@@ -166,7 +166,7 @@ Responsibilities:
 MVP public APIs:
 
 ```csharp
-public interface IFhirJsonSerializer   
+public interface IFhirJsonSerializer   // 可以考慮DI，IFhirSerialier，json只是一種方式
 {
     string Serialize<TResource>(TResource resource)
         where TResource : Resource;
