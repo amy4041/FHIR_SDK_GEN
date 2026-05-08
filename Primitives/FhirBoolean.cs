@@ -5,7 +5,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR boolean primitive. Valid values are true or false when present.
 /// </summary>
-public sealed class FhirBoolean : PrimitiveType<bool>
+public sealed class FhirBoolean : PrimitiveType<bool?>
 {
     public FhirBoolean()
     {

@@ -6,7 +6,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR decimal primitive backed by the .NET decimal type.
 /// </summary>
-public sealed class FhirDecimal : PrimitiveType<decimal>
+public sealed class FhirDecimal : PrimitiveType<decimal?>
 {
     public FhirDecimal()
     {

@@ -6,7 +6,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR integer primitive backed by a signed 32-bit integer.
 /// </summary>
-public sealed class FhirInteger : PrimitiveType<int>
+public sealed class FhirInteger : PrimitiveType<int?>
 {
     public FhirInteger()
     {
