@@ -14,5 +14,5 @@ public sealed class Extension : DataType
     /// Value of extension. Nested extensions are represented by the inherited Extension collection.
     /// MVP可以，但是Special types是Element
     /// </summary>
-    public DataType? Value { get; set; }  
+    public IFhirExtensionValue? Value { get; set; }
 }
