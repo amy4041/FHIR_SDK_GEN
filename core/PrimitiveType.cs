@@ -16,7 +16,7 @@ public abstract class PrimitiveType<T> : DataType
     }
 
     /// <summary>
-    /// Raw primitive value.
+    /// 實際保存Raw primitive value.
     /// </summary>
     public T? Value { get; set; }
 
