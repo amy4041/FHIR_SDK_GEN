@@ -1,0 +1,206 @@
+# =========================================================
+# .NET 9 / ASP.NET Core / Blazor / Visual Studio
+# 適用於：
+# - ASP.NET Core Web API
+# - Blazor Server / WebAssembly
+# - Radzen Blazor
+# - xUnit / Bunit / Playwright
+# - SQLite
+# - Visual Studio / Rider / VS Code
+# =========================================================
+
+# =========================
+# Build Results
+# =========================
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Publish Output
+publish/
+artifacts/
+
+# =========================
+# User-specific files
+# =========================
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# =========================
+# Visual Studio
+# =========================
+.vs/
+
+# =========================
+# Rider / ReSharper
+# =========================
+.idea/
+_ReSharper*/
+*.DotSettings.user
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+
+# =========================
+# NuGet
+# =========================
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# 如果你有使用 packages.config 才需要保留
+#!packages/repositories.config
+
+# =========================
+# Test Results
+# =========================
+[Tt]est[Rr]esult*/
+[Tt]est[Rr]esults/
+*.trx
+*.coverage
+*.coveragexml
+
+# =========================
+# xUnit / BUnit
+# =========================
+coverage/
+coverage-report/
+
+# =========================
+# Playwright
+# =========================
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+ms-playwright/
+
+# Playwright screenshots/videos
+*.png
+*.webm
+*.zip
+
+# =========================
+# SQLite
+# =========================
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# 若你有初始化資料庫需要保留可取消註解
+#!data/app.db
+
+# =========================
+# Entity Framework Core
+# =========================
+Migrations/*Designer.cs
+Migrations/*.resx
+
+# 不忽略 migration 本體
+#!Migrations/*.cs
+
+# =========================
+# ASP.NET Scaffolding
+# =========================
+ScaffoldingReadMe.txt
+
+# =========================
+# Secrets / Environment
+# =========================
+appsettings.Development.json
+appsettings.Local.json
+.env
+.env.*
+secrets.json
+
+# User Secrets
+**/secrets.json
+
+# =========================
+# Certificates
+# =========================
+*.pfx
+*.pem
+*.key
+*.crt
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# Node / Frontend
+# (Blazor WASM 或前端工具常用)
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Temporary files
+# =========================
+*.tmp
+*.temp
+*.cache
+
+# =========================
+# Generated files
+# =========================
+Generated/
+wwwroot/dist/
+wwwroot/lib/
+
+# =========================
+# JetBrains
+# =========================
+*.sln.iml
+
+# =========================
+# Azure / Publish Profiles
+# =========================
+*.Publish.xml
+*.pubxml.user
+
+# 如果需要保留 pubxml 可取消註解
+#!*.pubxml
+
+# =========================
+# Docker
+# =========================
+docker-compose.override.yml
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Backup files
+# =========================
+*.bak
+*.backup
+*.old
+
+# =========================
+# Generated Blazor CSS
+# =========================
+*.rz.scp.css
+
+# =========================
+# Radzen
+# =========================
+RadzenLogs/
