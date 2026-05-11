@@ -3,7 +3,7 @@ namespace MyFhirSdk.Core;
 /// <summary>
 /// Additional content defined by implementations.
 /// </summary>
-public sealed class Extension : DataType
+public sealed class Extension : Element
 {
     /// <summary>
     /// Source of the definition for the extension code.
