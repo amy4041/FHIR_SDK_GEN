@@ -153,33 +153,85 @@ Resource classes should inherit from `DomainResource` unless a FHIR R4 rule requ
 
 ### MyFhirSdk.Serialization
 
-Handles FHIR JSON serialization and deserialization.
+Defines serialization contracts and format-specific implementations.
+
+The serialization layer should expose small interfaces that other modules depend on.
+JSON classes should implement those interfaces using `System.Text.Json` for the MVP.
+This keeps the SDK open to other formats or implementations later without changing the client-facing API.
 
 Responsibilities:
 
-- Convert typed SDK resources to FHIR JSON.
-- Parse FHIR JSON into typed SDK resources.
+- Define format-neutral serializer and parser abstractions.
+- Convert typed SDK resources to FHIR JSON through `FhirJsonSerializer`.
+- Parse FHIR JSON into typed SDK resources through `FhirJsonParser`.
 - Handle `resourceType`.
 - Handle primitive values and complex datatypes.
 - Preserve FHIR JSON naming conventions.
+- Keep serialization and parsing behavior outside resource model classes.
 
-MVP public APIs:
+Primary interfaces:
+
+- `IFhirSerializer`
+- `IFhirParser`
+
+Primary implementations:
+
+- `FhirJsonSerializer`
+- `FhirJsonParser`
+
+Recommended file layout:
+
+```text
+Serialization
+|-- IFhirSerializer.cs
+|-- IFhirParser.cs
+`-- Json
+    |-- FhirJsonSerializer.cs
+    `-- FhirJsonParser.cs
+```
+
+MVP public contracts:
 
 ```csharp
-public interface IFhirJsonSerializer   // 可以考慮DI，IFhirSerialier，json只是一種方式
+public interface IFhirSerializer
 {
     string Serialize<TResource>(TResource resource)
         where TResource : Resource;
 }
 
-public interface IFhirJsonParser
+public interface IFhirParser
 {
     TResource Parse<TResource>(string json)
         where TResource : Resource;
 }
 ```
 
+MVP implementation classes:
+
+```csharp
+namespace MyFhirSdk.Serialization.Json;
+
+public sealed class FhirJsonSerializer : IFhirSerializer
+{
+    public string Serialize<TResource>(TResource resource)
+        where TResource : Resource
+    {
+        // Uses System.Text.Json and FHIR-specific converters.
+    }
+}
+
+public sealed class FhirJsonParser : IFhirParser
+{
+    public TResource Parse<TResource>(string json)
+        where TResource : Resource
+    {
+        // Uses System.Text.Json and validates resourceType.
+    }
+}
+```
+
 Implementation should use `System.Text.Json` unless there is a clear reason to choose another serializer.
+FHIR-specific behavior such as primitive wrapper conversion, `resourceType` handling, and resource dispatch should be implemented with serializer options or custom converters in this module.
 
 ### MyFhirSdk.Validation
 
@@ -424,8 +476,8 @@ public sealed class FhirClient : IFhirClient
 {
     public FhirClient(
         HttpClient httpClient,
-        IFhirJsonSerializer serializer,
-        IFhirJsonParser parser,
+        IFhirSerializer serializer,
+        IFhirParser parser,
         FhirClientOptions options)
     {
     }
