@@ -1,90 +1,68 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using MyFhirSdk.Primitives;
-using MyFhirSdk.Resources;
 using MyFhirSdk.Serialization.Json;
-using MyFhirSdk.Types;
 
-return PatientSimpleJsonFixtureMatchesSerializer();
+return RunAllFixtureTests();
 
-static int PatientSimpleJsonFixtureMatchesSerializer()
+static int RunAllFixtureTests()
 {
     var serializer = new FhirJsonSerializer();
-    var actualJson = serializer.Serialize(CreateSimplePatient());
-    var expectedJson = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", "patient-simple.json"));
+    var failures = new List<string>();
 
-    var normalizedExpected = NormalizeJson(expectedJson);
-    var normalizedActual = NormalizeJson(actualJson);
-
-    if (normalizedExpected == normalizedActual)
+    foreach (var testCase in PatientJsonTestCases.All)
     {
-        Console.WriteLine("PASS patient-simple.json matches serialized Patient resource.");
+        var result = RunFixtureTest(serializer, testCase);
+
+        if (result.Passed)
+        {
+            Console.WriteLine($"PASS {testCase.FixtureFileName}");
+            continue;
+        }
+
+        failures.Add(result.Message);
+        Console.Error.WriteLine($"FAIL {testCase.FixtureFileName}");
+    }
+
+    if (failures.Count == 0)
+    {
+        Console.WriteLine($"All {PatientJsonTestCases.All.Count} JSON serializer fixture tests passed.");
         return 0;
     }
 
-    Console.Error.WriteLine("FAIL patient-simple.json does not match serialized Patient resource.");
     Console.Error.WriteLine();
-    Console.Error.WriteLine("Expected:");
-    Console.Error.WriteLine(normalizedExpected);
+    Console.Error.WriteLine($"{failures.Count} JSON serializer fixture test(s) failed.");
     Console.Error.WriteLine();
-    Console.Error.WriteLine("Actual:");
-    Console.Error.WriteLine(normalizedActual);
+    Console.Error.WriteLine(string.Join(Environment.NewLine + Environment.NewLine, failures));
     return 1;
 }
 
-static Patient CreateSimplePatient()
+static JsonFixtureTestResult RunFixtureTest(FhirJsonSerializer serializer, JsonFixtureTestCase testCase)
 {
-    return new Patient
+    var actualJson = serializer.Serialize(testCase.CreateResource());
+    var fixturePath = Path.Combine(AppContext.BaseDirectory, "Fixtures", testCase.FixtureFileName);
+    var expectedJson = File.ReadAllText(fixturePath);
+
+    var normalizedExpected = NormalizeJson(expectedJson);
+    var normalizedActual = NormalizeJson(actualJson);
+    Console.WriteLine("------normalizedExpected------");
+    Console.WriteLine(normalizedExpected);
+    Console.WriteLine("------normalizedActual------");
+    Console.WriteLine(normalizedActual);
+
+    if (normalizedExpected == normalizedActual)
     {
-        Id = "patient-simple",
-        Active = new FhirBoolean(true),
-        Gender = new FhirCode("male"),
-        BirthDate = new FhirDate("1974-12-25"),
-        Identifier =
-        {
-            new Identifier
-            {
-                System = new FhirUri("http://hospital.example.org/patients"),
-                Value = new FhirString("MRN-12345")
-            }
-        },
-        Name =
-        {
-            new HumanName
-            {
-                Use = new FhirCode("official"),
-                Family = new FhirString("Chalmers"),
-                Given =
-                {
-                    new FhirString("Peter"),
-                    new FhirString("James")
-                }
-            }
-        },
-        Telecom =
-        {
-            new ContactPoint
-            {
-                System = new FhirCode("phone"),
-                Value = new FhirString("555-0100"),
-                Use = new FhirCode("home")
-            }
-        },
-        Address =
-        {
-            new Address
-            {
-                Use = new FhirCode("home"),
-                Line =
-                {
-                    new FhirString("534 Erewhon St")
-                },
-                City = new FhirString("PleasantVille"),
-                State = new FhirString("Vic"),
-                PostalCode = new FhirString("3999")
-            }
-        }
-    };
+        return JsonFixtureTestResult.Pass();
+    }
+
+    return JsonFixtureTestResult.Fail($"""
+        {testCase.FixtureFileName} does not match serialized {testCase.ResourceName} resource.
+
+        Expected:
+        {normalizedExpected}
+
+        Actual:
+        {normalizedActual}
+        """);
 }
 
 static string NormalizeJson(string json)
