@@ -1,0 +1,41 @@
+{
+  "resourceType": "Patient",
+  "id": "patient-simple",
+  "identifier": [
+    {
+      "system": "http://hospital.example.org/patients",
+      "value": "MRN-12345"
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "use": "official",
+      "family": "Chalmers",
+      "given": [
+        "Peter",
+        "James"
+      ]
+    }
+  ],
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "555-0100",
+      "use": "home"
+    }
+  ],
+  "gender": "male",
+  "birthDate": "1974-12-25",
+  "address": [
+    {
+      "use": "home",
+      "line": [
+        "534 Erewhon St"
+      ],
+      "city": "PleasantVille",
+      "state": "Vic",
+      "postalCode": "3999"
+    }
+  ]
+}

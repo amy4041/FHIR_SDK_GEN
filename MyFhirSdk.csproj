@@ -7,5 +7,6 @@
   <ItemGroup>
     <Compile Remove="core\bin\**\*.cs" />
     <Compile Remove="core\obj\**\*.cs" />
+    <Compile Remove="Tests\**\*.cs" />
   </ItemGroup>
 </Project>
