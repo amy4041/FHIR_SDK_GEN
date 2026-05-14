@@ -32,16 +32,9 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
     private static void WriteResourceValue(Utf8JsonWriter writer, Resource resource)
     {
         writer.WriteStartObject();
-        writer.WriteString("resourceType", GetResourceTypeName(resource));
+        writer.WriteString("resourceType", FhirJsonConventions.GetResourceTypeName(resource));
         WriteObjectProperties(writer, resource);
         writer.WriteEndObject();
-    }
-
-    private static string GetResourceTypeName(Resource resource)
-    {
-        return string.IsNullOrWhiteSpace(resource.ResourceType)
-            ? resource.GetType().Name
-            : resource.ResourceType;
     }
 
     private static void WriteObjectValue(Utf8JsonWriter writer, object value)
@@ -59,7 +52,7 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
 
     private static void WriteObjectProperties(Utf8JsonWriter writer, object value)
     {
-        foreach (var property in GetSerializableProperties(value.GetType()))
+        foreach (var property in FhirJsonConventions.GetSerializableProperties(value.GetType()))
         {
             var propertyValue = property.GetValue(value);
 
@@ -70,7 +63,7 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
                 continue;
             }
 
-            TryWriteProperty(writer, GetJsonPropertyName(property), propertyValue);
+            TryWriteProperty(writer, FhirJsonConventions.GetJsonPropertyName(property), propertyValue);
         }
     }
 
@@ -81,7 +74,7 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
             return false;
         }
 
-        return TryWriteProperty(writer, GetExtensionValuePropertyName(value!), value);
+        return TryWriteProperty(writer, FhirJsonConventions.GetExtensionValuePropertyName(value!), value);
     }
 
     private static bool TryWriteProperty(Utf8JsonWriter writer, string propertyName, object? value)
@@ -104,7 +97,7 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
             return true;
         }
 
-        if (IsFhirPrimitive(nonNullValue.GetType()))
+        if (FhirJsonConventions.IsFhirPrimitive(nonNullValue.GetType()))
         {
             return WritePrimitiveProperty(writer, propertyName, nonNullValue);
         }
@@ -127,7 +120,7 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
             return false;
         }
 
-        if (items.TrueForAll(item => item is not null && IsFhirPrimitive(item.GetType())))
+        if (items.TrueForAll(item => item is not null && FhirJsonConventions.IsFhirPrimitive(item.GetType())))
         {
             return WritePrimitiveArrayProperty(writer, propertyName, items);
         }

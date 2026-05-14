@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Globalization;
 using System.Text.Json;
 using MyFhirSdk.Core;
 
@@ -20,7 +19,7 @@ public sealed partial class FhirJsonSerializer
             return;
         }
 
-        if (IsFhirPrimitive(value.GetType()))
+        if (FhirJsonConventions.IsFhirPrimitive(value.GetType()))
         {
             WritePrimitiveRawValue(writer, value, writeNullWhenMissing: true);
             return;
@@ -59,10 +58,10 @@ public sealed partial class FhirJsonSerializer
                 writer.WriteNumber(propertyName, decimalValue);
                 return true;
             case DateTimeOffset dateTimeOffsetValue:
-                writer.WriteString(propertyName, FormatDateTimeOffset(dateTimeOffsetValue));
+                writer.WriteString(propertyName, FhirJsonConventions.FormatDateTimeOffset(dateTimeOffsetValue));
                 return true;
             case DateTime dateTimeValue:
-                writer.WriteString(propertyName, FormatDateTime(dateTimeValue));
+                writer.WriteString(propertyName, FhirJsonConventions.FormatDateTime(dateTimeValue));
                 return true;
             default:
                 return false;
@@ -86,10 +85,10 @@ public sealed partial class FhirJsonSerializer
                 writer.WriteNumberValue(decimalValue);
                 return true;
             case DateTimeOffset dateTimeOffsetValue:
-                writer.WriteStringValue(FormatDateTimeOffset(dateTimeOffsetValue));
+                writer.WriteStringValue(FhirJsonConventions.FormatDateTimeOffset(dateTimeOffsetValue));
                 return true;
             case DateTime dateTimeValue:
-                writer.WriteStringValue(FormatDateTime(dateTimeValue));
+                writer.WriteStringValue(FhirJsonConventions.FormatDateTime(dateTimeValue));
                 return true;
             default:
                 return false;
@@ -139,9 +138,9 @@ public sealed partial class FhirJsonSerializer
             return stringValue.Length > 0;
         }
 
-        if (IsFhirPrimitive(value.GetType()))
+        if (FhirJsonConventions.IsFhirPrimitive(value.GetType()))
         {
-            return HasPrimitiveRawValue(value) || HasPrimitiveMetadata(value);
+            return FhirJsonConventions.HasPrimitiveRawValue(value) || HasPrimitiveMetadata(value);
         }
 
         if (value is IEnumerable enumerable)
@@ -157,7 +156,7 @@ public sealed partial class FhirJsonSerializer
             return false;
         }
 
-        if (IsSimpleValue(value))
+        if (FhirJsonConventions.IsSimpleValue(value))
         {
             return true;
         }
@@ -172,7 +171,7 @@ public sealed partial class FhirJsonSerializer
 
     private static bool HasSerializableObjectProperties(object value)
     {
-        foreach (var property in GetSerializableProperties(value.GetType()))
+        foreach (var property in FhirJsonConventions.GetSerializableProperties(value.GetType()))
         {
             if (property.DeclaringType == typeof(Extension) &&
                 property.Name == nameof(Extension.Value))
@@ -192,25 +191,5 @@ public sealed partial class FhirJsonSerializer
         }
 
         return false;
-    }
-
-    private static bool IsSimpleValue(object value)
-    {
-        return value is bool
-            or int
-            or long
-            or decimal
-            or DateTimeOffset
-            or DateTime;
-    }
-
-    private static string FormatDateTimeOffset(DateTimeOffset value)
-    {
-        return value.ToString("O", CultureInfo.InvariantCulture);
-    }
-
-    private static string FormatDateTime(DateTime value)
-    {
-        return value.ToString("O", CultureInfo.InvariantCulture);
     }
 }

@@ -42,9 +42,13 @@ static JsonFixtureTestResult RunFixtureTest(FhirJsonSerializer serializer, JsonF
     var actualJson = serializer.Serialize(testCase.CreateResource());
     var fixturePath = Path.Combine(AppContext.BaseDirectory, "Fixtures", testCase.FixtureFileName);
     var expectedJson = File.ReadAllText(fixturePath);
+    Console.WriteLine("---expectedJson---");
+    Console.WriteLine(expectedJson);
 
     var normalizedExpected = NormalizeJson(expectedJson);
     var normalizedActual = NormalizeJson(actualJson);
+    Console.WriteLine("---normalizedActual---");
+    Console.WriteLine(normalizedActual);
 
     if (normalizedExpected == normalizedActual)
     {
