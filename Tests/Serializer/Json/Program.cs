@@ -7,9 +7,10 @@ return RunAllFixtureTests();
 static int RunAllFixtureTests()
 {
     var serializer = new FhirJsonSerializer();
+    var testCases = JsonTestCases.All;
     var failures = new List<string>();
 
-    foreach (var testCase in PatientJsonTestCases.All)
+    foreach (var testCase in testCases)
     {
         var result = RunFixtureTest(serializer, testCase);
 
@@ -25,7 +26,7 @@ static int RunAllFixtureTests()
 
     if (failures.Count == 0)
     {
-        Console.WriteLine($"All {PatientJsonTestCases.All.Count} JSON serializer fixture tests passed.");
+        Console.WriteLine($"All {testCases.Count} JSON serializer fixture tests passed.");
         return 0;
     }
 
@@ -44,10 +45,6 @@ static JsonFixtureTestResult RunFixtureTest(FhirJsonSerializer serializer, JsonF
 
     var normalizedExpected = NormalizeJson(expectedJson);
     var normalizedActual = NormalizeJson(actualJson);
-    Console.WriteLine("------normalizedExpected------");
-    Console.WriteLine(normalizedExpected);
-    Console.WriteLine("------normalizedActual------");
-    Console.WriteLine(normalizedActual);
 
     if (normalizedExpected == normalizedActual)
     {

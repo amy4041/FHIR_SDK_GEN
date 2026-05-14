@@ -1,0 +1,16 @@
+{
+  "resourceType": "Patient",
+  "id": "patient-primitive-metadata",
+  "active": true,
+  "_active": {
+    "id": "active-element",
+    "extension": [
+      {
+        "url": "http://example.org/fhir/StructureDefinition/source",
+        "valueString": "registration"
+      }
+    ]
+  },
+  "gender": "male",
+  "birthDate": "1974-12-25"
+}

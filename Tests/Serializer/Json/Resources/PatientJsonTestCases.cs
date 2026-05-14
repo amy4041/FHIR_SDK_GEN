@@ -1,4 +1,3 @@
-using System.Reflection;
 using MyFhirSdk.Core;
 using MyFhirSdk.Primitives;
 using MyFhirSdk.Resources;
@@ -9,11 +8,11 @@ internal static class PatientJsonTestCases
     public static IReadOnlyList<JsonFixtureTestCase> All { get; } =
     [
         new JsonFixtureTestCase(
-            "patient-simple.json",
+            Path.Combine("Resources", "patient-simple.json"),
             "Patient",
             CreateSimplePatient),
         new JsonFixtureTestCase(
-            "patient-list-name.json",
+            Path.Combine("Resources", "patient-list-name.json"),
             "Patient",
             CreatePatientWithListName)
     ];

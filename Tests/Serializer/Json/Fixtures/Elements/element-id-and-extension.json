@@ -1,0 +1,22 @@
+{
+  "resourceType": "Patient",
+  "id": "patient-element-metadata",
+  "extension": [
+    {
+      "url": "http://example.org/fhir/StructureDefinition/patient-note",
+      "valueString": "front desk"
+    }
+  ],
+  "name": [
+    {
+      "id": "name-element",
+      "extension": [
+        {
+          "url": "http://example.org/fhir/StructureDefinition/name-source",
+          "valueString": "passport"
+        }
+      ],
+      "family": "Lin"
+    }
+  ]
+}

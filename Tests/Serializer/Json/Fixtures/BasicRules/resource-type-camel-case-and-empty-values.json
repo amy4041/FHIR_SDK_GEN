@@ -1,0 +1,8 @@
+{
+  "resourceType": "Patient",
+  "id": "patient-basic-rules",
+  "implicitRules": "http://example.org/fhir/rules",
+  "language": "en-US",
+  "deceasedBoolean": false,
+  "multipleBirthInteger": 2
+}
