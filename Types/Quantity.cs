@@ -6,7 +6,7 @@ namespace MyFhirSdk.Types;
 /// <summary>
 /// FHIR R4 Quantity datatype for measured or counted amounts.
 /// </summary>
-public sealed class Quantity : DataType
+public class Quantity : DataType
 {
     /// <summary>
     /// Numerical value with implicit precision.
@@ -14,7 +14,7 @@ public sealed class Quantity : DataType
     public FhirDecimal? Value { get; set; }
 
     /// <summary>
-    /// &lt; | &lt;= | &gt;= | &gt;.
+    /// &lt; | &lt;= | &gt;= | &gt; | ad.
     /// </summary>
     public FhirCode? Comparator { get; set; }
 

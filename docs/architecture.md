@@ -5,9 +5,9 @@
 This document defines the technical architecture for the MyFhirSdk MVP.
 It is intended to guide implementation work by humans and Codex agents.
 
-MyFhirSdk is a .NET 9 SDK for working with FHIR R4 resources. The MVP focuses on:
+MyFhirSdk is a .NET 9 SDK for working with FHIR R5 resources. The MVP focuses on:
 
-- Creating common FHIR R4 resources.
+- Creating common FHIR R5 resources.
 - Serializing resources to FHIR JSON.
 - Deserializing FHIR JSON into typed resource objects.
 - Calling basic FHIR REST APIs.
@@ -17,7 +17,7 @@ The SDK should be small, modular, testable, and easy to extend after the MVP.
 
 ## 2. Architectural Principles
 
-- Support FHIR R4 only in the MVP.
+- Support FHIR R5 only in the MVP.
 - Keep resource models strongly typed.
 - Keep FHIR primitives separate from .NET primitive values.
 - Prefer clear SDK APIs over exposing internal serialization details.
@@ -112,7 +112,7 @@ Defines reusable complex FHIR datatypes.
 
 Responsibilities:
 
-- Model general-purpose FHIR R4 datatypes.
+- Model general-purpose FHIR R5 datatypes.
 - Use FHIR primitive types where applicable.
 - Avoid embedding resource-specific behavior.
 
@@ -130,7 +130,7 @@ MVP datatypes:
 
 ### MyFhirSdk.Resources
 
-Defines supported FHIR R4 resources.
+Defines supported FHIR R5 resources.
 
 Responsibilities:
 
@@ -149,7 +149,7 @@ MVP resources:
 - `Claim`
 - `Bundle`
 
-Resource classes should inherit from `DomainResource` unless a FHIR R4 rule requires otherwise.
+Resource classes should inherit from `DomainResource` unless a FHIR R5 rule requires otherwise.
 
 ### MyFhirSdk.Serialization
 
@@ -295,7 +295,7 @@ Client behavior:
 
 ## 5. Type Hierarchy
 
-The core hierarchy should follow the FHIR R4 model at a practical MVP level:
+The core hierarchy should follow the FHIR R5 model at a practical MVP level:
 
 ```text
 Base
@@ -537,7 +537,7 @@ Acceptance targets:
 
 In scope:
 
-- FHIR R4.
+- FHIR R5.
 - FHIR JSON.
 - Patient, Organization, Practitioner, Encounter, Coverage, Claim, and Bundle.
 - Read, create, update, and search REST operations.

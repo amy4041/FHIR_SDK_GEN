@@ -10,7 +10,7 @@ MyFhirSdk
 
 ### Product Vision
 
-提供一個輕量化、易擴充、符合 FHIR R4 的 .NET SDK，
+提供一個輕量化、易擴充、符合 FHIR R5 的 .NET SDK，
 讓醫療系統能快速進行：
 
 - FHIR Resource 建立
@@ -49,7 +49,7 @@ MyFhirSdk
 - 可維護
 - 可擴充
 - 型別安全
-- 符合 FHIR R4
+- 符合 FHIR R5
 
 的 SDK 作為基礎框架。
 
@@ -78,7 +78,7 @@ MyFhirSdk
 
 ### FHIR Version
 
-- FHIR R4 only
+- FHIR R5 only
 
 ---
 
