@@ -20,9 +20,9 @@ public sealed class EncounterLocation : BackboneElement
     public FhirCode? Status { get; set; }
 
     /// <summary>
-    /// Physical type of the location.
+    /// Form of location required, such as bed, room, or ward.
     /// </summary>
-    public CodeableConcept? PhysicalType { get; set; }
+    public CodeableConcept? Form { get; set; }
 
     /// <summary>
     /// Time period during which the patient was present at this location.

@@ -11,7 +11,7 @@ public sealed class BundleLink : BackboneElement
     /// <summary>
     /// Relation type for the link.
     /// </summary>
-    public FhirString? Relation { get; set; }
+    public FhirCode? Relation { get; set; }
 
     /// <summary>
     /// Link URL.

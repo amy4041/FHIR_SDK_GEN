@@ -26,9 +26,14 @@ public sealed class Encounter : DomainResource
     public FhirCode? Status { get; set; }
 
     /// <summary>
-    /// Classification such as inpatient, outpatient, ambulatory, or emergency.
+    /// Classifications such as inpatient, outpatient, ambulatory, or emergency.
     /// </summary>
-    public Coding? Class { get; set; }
+    public IList<CodeableConcept> Class { get; set; } = new List<CodeableConcept>();
+
+    /// <summary>
+    /// Priority of the encounter.
+    /// </summary>
+    public CodeableConcept? Priority { get; set; }
 
     /// <summary>
     /// Specific type of encounter.
@@ -38,12 +43,7 @@ public sealed class Encounter : DomainResource
     /// <summary>
     /// Broad service type associated with the encounter.
     /// </summary>
-    public CodeableConcept? ServiceType { get; set; }
-
-    /// <summary>
-    /// Priority of the encounter.
-    /// </summary>
-    public CodeableConcept? Priority { get; set; }
+    public IList<CodeableReference> ServiceType { get; set; } = new List<CodeableReference>();
 
     /// <summary>
     /// Patient or group present at the encounter.
@@ -51,34 +51,29 @@ public sealed class Encounter : DomainResource
     public Reference? Subject { get; set; }
 
     /// <summary>
-    /// Participants involved in the encounter.
+    /// Current status of the subject in relation to the encounter.
     /// </summary>
-    public IList<EncounterParticipant> Participant { get; set; } = new List<EncounterParticipant>();
+    public CodeableConcept? SubjectStatus { get; set; }
 
     /// <summary>
-    /// Time period covered by the encounter.
+    /// Episodes of care that this encounter should be recorded against.
     /// </summary>
-    public Period? Period { get; set; }
+    public IList<Reference> EpisodeOfCare { get; set; } = new List<Reference>();
 
     /// <summary>
-    /// Quantity of time the encounter lasted.
+    /// Requests that initiated this encounter.
     /// </summary>
-    public Quantity? Length { get; set; }
+    public IList<Reference> BasedOn { get; set; } = new List<Reference>();
 
     /// <summary>
-    /// Coded reasons for the encounter.
+    /// Care teams allocated to participate in this encounter.
     /// </summary>
-    public IList<CodeableConcept> ReasonCode { get; set; } = new List<CodeableConcept>();
+    public IList<Reference> CareTeam { get; set; } = new List<Reference>();
 
     /// <summary>
-    /// Resource references describing reasons for the encounter.
+    /// Encounter this encounter is part of.
     /// </summary>
-    public IList<Reference> ReasonReference { get; set; } = new List<Reference>();
-
-    /// <summary>
-    /// Diagnoses relevant to the encounter.
-    /// </summary>
-    public IList<EncounterDiagnosis> Diagnosis { get; set; } = new List<EncounterDiagnosis>();
+    public Reference? PartOf { get; set; }
 
     /// <summary>
     /// Organization responsible for the encounter.
@@ -86,9 +81,74 @@ public sealed class Encounter : DomainResource
     public Reference? ServiceProvider { get; set; }
 
     /// <summary>
-    /// Encounter this encounter is part of.
+    /// Participants involved in the encounter.
     /// </summary>
-    public Reference? PartOf { get; set; }
+    public IList<EncounterParticipant> Participant { get; set; } = new List<EncounterParticipant>();
+
+    /// <summary>
+    /// Appointments that scheduled this encounter.
+    /// </summary>
+    public IList<Reference> Appointment { get; set; } = new List<Reference>();
+
+    /// <summary>
+    /// Connection details of virtual services.
+    /// </summary>
+    public IList<VirtualServiceDetail> VirtualService { get; set; } = new List<VirtualServiceDetail>();
+
+    /// <summary>
+    /// Actual start and end time of the encounter.
+    /// </summary>
+    public Period? ActualPeriod { get; set; }
+
+    /// <summary>
+    /// Planned start date/time of the encounter.
+    /// </summary>
+    public FhirDateTime? PlannedStartDate { get; set; }
+
+    /// <summary>
+    /// Planned end date/time of the encounter.
+    /// </summary>
+    public FhirDateTime? PlannedEndDate { get; set; }
+
+    /// <summary>
+    /// Quantity of time the encounter lasted.
+    /// </summary>
+    public Duration? Length { get; set; }
+
+    /// <summary>
+    /// Medical reasons expected to be addressed during the encounter.
+    /// </summary>
+    public IList<EncounterReason> Reason { get; set; } = new List<EncounterReason>();
+
+    /// <summary>
+    /// Diagnoses relevant to the encounter.
+    /// </summary>
+    public IList<EncounterDiagnosis> Diagnosis { get; set; } = new List<EncounterDiagnosis>();
+
+    /// <summary>
+    /// Accounts that may be used for billing this encounter.
+    /// </summary>
+    public IList<Reference> Account { get; set; } = new List<Reference>();
+
+    /// <summary>
+    /// Diet preferences reported by the patient.
+    /// </summary>
+    public IList<CodeableConcept> DietPreference { get; set; } = new List<CodeableConcept>();
+
+    /// <summary>
+    /// Special arrangements such as wheelchair, translator, or stretcher.
+    /// </summary>
+    public IList<CodeableConcept> SpecialArrangement { get; set; } = new List<CodeableConcept>();
+
+    /// <summary>
+    /// Special courtesies such as VIP or board member.
+    /// </summary>
+    public IList<CodeableConcept> SpecialCourtesy { get; set; } = new List<CodeableConcept>();
+
+    /// <summary>
+    /// Details about the admission to a healthcare service.
+    /// </summary>
+    public EncounterAdmission? Admission { get; set; }
 
     /// <summary>
     /// Locations where the encounter takes place.

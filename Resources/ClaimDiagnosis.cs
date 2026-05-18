@@ -13,7 +13,7 @@ public sealed class ClaimDiagnosis : BackboneElement
     /// <summary>
     /// Diagnosis sequence number.
     /// </summary>
-    public FhirInteger? Sequence { get; set; }
+    public FhirPositiveInt? Sequence { get; set; }
 
     /// <summary>
     /// Coded diagnosis.
@@ -29,4 +29,9 @@ public sealed class ClaimDiagnosis : BackboneElement
     /// Diagnosis type, such as admitting or principal.
     /// </summary>
     public IList<CodeableConcept> Type { get; set; } = new List<CodeableConcept>();
+
+    /// <summary>
+    /// Present on admission indicator.
+    /// </summary>
+    public CodeableConcept? OnAdmission { get; set; }
 }

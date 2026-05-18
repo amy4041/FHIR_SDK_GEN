@@ -51,12 +51,27 @@ public sealed class Practitioner : DomainResource
     public FhirDate? BirthDate { get; set; }
 
     /// <summary>
+    /// Indicates if the practitioner is deceased.
+    /// </summary>
+    public FhirBoolean? DeceasedBoolean { get; set; }
+
+    /// <summary>
+    /// Date or time of death.
+    /// </summary>
+    public FhirDateTime? DeceasedDateTime { get; set; }
+
+    /// <summary>
+    /// Images of the practitioner.
+    /// </summary>
+    public IList<Attachment> Photo { get; set; } = new List<Attachment>();
+
+    /// <summary>
     /// Qualifications, certifications, or licenses held by the practitioner.
     /// </summary>
     public IList<PractitionerQualification> Qualification { get; set; } = new List<PractitionerQualification>();
 
     /// <summary>
-    /// Languages used by the practitioner.
+    /// Languages that may be used to communicate with the practitioner.
     /// </summary>
-    public IList<CodeableConcept> Communication { get; set; } = new List<CodeableConcept>();
+    public IList<PractitionerCommunication> Communication { get; set; } = new List<PractitionerCommunication>();
 }

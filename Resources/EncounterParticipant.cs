@@ -20,7 +20,7 @@ public sealed class EncounterParticipant : BackboneElement
     public Period? Period { get; set; }
 
     /// <summary>
-    /// Practitioner, practitioner role, related person, or device involved.
+    /// Individual, device, or service participating in the encounter.
     /// </summary>
-    public Reference? Individual { get; set; }
+    public Reference? Actor { get; set; }
 }

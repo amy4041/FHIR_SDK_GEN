@@ -33,7 +33,7 @@ public sealed class Bundle : Resource
     /// <summary>
     /// Total number of matching resources when this is a searchset.
     /// </summary>
-    public FhirInteger? Total { get; set; }
+    public FhirUnsignedInt? Total { get; set; }
 
     /// <summary>
     /// Links related to this bundle.
@@ -44,4 +44,14 @@ public sealed class Bundle : Resource
     /// Entries contained in this bundle.
     /// </summary>
     public IList<BundleEntry> Entry { get; set; } = new List<BundleEntry>();
+
+    /// <summary>
+    /// Digital signature for the bundle.
+    /// </summary>
+    public Signature? Signature { get; set; }
+
+    /// <summary>
+    /// Issues and warnings related to the bundle construction or content.
+    /// </summary>
+    public Resource? Issues { get; set; }
 }

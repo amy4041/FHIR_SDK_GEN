@@ -1,5 +1,5 @@
+using System.Collections.Generic;
 using MyFhirSdk.Core;
-using MyFhirSdk.Primitives;
 using MyFhirSdk.Types;
 
 namespace MyFhirSdk.Resources;
@@ -10,17 +10,12 @@ namespace MyFhirSdk.Resources;
 public sealed class EncounterDiagnosis : BackboneElement
 {
     /// <summary>
-    /// Condition or procedure relevant to the encounter.
+    /// Diagnoses relevant to the encounter.
     /// </summary>
-    public Reference? Condition { get; set; }
+    public IList<CodeableReference> Condition { get; set; } = new List<CodeableReference>();
 
     /// <summary>
-    /// Role or use of this diagnosis.
+    /// Roles this diagnosis has within the encounter.
     /// </summary>
-    public CodeableConcept? Use { get; set; }
-
-    /// <summary>
-    /// Diagnosis ranking for the encounter.
-    /// </summary>
-    public FhirInteger? Rank { get; set; }
+    public IList<CodeableConcept> Use { get; set; } = new List<CodeableConcept>();
 }

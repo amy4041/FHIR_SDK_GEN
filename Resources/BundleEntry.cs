@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using MyFhirSdk.Core;
 using MyFhirSdk.Primitives;
 
@@ -8,6 +9,11 @@ namespace MyFhirSdk.Resources;
 /// </summary>
 public sealed class BundleEntry : BackboneElement
 {
+    /// <summary>
+    /// Links related to this entry.
+    /// </summary>
+    public IList<BundleLink> Link { get; set; } = new List<BundleLink>();
+
     /// <summary>
     /// URI for the resource in the entry.
     /// </summary>

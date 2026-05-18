@@ -26,6 +26,16 @@ public sealed class Coverage : DomainResource
     public FhirCode? Status { get; set; }
 
     /// <summary>
+    /// insurance | self-pay | other.
+    /// </summary>
+    public FhirCode? Kind { get; set; }
+
+    /// <summary>
+    /// Self-pay parties and responsibilities.
+    /// </summary>
+    public IList<CoveragePaymentBy> PaymentBy { get; set; } = new List<CoveragePaymentBy>();
+
+    /// <summary>
     /// Type of coverage.
     /// </summary>
     public CodeableConcept? Type { get; set; }
@@ -43,7 +53,7 @@ public sealed class Coverage : DomainResource
     /// <summary>
     /// Insurer-assigned subscriber identifier.
     /// </summary>
-    public FhirString? SubscriberId { get; set; }
+    public IList<Identifier> SubscriberId { get; set; } = new List<Identifier>();
 
     /// <summary>
     /// Party covered by the policy.
@@ -68,7 +78,7 @@ public sealed class Coverage : DomainResource
     /// <summary>
     /// Issuer or payer for this coverage.
     /// </summary>
-    public IList<Reference> Payor { get; set; } = new List<Reference>();
+    public Reference? Insurer { get; set; }
 
     /// <summary>
     /// Coverage classification such as group, plan, or class.
@@ -78,10 +88,30 @@ public sealed class Coverage : DomainResource
     /// <summary>
     /// Relative order of this coverage.
     /// </summary>
-    public FhirInteger? Order { get; set; }
+    public FhirPositiveInt? Order { get; set; }
 
     /// <summary>
     /// Insurer network.
     /// </summary>
     public FhirString? Network { get; set; }
+
+    /// <summary>
+    /// Patient payments for services or products.
+    /// </summary>
+    public IList<CoverageCostToBeneficiary> CostToBeneficiary { get; set; } = new List<CoverageCostToBeneficiary>();
+
+    /// <summary>
+    /// Whether this coverage is included only for insurer reimbursement recovery.
+    /// </summary>
+    public FhirBoolean? Subrogation { get; set; }
+
+    /// <summary>
+    /// Contract details.
+    /// </summary>
+    public IList<Reference> Contract { get; set; } = new List<Reference>();
+
+    /// <summary>
+    /// Insurance plan details.
+    /// </summary>
+    public Reference? InsurancePlan { get; set; }
 }

@@ -17,7 +17,7 @@ public sealed class CoverageClass : BackboneElement
     /// <summary>
     /// Classification value assigned by the issuer.
     /// </summary>
-    public FhirString? Value { get; set; }
+    public Identifier? Value { get; set; }
 
     /// <summary>
     /// Human-readable class name.

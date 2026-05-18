@@ -41,14 +41,14 @@ public sealed class Organization : DomainResource
     public IList<FhirString> Alias { get; set; } = new List<FhirString>();
 
     /// <summary>
-    /// Contact details for the organization.
+    /// Additional details that identify the organization beyond its name.
     /// </summary>
-    public IList<ContactPoint> Telecom { get; set; } = new List<ContactPoint>();
+    public FhirMarkdown? Description { get; set; }
 
     /// <summary>
-    /// Addresses associated with the organization.
+    /// Official contact details for the organization.
     /// </summary>
-    public IList<Address> Address { get; set; } = new List<Address>();
+    public IList<ExtendedContactDetail> Contact { get; set; } = new List<ExtendedContactDetail>();
 
     /// <summary>
     /// Parent organization.
@@ -56,7 +56,12 @@ public sealed class Organization : DomainResource
     public Reference? PartOf { get; set; }
 
     /// <summary>
-    /// Contact parties for the organization.
+    /// Technical endpoints providing access to services operated for the organization.
     /// </summary>
-    public IList<OrganizationContact> Contact { get; set; } = new List<OrganizationContact>();
+    public IList<Reference> Endpoint { get; set; } = new List<Reference>();
+
+    /// <summary>
+    /// Qualifications, certifications, accreditations, licenses, and training.
+    /// </summary>
+    public IList<OrganizationQualification> Qualification { get; set; } = new List<OrganizationQualification>();
 }
