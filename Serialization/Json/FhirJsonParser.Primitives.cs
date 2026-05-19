@@ -19,8 +19,7 @@ public sealed partial class FhirJsonParser
 
         var primitive = CreatePrimitiveInstance(primitiveType, rawElement);
 
-        if (HasJsonValue(rawElement) &&
-            primitiveType.Name != "FhirDecimal")
+        if (HasJsonValue(rawElement) && !CreatesPrimitiveFromRawElement(primitiveType))
         {
             SetPrimitiveRawValue(primitive, rawElement!.Value);
         }
@@ -70,7 +69,23 @@ public sealed partial class FhirJsonParser
                 ?? throw new FhirSdkException($"Could not create an instance of '{primitiveType.FullName}'.");
         }
 
+        if (primitiveType.Name == "FhirInteger64" && HasJsonValue(rawElement))
+        {
+            if (rawElement!.Value.ValueKind != JsonValueKind.String)
+            {
+                throw new FhirSdkException("FHIR integer64 values must be JSON strings.");
+            }
+
+            return Activator.CreateInstance(primitiveType, rawElement.Value.GetString())
+                ?? throw new FhirSdkException($"Could not create an instance of '{primitiveType.FullName}'.");
+        }
+
         return CreateInstance(primitiveType);
+    }
+
+    private static bool CreatesPrimitiveFromRawElement(Type primitiveType)
+    {
+        return primitiveType.Name is "FhirDecimal" or "FhirInteger64";
     }
 
     private static void SetPrimitiveRawValue(object primitive, JsonElement rawElement)

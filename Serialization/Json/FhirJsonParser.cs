@@ -9,7 +9,6 @@ namespace MyFhirSdk.Serialization.Json;
 public sealed partial class FhirJsonParser : IFhirParser
 {
     private static readonly IReadOnlyDictionary<string, Type> ResourceTypesByName = BuildResourceTypesByName();
-    private static readonly IReadOnlyDictionary<string, Type> ExtensionValueTypesByPropertyName = BuildExtensionValueTypesByPropertyName();
     private static readonly Type[] ComplexDataTypes = BuildComplexDataTypes();
 
     public TResource Parse<TResource>(string json)
@@ -85,7 +84,7 @@ public sealed partial class FhirJsonParser : IFhirParser
 
     private static bool TryResolveExtensionValueType(string propertyName, out Type valueType)
     {
-        return ExtensionValueTypesByPropertyName.TryGetValue(propertyName, out valueType!);
+        return FhirExtensionValuePropertyNames.TryGetParserExtensionValueType(propertyName, out valueType);
     }
 
     private static Type ResolveObjectType(Type declaredType, JsonElement element, string propertyName)
@@ -230,23 +229,6 @@ public sealed partial class FhirJsonParser : IFhirParser
         }
 
         return resourceTypes;
-    }
-
-    private static IReadOnlyDictionary<string, Type> BuildExtensionValueTypesByPropertyName()
-    {
-        var valueTypes = new Dictionary<string, Type>(StringComparer.Ordinal);
-
-        foreach (var type in typeof(Resource).Assembly.GetTypes())
-        {
-            if (!typeof(IFhirExtensionValue).IsAssignableFrom(type) || !IsConcreteType(type))
-            {
-                continue;
-            }
-
-            valueTypes[FhirJsonConventions.GetExtensionValuePropertyName(type)] = type;
-        }
-
-        return valueTypes;
     }
 
     private static Type[] BuildComplexDataTypes()
