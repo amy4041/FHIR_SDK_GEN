@@ -1,0 +1,15 @@
+{
+  "resourceType": "Patient",
+  "id": "patient-value-quantity-extension",
+  "extension": [
+    {
+      "url": "http://example.org/fhir/StructureDefinition/body-weight",
+      "valueQuantity": {
+        "value": 72.50,
+        "unit": "kg",
+        "system": "http://unitsofmeasure.org",
+        "code": "kg"
+      }
+    }
+  ]
+}

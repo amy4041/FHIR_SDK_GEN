@@ -4,7 +4,10 @@ internal static class JsonTestCases
     [
         ..BasicRulesJsonTestCases.All,
         ..PrimitiveJsonTestCases.All,
+        ..PractitionerPrimitiveJsonTestCases.All,
         ..ElementJsonTestCases.All,
+        ..PrimitiveArrayAlignmentJsonTestCases.All,
+        ..ExtensionValueQuantityJsonTestCases.All,
         ..PatientJsonTestCases.All
     ];
 }

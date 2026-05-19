@@ -1,0 +1,11 @@
+{
+  "resourceType": "Practitioner",
+  "id": "practitioner-integer64-decimal-literal",
+  "photo": [
+    {
+      "contentType": "image/jpeg",
+      "size": "1048576",
+      "duration": 2.50
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "resourceType": "Patient",
+  "id": "patient-given-alignment",
+  "contact": [
+    {
+      "name": {
+        "family": "Lin",
+        "given": [
+          "Amy",
+          null,
+          "Cara"
+        ],
+        "_given": [
+          null,
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier",
+                "valueCode": "MID"
+              }
+            ]
+          },
+          null
+        ]
+      }
+    }
+  ]
+}
