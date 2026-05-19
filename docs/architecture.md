@@ -265,6 +265,7 @@ Responsibilities:
 - Execute read, create, update, and search operations.
 - Use the serialization layer for request and response bodies.
 - Return typed resources or bundles.
+- Apply simple authentication through `NoAuthProvider` or `BearerTokenAuthProvider`.
 - Allow tests to inject `HttpClient` or `HttpMessageHandler`.
 
 MVP public API:
@@ -283,6 +284,9 @@ public interface IFhirClient
 
     Task<Bundle> SearchAsync<TResource>(string query, CancellationToken cancellationToken = default)
         where TResource : Resource;
+
+    Task<Bundle> SearchAsync<TResource>(FhirSearchQuery query, CancellationToken cancellationToken = default)
+        where TResource : Resource;
 }
 ```
 
@@ -292,6 +296,8 @@ Client behavior:
 - `CreateAsync(patient)` should call `POST /Patient`.
 - `UpdateAsync(patient)` should call `PUT /Patient/{id}`.
 - `SearchAsync<Patient>("name=amy")` should call `GET /Patient?name=amy`.
+- `SearchAsync<Patient>(query)` should use the generic resource type for the path and `FhirSearchQuery` only for query parameters.
+- Delete is not part of the MVP client surface.
 
 ## 5. Type Hierarchy
 
@@ -478,7 +484,8 @@ public sealed class FhirClient : IFhirClient
         HttpClient httpClient,
         IFhirSerializer serializer,
         IFhirParser parser,
-        FhirClientOptions options)
+        FhirClientOptions options,
+        IAuthProvider? authProvider = null)
     {
     }
 }
@@ -491,8 +498,9 @@ HTTP expectations:
 - Treat non-success responses as SDK client exceptions.
 - Preserve server response bodies in exceptions when practical.
 - Support cancellation tokens on all async methods.
+- Support simple authentication with no-auth and bearer-token providers.
 
-Authentication is out of scope for the MVP unless a consuming application configures `HttpClient` externally.
+SMART on FHIR, OAuth token refresh, and API key authentication are out of scope for the MVP.
 
 ## 10. Error Handling
 
@@ -541,18 +549,22 @@ In scope:
 - FHIR JSON.
 - Patient, Organization, Practitioner, Encounter, Coverage, Claim, and Bundle.
 - Read, create, update, and search REST operations.
+- Simple REST authentication with no-auth and bearer-token providers.
 - Required, cardinality, and primitive format validation.
 
 Out of scope:
 
-- FHIR R5.
+- FHIR versions other than R5.
 - XML serialization.
+- Delete REST operation.
 - FHIRPath.
 - Profile validation.
 - StructureDefinition validation.
 - Terminology service integration.
 - ValueSet expansion.
 - SMART on FHIR.
+- API key authentication.
+- OAuth token refresh.
 - GraphQL.
 - Subscription.
 - Batch and transaction bundles.

@@ -152,6 +152,23 @@ MVP Resource 範圍：
 - Update
 - Search
 
+MVP 不包含 Delete。Delete 放到後續版本。
+
+---
+
+### Authentication
+
+支援：
+
+- NoAuthProvider
+- BearerTokenAuthProvider
+
+不支援：
+
+- ApiKeyAuthProvider
+- SMART on FHIR
+- OAuth token refresh
+
 ---
 
 ### Validation
@@ -168,14 +185,17 @@ MVP Resource 範圍：
 
 第一版不包含：
 
-- FHIR R5
+- FHIR R5 以外的版本
 - XML Serialization
+- REST Delete
 - FHIRPath
 - Profile Validation
 - StructureDefinition Validation
 - Terminology Service
 - ValueSet Expansion
 - SMART on FHIR
+- ApiKey Authentication
+- OAuth token refresh
 - GraphQL
 - Subscription
 - Batch/Transaction Bundle
@@ -372,6 +392,10 @@ Example:
 
 ```csharp
 await client.SearchAsync<Patient>("name=amy");
+
+await client.SearchAsync<Patient>(
+    FhirSearchQuery.Create()
+        .Where("name", "amy"));
 ```
 
 ---
@@ -530,7 +554,8 @@ MVP 完成標準：
 - 能產生合法 FHIR JSON
 - 能解析 FHIR JSON
 - 能與 HAPI FHIR Server 互通
-- 能成功執行 CRUD API
+- 能成功執行 Read / Create / Update / Search API
+- 能以 NoAuth 或 Bearer Token 呼叫 FHIR REST API
 - 能解析 Search Bundle
 - 能完成基本 Validation
 - 能支援 Claim exchange
@@ -541,7 +566,6 @@ MVP 完成標準：
 
 未來版本預計支援：
 
-- FHIR R5
 - XML Serialization
 - StructureDefinition Validation
 - FHIRPath
@@ -549,6 +573,9 @@ MVP 完成標準：
 - Code Generator
 - Multi-version Support
 - SMART on FHIR
+- OAuth token refresh
+- ApiKey Authentication
+- REST Delete
 - Batch/Transaction
 - Subscription
 
@@ -567,4 +594,3 @@ MVP 完成標準：
 5. 執行基本 Validation
 
 即視為 MVP 成功。
-
