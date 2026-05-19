@@ -114,15 +114,15 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
 
     private static bool WriteArrayProperty(Utf8JsonWriter writer, string propertyName, IEnumerable enumerable)
     {
+        if (TryGetPrimitiveArrayItems(enumerable, out var primitiveItems))
+        {
+            return WritePrimitiveArrayProperty(writer, propertyName, primitiveItems);
+        }
+
         var items = GetSerializableItems(enumerable);
         if (items.Count == 0)
         {
             return false;
-        }
-
-        if (items.TrueForAll(item => item is not null && FhirJsonConventions.IsFhirPrimitive(item.GetType())))
-        {
-            return WritePrimitiveArrayProperty(writer, propertyName, items);
         }
 
         writer.WritePropertyName(propertyName);
@@ -135,5 +135,32 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
 
         writer.WriteEndArray();
         return true;
+    }
+
+    private static bool TryGetPrimitiveArrayItems(IEnumerable enumerable, out List<object?> items)
+    {
+        items = [];
+
+        foreach (var item in enumerable)
+        {
+            if (item is null)
+            {
+                items.Add(null);
+                continue;
+            }
+
+            if (!FhirJsonConventions.IsFhirPrimitive(item.GetType()))
+            {
+                items = [];
+                return false;
+            }
+
+            if (FhirJsonConventions.HasPrimitiveRawValue(item) || HasPrimitiveMetadata(item))
+            {
+                items.Add(item);
+            }
+        }
+
+        return items.Count > 0;
     }
 }

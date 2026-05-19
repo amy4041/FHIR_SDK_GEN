@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Reflection;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using MyFhirSdk.Core;
 
@@ -50,13 +51,7 @@ internal static class FhirJsonConventions
 
     internal static string GetExtensionValuePropertyName(Type type)
     {
-        var typeName = type.Name;
-        if (typeName.StartsWith("Fhir", StringComparison.Ordinal))
-        {
-            typeName = typeName["Fhir".Length..];
-        }
-
-        return "value" + typeName;
+        return FhirExtensionValuePropertyNames.GetPropertyName(type);
     }
 
     internal static string GetResourceTypeName(Resource resource)
@@ -68,12 +63,30 @@ internal static class FhirJsonConventions
 
     internal static bool HasPrimitiveRawValue(object primitive)
     {
-        if (TryGetDecimalLiteral(primitive, out _))
+        if (TryGetDecimalLiteral(primitive, out _) || TryGetInteger64Literal(primitive, out _))
         {
             return true;
         }
 
         return HasRawJsonValue(GetPrimitiveRawValue(primitive));
+    }
+
+    internal static bool TryWritePrimitiveJsonValue(
+        Utf8JsonWriter writer,
+        object primitive,
+        bool writeNullWhenMissing)
+    {
+        if (TryWriteDecimalJsonValue(writer, primitive, writeNullWhenMissing))
+        {
+            return true;
+        }
+
+        if (TryWriteInteger64JsonValue(writer, primitive, writeNullWhenMissing))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     internal static bool HasRawJsonValue(object? value)
@@ -105,10 +118,7 @@ internal static class FhirJsonConventions
             return false;
         }
 
-        var literal = primitive.GetType()
-            .GetProperty("Literal", BindingFlags.Instance | BindingFlags.Public)
-            ?.GetValue(primitive) as string;
-
+        var literal = GetLiteralPropertyValue(primitive);
         if (string.IsNullOrEmpty(literal))
         {
             return false;
@@ -116,6 +126,92 @@ internal static class FhirJsonConventions
 
         decimalLiteral = literal;
         return true;
+    }
+
+    internal static bool TryGetInteger64Literal(object primitive, out string integer64Literal)
+    {
+        integer64Literal = string.Empty;
+
+        if (primitive.GetType().Name != "FhirInteger64")
+        {
+            return false;
+        }
+
+        var literal = GetLiteralPropertyValue(primitive);
+        if (string.IsNullOrEmpty(literal))
+        {
+            return false;
+        }
+
+        integer64Literal = literal;
+        return true;
+    }
+
+    private static bool TryWriteDecimalJsonValue(
+        Utf8JsonWriter writer,
+        object primitive,
+        bool writeNullWhenMissing)
+    {
+        if (primitive.GetType().Name != "FhirDecimal")
+        {
+            return false;
+        }
+
+        if (TryGetDecimalLiteral(primitive, out var literal))
+        {
+            writer.WriteRawValue(literal);
+            return true;
+        }
+
+        if (GetPrimitiveRawValue(primitive) is decimal decimalValue)
+        {
+            writer.WriteRawValue(decimalValue.ToString(CultureInfo.InvariantCulture));
+            return true;
+        }
+
+        if (writeNullWhenMissing)
+        {
+            writer.WriteNullValue();
+        }
+
+        return false;
+    }
+
+    private static bool TryWriteInteger64JsonValue(
+        Utf8JsonWriter writer,
+        object primitive,
+        bool writeNullWhenMissing)
+    {
+        if (primitive.GetType().Name != "FhirInteger64")
+        {
+            return false;
+        }
+
+        if (TryGetInteger64Literal(primitive, out var literal))
+        {
+            writer.WriteStringValue(literal);
+            return true;
+        }
+
+        if (GetPrimitiveRawValue(primitive) is long longValue)
+        {
+            writer.WriteStringValue(longValue.ToString(CultureInfo.InvariantCulture));
+            return true;
+        }
+
+        if (writeNullWhenMissing)
+        {
+            writer.WriteNullValue();
+        }
+
+        return false;
+    }
+
+    private static string? GetLiteralPropertyValue(object primitive)
+    {
+        return primitive.GetType()
+            .GetProperty("Literal", BindingFlags.Instance | BindingFlags.Public)
+            ?.GetValue(primitive) as string;
     }
 
     internal static bool IsFhirPrimitive(Type type)

@@ -43,18 +43,21 @@ public sealed partial class FhirJsonSerializer
             return false;
         }
 
-        if (hasAnyRawValue)
-        {
-            writer.WritePropertyName(propertyName);
-            writer.WriteStartArray();
+        writer.WritePropertyName(propertyName);
+        writer.WriteStartArray();
 
-            foreach (var item in items)
+        foreach (var item in items)
+        {
+            if (item is null)
             {
-                WritePrimitiveRawValue(writer, item!, writeNullWhenMissing: true);
+                writer.WriteNullValue();
+                continue;
             }
 
-            writer.WriteEndArray();
+            WritePrimitiveRawValue(writer, item, writeNullWhenMissing: true);
         }
+
+        writer.WriteEndArray();
 
         if (hasAnyMetadata)
         {
@@ -98,9 +101,8 @@ public sealed partial class FhirJsonSerializer
         object primitive,
         bool writeNullWhenMissing)
     {
-        if (FhirJsonConventions.TryGetDecimalLiteral(primitive, out var decimalLiteral))
+        if (FhirJsonConventions.TryWritePrimitiveJsonValue(writer, primitive, writeNullWhenMissing))
         {
-            writer.WriteRawValue(decimalLiteral);
             return true;
         }
 
