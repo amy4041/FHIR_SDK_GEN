@@ -1,0 +1,16 @@
+global using System.Net;
+global using System.Net.Http.Headers;
+global using MyFhirSdk.Client;
+global using MyFhirSdk.Client.Abstractions;
+global using MyFhirSdk.Client.Authentication;
+global using MyFhirSdk.Client.Configuration;
+global using MyFhirSdk.Client.Exceptions;
+global using MyFhirSdk.Client.Http;
+global using MyFhirSdk.Client.Requests;
+global using MyFhirSdk.Client.Responses;
+global using MyFhirSdk.Client.Search;
+global using MyFhirSdk.Core;
+global using MyFhirSdk.Resources;
+global using MyFhirSdk.Serialization;
+global using MyFhirSdk.Tests.Client;
+global using MyFhirSdk.Tests.Client.Fakes;
