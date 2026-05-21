@@ -7,7 +7,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// FHIR R4 Bundle resource for a collection of resources.
+/// FHIR R5 Bundle resource for a collection of resources.
 /// </summary>
 public sealed class Bundle : Resource
 {

@@ -4,7 +4,7 @@ using MyFhirSdk.Primitives;
 namespace MyFhirSdk.Types;
 
 /// <summary>
-/// FHIR R4 Quantity datatype for measured or counted amounts.
+/// FHIR R5 Quantity datatype for measured or counted amounts.
 /// </summary>
 public class Quantity : DataType
 {

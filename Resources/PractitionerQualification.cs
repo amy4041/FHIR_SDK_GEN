@@ -5,7 +5,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// Qualification, certification, or license for a FHIR R4 Practitioner.
+/// Qualification, certification, or license for a FHIR R5 Practitioner.
 /// </summary>
 public sealed class PractitionerQualification : BackboneElement
 {

@@ -7,7 +7,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// FHIR R4 Coverage resource for insurance or other payment coverage.
+/// FHIR R5 Coverage resource for insurance or other payment coverage.
 /// </summary>
 public sealed class Coverage : DomainResource
 {

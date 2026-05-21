@@ -5,7 +5,7 @@ using MyFhirSdk.Primitives;
 namespace MyFhirSdk.Types;
 
 /// <summary>
-/// FHIR R4 Address datatype for postal and physical addresses.
+/// FHIR R5 Address datatype for postal and physical addresses.
 /// </summary>
 public sealed class Address : DataType
 {

@@ -6,7 +6,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// Insurance coverage information on a FHIR R4 Claim.
+/// Insurance coverage information on a FHIR R5 Claim.
 /// </summary>
 public sealed class ClaimInsurance : BackboneElement
 {

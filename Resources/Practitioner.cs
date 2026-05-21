@@ -7,7 +7,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// FHIR R4 Practitioner resource for a person involved in care delivery.
+/// FHIR R5 Practitioner resource for a person involved in care delivery.
 /// </summary>
 public sealed class Practitioner : DomainResource
 {

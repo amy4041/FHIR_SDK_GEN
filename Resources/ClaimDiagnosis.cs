@@ -6,7 +6,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// Diagnosis information on a FHIR R4 Claim.
+/// Diagnosis information on a FHIR R5 Claim.
 /// </summary>
 public sealed class ClaimDiagnosis : BackboneElement
 {

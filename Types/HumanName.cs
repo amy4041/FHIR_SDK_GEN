@@ -5,7 +5,7 @@ using MyFhirSdk.Primitives;
 namespace MyFhirSdk.Types;
 
 /// <summary>
-/// FHIR R4 HumanName datatype for representing names of people or animals.
+/// FHIR R5 HumanName datatype for representing names of people or animals.
 /// </summary>
 public sealed class HumanName : DataType
 {

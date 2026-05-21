@@ -4,7 +4,7 @@ using MyFhirSdk.Primitives;
 namespace MyFhirSdk.Types;
 
 /// <summary>
-/// FHIR R4 Identifier datatype for business identifiers assigned to a resource.
+/// FHIR R5 Identifier datatype for business identifiers assigned to a resource.
 /// </summary>
 public sealed class Identifier : DataType
 {

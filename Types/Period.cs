@@ -4,7 +4,7 @@ using MyFhirSdk.Primitives;
 namespace MyFhirSdk.Types;
 
 /// <summary>
-/// FHIR R4 Period datatype for a start and end date/time.
+/// FHIR R5 Period datatype for a start and end date/time.
 /// </summary>
 public sealed class Period : DataType
 {

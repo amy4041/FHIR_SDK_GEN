@@ -5,7 +5,7 @@ using MyFhirSdk.Primitives;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// Entry contained in a FHIR R4 Bundle.
+/// Entry contained in a FHIR R5 Bundle.
 /// </summary>
 public sealed class BundleEntry : BackboneElement
 {

@@ -5,7 +5,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// Diagnosis relevant to a FHIR R4 Encounter.
+/// Diagnosis relevant to a FHIR R5 Encounter.
 /// </summary>
 public sealed class EncounterDiagnosis : BackboneElement
 {

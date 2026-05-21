@@ -7,7 +7,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// FHIR R4 Organization resource for formal and informal organizations.
+/// FHIR R5 Organization resource for formal and informal organizations.
 /// </summary>
 public sealed class Organization : DomainResource
 {

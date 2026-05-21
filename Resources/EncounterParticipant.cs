@@ -5,7 +5,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// Participant involved in a FHIR R4 Encounter.
+/// Participant involved in a FHIR R5 Encounter.
 /// </summary>
 public sealed class EncounterParticipant : BackboneElement
 {

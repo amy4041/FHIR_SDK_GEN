@@ -5,7 +5,7 @@ using MyFhirSdk.Primitives;
 namespace MyFhirSdk.Types;
 
 /// <summary>
-/// FHIR R4 Reference datatype for pointing to another resource or logical identifier.
+/// FHIR R5 Reference datatype for pointing to another resource or logical identifier.
 /// </summary>
 public sealed class Reference : DataType
 {

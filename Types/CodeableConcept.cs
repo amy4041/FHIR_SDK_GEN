@@ -5,7 +5,7 @@ using MyFhirSdk.Primitives;
 namespace MyFhirSdk.Types;
 
 /// <summary>
-/// FHIR R4 CodeableConcept datatype for a concept represented by codings and text.
+/// FHIR R5 CodeableConcept datatype for a concept represented by codings and text.
 /// </summary>
 public sealed class CodeableConcept : DataType
 {

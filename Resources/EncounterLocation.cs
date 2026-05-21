@@ -5,7 +5,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// Location used during a FHIR R4 Encounter.
+/// Location used during a FHIR R5 Encounter.
 /// </summary>
 public sealed class EncounterLocation : BackboneElement
 {

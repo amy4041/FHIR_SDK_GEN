@@ -4,7 +4,7 @@ using MyFhirSdk.Primitives;
 namespace MyFhirSdk.Types;
 
 /// <summary>
-/// FHIR R4 Coding datatype for a code defined by a terminology system.
+/// FHIR R5 Coding datatype for a code defined by a terminology system.
 /// </summary>
 public sealed class Coding : DataType
 {

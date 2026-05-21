@@ -7,7 +7,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// FHIR R4 Claim resource for requesting payment or authorization.
+/// FHIR R5 Claim resource for requesting payment or authorization.
 /// </summary>
 public sealed class Claim : DomainResource
 {

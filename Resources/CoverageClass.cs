@@ -5,7 +5,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// Classification information for a FHIR R4 Coverage resource.
+/// Classification information for a FHIR R5 Coverage resource.
 /// </summary>
 public sealed class CoverageClass : BackboneElement
 {

@@ -6,7 +6,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// Contact party for a FHIR R4 Patient resource.
+/// Contact party for a FHIR R5 Patient resource.
 /// </summary>
 public sealed class PatientContact : BackboneElement
 {

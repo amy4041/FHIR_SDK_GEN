@@ -4,7 +4,7 @@ using MyFhirSdk.Primitives;
 namespace MyFhirSdk.Types;
 
 /// <summary>
-/// FHIR R4 ContactPoint datatype for phone, email, URL, or other contact details.
+/// FHIR R5 ContactPoint datatype for phone, email, URL, or other contact details.
 /// </summary>
 public sealed class ContactPoint : DataType
 {

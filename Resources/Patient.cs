@@ -7,7 +7,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// FHIR R4 Patient resource for demographic and administrative patient data.
+/// FHIR R5 Patient resource for demographic and administrative patient data.
 /// </summary>
 public sealed class Patient : DomainResource
 {

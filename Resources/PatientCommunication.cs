@@ -5,7 +5,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// Language preference for communicating with a FHIR R4 Patient.
+/// Language preference for communicating with a FHIR R5 Patient.
 /// </summary>
 public sealed class PatientCommunication : BackboneElement
 {

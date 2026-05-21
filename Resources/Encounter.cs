@@ -7,7 +7,7 @@ using MyFhirSdk.Types;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// FHIR R4 Encounter resource for an interaction between a patient and care providers.
+/// FHIR R5 Encounter resource for an interaction between a patient and care providers.
 /// </summary>
 public sealed class Encounter : DomainResource
 {

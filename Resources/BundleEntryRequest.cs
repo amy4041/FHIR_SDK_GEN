@@ -4,7 +4,7 @@ using MyFhirSdk.Primitives;
 namespace MyFhirSdk.Resources;
 
 /// <summary>
-/// Request metadata for a FHIR R4 Bundle entry.
+/// Request metadata for a FHIR R5 Bundle entry.
 /// </summary>
 public sealed class BundleEntryRequest : BackboneElement
 {
