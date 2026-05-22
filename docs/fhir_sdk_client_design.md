@@ -732,6 +732,30 @@ Update Patient
 Bearer token request header
 ```
 
+測試檔案結構:
+Tests
+`-- Client
+    |-- MyFhirSdk.Client.Tests.csproj
+    |-- GlobalUsings.cs
+    |-- Program.cs
+    |-- Fakes
+    |   |-- FakeFhirParser.cs
+    |   |-- FakeFhirSerializer.cs
+    |   `-- FakeFhirHttpSender.cs
+    |-- Authentication
+    |   |-- BearerTokenAuthProviderTests.cs
+    |   `-- NoAuthProviderTests.cs
+    |-- Requests
+    |   |-- FhirRequestBuilderTests.cs
+    |   |-- FhirRequestUriBuilderTests.cs
+    |   `-- FhirResourceTypeResolverTests.cs
+    |-- Responses
+    |   `-- FhirResponseHandlerTests.cs
+    |-- Search
+    |   |-- FhirSearchParameterTests.cs
+    |   `-- FhirSearchQueryTests.cs
+    `-- FhirClientTests.cs
+
 ---
 
 ## 16. Client Layer 和其他 Layer 的關係
