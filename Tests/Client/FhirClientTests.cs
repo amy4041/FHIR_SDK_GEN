@@ -63,6 +63,52 @@ public static class FhirClientTests
         TestAssert.AreEqual("{\"resourceType\":\"Patient\"}", await request.Content.ReadAsStringAsync().ConfigureAwait(false));
     }
 
+    public static async Task UpdateAsyncSerializesAndSendsResource()
+    {
+        var resource = new Patient { Id = "updated" };
+        var updated = new Patient { Id = "updated" };
+        var serializer = new FakeFhirSerializer
+        {
+            SerializedJson = "{\"resourceType\":\"Patient\",\"id\":\"updated\"}"
+        };
+        var parser = new FakeFhirParser();
+        parser.AddResource(updated);
+        var sender = new FakeFhirHttpSender();
+        sender.EnqueueResponse(CreateResponse(HttpStatusCode.OK, "{\"resourceType\":\"Patient\",\"id\":\"updated\"}"));
+        var client = CreateClient(sender, parser, serializer);
+
+        var actual = await client.UpdateAsync(resource).ConfigureAwait(false);
+
+        TestAssert.AreSame(updated, actual);
+        TestAssert.AreEqual(1, serializer.SerializeCallCount);
+        TestAssert.AreSame(resource, serializer.LastResource!);
+        TestAssert.AreEqual(1, sender.SentRequests.Count);
+
+        var request = sender.SentRequests[0];
+        TestAssert.AreEqual(HttpMethod.Put, request.Method);
+        TestAssert.AreEqual("https://example.org/fhir/Patient/updated", request.RequestUri!.AbsoluteUri);
+        TestAssert.AreEqual(FhirHttpConstants.FhirJsonMediaType, request.Content!.Headers.ContentType!.MediaType);
+        TestAssert.IsTrue(
+            request.Headers.TryGetValues(FhirHttpConstants.PreferHeaderName, out var values)
+            && values.Contains(FhirHttpConstants.PreferReturnRepresentation),
+            "Expected update request to prefer return=representation.");
+        TestAssert.AreEqual(
+            "{\"resourceType\":\"Patient\",\"id\":\"updated\"}",
+            await request.Content.ReadAsStringAsync().ConfigureAwait(false));
+    }
+
+    public static async Task UpdateAsyncRequiresResourceId()
+    {
+        var resource = new Patient();
+        var parser = new FakeFhirParser();
+        var sender = new FakeFhirHttpSender();
+        var client = CreateClient(sender, parser);
+
+        await TestAssert.ThrowsAsync<ArgumentException>(() => client.UpdateAsync(resource)).ConfigureAwait(false);
+
+        TestAssert.AreEqual(0, sender.SentRequests.Count);
+    }
+
     public static async Task SearchAsyncSendsStructuredSearchQuery()
     {
         var bundle = new Bundle();

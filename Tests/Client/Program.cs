@@ -39,6 +39,8 @@ public static class Program
             Test("FhirClient.ReadAsync sends request and parses response", FhirClientTests.ReadAsyncSendsRequestAndParsesResponse),
             Test("FhirClient.ReadAsync returns null for not found", FhirClientTests.ReadAsyncReturnsNullForNotFound),
             Test("FhirClient.CreateAsync serializes and sends resource", FhirClientTests.CreateAsyncSerializesAndSendsResource),
+            Test("FhirClient.UpdateAsync serializes and sends resource", FhirClientTests.UpdateAsyncSerializesAndSendsResource),
+            Test("FhirClient.UpdateAsync requires resource id", FhirClientTests.UpdateAsyncRequiresResourceId),
             Test("FhirClient.SearchAsync sends structured search query", FhirClientTests.SearchAsyncSendsStructuredSearchQuery)
         };
 
