@@ -55,6 +55,10 @@ internal sealed class ResourceRuleRegistry
             [
                 RequiredFieldRule<EncounterLocation>.For("location", location => location.Location)
             ],
+            [typeof(ClaimBodySite)] =
+            [
+                RequiredFieldRule<ClaimBodySite>.ForList("site", bodySite => bodySite.Site)
+            ],
             [typeof(Patient)] =
             [
                 ChoiceElementRule<Patient>.AtMostOne(

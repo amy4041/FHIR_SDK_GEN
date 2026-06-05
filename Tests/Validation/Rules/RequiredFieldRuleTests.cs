@@ -43,6 +43,20 @@ public static class RequiredFieldRuleTests
         TestAssert.IsTrue(result.IsValid);
     }
 
+    public static void ValidateDoesNotRequireOrganizationOptionalFields()
+    {
+        var result = new FhirValidator().Validate(new Organization());
+
+        TestAssert.IsTrue(result.IsValid);
+    }
+
+    public static void ValidateDoesNotRequirePractitionerOptionalFields()
+    {
+        var result = new FhirValidator().Validate(new Practitioner());
+
+        TestAssert.IsTrue(result.IsValid);
+    }
+
     public static void ValidateReportsMissingBundleLinkFields()
     {
         var bundle = new Bundle
@@ -66,6 +80,16 @@ public static class RequiredFieldRuleTests
 
         TestAssert.HasIssue(result, "Coverage.class[0].type", ValidationIssueCode.Required);
         TestAssert.HasIssue(result, "Coverage.class[0].value", ValidationIssueCode.Required);
+    }
+
+    public static void ValidateReportsMissingCoveragePaymentByParty()
+    {
+        var coverage = CreateValidCoverage();
+        coverage.PaymentBy = [new CoveragePaymentBy()];
+
+        var result = new FhirValidator().Validate(coverage);
+
+        TestAssert.HasIssue(result, "Coverage.paymentBy[0].party", ValidationIssueCode.Required);
     }
 
     public static void ValidateReportsMissingEncounterLocation()

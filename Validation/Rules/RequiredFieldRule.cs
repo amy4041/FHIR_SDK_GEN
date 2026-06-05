@@ -8,20 +8,30 @@ internal sealed class RequiredFieldRule<TFhirObject> : IFhirValidationRule
 {
     private readonly string _fieldName;
     private readonly Func<TFhirObject, object?> _getValue;
+    private readonly bool _requiresListItem;
 
     private RequiredFieldRule(
         string fieldName,
-        Func<TFhirObject, object?> getValue)
+        Func<TFhirObject, object?> getValue,
+        bool requiresListItem)
     {
         _fieldName = fieldName;
         _getValue = getValue;
+        _requiresListItem = requiresListItem;
     }
 
     public static RequiredFieldRule<TFhirObject> For(
         string fieldName,
         Func<TFhirObject, object?> getValue)
     {
-        return new RequiredFieldRule<TFhirObject>(fieldName, getValue);
+        return new RequiredFieldRule<TFhirObject>(fieldName, getValue, requiresListItem: false);
+    }
+
+    public static RequiredFieldRule<TFhirObject> ForList(
+        string fieldName,
+        Func<TFhirObject, object?> getValue)
+    {
+        return new RequiredFieldRule<TFhirObject>(fieldName, getValue, requiresListItem: true);
     }
 
     public void Validate(
@@ -42,9 +52,11 @@ internal sealed class RequiredFieldRule<TFhirObject> : IFhirValidationRule
         issues.Add(new ValidationIssue
         {
             Path = path,
-            Code = ValidationIssueCode.Required,
+            Code = _requiresListItem ? ValidationIssueCode.Cardinality : ValidationIssueCode.Required,
             Severity = ValidationSeverity.Error,
-            Message = path + " is required."
+            Message = _requiresListItem
+                ? path + " must contain at least one item."
+                : path + " is required."
         });
     }
 }

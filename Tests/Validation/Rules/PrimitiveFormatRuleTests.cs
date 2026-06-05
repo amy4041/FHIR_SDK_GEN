@@ -50,6 +50,135 @@ public static class PrimitiveFormatRuleTests
         TestAssert.HasIssue(result, "Patient.managingOrganization.type", ValidationIssueCode.PrimitiveFormat);
     }
 
+    public static void ValidateReportsInvalidFhirMarkdown()
+    {
+        var organization = new Organization
+        {
+            Description = new FhirMarkdown("")
+        };
+
+        var result = new FhirValidator().Validate(organization);
+
+        TestAssert.HasIssue(result, "Organization.description", ValidationIssueCode.PrimitiveFormat);
+    }
+
+    public static void ValidateReportsInvalidFhirUrl()
+    {
+        var practitioner = new Practitioner
+        {
+            Photo =
+            [
+                new Attachment
+                {
+                    Url = new FhirUrl("Patient/123")
+                }
+            ]
+        };
+
+        var result = new FhirValidator().Validate(practitioner);
+
+        TestAssert.HasIssue(result, "Practitioner.photo[0].url", ValidationIssueCode.PrimitiveFormat);
+    }
+
+    public static void ValidateReportsInvalidFhirCanonical()
+    {
+        var patient = new Patient
+        {
+            Extension =
+            [
+                new Extension
+                {
+                    Value = new FhirCanonical("relative/path")
+                }
+            ]
+        };
+
+        var result = new FhirValidator().Validate(patient);
+
+        TestAssert.HasIssue(result, "Patient.extension[0].value", ValidationIssueCode.PrimitiveFormat);
+    }
+
+    public static void ValidateReportsInvalidFhirId()
+    {
+        var patient = new Patient
+        {
+            Extension =
+            [
+                new Extension
+                {
+                    Value = new FhirId("a/b")
+                }
+            ]
+        };
+
+        var result = new FhirValidator().Validate(patient);
+
+        TestAssert.HasIssue(result, "Patient.extension[0].value", ValidationIssueCode.PrimitiveFormat);
+    }
+
+    public static void ValidateReportsInvalidFhirDateTime()
+    {
+        var claim = CreateValidClaim();
+        claim.Created = new FhirDateTime("2026-06-05T10:30:00");
+
+        var result = new FhirValidator().Validate(claim);
+
+        TestAssert.HasIssue(result, "Claim.created", ValidationIssueCode.PrimitiveFormat);
+    }
+
+    public static void ValidateReportsInvalidFhirInstant()
+    {
+        var bundle = new Bundle
+        {
+            Type = new FhirCode("searchset"),
+            Timestamp = new FhirInstant("2026-06-05")
+        };
+
+        var result = new FhirValidator().Validate(bundle);
+
+        TestAssert.HasIssue(result, "Bundle.timestamp", ValidationIssueCode.PrimitiveFormat);
+    }
+
+    public static void ValidateReportsInvalidFhirDecimal()
+    {
+        var bundle = new Bundle
+        {
+            Type = new FhirCode("searchset"),
+            Entry =
+            [
+                new BundleEntry
+                {
+                    Search = new BundleEntrySearch
+                    {
+                        Score = new FhirDecimal("01.20")
+                    }
+                }
+            ]
+        };
+
+        var result = new FhirValidator().Validate(bundle);
+
+        TestAssert.HasIssue(result, "Bundle.entry[0].search.score", ValidationIssueCode.PrimitiveFormat);
+    }
+
+    public static void ValidateReportsInvalidFhirInteger64()
+    {
+        var practitioner = new Practitioner
+        {
+            Photo =
+            [
+                new Attachment
+                {
+                    Size = new FhirInteger64("9223372036854775808")
+                }
+            ]
+        };
+
+        var result = new FhirValidator().Validate(practitioner);
+
+        TestAssert.HasIssue(result, "Practitioner.photo[0].size", ValidationIssueCode.PrimitiveFormat);
+    }
+
     public static void ValidateReportsInvalidPositiveInt()
     {
         var claim = CreateValidClaim();
@@ -79,6 +208,37 @@ public static class PrimitiveFormatRuleTests
         var result = new FhirValidator().Validate(bundle);
 
         TestAssert.HasIssue(result, "Bundle.total", ValidationIssueCode.PrimitiveFormat);
+    }
+
+    public static void ValidateReportsInvalidFhirBase64Binary()
+    {
+        var practitioner = new Practitioner
+        {
+            Photo =
+            [
+                new Attachment
+                {
+                    Data = new FhirBase64Binary("not base64")
+                }
+            ]
+        };
+
+        var result = new FhirValidator().Validate(practitioner);
+
+        TestAssert.HasIssue(result, "Practitioner.photo[0].data", ValidationIssueCode.PrimitiveFormat);
+    }
+
+    public static void ValidateDoesNotReportIssueForValidBooleanAndInteger()
+    {
+        var patient = new Patient
+        {
+            Active = new FhirBoolean(false),
+            MultipleBirthInteger = new FhirInteger(1)
+        };
+
+        var result = new FhirValidator().Validate(patient);
+
+        TestAssert.IsTrue(result.IsValid);
     }
 
     private static Claim CreateValidClaim()
