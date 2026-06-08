@@ -1,6 +1,7 @@
 using MyFhirSdk.Client.Abstractions;
 using MyFhirSdk.Client.Authentication;
 using MyFhirSdk.Client.Configuration;
+using MyFhirSdk.Client.Exceptions;
 using MyFhirSdk.Client.Requests;
 using MyFhirSdk.Client.Responses;
 using MyFhirSdk.Client.Http;
@@ -8,6 +9,7 @@ using MyFhirSdk.Client.Search;
 using MyFhirSdk.Core;
 using MyFhirSdk.Resources;
 using MyFhirSdk.Serialization;
+using MyFhirSdk.Validation;
 
 namespace MyFhirSdk.Client;
 
@@ -21,6 +23,8 @@ public sealed class FhirClient : IFhirClient
     private readonly IFhirHttpSender _httpSender;
     private readonly IFhirResponseHandler _responseHandler;
     private readonly IAuthProvider _authProvider;
+    private readonly IFhirValidator _validator;
+    private readonly bool _validateBeforeSend;
 
     /// <summary>
     /// Creates a client from the SDK serializer/parser and an <see cref="HttpClient"/>.
@@ -30,7 +34,8 @@ public sealed class FhirClient : IFhirClient
         IFhirSerializer serializer,
         IFhirParser parser,
         FhirClientOptions options,
-        IAuthProvider? authProvider = null)
+        IAuthProvider? authProvider = null,
+        IFhirValidator? validator = null)
         : this(
             serializer,
             new FhirRequestBuilder(
@@ -38,7 +43,9 @@ public sealed class FhirClient : IFhirClient
                 new FhirRequestUriBuilder(options.BaseAddress)),
             new FhirHttpSender(ConfigureHttpClient(httpClient, options)),
             new FhirResponseHandler(parser),
-            authProvider)
+            authProvider,
+            options.ValidateBeforeSend,
+            validator)
     {
     }
 
@@ -50,13 +57,17 @@ public sealed class FhirClient : IFhirClient
         IFhirRequestBuilder requestBuilder,
         IFhirHttpSender httpSender,
         IFhirResponseHandler responseHandler,
-        IAuthProvider? authProvider = null)
+        IAuthProvider? authProvider = null,
+        bool validateBeforeSend = false,
+        IFhirValidator? validator = null)
     {
         _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
         _requestBuilder = requestBuilder ?? throw new ArgumentNullException(nameof(requestBuilder));
         _httpSender = httpSender ?? throw new ArgumentNullException(nameof(httpSender));
         _responseHandler = responseHandler ?? throw new ArgumentNullException(nameof(responseHandler));
         _authProvider = authProvider ?? NoAuthProvider.Instance;
+        _validateBeforeSend = validateBeforeSend;
+        _validator = validator ?? new FhirValidator();
     }
 
     /// <inheritdoc />
@@ -81,6 +92,8 @@ public sealed class FhirClient : IFhirClient
     {
         ArgumentNullException.ThrowIfNull(resource);
 
+        ValidateResourceBeforeSend(resource);
+
         var json = _serializer.Serialize(resource);
         var request = _requestBuilder.BuildCreateRequest(resource, json);
         using var response = await SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -97,6 +110,8 @@ public sealed class FhirClient : IFhirClient
         where TResource : Resource
     {
         ArgumentNullException.ThrowIfNull(resource);
+
+        ValidateResourceBeforeSend(resource);
 
         var json = _serializer.Serialize(resource);
         var request = _requestBuilder.BuildUpdateRequest(resource, json);
@@ -140,6 +155,22 @@ public sealed class FhirClient : IFhirClient
         await _authProvider.ApplyAsync(request, cancellationToken).ConfigureAwait(false);
 
         return await _httpSender.SendAsync(request, cancellationToken).ConfigureAwait(false);
+    }
+
+    private void ValidateResourceBeforeSend(Resource resource)
+    {
+        if (!_validateBeforeSend)
+        {
+            return;
+        }
+
+        var result = _validator.Validate(resource);
+        if (result.IsValid)
+        {
+            return;
+        }
+
+        throw new FhirValidationException(result);
     }
 
     private static HttpClient ConfigureHttpClient(HttpClient httpClient, FhirClientOptions options)

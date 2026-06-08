@@ -63,6 +63,56 @@ public static class FhirClientTests
         TestAssert.AreEqual("{\"resourceType\":\"Patient\"}", await request.Content.ReadAsStringAsync().ConfigureAwait(false));
     }
 
+    public static async Task CreateAsyncDoesNotValidateWhenValidationDisabled()
+    {
+        var resource = new Patient { Id = "bad/id" };
+        var created = new Patient { Id = "created" };
+        var serializer = new FakeFhirSerializer
+        {
+            SerializedJson = "{\"resourceType\":\"Patient\",\"id\":\"bad/id\"}"
+        };
+        var parser = new FakeFhirParser();
+        parser.AddResource(created);
+        var sender = new FakeFhirHttpSender();
+        sender.EnqueueResponse(CreateResponse(HttpStatusCode.Created, "{\"resourceType\":\"Patient\",\"id\":\"created\"}"));
+        var validator = new FakeFhirValidator
+        {
+            ExceptionToThrow = new InvalidOperationException("Validation should not run.")
+        };
+        var client = CreateClient(sender, parser, serializer, validateBeforeSend: false, validator: validator);
+
+        var actual = await client.CreateAsync(resource).ConfigureAwait(false);
+
+        TestAssert.AreSame(created, actual);
+        TestAssert.AreEqual(0, validator.ValidateCallCount);
+        TestAssert.AreEqual(1, serializer.SerializeCallCount);
+        TestAssert.AreEqual(1, sender.SentRequests.Count);
+    }
+
+    public static async Task CreateAsyncValidatesBeforeSendingWhenEnabled()
+    {
+        var resource = new Patient();
+        var serializer = new FakeFhirSerializer();
+        var parser = new FakeFhirParser();
+        var sender = new FakeFhirHttpSender();
+        var result = CreateFailedValidationResult("Patient.id");
+        var validator = new FakeFhirValidator
+        {
+            Result = result
+        };
+        var client = CreateClient(sender, parser, serializer, validateBeforeSend: true, validator: validator);
+
+        var exception = await TestAssert
+            .ThrowsAsync<FhirValidationException>(() => client.CreateAsync(resource))
+            .ConfigureAwait(false);
+
+        TestAssert.AreSame(result, exception.Result);
+        TestAssert.AreEqual(1, validator.ValidateCallCount);
+        TestAssert.AreSame(resource, validator.LastResource!);
+        TestAssert.AreEqual(0, serializer.SerializeCallCount);
+        TestAssert.AreEqual(0, sender.SentRequests.Count);
+    }
+
     public static async Task UpdateAsyncSerializesAndSendsResource()
     {
         var resource = new Patient { Id = "updated" };
@@ -97,6 +147,30 @@ public static class FhirClientTests
             await request.Content.ReadAsStringAsync().ConfigureAwait(false));
     }
 
+    public static async Task UpdateAsyncValidatesBeforeSendingWhenEnabled()
+    {
+        var resource = new Patient { Id = "updated" };
+        var serializer = new FakeFhirSerializer();
+        var parser = new FakeFhirParser();
+        var sender = new FakeFhirHttpSender();
+        var result = CreateFailedValidationResult("Patient.id");
+        var validator = new FakeFhirValidator
+        {
+            Result = result
+        };
+        var client = CreateClient(sender, parser, serializer, validateBeforeSend: true, validator: validator);
+
+        var exception = await TestAssert
+            .ThrowsAsync<FhirValidationException>(() => client.UpdateAsync(resource))
+            .ConfigureAwait(false);
+
+        TestAssert.AreSame(result, exception.Result);
+        TestAssert.AreEqual(1, validator.ValidateCallCount);
+        TestAssert.AreSame(resource, validator.LastResource!);
+        TestAssert.AreEqual(0, serializer.SerializeCallCount);
+        TestAssert.AreEqual(0, sender.SentRequests.Count);
+    }
+
     public static async Task UpdateAsyncRequiresResourceId()
     {
         var resource = new Patient();
@@ -107,6 +181,26 @@ public static class FhirClientTests
         await TestAssert.ThrowsAsync<ArgumentException>(() => client.UpdateAsync(resource)).ConfigureAwait(false);
 
         TestAssert.AreEqual(0, sender.SentRequests.Count);
+    }
+
+    public static async Task ReadAsyncDoesNotValidateWhenValidationEnabled()
+    {
+        var patient = new Patient { Id = "123" };
+        var parser = new FakeFhirParser();
+        parser.AddResource(patient);
+        var sender = new FakeFhirHttpSender();
+        sender.EnqueueResponse(CreateResponse(HttpStatusCode.OK, "{\"resourceType\":\"Patient\",\"id\":\"123\"}"));
+        var validator = new FakeFhirValidator
+        {
+            ExceptionToThrow = new InvalidOperationException("Read should not validate a resource body.")
+        };
+        var client = CreateClient(sender, parser, validateBeforeSend: true, validator: validator);
+
+        var actual = await client.ReadAsync<Patient>("123").ConfigureAwait(false);
+
+        TestAssert.AreSame(patient, actual!);
+        TestAssert.AreEqual(0, validator.ValidateCallCount);
+        TestAssert.AreEqual(1, sender.SentRequests.Count);
     }
 
     public static async Task SearchAsyncSendsStructuredSearchQuery()
@@ -128,11 +222,33 @@ public static class FhirClientTests
         TestAssert.AreEqual("https://example.org/fhir/Patient?name=John&_count=10", sender.SentRequests[0].RequestUri!.AbsoluteUri);
     }
 
+    public static async Task SearchAsyncDoesNotValidateWhenValidationEnabled()
+    {
+        var bundle = new Bundle();
+        var parser = new FakeFhirParser();
+        parser.AddResource(bundle);
+        var sender = new FakeFhirHttpSender();
+        sender.EnqueueResponse(CreateResponse(HttpStatusCode.OK, "{\"resourceType\":\"Bundle\"}"));
+        var validator = new FakeFhirValidator
+        {
+            ExceptionToThrow = new InvalidOperationException("Search should not validate a resource body.")
+        };
+        var client = CreateClient(sender, parser, validateBeforeSend: true, validator: validator);
+
+        var actual = await client.SearchAsync<Patient>("name=John").ConfigureAwait(false);
+
+        TestAssert.AreSame(bundle, actual);
+        TestAssert.AreEqual(0, validator.ValidateCallCount);
+        TestAssert.AreEqual(1, sender.SentRequests.Count);
+    }
+
     private static FhirClient CreateClient(
         FakeFhirHttpSender sender,
         FakeFhirParser parser,
         FakeFhirSerializer? serializer = null,
-        IAuthProvider? authProvider = null)
+        IAuthProvider? authProvider = null,
+        bool validateBeforeSend = false,
+        IFhirValidator? validator = null)
     {
         return new FhirClient(
             serializer ?? new FakeFhirSerializer(),
@@ -141,7 +257,9 @@ public static class FhirClientTests
                 new FhirRequestUriBuilder(new Uri("https://example.org/fhir"))),
             sender,
             new FhirResponseHandler(parser),
-            authProvider);
+            authProvider,
+            validateBeforeSend,
+            validator);
     }
 
     private static HttpResponseMessage CreateResponse(HttpStatusCode statusCode, string body)
@@ -150,5 +268,19 @@ public static class FhirClientTests
         {
             Content = new StringContent(body)
         };
+    }
+
+    private static ValidationResult CreateFailedValidationResult(string path)
+    {
+        return new ValidationResult(new[]
+        {
+            new ValidationIssue
+            {
+                Path = path,
+                Code = ValidationIssueCode.PrimitiveFormat,
+                Severity = ValidationSeverity.Error,
+                Message = path + " is invalid."
+            }
+        });
     }
 }

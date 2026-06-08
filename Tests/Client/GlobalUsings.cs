@@ -12,5 +12,6 @@ global using MyFhirSdk.Client.Search;
 global using MyFhirSdk.Core;
 global using MyFhirSdk.Resources;
 global using MyFhirSdk.Serialization;
+global using MyFhirSdk.Validation;
 global using MyFhirSdk.Tests.Client;
 global using MyFhirSdk.Tests.Client.Fakes;

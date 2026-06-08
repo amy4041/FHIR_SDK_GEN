@@ -16,7 +16,7 @@ public sealed class FhirClientOptions
     public TimeSpan Timeout { get; init; } = TimeSpan.FromSeconds(30);
 
     /// <summary>
-    /// Reserved for a future validation layer before requests are sent.
+    /// Whether create and update requests validate the resource before sending HTTP.
     /// </summary>
     public bool ValidateBeforeSend { get; init; } = false;
 }

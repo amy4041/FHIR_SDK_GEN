@@ -39,9 +39,14 @@ public static class Program
             Test("FhirClient.ReadAsync sends request and parses response", FhirClientTests.ReadAsyncSendsRequestAndParsesResponse),
             Test("FhirClient.ReadAsync returns null for not found", FhirClientTests.ReadAsyncReturnsNullForNotFound),
             Test("FhirClient.CreateAsync serializes and sends resource", FhirClientTests.CreateAsyncSerializesAndSendsResource),
+            Test("FhirClient.CreateAsync does not validate when validation is disabled", FhirClientTests.CreateAsyncDoesNotValidateWhenValidationDisabled),
+            Test("FhirClient.CreateAsync validates before sending when enabled", FhirClientTests.CreateAsyncValidatesBeforeSendingWhenEnabled),
             Test("FhirClient.UpdateAsync serializes and sends resource", FhirClientTests.UpdateAsyncSerializesAndSendsResource),
+            Test("FhirClient.UpdateAsync validates before sending when enabled", FhirClientTests.UpdateAsyncValidatesBeforeSendingWhenEnabled),
             Test("FhirClient.UpdateAsync requires resource id", FhirClientTests.UpdateAsyncRequiresResourceId),
-            Test("FhirClient.SearchAsync sends structured search query", FhirClientTests.SearchAsyncSendsStructuredSearchQuery)
+            Test("FhirClient.ReadAsync does not validate when validation is enabled", FhirClientTests.ReadAsyncDoesNotValidateWhenValidationEnabled),
+            Test("FhirClient.SearchAsync sends structured search query", FhirClientTests.SearchAsyncSendsStructuredSearchQuery),
+            Test("FhirClient.SearchAsync does not validate when validation is enabled", FhirClientTests.SearchAsyncDoesNotValidateWhenValidationEnabled)
         };
 
         var failures = new List<string>();
