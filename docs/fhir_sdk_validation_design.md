@@ -43,6 +43,9 @@ from the REST client.
 Recommended folder shape:
 
 ```text
+Primitives
+`-- IFhirValidatablePrimitive.cs
+
 Validation
 |-- IFhirValidator.cs
 |-- FhirValidator.cs
@@ -69,6 +72,20 @@ stay separate:
 - Primitive validation.
 - Resource-specific rules.
 - Client integration.
+
+Primitive format validation uses an internal primitive contract:
+
+```csharp
+internal interface IFhirValidatablePrimitive
+{
+    bool IsValid();
+}
+```
+
+Primitive wrapper classes should implement this interface explicitly. This keeps primitive
+format checks available to the SDK internals without making `IsValid()` part of the public
+primitive API. The validation layer remains responsible for traversal, issue paths,
+`ValidationIssueCode`, severity, and error messages.
 
 ## 4. Public API
 
@@ -137,28 +154,37 @@ This gives the rest of the implementation a stable contract.
 ### Step 2 - Implement primitive format validation
 
 Primitive validation should be the first real validation behavior because primitive types
-already expose local `IsValid()` methods.
+already know their own intrinsic FHIR format rules. These format checks should be exposed
+to the validation layer through the internal `IFhirValidatablePrimitive` interface, not as
+public primitive APIs.
 
 Initial primitive scope:
 
-- `FhirString`.
-- `FhirUri`.
+- `FhirBase64Binary`.
+- `FhirBoolean`.
 - `FhirCanonical`.
 - `FhirCode`.
-- `FhirId`.
-- `FhirInteger`.
-- `FhirDecimal`.
 - `FhirDate`.
 - `FhirDateTime`.
+- `FhirDecimal`.
+- `FhirId`.
 - `FhirInstant`.
-- `FhirBoolean`.
+- `FhirInteger`.
+- `FhirInteger64`.
+- `FhirMarkdown`.
+- `FhirPositiveInt`.
+- `FhirString`.
+- `FhirUnsignedInt`.
+- `FhirUri`.
+- `FhirUrl`.
 
 Recommended behavior:
 
 - Walk the resource object graph recursively.
 - Visit nested `DataType`, `BackboneElement`, and `Resource` objects.
 - Visit list items with indexed paths, for example `Patient.name[0].given[1]`.
-- Call the primitive's existing `IsValid()` method.
+- If a node value implements `IFhirValidatablePrimitive`, call the internal interface
+  method.
 - Emit a `PrimitiveFormat` issue when a primitive value is invalid.
 
 Example issue paths:
@@ -175,7 +201,11 @@ Implementation note:
 
 - Prefer using reflection only for traversal and keep validation decisions in explicit
   rule classes.
+- Do not use reflection to discover or invoke primitive `IsValid()` methods. Use
+  `IFhirValidatablePrimitive` instead.
 - Avoid adding validation logic directly into resource classes.
+- Keep primitive `IsValid()` explicit and internal-facing so primitive validation does not
+  become a public API surface.
 - Guard against cycles or repeated references during traversal.
 
 ### Step 3 - Add explicit resource rule registry
@@ -352,7 +382,8 @@ Outcome:
 Outcome:
 
 - Validator can walk a full resource graph.
-- Existing primitive `IsValid()` methods are used.
+- Primitive format checks are called through internal `IFhirValidatablePrimitive`.
+- Primitive `IsValid()` is not exposed as a public API.
 - Invalid nested primitive values produce useful paths.
 
 ### Milestone 3 - Resource required rules
@@ -384,6 +415,7 @@ Outcome:
 - Keep validation independent from serialization and HTTP.
 - Return structured validation results for normal validation failures.
 - Keep resource classes simple data models.
+- Keep primitive format hooks internal; `FhirValidator` is the public validation entry point.
 - Prefer explicit rules over hidden convention.
 - Start with base FHIR R5 rules only.
 - Make every issue path useful to SDK callers.
@@ -402,4 +434,3 @@ After MVP, the validation layer can grow in these directions:
 - Rule generation from official FHIR definitions.
 - Severity customization.
 - Validation options for strict vs. lenient modes.
-
