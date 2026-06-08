@@ -17,7 +17,7 @@ FHIR Resource Object
   -> FHIR Resource Object
 ```
 
-Client Layer 是 orchestration layer。它應該整合 serialization、parser、HTTP request/response handling、authentication 和 search query building，但不應該把 FHIR model、primitive validation、business logic 或 database access 放進來。
+Client Layer 是 orchestration layer。它應該整合 serialization、parser、HTTP request/response handling、authentication、search query building，以及可選的 validation-before-send orchestration，但不應該把 FHIR model、primitive validation、business logic 或 database access 放進來。
 
 ---
 
@@ -55,7 +55,8 @@ Client
 |-- Exceptions
 |   |-- FhirClientException.cs
 |   |-- FhirHttpException.cs
-|   `-- FhirInvalidResponseException.cs
+|   |-- FhirInvalidResponseException.cs
+|   `-- FhirValidationException.cs
 |-- Http
 |   |-- FhirHttpConstants.cs
 |   |-- FhirHttpContent.cs
@@ -517,6 +518,14 @@ public sealed class FhirClientOptions
 }
 ```
 
+`ValidateBeforeSend` behavior:
+
+- Default is `false`, so existing create/update behavior remains backward-compatible.
+- When `true`, `CreateAsync` and `UpdateAsync` validate the resource before serialization and HTTP send.
+- If validation fails, the client throws `FhirValidationException` with the full `ValidationResult`.
+- Failed validation stops before serializer, request builder, authentication, and HTTP sender are called.
+- `ReadAsync` and `SearchAsync` do not validate because they do not send a resource body.
+
 建議 constructor：
 
 ```csharp
@@ -527,7 +536,8 @@ public sealed class FhirClient : IFhirClient
         IFhirSerializer serializer,
         IFhirParser parser,
         FhirClientOptions options,
-        IAuthProvider? authProvider = null)
+        IAuthProvider? authProvider = null,
+        IFhirValidator? validator = null)
     {
     }
 }
@@ -539,7 +549,8 @@ public sealed class FhirClient : IFhirClient
 var options = new FhirClientOptions
 {
     BaseAddress = new Uri("https://server.example.org/fhir"),
-    Timeout = TimeSpan.FromSeconds(30)
+    Timeout = TimeSpan.FromSeconds(30),
+    ValidateBeforeSend = true
 };
 
 var client = new FhirClient(
@@ -562,6 +573,7 @@ MVP 建議包含：
 FhirClientException
 FhirHttpException
 FhirInvalidResponseException
+FhirValidationException
 ```
 
 使用情境：
@@ -571,6 +583,7 @@ FhirInvalidResponseException
 | `FhirClientException` | Client 通用錯誤，建議繼承 `FhirSdkException` |
 | `FhirHttpException` | HTTP status code 失敗 |
 | `FhirInvalidResponseException` | Response body 為空或無法 parse |
+| `FhirValidationException` | `ValidateBeforeSend=true` 時 resource validation failed before HTTP send |
 
 `FhirHttpException` 建議保存：
 
@@ -579,6 +592,11 @@ FhirInvalidResponseException
 - `string? ResponseBody`
 - `HttpMethod? Method`
 - `Uri? RequestUri`
+
+`FhirValidationException` should preserve:
+
+- `ValidationResult Result`
+- All validation issues returned by the standalone validation layer.
 
 `FhirOperationOutcomeException` 先放到 future，等 `OperationOutcome` resource 納入 scope 後再做。
 
@@ -608,6 +626,8 @@ Patient created = await client.CreateAsync(patient);
 
 ```text
 FhirClient.CreateAsync(patient)
+  -> if ValidateBeforeSend: Validator.Validate(patient)
+  -> if invalid: throw FhirValidationException and stop before serialization/HTTP
   -> Serializer.Serialize(patient)
   -> FhirRequestBuilder.BuildCreateRequest(patient, json)
   -> Authentication.ApplyAsync(request)
@@ -660,6 +680,7 @@ Responses/FhirResponseHandler.cs
 Search/FhirSearchQuery.cs
 Configuration/FhirClientOptions.cs
 Exceptions/FhirClientException.cs
+Exceptions/FhirValidationException.cs
 ```
 
 REST 操作：
@@ -718,6 +739,10 @@ Read 404 returns null test
 Non-success response preserves status/body test
 Response parser test
 Empty response body test
+ValidateBeforeSend disabled does not call validator
+Create validation failure stops before HTTP send
+Update validation failure stops before HTTP send
+Read/Search do not validate resource bodies
 ```
 
 Integration test 可使用公開測試 FHIR Server，例如 HAPI FHIR Test Server。
@@ -741,7 +766,8 @@ Tests
     |-- Fakes
     |   |-- FakeFhirParser.cs
     |   |-- FakeFhirSerializer.cs
-    |   `-- FakeFhirHttpSender.cs
+    |   |-- FakeFhirHttpSender.cs
+    |   `-- FakeFhirValidator.cs
     |-- Authentication
     |   |-- BearerTokenAuthProviderTests.cs
     |   `-- NoAuthProviderTests.cs
@@ -766,8 +792,11 @@ Client Layer
   |-- 使用 Parser Layer：JSON -> Object
   |-- 使用 Authentication：套用認證
   |-- 使用 HTTP：發送 request
+  |-- 選擇性使用 Validation Layer：ValidateBeforeSend=true 時驗證 create/update resource
   `-- 使用 Responses：處理 response
 ```
+
+Client Layer 可以在 `CreateAsync` / `UpdateAsync` 送出前呼叫 validation layer，但 validation rules、primitive format checks、issue path 與 `ValidationResult` 結構仍由 `MyFhirSdk.Validation` 負責。
 
 Client Layer 不負責：
 
