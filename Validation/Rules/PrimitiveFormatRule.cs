@@ -34,7 +34,7 @@ internal static class PrimitiveFormatRule
         string path,
         ICollection<ValidationIssue> issues)
     {
-        if (new FhirId(id).IsValid())
+        if (((IFhirValidatablePrimitive)new FhirId(id)).IsValid())
         {
             return;
         }
@@ -52,18 +52,12 @@ internal static class PrimitiveFormatRule
         FhirObjectGraphNode node,
         ICollection<ValidationIssue> issues)
     {
-        if (!IsPrimitiveType(node.Value.GetType()))
+        if (node.Value is not IFhirValidatablePrimitive primitive)
         {
             return;
         }
 
-        var isValidMethod = node.Value.GetType().GetMethod(nameof(FhirId.IsValid), Type.EmptyTypes);
-        if (isValidMethod?.ReturnType != typeof(bool))
-        {
-            return;
-        }
-
-        if (isValidMethod.Invoke(node.Value, Array.Empty<object>()) is true)
+        if (primitive.IsValid())
         {
             return;
         }
@@ -75,20 +69,5 @@ internal static class PrimitiveFormatRule
             Severity = ValidationSeverity.Error,
             Message = node.Path + " has invalid " + node.Value.GetType().Name + " format."
         });
-    }
-
-    private static bool IsPrimitiveType(Type? type)
-    {
-        while (type is not null)
-        {
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(PrimitiveType<>))
-            {
-                return true;
-            }
-
-            type = type.BaseType;
-        }
-
-        return false;
     }
 }

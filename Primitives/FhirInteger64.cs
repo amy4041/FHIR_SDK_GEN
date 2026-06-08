@@ -8,7 +8,7 @@ namespace MyFhirSdk.Primitives;
 /// FHIR integer64 primitive. JSON represents this value as a string to avoid
 /// precision loss in floating point implementations.
 /// </summary>
-public sealed partial class FhirInteger64 : PrimitiveType<long?>
+public sealed partial class FhirInteger64 : PrimitiveType<long?>, IFhirValidatablePrimitive
 {
     public FhirInteger64()
     {
@@ -35,7 +35,7 @@ public sealed partial class FhirInteger64 : PrimitiveType<long?>
     /// </summary>
     public string? Literal { get; }
 
-    public bool IsValid()
+    bool IFhirValidatablePrimitive.IsValid()
     {
         var literal = Literal ?? Value?.ToString(CultureInfo.InvariantCulture);
         if (literal is null)

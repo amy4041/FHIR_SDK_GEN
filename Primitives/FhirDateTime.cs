@@ -9,7 +9,7 @@ namespace MyFhirSdk.Primitives;
 /// FHIR dateTime primitive. Supports partial dates and full date-times.
 /// If a time is present, a timezone offset is required.
 /// </summary>
-public sealed partial class FhirDateTime : PrimitiveType<string>
+public sealed partial class FhirDateTime : PrimitiveType<string>, IFhirValidatablePrimitive
 {
     public FhirDateTime()
     {
@@ -20,7 +20,7 @@ public sealed partial class FhirDateTime : PrimitiveType<string>
     {
     }
 
-    public bool IsValid()
+    bool IFhirValidatablePrimitive.IsValid()
     {
         if (Value is null)
         {

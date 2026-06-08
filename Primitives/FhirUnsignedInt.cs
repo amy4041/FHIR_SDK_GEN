@@ -6,7 +6,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR unsignedInt primitive. Valid values are 0 through 2,147,483,647.
 /// </summary>
-public sealed class FhirUnsignedInt : PrimitiveType<int?>
+public sealed class FhirUnsignedInt : PrimitiveType<int?>, IFhirValidatablePrimitive
 {
     public FhirUnsignedInt()
     {
@@ -17,7 +17,7 @@ public sealed class FhirUnsignedInt : PrimitiveType<int?>
     {
     }
 
-    public bool IsValid()
+    bool IFhirValidatablePrimitive.IsValid()
     {
         return Value is null or >= 0;
     }

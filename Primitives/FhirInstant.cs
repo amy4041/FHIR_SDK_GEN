@@ -8,7 +8,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR instant primitive. Requires a full date-time at least to seconds and a timezone.
 /// </summary>
-public sealed partial class FhirInstant : PrimitiveType<string>
+public sealed partial class FhirInstant : PrimitiveType<string>, IFhirValidatablePrimitive
 {
     public FhirInstant()
     {
@@ -19,7 +19,7 @@ public sealed partial class FhirInstant : PrimitiveType<string>
     {
     }
 
-    public bool IsValid()
+    bool IFhirValidatablePrimitive.IsValid()
     {
         if (Value is null)
         {

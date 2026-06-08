@@ -6,7 +6,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR positiveInt primitive. Valid values are 1 through 2,147,483,647.
 /// </summary>
-public sealed class FhirPositiveInt : PrimitiveType<int?>
+public sealed class FhirPositiveInt : PrimitiveType<int?>, IFhirValidatablePrimitive
 {
     public FhirPositiveInt()
     {
@@ -17,7 +17,7 @@ public sealed class FhirPositiveInt : PrimitiveType<int?>
     {
     }
 
-    public bool IsValid()
+    bool IFhirValidatablePrimitive.IsValid()
     {
         return Value is null or > 0;
     }

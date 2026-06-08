@@ -5,7 +5,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR markdown primitive. Markdown values are strings intended for markdown rendering.
 /// </summary>
-public sealed class FhirMarkdown : PrimitiveType<string>
+public sealed class FhirMarkdown : PrimitiveType<string>, IFhirValidatablePrimitive
 {
     public const int MaxLength = 1024 * 1024;
 
@@ -18,7 +18,7 @@ public sealed class FhirMarkdown : PrimitiveType<string>
     {
     }
 
-    public bool IsValid()
+    bool IFhirValidatablePrimitive.IsValid()
     {
         if (Value is null)
         {

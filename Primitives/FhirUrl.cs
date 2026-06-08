@@ -7,7 +7,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR url primitive. URLs are directly accessed using their specified protocol.
 /// </summary>
-public sealed partial class FhirUrl : PrimitiveType<string>
+public sealed partial class FhirUrl : PrimitiveType<string>, IFhirValidatablePrimitive
 {
     public FhirUrl()
     {
@@ -18,7 +18,7 @@ public sealed partial class FhirUrl : PrimitiveType<string>
     {
     }
 
-    public bool IsValid()
+    bool IFhirValidatablePrimitive.IsValid()
     {
         if (Value is null)
         {

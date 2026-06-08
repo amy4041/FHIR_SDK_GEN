@@ -8,7 +8,7 @@ namespace MyFhirSdk.Primitives;
 /// FHIR decimal primitive. FHIR decimals are JSON numbers with a decimal
 /// representation and constrained precision.
 /// </summary>
-public sealed partial class FhirDecimal : PrimitiveType<decimal?>
+public sealed partial class FhirDecimal : PrimitiveType<decimal?>, IFhirValidatablePrimitive
 {
     public const int MaxIntegerDigits = 18;
     public const int MaxFractionDigits = 17;
@@ -40,7 +40,7 @@ public sealed partial class FhirDecimal : PrimitiveType<decimal?>
     /// </summary>
     public string? Literal { get; }
 
-    public bool IsValid()
+    bool IFhirValidatablePrimitive.IsValid()
     {
         var literal = Literal ?? Value?.ToString(CultureInfo.InvariantCulture);
         return literal is null || DecimalRegex().IsMatch(literal);

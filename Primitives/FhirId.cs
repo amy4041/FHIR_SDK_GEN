@@ -6,7 +6,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR id primitive. Allows ASCII letters, digits, '-' and '.', up to 64 chars.
 /// </summary>
-public sealed partial class FhirId : PrimitiveType<string>
+public sealed partial class FhirId : PrimitiveType<string>, IFhirValidatablePrimitive
 {
     public FhirId()
     {
@@ -17,7 +17,7 @@ public sealed partial class FhirId : PrimitiveType<string>
     {
     }
 
-    public bool IsValid()
+    bool IFhirValidatablePrimitive.IsValid()
     {
         return Value is null || IdRegex().IsMatch(Value);
     }

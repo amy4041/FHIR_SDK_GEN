@@ -8,7 +8,7 @@ namespace MyFhirSdk.Primitives;
 /// FHIR canonical primitive. Canonicals are absolute URIs or fragment references,
 /// optionally with a version suffix separated by '|'.
 /// </summary>
-public sealed partial class FhirCanonical : PrimitiveType<string>
+public sealed partial class FhirCanonical : PrimitiveType<string>, IFhirValidatablePrimitive
 {
     public FhirCanonical()
     {
@@ -19,7 +19,7 @@ public sealed partial class FhirCanonical : PrimitiveType<string>
     {
     }
 
-    public bool IsValid()
+    bool IFhirValidatablePrimitive.IsValid()
     {
         if (Value is null)
         {

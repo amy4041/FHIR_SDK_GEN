@@ -8,7 +8,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR date primitive. Supports YYYY, YYYY-MM, and YYYY-MM-DD with no timezone.
 /// </summary>
-public sealed partial class FhirDate : PrimitiveType<string>
+public sealed partial class FhirDate : PrimitiveType<string>, IFhirValidatablePrimitive
 {
     public FhirDate()
     {
@@ -19,7 +19,7 @@ public sealed partial class FhirDate : PrimitiveType<string>
     {
     }
 
-    public bool IsValid()
+    bool IFhirValidatablePrimitive.IsValid()
     {
         if (Value is null)
         {

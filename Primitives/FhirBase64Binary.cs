@@ -7,7 +7,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR base64Binary primitive. The value is base64 content without whitespace.
 /// </summary>
-public sealed partial class FhirBase64Binary : PrimitiveType<string>
+public sealed partial class FhirBase64Binary : PrimitiveType<string>, IFhirValidatablePrimitive
 {
     public FhirBase64Binary()
     {
@@ -18,7 +18,7 @@ public sealed partial class FhirBase64Binary : PrimitiveType<string>
     {
     }
 
-    public bool IsValid()
+    bool IFhirValidatablePrimitive.IsValid()
     {
         if (Value is null)
         {
