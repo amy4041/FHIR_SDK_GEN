@@ -1,0 +1,35 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-search-result",
+  "type": "searchset",
+  "timestamp": "2026-06-10T03:00:00Z",
+  "total": 1,
+  "link": [
+    {
+      "relation": "self",
+      "url": "https://fhir.example.org/Patient?family=Chalmers"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "https://fhir.example.org/Patient/patient-simple",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-simple",
+        "active": true,
+        "name": [
+          {
+            "family": "Chalmers",
+            "given": [
+              "Peter"
+            ]
+          }
+        ]
+      },
+      "search": {
+        "mode": "match",
+        "score": 1.0
+      }
+    }
+  ]
+}

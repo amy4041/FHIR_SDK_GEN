@@ -8,6 +8,7 @@ internal static class JsonParserTestCases
         ..ExtensionValueQuantityJsonParserTestCases.All,
         ..PrimitiveJsonParserTestCases.All,
         ..PractitionerPrimitiveJsonParserTestCases.All,
+        ..MvpResourceJsonParserTestCases.All,
         ..PatientJsonParserTestCases.All
     ];
 }

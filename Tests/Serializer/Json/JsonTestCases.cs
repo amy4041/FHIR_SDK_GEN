@@ -8,6 +8,7 @@ internal static class JsonTestCases
         ..ElementJsonTestCases.All,
         ..PrimitiveArrayAlignmentJsonTestCases.All,
         ..ExtensionValueQuantityJsonTestCases.All,
+        ..MvpResourceJsonTestCases.All,
         ..PatientJsonTestCases.All
     ];
 }
