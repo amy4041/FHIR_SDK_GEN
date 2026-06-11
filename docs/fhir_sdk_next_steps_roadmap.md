@@ -35,7 +35,7 @@ Existing inventories:
 
 ### Phase 0 - Add Solution File
 
-Status: Planned
+Status: Finished
 
 Goal:
 
@@ -55,7 +55,7 @@ Done when:
 
 ### Phase 1 - Add Base FHIR JSON Fixtures
 
-Status: Planned
+Status: Finished
 
 Goal:
 
