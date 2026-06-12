@@ -1,22 +1,33 @@
 # FHIR SDK IG Layer Design
 
-Last updated: 2026-06-10
+Last updated: 2026-06-12
 
 ## 1. Purpose
 
-This document describes how MyFhirSdk should support Implementation Guides (IGs) and
-profiles without mixing IG-specific behavior into the base FHIR R5 SDK.
+This document defines how MyFhirSdk should support Implementation Guides (IGs) and
+profiles without mixing IG-specific behavior into the base FHIR SDK.
 
-The goal is to make IG support optional, replaceable, and extensible.
+The design target is:
+
+```text
+FhirValidator = base FHIR validation
+ProfileValidator = base validation plus selected profile validation
+TwCorePackage = a concrete IG package that provides TW Core profile rules
+```
+
+The goal is to make IG support optional, replaceable, and extensible while keeping the
+base SDK clean.
 
 ## 2. Design Goals
 
-- Keep the base SDK FHIR R5 compliant and IG-neutral.
-- Allow multiple IGs to be registered at the same time.
+- Keep base FHIR validation independent from IG/profile validation.
+- Keep concrete IG names such as TW Core out of base resource models, serialization, parsing,
+  REST client behavior, and base rule registries.
 - Allow one resource to be validated against one or more profiles.
-- Keep base validation separate from profile validation.
-- Support IG-specific validation rules, extensions, terminology, search helpers, and examples over time.
-- Avoid full StructureDefinition-driven validation in the first IG implementation.
+- Allow one validator instance to register one or more IG packages.
+- Run base validation once when validating against multiple profiles.
+- Make validation issues explain where each issue came from.
+- Support manual profile rules first; defer full StructureDefinition-driven validation.
 
 ## 3. Non-Goals for the First Version
 
@@ -26,39 +37,49 @@ The goal is to make IG support optional, replaceable, and extensible.
 - Remote terminology server integration.
 - Automatic code generation from IG profiles.
 - Modifying base resource classes for IG-specific requirements.
+- Claiming conformance to an IG whose FHIR version is not compatible with the SDK model.
 
-## 4. Relationship Between the Base SDK and IG Layer
+## 4. Layering Model
 
 ```text
-Application
-  -> IG Layer
+Application / Local Business Rules
+  -> IG/Profile Layer
   -> Base SDK
   -> FHIR JSON / REST Server
 ```
 
 Base SDK responsibilities:
 
-- FHIR R5 resource models.
+- FHIR resource models.
 - FHIR primitives and datatypes.
 - JSON serialization and parsing.
 - REST client.
 - Base FHIR validation.
+- Generic extension representation.
+- Generic profile validation extension points.
 
 IG layer responsibilities:
 
-- Profile metadata and canonical URLs.
+- IG package metadata.
+- Profile canonical URLs.
 - IG/profile-specific validation rules.
-- Extension helpers.
-- Terminology bindings.
-- Search helpers.
+- Slice and extension rules.
+- Terminology binding references.
+- Typed extension helpers.
+- Typed search helpers.
 - IG examples and fixtures.
-- Future package loading.
+
+Local business rule responsibilities:
+
+- Project-specific workflow rules.
+- Hospital/platform-specific required fields.
+- Exchange-specific constraints that are not part of base FHIR or a published IG.
 
 Dependency direction:
 
 ```text
-IG layer depends on the Base SDK.
-Base SDK does not depend on any concrete IG.
+Concrete IG package -> Base SDK
+Base SDK -> no dependency on concrete IG packages
 ```
 
 ## 5. Key Boundary Rule
@@ -69,136 +90,484 @@ Do not place IG-specific rules directly into:
 - The base JSON serializer or parser.
 - The base REST client.
 - The base `ResourceRuleRegistry`.
+- Base validation rules under `Validation/Rules`.
 
-IG-specific behavior should live in replaceable IG providers, registries, helpers, or wrapper APIs.
+IG-specific behavior should live in concrete IG packages, profile rule registries, typed helpers,
+or optional wrappers.
 
-## 6. Proposed Modules
+## 6. Core API Shape
 
-Initial conceptual modules:
+### Base FHIR Validation
+
+`FhirValidator` remains the base validator. It only answers:
 
 ```text
-MyFhirSdk
-  Validation
-    FhirValidator
-    ResourceRuleRegistry
-
-MyFhirSdk.ImplementationGuides
-  IFhirImplementationGuide
-  IFhirProfileValidator
-  IFhirProfileValidationRule
-  FhirProfileValidator
-  FhirImplementationGuideRegistry
-
-MyFhirSdk.Ig.ClaimExchange
-  ClaimExchangeImplementationGuide
-  ClaimExchangeProfiles
-  ClaimExchangeValidationRules
-  ClaimExchangeExtensions
-  ClaimExchangeSearch
+Is this a valid base FHIR resource according to the SDK's implemented base rules?
 ```
 
-The exact project split can happen later. The first version may keep abstractions inside the main SDK
-and add concrete IG packages after the base extension points are stable.
-
-## 7. Core Interfaces
-
-The base SDK should expose abstractions. Concrete IG packages should provide implementations.
+Example:
 
 ```csharp
-public interface IFhirImplementationGuide
+var baseValidator = new FhirValidator();
+
+ValidationResult result = baseValidator.Validate(patient);
+```
+
+`FhirValidator` should not know about TW Core, US Core, local hospital profiles, or any concrete
+IG package.
+
+### Profile Validation
+
+`ProfileValidator` is an orchestration layer that runs base validation and then applies selected
+profile rules from registered IG packages.
+
+Example with one IG:
+
+```csharp
+var validator = new ProfileValidator(
+    new FhirValidator(),
+    TwCorePackage.Default);
+
+ValidationResult result = validator.Validate(
+    patient,
+    TwCoreProfiles.Patient);
+```
+
+This means:
+
+```text
+1. Run base FHIR validation once.
+2. Locate the package that supports TwCoreProfiles.Patient.
+3. Run TW Core Patient profile rules.
+4. Return one combined ValidationResult.
+```
+
+Example with multiple IGs:
+
+```csharp
+var validator = new ProfileValidator(
+    new FhirValidator(),
+    TwCorePackage.Default,
+    UsCorePackage.Default);
+
+ValidationResult result = validator.Validate(
+    patient,
+    [
+        TwCoreProfiles.Patient,
+        UsCoreProfiles.Patient
+    ]);
+```
+
+This means:
+
+```text
+1. Run base FHIR validation once.
+2. Run TW Core Patient rules.
+3. Run US Core Patient rules.
+4. Return one combined ValidationResult with source metadata on every issue.
+```
+
+The SDK should not silently resolve conflicts between profiles. If two profiles require conflicting
+values, the resource is invalid against at least one of the requested profiles.
+
+### IG Package
+
+An IG package is not a validator by itself. It is a package of metadata and rules that
+`ProfileValidator` can use.
+
+Example:
+
+```csharp
+public sealed class TwCorePackage : IImplementationGuidePackage
 {
-    string Id { get; }
+    public static TwCorePackage Default { get; } = new();
+
+    public string PackageId => "tw.gov.mohw.twcore#1.0.0";
+
+    public IReadOnlyCollection<string> SupportedProfiles =>
+    [
+        TwCoreProfiles.Patient,
+        TwCoreProfiles.Organization,
+        TwCoreProfiles.Practitioner
+    ];
+
+    public bool SupportsProfile(string profileUrl);
+
+    public IEnumerable<IProfileValidationRule> GetRules(
+        string profileUrl,
+        Type resourceType);
+}
+```
+
+Concrete packages should also declare their target FHIR release so callers can detect incompatible
+combinations before validation.
+
+## 7. Recommended File Structure / 建議檔案結構
+
+The first implementation should stay inside the current single project. Use folders and namespaces
+to protect the boundary before splitting NuGet packages.
+
+Current repo root:
+
+```text
+D:\projects\MyFhirSdk
+```
+
+The main idea is:
+
+```text
+Validation/Rules
+  = base FHIR validation rules only
+
+Validation/Profiles
+  = generic profile/IG validation framework
+
+ImplementationGuides/TwCore
+  = TW Core-specific package, constants, rules, helpers, and fixtures
+```
+
+Recommended current layout:
+
+```text
+Validation/
+  FhirValidator.cs
+  IFhirValidator.cs
+  ValidationResult.cs
+  ValidationIssue.cs
+  ValidationIssueCode.cs
+  ValidationRuleSource.cs              # new
+
+  Rules/
+    ResourceRuleRegistry.cs             # base FHIR rules only
+    IFhirValidationRule.cs
+    RequiredFieldRule.cs
+    CardinalityRule.cs
+    ChoiceElementRule.cs
+    PrimitiveFormatRule.cs
+
+  Profiles/                             # new generic profile framework
+    ProfileValidator.cs
+    IImplementationGuidePackage.cs
+    IProfileValidationRule.cs
+    ProfileValidationContext.cs
+    ProfileValidationOptions.cs
+
+  Traversal/
+    FhirObjectGraphWalker.cs
+    FhirObjectGraphNode.cs
+    FhirPathFormatter.cs
+
+ImplementationGuides/
+  TwCore/
+    TwCorePackage.cs
+    TwCoreProfiles.cs
+    Validation/
+      TwCorePatientRules.cs
+      TwCoreOrganizationRules.cs
+      TwCorePractitionerRules.cs
+    Terminology/
+      TwCoreValueSets.cs
+    Extensions/
+      TwCoreExtensions.cs
+    Search/
+      TwCoreSearch.cs
+
+Tests/
+  ImplementationGuides/
+    TwCore/
+      TwCorePackageTests.cs
+      Validation/
+        TwCorePatientValidationTests.cs
+      Fixtures/
+```
+
+Responsibility map:
+
+| Path | Responsibility | May reference |
+|---|---|---|
+| `Validation/FhirValidator.cs` | Base FHIR validation entry point. | `Validation/Rules`, `Validation/Traversal` |
+| `Validation/Rules/` | Base FHIR rules only. | Base SDK types |
+| `Validation/Profiles/` | Generic IG/profile validation framework. | Base validator, base SDK types |
+| `ImplementationGuides/TwCore/` | TW Core-specific package and rules. | Base SDK, `Validation/Profiles` |
+| `ImplementationGuides/TwCore/Validation/` | TW Core profile validation rules. | TW Core constants, base SDK models |
+| `ImplementationGuides/TwCore/Terminology/` | TW Core ValueSet/CodeSystem references. | Base SDK terminology abstractions later |
+| `ImplementationGuides/TwCore/Extensions/` | Typed TW Core extension helpers. | Base `Extension` model |
+| `ImplementationGuides/TwCore/Search/` | Typed TW Core search helpers. | Base client/search query APIs |
+| `Tests/ImplementationGuides/TwCore/` | TW Core-specific tests and fixtures. | SDK test helpers |
+
+Boundary notes:
+
+- `Validation/Rules` remains base FHIR only.
+- `Validation/Profiles` contains generic IG/profile infrastructure, not TW Core-specific rules.
+- `ImplementationGuides/TwCore` contains TW Core-specific constants, rules, helpers, and fixtures.
+- `Core`, `Resources`, `Serialization`, `Client`, and `Validation/Rules` must not reference
+  `ImplementationGuides/TwCore`.
+- The existing `ResourceRuleRegistry` can remain as-is initially, but it should be treated as the
+  base rule registry. A later rename to `BaseResourceRuleRegistry` may make the boundary clearer.
+
+Future project split:
+
+```text
+src/
+  MyFhirSdk/
+    Core/
+    Resources/
+    Serialization/
+    Client/
+    Validation/
+
+  MyFhirSdk.TwCore/
+    TwCorePackage.cs
+    TwCoreProfiles.cs
+    Validation/
+    Terminology/
+    Extensions/
+    Search/
+
+tests/
+  MyFhirSdk.Tests/
+  MyFhirSdk.TwCore.Tests/
+```
+
+Future dependency direction:
+
+```text
+MyFhirSdk.TwCore -> MyFhirSdk
+MyFhirSdk -> does not reference MyFhirSdk.TwCore
+```
+
+## 8. Core Interfaces
+
+The base SDK should expose generic abstractions. Concrete IG packages should provide
+implementations.
+
+```csharp
+public interface IImplementationGuidePackage
+{
+    string PackageId { get; }
+
     string Name { get; }
+
+    string FhirVersion { get; }
+
     IReadOnlyCollection<string> SupportedProfiles { get; }
 
     bool SupportsProfile(string profileUrl);
 
-    IEnumerable<IFhirProfileValidationRule> GetRules(
+    IEnumerable<IProfileValidationRule> GetRules(
         string profileUrl,
         Type resourceType);
 }
 ```
 
 ```csharp
-public interface IFhirProfileValidator
+public interface IProfileValidationRule
 {
-    ValidationResult Validate(Resource resource, string profileUrl);
+    string RuleId { get; }
 
-    ValidationResult Validate(Resource resource, IEnumerable<string> profileUrls);
-
-    ValidationResult ValidateByDeclaredProfiles(Resource resource);
+    void Validate(
+        ProfileValidationContext context,
+        ICollection<ValidationIssue> issues);
 }
 ```
 
 ```csharp
-public interface IFhirProfileValidationRule
+public sealed class ProfileValidationContext
 {
-    void Validate(
-        FhirProfileValidationContext context,
-        IList<ValidationIssue> issues);
+    public required Resource Resource { get; init; }
+
+    public required string PackageId { get; init; }
+
+    public required string ProfileUrl { get; init; }
+
+    public required string RuleId { get; init; }
 }
 ```
 
-## 8. Validation Flow
+```csharp
+public sealed class ProfileValidator
+{
+    public ProfileValidator(
+        IFhirValidator baseValidator,
+        params IImplementationGuidePackage[] packages);
 
-### Explicit Profile Validation
+    public ValidationResult Validate(Resource resource, string profileUrl);
+
+    public ValidationResult Validate(Resource resource, IEnumerable<string> profileUrls);
+
+    public ValidationResult ValidateDeclaredProfiles(Resource resource);
+}
+```
+
+Open design choice:
+
+- `ProfileValidator` can be concrete first. Add `IProfileValidator` later only if another
+  implementation is needed.
+
+## 9. ValidationIssue Metadata
+
+To support IG validation, multiple IGs, and future business rules, `ValidationIssue` should carry
+rule source metadata.
+
+Recommended model:
+
+```csharp
+public enum ValidationRuleSource
+{
+    BaseFhir,
+    ImplementationGuide,
+    BusinessRule
+}
+```
+
+```csharp
+public sealed class ValidationIssue
+{
+    public string Path { get; init; } = string.Empty;
+
+    public string Message { get; init; } = string.Empty;
+
+    public ValidationSeverity Severity { get; init; } = ValidationSeverity.Error;
+
+    public ValidationIssueCode Code { get; init; }
+
+    public ValidationRuleSource Source { get; init; } = ValidationRuleSource.BaseFhir;
+
+    public string? PackageId { get; init; }
+
+    public string? ProfileUrl { get; init; }
+
+    public string? RuleId { get; init; }
+}
+```
+
+Field meanings:
+
+| Field | Meaning | Example |
+|---|---|---|
+| `Source` | Which validation layer produced the issue. | `BaseFhir`, `ImplementationGuide`, `BusinessRule` |
+| `PackageId` | Which IG package produced the issue. Null for base rules. | `tw.gov.mohw.twcore#1.0.0` |
+| `ProfileUrl` | Which profile produced the issue. Null for base rules. | `https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition/Patient-twcore` |
+| `RuleId` | Stable identifier for the specific rule. | `TWCORE-PATIENT-IDENTIFIER-REQUIRED` |
+
+Relationship:
+
+```text
+Package
+  contains many ProfileUrls
+    contains many Rules
+      may produce ValidationIssues
+```
+
+Example base issue:
+
+```text
+Path: Coverage.status
+Code: Required
+Source: BaseFhir
+PackageId: null
+ProfileUrl: null
+RuleId: FHIR-R5-COVERAGE-STATUS-REQUIRED
+```
+
+Example IG issue:
+
+```text
+Path: Patient.identifier
+Code: Required
+Source: ImplementationGuide
+PackageId: tw.gov.mohw.twcore#1.0.0
+ProfileUrl: https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition/Patient-twcore
+RuleId: TWCORE-PATIENT-IDENTIFIER-REQUIRED
+```
+
+Rules:
+
+- Do not use `ValidationIssueCode` to distinguish base, IG, and business sources.
+- Keep `PackageId`, `ProfileUrl`, and `RuleId` nullable so base validation remains simple.
+- Base rules may add `RuleId` over time using existing validation inventory IDs.
+- IG rules should always set `Source`, `PackageId`, `ProfileUrl`, and `RuleId`.
+
+## 10. Explicit Profile Validation
+
+Explicit profile validation is best for send-time validation, when the application knows the target
+profile even if the resource has not declared `meta.profile`.
+
+Example:
 
 ```csharp
 var result = validator.Validate(
-    claim,
-    ClaimExchangeProfiles.Claim);
+    patient,
+    TwCoreProfiles.Patient);
 ```
 
 Flow:
 
 ```text
-1. Run base FHIR validation.
-2. Find an IG provider by profile URL.
-3. Get profile rules for the resource type.
-4. Run profile rules.
-5. Return a combined ValidationResult.
+1. Reject null resource.
+2. Run base validation once.
+3. Find the registered IG package that supports the requested profile URL.
+4. Check package FHIR version compatibility.
+5. Get rules for the profile URL and resource type.
+6. Run profile rules.
+7. Return combined ValidationResult.
 ```
 
-Explicit profile validation is best for send-time validation, when the application knows the target
-profile even if the resource has not yet declared `meta.profile`.
+Unknown profile behavior should be configurable:
 
-### Declared Profile Validation
+```text
+Ignore unknown profiles
+Warn on unknown profiles
+Error on unknown profiles
+```
+
+The recommended default for explicit validation is error, because the caller specifically requested
+that profile.
+
+## 11. Declared Profile Validation
+
+Declared profile validation reads `Resource.Meta.Profile`.
+
+Example:
 
 ```csharp
-var result = validator.ValidateByDeclaredProfiles(claim);
+patient.Meta.Profile =
+[
+    TwCoreProfiles.Patient
+];
+
+var result = validator.ValidateDeclaredProfiles(patient);
 ```
 
 Flow:
 
 ```text
 1. Read resource.meta.profile.
-2. For each declared profile, find a matching IG provider.
-3. Run base validation once.
+2. Run base validation once.
+3. For each declared profile, find a matching registered IG package.
 4. Run all matching profile rules.
-5. Return a combined ValidationResult.
+5. Return combined ValidationResult.
 ```
 
 Declared profile validation is best for received resources, parsed server responses, and Bundles that
 may contain resources from different profiles.
 
-Open design choices:
+Recommended defaults:
 
-- Unknown declared profile should be ignored, warning, or error.
-- Empty `meta.profile` should return base validation only, warning, or error.
-- Multiple profile conflicts should be reported as validation issues.
-- Profile validation should probably run base validation first by default.
+- Empty `meta.profile`: run base validation only.
+- Unknown declared profile: warning or ignored by option.
+- Duplicate profile URL: validate once.
+- Multiple profiles: validate in deterministic input order after de-duplication.
 
-## 9. Multiple IG Support
+## 12. Multiple IG Support
 
-The SDK should allow multiple IGs to be registered:
+The SDK should allow multiple IG packages to be registered:
 
 ```csharp
-var validator = new FhirProfileValidator(
-    baseValidator,
-    [
-        new TwCoreImplementationGuide(),
-        new ClaimExchangeImplementationGuide()
-    ]);
+var validator = new ProfileValidator(
+    new FhirValidator(),
+    TwCorePackage.Default,
+    ClaimExchangePackage.Default);
 ```
 
 Supported scenarios:
@@ -211,24 +580,52 @@ Supported scenarios:
 Conflict handling:
 
 - The SDK should not silently resolve conflicting rules.
-- Conflicts should surface as validation issues.
+- Conflicts should surface as validation issues from the relevant profile rules.
 - The caller decides how to handle invalid resources.
+- Validation issue metadata must identify which package/profile/rule produced each issue.
 
-## 10. Profile Metadata
+## 13. Package, Profile, and Rule Concepts
+
+Hierarchy:
+
+```text
+Package
+  contains profiles
+    contain rules
+```
+
+Package:
+
+- A published or local IG unit.
+- Contains profiles, extensions, ValueSets, CodeSystems, examples, SearchParameters, and other
+  artifacts.
+- Represented in code by `IImplementationGuidePackage`.
+
+Profile URL:
+
+- Canonical URL for one profile inside a package.
+- Represents constraints for a resource or datatype.
+- Represented in code by constants such as `TwCoreProfiles.Patient`.
+
+Rule:
+
+- A concrete validation check derived from a base rule, profile constraint, terminology binding,
+  FHIRPath invariant, or business rule.
+- Represented in code by `IProfileValidationRule` for profile rules.
+- Identified in results by `RuleId`.
+
+## 14. Profile Metadata
 
 Each IG package should define profile canonical URLs as constants.
 
 ```csharp
-public static class ClaimExchangeProfiles
+public static class TwCoreProfiles
 {
-    public const string Claim =
-        "https://example.org/fhir/StructureDefinition/claim-exchange-claim";
-
-    public const string Coverage =
-        "https://example.org/fhir/StructureDefinition/claim-exchange-coverage";
-
     public const string Patient =
-        "https://example.org/fhir/StructureDefinition/claim-exchange-patient";
+        "https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition/Patient-twcore";
+
+    public const string Organization =
+        "https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition/Organization-twcore";
 }
 ```
 
@@ -237,7 +634,41 @@ Resources can declare conformance with `Resource.Meta.Profile`.
 The base serializer and parser should continue to handle `meta.profile` as normal FHIR data. They
 should not contain IG-specific logic.
 
-## 11. Extension Helpers
+## 15. Slices
+
+Slices are profile-specific classifications of repeated elements.
+
+Example:
+
+```text
+Patient.identifier 0..*
+  slice: nationalId
+  slice: medicalRecordNumber
+```
+
+The base model should remain:
+
+```text
+Patient.Identifier : IList<Identifier>
+```
+
+The IG validator is responsible for:
+
+- Determining which list item belongs to which slice.
+- Applying slice-specific required fields.
+- Checking required slices.
+- Reporting profile-specific issues with `Source`, `PackageId`, `ProfileUrl`, and `RuleId`.
+
+Discriminators may use values such as:
+
+- `identifier.system`
+- `identifier.type.coding.system`
+- `identifier.type.coding.code`
+- `extension.url`
+
+Do not create base model properties such as `Patient.NationalIdIdentifier` for profile slices.
+
+## 16. Extension Helpers
 
 The base SDK supports generic extensions:
 
@@ -249,8 +680,8 @@ Extension.value[x]
 The IG layer may provide typed helpers:
 
 ```csharp
-ClaimExchangeExtensions.SetAuthorizationNumber(claim, "AUTH-123");
-ClaimExchangeExtensions.GetAuthorizationNumber(claim);
+TwCoreExtensions.SetSomeExtension(patient, value);
+TwCoreExtensions.GetSomeExtension(patient);
 ```
 
 Rules:
@@ -260,7 +691,7 @@ Rules:
 - Extension URLs should be constants in the IG layer.
 - Extension validation should live in profile validation rules, not in base resources.
 
-## 12. Terminology Bindings
+## 17. Terminology Bindings
 
 Future IG validation may validate codes against ValueSets.
 
@@ -276,7 +707,7 @@ public interface ITerminologyValidator
 }
 ```
 
-The first version may use local static ValueSets only.
+The first IG implementation may store terminology references but defer membership checks.
 
 Out of scope initially:
 
@@ -284,24 +715,20 @@ Out of scope initially:
 - ValueSet expansion.
 - Required binding validation across full StructureDefinition definitions.
 
-## 13. Search Helpers
+## 18. Search Helpers
 
-The base SDK already supports generic search query construction:
-
-```csharp
-FhirSearchQuery.Create().Where("identifier", "123");
-```
+The base SDK should remain responsible for generic search query construction and HTTP execution.
 
 The IG layer may provide typed search helpers:
 
 ```csharp
-ClaimExchangeSearch.ClaimsByPatient("Patient/123");
 TwCoreSearch.PatientByIdentifier("MRN-123");
 ```
 
-Search helpers should return `FhirSearchQuery` and delegate execution to the base SDK `FhirClient`.
+Search helpers should return generic search query objects and delegate execution to the base SDK
+`FhirClient`.
 
-## 14. IG Examples and Fixtures
+## 19. IG Examples and Fixtures
 
 IG support should be tested with JSON examples.
 
@@ -310,7 +737,7 @@ Recommended test flow:
 ```text
 IG fixture JSON
   -> Base parser
-  -> IG profile validator
+  -> ProfileValidator
   -> Base serializer
   -> JSON comparison
 ```
@@ -320,10 +747,10 @@ Fixtures should be separated from base FHIR fixtures when possible.
 Example folder:
 
 ```text
-Tests/ImplementationGuides/ClaimExchange/Fixtures/
+Tests/ImplementationGuides/TwCore/Fixtures/
 ```
 
-## 15. Client Integration
+## 20. Client Integration
 
 Initial client behavior:
 
@@ -341,9 +768,9 @@ public IReadOnlyList<string> ProfilesToValidateBeforeSend { get; init; }
 Alternative future shape:
 
 ```text
-ClaimExchangeFhirClient
-  -> validates profile
-  -> sets meta.profile
+TwCoreFhirClient
+  -> validates selected profiles
+  -> optionally sets meta.profile
   -> delegates HTTP to base FhirClient
 ```
 
@@ -354,57 +781,67 @@ Keep base FhirClient unchanged.
 Perform IG validation outside the client or in an optional wrapper.
 ```
 
-## 16. Implementation Phases
+## 21. Implementation Phases
 
-### Phase 1 - Design and Inventory
+### Phase 1 - Validation Issue Metadata
 
-- Add this design document.
-- Add rule source classification to the validation inventory:
-  - FHIR R5 Base
-  - IG/Profile
-  - Local Business Rule
+- Add `ValidationRuleSource`.
+- Add nullable `PackageId`, `ProfileUrl`, and `RuleId` to `ValidationIssue`.
+- Keep default `Source` as `BaseFhir`.
+- Update result contract tests.
 
-### Phase 2 - Manual IG Provider
+### Phase 2 - Generic Profile Framework
 
-- Add IG abstractions.
-- Add one sample/manual IG provider.
-- Add explicit profile validation.
+- Add `Validation/Profiles`.
+- Add `IImplementationGuidePackage`.
+- Add `IProfileValidationRule`.
+- Add `ProfileValidationContext`.
+- Add `ProfileValidator`.
+- Support explicit single-profile validation.
 
-### Phase 3 - Declared Profile Validation
+### Phase 3 - Multiple Profiles and Packages
+
+- Allow multiple IG packages in one `ProfileValidator`.
+- Allow multiple profile URLs in one validation call.
+- Run base validation once.
+- Add unknown-profile behavior options.
+
+### Phase 4 - TW Core Manual Package POC
+
+- Add `ImplementationGuides/TwCore`.
+- Add `TwCorePackage`.
+- Add `TwCoreProfiles`.
+- Add one or two manual TW Core Patient rules.
+- Add TW Core profile validation tests.
+
+### Phase 5 - Declared Profile Validation
 
 - Read `meta.profile`.
-- Validate against all known declared profiles.
-- Define unknown-profile behavior.
+- Validate against known declared profiles.
+- De-duplicate profile URLs.
+- Define unknown declared profile behavior.
 
-### Phase 4 - IG Fixtures
+### Phase 6 - Fixtures, Extensions, and Search Helpers
 
 - Add IG-specific JSON fixtures.
-- Validate parser and serializer compatibility.
-- Validate profile rules.
+- Add typed extension helpers when needed.
+- Add typed search helpers when needed.
 
-### Phase 5 - Extension and Search Helpers
-
-- Add typed extension helpers.
-- Add typed search helpers.
-
-### Phase 6 - Terminology
+### Phase 7 - Terminology and StructureDefinition Loading
 
 - Add local ValueSet support.
 - Add terminology validation abstraction.
-
-### Phase 7 - Package Loading
-
 - Consider loading official IG package artifacts.
-- Parse StructureDefinition, ValueSet, and CodeSystem resources.
-- Keep this out of the first IG implementation.
+- Keep full StructureDefinition-driven validation out of the first implementation.
 
-## 17. Open Questions
+## 22. Open Questions
 
-- Which IG should be implemented first?
-- Should unknown declared profiles be warnings or errors?
-- Should profile validation always run base validation first?
+- Which concrete IG should be implemented first?
+- What FHIR version compatibility policy should `ProfileValidator` enforce?
+- Should unknown declared profiles be ignored, warnings, or errors by default?
+- Should explicit unknown profiles always be errors?
 - Should profile validators set `meta.profile`, or only validate?
-- Should IG support live in the main package or separate NuGet packages?
-- How should validation issue codes distinguish base rules from profile rules?
+- Should IG support stay in the main package initially or move to separate NuGet packages earlier?
+- Should base rules start assigning `RuleId` now, or only after IG support is added?
+- Should `PackageId` remain `name#version`, or split into `PackageId` and `PackageVersion` later?
 - Should profile validation return one combined result or grouped results by profile?
-
