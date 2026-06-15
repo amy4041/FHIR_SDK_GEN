@@ -106,7 +106,10 @@ Possible rule sources:
 
 Done when:
 
+- IG layer boundary is documented in `docs/fhir_sdk_ig_layer_design.md`.
 - Validation inventory clearly labels rule source.
+- Initial TW Core Patient profile rules are listed in `docs/fhir_sdk_validation_rule_inventory.md`.
+- Initial TW Core Patient POC implementation order is documented in Phase 5.
 - Base validation and IG validation are not mixed together.
 
 ---
@@ -169,6 +172,34 @@ Possible design:
 - Profile validator adds IG-specific rules.
 - Profile constants define canonical URLs.
 - `meta.profile` can be used to indicate profile conformance.
+
+Initial TW Core Patient POC implementation order:
+
+1. Add validation issue metadata:
+   - `ValidationRuleSource`
+   - `ValidationIssue.Source`
+   - `ValidationIssue.PackageId`
+   - `ValidationIssue.ProfileUrl`
+   - `ValidationIssue.RuleId`
+2. Add the generic profile framework:
+   - `Validation/Profiles/IImplementationGuidePackage.cs`
+   - `Validation/Profiles/IProfileValidationRule.cs`
+   - `Validation/Profiles/ProfileValidationContext.cs`
+   - `Validation/Profiles/ProfileValidationOptions.cs`
+   - `Validation/Profiles/ProfileValidator.cs`
+3. Add `ImplementationGuides/TwCore/TwCoreProfiles.cs`.
+4. Add `ImplementationGuides/TwCore/TwCorePackage.cs`.
+5. Add `ImplementationGuides/TwCore/Validation/TwCorePatientRules.cs` with only the initial identifier rules:
+   - `TWCORE-PAT-002`: `Patient.identifier` must contain at least one item.
+   - `TWCORE-PAT-003`: each `Patient.identifier[*].system` must be present.
+   - `TWCORE-PAT-004`: each `Patient.identifier[*].value` must be present.
+6. Add TW Core Patient tests:
+   - `Tests/ImplementationGuides/TwCore/TwCorePackageTests.cs`
+   - `Tests/ImplementationGuides/TwCore/Validation/TwCorePatientValidationTests.cs`
+7. Reassess the next TW Core Patient scope:
+   - name slices
+   - identifier slices
+   - `meta.profile` declared-profile validation
 
 Done when:
 
