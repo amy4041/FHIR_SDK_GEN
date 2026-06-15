@@ -30,6 +30,16 @@ It combines validation rule inventory and test coverage inventory so each rule c
 | Deferred | Known rule or behavior, intentionally outside the current MVP. |
 | Blocked | Rule cannot be implemented until a model/API gap is resolved. |
 
+## Rule Source Values
+
+Rules should identify their source in the `Notes` column until a dedicated source column is added.
+
+| Source | Meaning |
+|---|---|
+| FHIR R5 Base | Rule comes from the base FHIR release targeted by the SDK. |
+| IG/Profile | Rule comes from a concrete Implementation Guide or profile. |
+| Local Business Rule | Rule comes from a project, workflow, hospital, or exchange-specific requirement. |
+
 ## Result Contract
 
 | ID | Area | Rule Type | Target | Rule / Cardinality | Invalid Condition | Expected Issue | Covered By | Test File | Priority | Status | Notes |
@@ -148,6 +158,32 @@ It combines validation rule inventory and test coverage inventory so each rule c
 | VAL-CLI-004 | Client Integration | Contract | `ReadAsync` | Read does not validate resource body | `ValidateBeforeSend=true` | No resource validation is attempted |  | `Tests/Client/FhirClientValidationTests.cs` | MVP | Planned | Read only sends resource type and id. |
 | VAL-CLI-005 | Client Integration | Contract | `SearchAsync` | Search does not validate resource body | `ValidateBeforeSend=true` | No resource validation is attempted |  | `Tests/Client/FhirClientValidationTests.cs` | MVP | Planned | Search sends query parameters, not a resource body. |
 
+## TW Core Patient Profile Rules
+
+Initial TW Core Patient support is a manual L1 profile structural validation POC. TW Core v1.0.0 is
+based on FHIR R4.0.1 while the current SDK models are FHIR R5-oriented, so these rules should not be
+treated as full TW Core conformance.
+
+Package/profile settings:
+
+| Setting | Value |
+|---|---|
+| Source | IG/Profile |
+| PackageId | `tw.gov.mohw.twcore#1.0.0` |
+| ProfileUrl | `https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition/Patient-twcore` |
+| Target resource | `Patient` |
+| Validation level | L1 Profile Structural Validation |
+| Terminology | Deferred |
+| FHIRPath invariants | Deferred |
+| Full slicing | Deferred |
+
+| ID | Area | Rule Type | Target | Rule / Cardinality | Invalid Condition | Expected Issue | Covered By | Test File | Priority | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| TWCORE-PAT-001 | Profile Contract | Contract | `TwCorePackage` / `TwCoreProfiles.Patient` | `TwCorePackage` supports the TW Core Patient canonical URL | `TwCoreProfiles.Patient` cannot be resolved by the package | N/A |  | `Tests/ImplementationGuides/TwCore/TwCorePackageTests.cs` | Next | Planned | Source: IG/Profile. PackageId: `tw.gov.mohw.twcore#1.0.0`. ProfileUrl: `https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition/Patient-twcore`. Verifies profile metadata and lookup only. |
+| TWCORE-PAT-002 | Profile Cardinality | Cardinality | `Patient.identifier` | TW Core Patient requires `Patient.identifier` `1..*` | `Identifier` is empty | `Cardinality/Error/Patient.identifier`; `Source=ImplementationGuide`; `PackageId=tw.gov.mohw.twcore#1.0.0`; `ProfileUrl=Patient-twcore`; `RuleId=TWCORE-PAT-002` |  | `Tests/ImplementationGuides/TwCore/Validation/TwCorePatientValidationTests.cs` | Next | Planned | Source: IG/Profile. L1 structural rule. This must not be added to base `ResourceRuleRegistry` because base Patient can remain valid without identifier. |
+| TWCORE-PAT-003 | Profile Required Field | Required | `Patient.identifier[].system` | TW Core Patient requires each identifier item to include `system` | Identifier item exists with null `System` | `Required/Error/Patient.identifier[0].system`; `Source=ImplementationGuide`; `PackageId=tw.gov.mohw.twcore#1.0.0`; `ProfileUrl=Patient-twcore`; `RuleId=TWCORE-PAT-003` |  | `Tests/ImplementationGuides/TwCore/Validation/TwCorePatientValidationTests.cs` | Next | Planned | Source: IG/Profile. Applies only when validating against `TwCoreProfiles.Patient`. |
+| TWCORE-PAT-004 | Profile Required Field | Required | `Patient.identifier[].value` | TW Core Patient requires each identifier item to include `value` | Identifier item exists with null `Value` | `Required/Error/Patient.identifier[0].value`; `Source=ImplementationGuide`; `PackageId=tw.gov.mohw.twcore#1.0.0`; `ProfileUrl=Patient-twcore`; `RuleId=TWCORE-PAT-004` |  | `Tests/ImplementationGuides/TwCore/Validation/TwCorePatientValidationTests.cs` | Next | Planned | Source: IG/Profile. Applies only when validating against `TwCoreProfiles.Patient`. |
+
 ## Deferred Rules and Explicit Non-Goals
 
 | ID | Area | Rule Type | Target | Rule / Cardinality | Invalid Condition | Expected Issue | Covered By | Test File | Priority | Status | Notes |
@@ -170,6 +206,12 @@ Base resource rules should be checked against the official FHIR R5 pages before 
 - FHIR R5 Coverage: https://hl7.org/fhir/R5/coverage-definitions.html
 - FHIR R5 Encounter: https://hl7.org/fhir/R5/encounter-definitions.html
 - FHIR R5 Claim: https://hl7.org/fhir/R5/claim.html
+
+IG/profile rules should be checked against the concrete IG version before implementation:
+
+- TW Core IG v1.0.0 home: https://twcore.mohw.gov.tw/ig/twcore/
+- TW Core Patient profile: https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition-Patient-twcore.html
+- TW Core downloads/package page: https://twcore.mohw.gov.tw/ig/twcore/downloads.html
 
 The implementation plan should stay aligned with:
 
