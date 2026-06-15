@@ -202,6 +202,56 @@ public sealed class TwCorePackage : IImplementationGuidePackage
 Concrete packages should also declare their target FHIR release so callers can detect incompatible
 combinations before validation.
 
+### First IG Implementation Target - TW Core Patient POC
+
+The first concrete IG implementation should use TW Core as the package and TW Core Patient as the
+first profile.
+
+Implementation target:
+
+| Setting | Value |
+|---|---|
+| IG | TW Core |
+| Package name | TW Core |
+| PackageId | `tw.gov.mohw.twcore#1.0.0` |
+| IG FHIR version | `R4.0.1` |
+| Current SDK model | FHIR R5-oriented base models |
+| Compatibility policy | Treat the first implementation as a TW Core Patient POC, not full TW Core conformance. |
+| First profile | TW Core Patient |
+| ProfileUrl | `https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition/Patient-twcore` |
+| Target resource type | `Patient` |
+| Validation level | L1 Profile Structural Validation |
+| Rule source | `ValidationRuleSource.ImplementationGuide` |
+| Default severity | `ValidationSeverity.Error` |
+| Explicit unknown profile behavior | Error |
+| Terminology validation | Deferred |
+| FHIRPath invariant validation | Deferred |
+| Full slice validation | Deferred |
+| Package auto loading | Deferred |
+
+Initial TW Core Patient rule scope:
+
+| RuleId | Rule |
+|---|---|
+| `TWCORE-PAT-001` | Support `TwCoreProfiles.Patient` canonical URL in `TwCorePackage`. |
+| `TWCORE-PAT-002` | `Patient.identifier` must contain at least one item for TW Core Patient. |
+| `TWCORE-PAT-003` | Each `Patient.identifier[*].system` must be present for TW Core Patient. |
+| `TWCORE-PAT-004` | Each `Patient.identifier[*].value` must be present for TW Core Patient. |
+
+Expected boundary behavior:
+
+```text
+new FhirValidator().Validate(new Patient())
+  -> base validation only; empty Patient may be valid under current base rules.
+
+new ProfileValidator(new FhirValidator(), TwCorePackage.Default)
+  .Validate(new Patient(), TwCoreProfiles.Patient)
+  -> base validation plus TW Core Patient rules; missing identifier is invalid.
+```
+
+These rules are intentionally small. They prove that profile rules can be layered onto base
+validation without adding TW Core-specific requirements to `Patient` or `ResourceRuleRegistry`.
+
 ## 7. Recommended File Structure / 建議檔案結構
 
 The first implementation should stay inside the current single project. Use folders and namespaces
