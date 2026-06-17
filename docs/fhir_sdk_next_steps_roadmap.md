@@ -117,7 +117,7 @@ Done when:
 
 ### Phase 3 - Complete Base Validation Rules
 
-Status: Planned
+Status: Finished
 
 Goal:
 
