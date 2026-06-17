@@ -24,4 +24,24 @@ public sealed class ValidationIssue
     /// Machine-readable issue category.
     /// </summary>
     public ValidationIssueCode Code { get; init; }
+
+    /// <summary>
+    /// Validation layer that produced this issue.
+    /// </summary>
+    public ValidationRuleSource Source { get; init; } = ValidationRuleSource.BaseFhir;
+
+    /// <summary>
+    /// IG package identifier that produced this issue, when applicable.
+    /// </summary>
+    public string? PackageId { get; init; }
+
+    /// <summary>
+    /// Profile canonical URL that produced this issue, when applicable.
+    /// </summary>
+    public string? ProfileUrl { get; init; }
+
+    /// <summary>
+    /// Stable validation rule identifier that produced this issue, when available.
+    /// </summary>
+    public string? RuleId { get; init; }
 }
