@@ -12,6 +12,7 @@ public static class Program
             Test("ValidationResult empty issues is valid", ValidationResultTests.EmptyIssuesIsValid),
             Test("ValidationResult with issues is invalid", ValidationResultTests.IssuesMakeResultInvalid),
             Test("ValidationResult preserves issue details", ValidationResultTests.PreservesIssueDetails),
+            Test("ValidationIssue defaults to base FHIR source", ValidationResultTests.IssueDefaultsToBaseFhirSource),
             Test("FhirValidator rejects null resource", FhirValidatorTests.ValidateRejectsNullResource),
             Test("FhirValidator returns success for empty optional Patient", FhirValidatorTests.ValidateReturnsSuccessForEmptyOptionalPatient),
             Test("Traversal reports indexed nested primitive path", FhirObjectGraphWalkerTests.ValidateReportsIndexedPathForNestedPrimitive),
@@ -119,6 +120,14 @@ internal static class TestAssert
         if (condition)
         {
             throw new InvalidOperationException(message ?? "Expected condition to be false.");
+        }
+    }
+
+    public static void IsNull(object? value, string? message = null)
+    {
+        if (value is not null)
+        {
+            throw new InvalidOperationException(message ?? $"Expected null, but got '{value}'.");
         }
     }
 
