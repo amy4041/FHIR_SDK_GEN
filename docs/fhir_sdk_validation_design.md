@@ -11,7 +11,7 @@ The MVP validation layer should provide:
 - Required field validation.
 - Primitive format validation.
 - Basic cardinality validation.
-- Structured validation results that SDK callers can inspect.
+- Structured validation results, including issue source metadata, that SDK callers can inspect.
 - Optional client-side validation before `CreateAsync` and `UpdateAsync` requests.
 
 The validation layer should not become a profile validator in MVP. It should validate the
@@ -53,6 +53,7 @@ Validation
 |-- ValidationIssue.cs
 |-- ValidationSeverity.cs
 |-- ValidationIssueCode.cs
+|-- ValidationRuleSource.cs
 |-- Rules
 |   |-- IFhirValidationRule.cs
 |   |-- RequiredFieldRule.cs
@@ -85,7 +86,7 @@ internal interface IFhirValidatablePrimitive
 Primitive wrapper classes should implement this interface explicitly. This keeps primitive
 format checks available to the SDK internals without making `IsValid()` part of the public
 primitive API. The validation layer remains responsible for traversal, issue paths,
-`ValidationIssueCode`, severity, and error messages.
+`ValidationIssueCode`, severity, source metadata, and error messages.
 
 ## 4. Public API
 
@@ -113,6 +114,10 @@ public sealed class ValidationIssue
     public string Message { get; init; } = string.Empty;
     public ValidationSeverity Severity { get; init; } = ValidationSeverity.Error;
     public ValidationIssueCode Code { get; init; }
+    public ValidationRuleSource Source { get; init; } = ValidationRuleSource.BaseFhir;
+    public string? PackageId { get; init; }
+    public string? ProfileUrl { get; init; }
+    public string? RuleId { get; init; }
 }
 
 public enum ValidationSeverity
@@ -129,10 +134,19 @@ public enum ValidationIssueCode
     PrimitiveFormat,
     ChoiceElement
 }
+
+public enum ValidationRuleSource
+{
+    BaseFhir,
+    ImplementationGuide,
+    BusinessRule
+}
 ```
 
 Normal validation failures should be returned as `ValidationResult`, not thrown. Exceptions
 should be reserved for invalid SDK usage, such as calling `Validate(null)`.
+Base FHIR rules should use the default `Source = BaseFhir`. IG/profile and business-rule
+validators can populate `PackageId`, `ProfileUrl`, and `RuleId` when those layers are added.
 
 ## 5. Implementation Order
 
@@ -147,7 +161,9 @@ Deliverables:
 - `ValidationIssue`.
 - `ValidationSeverity`.
 - `ValidationIssueCode`.
+- `ValidationRuleSource`.
 - Tests proving an empty issue list is valid and issue lists are preserved.
+- Tests proving issue source metadata is preserved and defaults to base FHIR.
 
 This gives the rest of the implementation a stable contract.
 

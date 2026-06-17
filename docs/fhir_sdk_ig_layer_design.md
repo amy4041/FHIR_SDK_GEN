@@ -1,6 +1,6 @@
 # FHIR SDK IG Layer Design
 
-Last updated: 2026-06-12
+Last updated: 2026-06-17
 
 ## 1. Purpose
 
@@ -285,7 +285,7 @@ Validation/
   ValidationResult.cs
   ValidationIssue.cs
   ValidationIssueCode.cs
-  ValidationRuleSource.cs              # new
+  ValidationRuleSource.cs
 
   Rules/
     ResourceRuleRegistry.cs             # base FHIR rules only
@@ -456,7 +456,7 @@ Open design choice:
 
 ## 9. ValidationIssue Metadata
 
-To support IG validation, multiple IGs, and future business rules, `ValidationIssue` should carry
+To support IG validation, multiple IGs, and future business rules, `ValidationIssue` carries
 rule source metadata.
 
 Recommended model:
@@ -498,7 +498,7 @@ Field meanings:
 | `Source` | Which validation layer produced the issue. | `BaseFhir`, `ImplementationGuide`, `BusinessRule` |
 | `PackageId` | Which IG package produced the issue. Null for base rules. | `tw.gov.mohw.twcore#1.0.0` |
 | `ProfileUrl` | Which profile produced the issue. Null for base rules. | `https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition/Patient-twcore` |
-| `RuleId` | Stable identifier for the specific rule. | `TWCORE-PATIENT-IDENTIFIER-REQUIRED` |
+| `RuleId` | Stable identifier for the specific rule. | `TWCORE-PAT-002` |
 
 Relationship:
 
@@ -517,7 +517,7 @@ Code: Required
 Source: BaseFhir
 PackageId: null
 ProfileUrl: null
-RuleId: FHIR-R5-COVERAGE-STATUS-REQUIRED
+RuleId: VAL-REQ-002
 ```
 
 Example IG issue:
@@ -528,7 +528,7 @@ Code: Required
 Source: ImplementationGuide
 PackageId: tw.gov.mohw.twcore#1.0.0
 ProfileUrl: https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition/Patient-twcore
-RuleId: TWCORE-PATIENT-IDENTIFIER-REQUIRED
+RuleId: TWCORE-PAT-002
 ```
 
 Rules:
@@ -833,12 +833,12 @@ Perform IG validation outside the client or in an optional wrapper.
 
 ## 21. Implementation Phases
 
-### Phase 1 - Validation Issue Metadata
+### Phase 1 - Validation Issue Metadata (implemented)
 
-- Add `ValidationRuleSource`.
-- Add nullable `PackageId`, `ProfileUrl`, and `RuleId` to `ValidationIssue`.
-- Keep default `Source` as `BaseFhir`.
-- Update result contract tests.
+- `ValidationRuleSource` exists.
+- `ValidationIssue` carries nullable `PackageId`, `ProfileUrl`, and `RuleId`.
+- Default `Source` is `BaseFhir`.
+- Result contract tests cover metadata preservation and default source behavior.
 
 ### Phase 2 - Generic Profile Framework
 
