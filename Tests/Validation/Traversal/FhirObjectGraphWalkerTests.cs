@@ -1,8 +1,9 @@
 namespace MyFhirSdk.Tests.Validation.Traversal;
 
-public static class FhirObjectGraphWalkerTests
+public sealed class FhirObjectGraphWalkerTests
 {
-    public static void ValidateReportsIndexedPathForNestedPrimitive()
+    [Fact]
+    public void ValidateReportsIndexedPathForNestedPrimitive()
     {
         var patient = new Patient
         {
@@ -18,11 +19,12 @@ public static class FhirObjectGraphWalkerTests
 
         var result = validator.Validate(patient);
 
-        TestAssert.IsFalse(result.IsValid);
-        TestAssert.HasIssue(result, "Patient.name[0].given[0]", ValidationIssueCode.PrimitiveFormat);
+        Assert.False(result.IsValid);
+        ValidationAssert.HasIssue(result, "Patient.name[0].given[0]", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateIgnoresNullOptionalFields()
+    [Fact]
+    public void ValidateIgnoresNullOptionalFields()
     {
         var patient = new Patient
         {
@@ -33,6 +35,6 @@ public static class FhirObjectGraphWalkerTests
 
         var result = validator.Validate(patient);
 
-        TestAssert.IsTrue(result.IsValid);
+        Assert.True(result.IsValid);
     }
 }

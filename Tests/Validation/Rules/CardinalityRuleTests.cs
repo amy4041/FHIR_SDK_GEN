@@ -1,8 +1,9 @@
 namespace MyFhirSdk.Tests.Validation.Rules;
 
-public static class CardinalityRuleTests
+public sealed class CardinalityRuleTests
 {
-    public static void ValidateReportsNullRepeatedField()
+    [Fact]
+    public void ValidateReportsNullRepeatedField()
     {
         var patient = new Patient
         {
@@ -11,10 +12,11 @@ public static class CardinalityRuleTests
 
         var result = new FhirValidator().Validate(patient);
 
-        TestAssert.HasIssue(result, "Patient.name", ValidationIssueCode.Cardinality);
+        ValidationAssert.HasIssue(result, "Patient.name", ValidationIssueCode.Cardinality);
     }
 
-    public static void ValidateReportsNullRepeatedItem()
+    [Fact]
+    public void ValidateReportsNullRepeatedItem()
     {
         var patient = new Patient
         {
@@ -23,10 +25,11 @@ public static class CardinalityRuleTests
 
         var result = new FhirValidator().Validate(patient);
 
-        TestAssert.HasIssue(result, "Patient.name[0]", ValidationIssueCode.Cardinality);
+        ValidationAssert.HasIssue(result, "Patient.name[0]", ValidationIssueCode.Cardinality);
     }
 
-    public static void ValidateReportsEmptyRequiredRepeatedField()
+    [Fact]
+    public void ValidateReportsEmptyRequiredRepeatedField()
     {
         var claim = new Claim
         {
@@ -46,6 +49,6 @@ public static class CardinalityRuleTests
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.item[0].bodySite[0].site", ValidationIssueCode.Cardinality);
+        ValidationAssert.HasIssue(result, "Claim.item[0].bodySite[0].site", ValidationIssueCode.Cardinality);
     }
 }

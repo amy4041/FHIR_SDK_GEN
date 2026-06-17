@@ -1,63 +1,71 @@
 namespace MyFhirSdk.Tests.Validation.Rules;
 
-public static class RequiredFieldRuleTests
+public sealed class RequiredFieldRuleTests
 {
-    public static void ValidateReportsMissingBundleType()
+    [Fact]
+    public void ValidateReportsMissingBundleType()
     {
         var result = new FhirValidator().Validate(new Bundle());
 
-        TestAssert.HasIssue(result, "Bundle.type", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Bundle.type", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingCoverageTopLevelFields()
+    [Fact]
+    public void ValidateReportsMissingCoverageTopLevelFields()
     {
         var result = new FhirValidator().Validate(new Coverage());
 
-        TestAssert.HasIssue(result, "Coverage.status", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Coverage.kind", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Coverage.beneficiary", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Coverage.status", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Coverage.kind", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Coverage.beneficiary", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingEncounterStatus()
+    [Fact]
+    public void ValidateReportsMissingEncounterStatus()
     {
         var result = new FhirValidator().Validate(new Encounter());
 
-        TestAssert.HasIssue(result, "Encounter.status", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Encounter.status", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingClaimTopLevelFields()
+    [Fact]
+    public void ValidateReportsMissingClaimTopLevelFields()
     {
         var result = new FhirValidator().Validate(new Claim());
 
-        TestAssert.HasIssue(result, "Claim.status", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Claim.type", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Claim.use", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Claim.patient", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Claim.created", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.status", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.type", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.use", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.patient", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.created", ValidationIssueCode.Required);
     }
 
-    public static void ValidateDoesNotRequirePatientOptionalFields()
+    [Fact]
+    public void ValidateDoesNotRequirePatientOptionalFields()
     {
         var result = new FhirValidator().Validate(new Patient());
 
-        TestAssert.IsTrue(result.IsValid);
+        Assert.True(result.IsValid);
     }
 
-    public static void ValidateDoesNotRequireOrganizationOptionalFields()
+    [Fact]
+    public void ValidateDoesNotRequireOrganizationOptionalFields()
     {
         var result = new FhirValidator().Validate(new Organization());
 
-        TestAssert.IsTrue(result.IsValid);
+        Assert.True(result.IsValid);
     }
 
-    public static void ValidateDoesNotRequirePractitionerOptionalFields()
+    [Fact]
+    public void ValidateDoesNotRequirePractitionerOptionalFields()
     {
         var result = new FhirValidator().Validate(new Practitioner());
 
-        TestAssert.IsTrue(result.IsValid);
+        Assert.True(result.IsValid);
     }
 
-    public static void ValidateReportsMissingBundleLinkFields()
+    [Fact]
+    public void ValidateReportsMissingBundleLinkFields()
     {
         var bundle = new Bundle
         {
@@ -67,32 +75,35 @@ public static class RequiredFieldRuleTests
 
         var result = new FhirValidator().Validate(bundle);
 
-        TestAssert.HasIssue(result, "Bundle.link[0].relation", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Bundle.link[0].url", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Bundle.link[0].relation", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Bundle.link[0].url", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingCoverageClassFields()
+    [Fact]
+    public void ValidateReportsMissingCoverageClassFields()
     {
         var coverage = CreateValidCoverage();
         coverage.Class = [new CoverageClass()];
 
         var result = new FhirValidator().Validate(coverage);
 
-        TestAssert.HasIssue(result, "Coverage.class[0].type", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Coverage.class[0].value", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Coverage.class[0].type", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Coverage.class[0].value", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingCoveragePaymentByParty()
+    [Fact]
+    public void ValidateReportsMissingCoveragePaymentByParty()
     {
         var coverage = CreateValidCoverage();
         coverage.PaymentBy = [new CoveragePaymentBy()];
 
         var result = new FhirValidator().Validate(coverage);
 
-        TestAssert.HasIssue(result, "Coverage.paymentBy[0].party", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Coverage.paymentBy[0].party", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingEncounterLocation()
+    [Fact]
+    public void ValidateReportsMissingEncounterLocation()
     {
         var encounter = new Encounter
         {
@@ -102,52 +113,57 @@ public static class RequiredFieldRuleTests
 
         var result = new FhirValidator().Validate(encounter);
 
-        TestAssert.HasIssue(result, "Encounter.location[0].location", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Encounter.location[0].location", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingClaimPayeeType()
+    [Fact]
+    public void ValidateReportsMissingClaimPayeeType()
     {
         var claim = CreateValidClaim();
         claim.Payee = new ClaimPayee();
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.payee.type", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.payee.type", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingClaimEventType()
+    [Fact]
+    public void ValidateReportsMissingClaimEventType()
     {
         var claim = CreateValidClaim();
         claim.Event = [new ClaimEvent { WhenDateTime = new FhirDateTime("2026-06-17T10:30:00Z") }];
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.event[0].type", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.event[0].type", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingClaimCareTeamFields()
+    [Fact]
+    public void ValidateReportsMissingClaimCareTeamFields()
     {
         var claim = CreateValidClaim();
         claim.CareTeam = [new ClaimCareTeam()];
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.careTeam[0].sequence", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Claim.careTeam[0].provider", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.careTeam[0].sequence", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.careTeam[0].provider", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingClaimSupportingInfoFields()
+    [Fact]
+    public void ValidateReportsMissingClaimSupportingInfoFields()
     {
         var claim = CreateValidClaim();
         claim.SupportingInfo = [new ClaimSupportingInfo()];
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.supportingInfo[0].sequence", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Claim.supportingInfo[0].category", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.supportingInfo[0].sequence", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.supportingInfo[0].category", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingClaimDiagnosisSequence()
+    [Fact]
+    public void ValidateReportsMissingClaimDiagnosisSequence()
     {
         var claim = CreateValidClaim();
         claim.Diagnosis =
@@ -160,10 +176,11 @@ public static class RequiredFieldRuleTests
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.diagnosis[0].sequence", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.diagnosis[0].sequence", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingClaimProcedureSequence()
+    [Fact]
+    public void ValidateReportsMissingClaimProcedureSequence()
     {
         var claim = CreateValidClaim();
         claim.Procedure =
@@ -176,42 +193,46 @@ public static class RequiredFieldRuleTests
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.procedure[0].sequence", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.procedure[0].sequence", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingClaimInsuranceFields()
+    [Fact]
+    public void ValidateReportsMissingClaimInsuranceFields()
     {
         var claim = CreateValidClaim();
         claim.Insurance = [new ClaimInsurance()];
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.insurance[0].sequence", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Claim.insurance[0].focal", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Claim.insurance[0].coverage", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.insurance[0].sequence", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.insurance[0].focal", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.insurance[0].coverage", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingClaimAccidentDate()
+    [Fact]
+    public void ValidateReportsMissingClaimAccidentDate()
     {
         var claim = CreateValidClaim();
         claim.Accident = new ClaimAccident();
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.accident.date", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.accident.date", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingClaimItemSequence()
+    [Fact]
+    public void ValidateReportsMissingClaimItemSequence()
     {
         var claim = CreateValidClaim();
         claim.Item = [new ClaimItem()];
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.item[0].sequence", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.item[0].sequence", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingClaimDetailSequences()
+    [Fact]
+    public void ValidateReportsMissingClaimDetailSequences()
     {
         var claim = CreateValidClaim();
         claim.Item =
@@ -231,11 +252,12 @@ public static class RequiredFieldRuleTests
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.item[0].detail[0].sequence", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Claim.item[0].detail[0].subDetail[0].sequence", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.item[0].detail[0].sequence", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Claim.item[0].detail[0].subDetail[0].sequence", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingBundleEntryRequestFields()
+    [Fact]
+    public void ValidateReportsMissingBundleEntryRequestFields()
     {
         var bundle = new Bundle
         {
@@ -245,11 +267,12 @@ public static class RequiredFieldRuleTests
 
         var result = new FhirValidator().Validate(bundle);
 
-        TestAssert.HasIssue(result, "Bundle.entry[0].request.method", ValidationIssueCode.Required);
-        TestAssert.HasIssue(result, "Bundle.entry[0].request.url", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Bundle.entry[0].request.method", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Bundle.entry[0].request.url", ValidationIssueCode.Required);
     }
 
-    public static void ValidateReportsMissingBundleEntryResponseStatus()
+    [Fact]
+    public void ValidateReportsMissingBundleEntryResponseStatus()
     {
         var bundle = new Bundle
         {
@@ -259,7 +282,7 @@ public static class RequiredFieldRuleTests
 
         var result = new FhirValidator().Validate(bundle);
 
-        TestAssert.HasIssue(result, "Bundle.entry[0].response.status", ValidationIssueCode.Required);
+        ValidationAssert.HasIssue(result, "Bundle.entry[0].response.status", ValidationIssueCode.Required);
     }
 
     private static Coverage CreateValidCoverage()

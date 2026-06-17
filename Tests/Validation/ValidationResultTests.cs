@@ -1,16 +1,18 @@
 namespace MyFhirSdk.Tests.Validation;
 
-public static class ValidationResultTests
+public sealed class ValidationResultTests
 {
-    public static void EmptyIssuesIsValid()
+    [Fact]
+    public void EmptyIssuesIsValid()
     {
         var result = new ValidationResult(Array.Empty<ValidationIssue>());
 
-        TestAssert.IsTrue(result.IsValid);
-        TestAssert.AreEqual(0, result.Issues.Count);
+        Assert.True(result.IsValid);
+        Assert.Empty(result.Issues);
     }
 
-    public static void IssuesMakeResultInvalid()
+    [Fact]
+    public void IssuesMakeResultInvalid()
     {
         var result = new ValidationResult(
         [
@@ -23,11 +25,12 @@ public static class ValidationResultTests
             }
         ]);
 
-        TestAssert.IsFalse(result.IsValid);
-        TestAssert.AreEqual(1, result.Issues.Count);
+        Assert.False(result.IsValid);
+        Assert.Single(result.Issues);
     }
 
-    public static void PreservesIssueDetails()
+    [Fact]
+    public void PreservesIssueDetails()
     {
         var issue = new ValidationIssue
         {
@@ -42,25 +45,26 @@ public static class ValidationResultTests
         };
         var result = new ValidationResult([issue]);
 
-        TestAssert.AreEqual("Patient.identifier", result.Issues[0].Path);
-        TestAssert.AreEqual(ValidationIssueCode.Cardinality, result.Issues[0].Code);
-        TestAssert.AreEqual(ValidationSeverity.Error, result.Issues[0].Severity);
-        TestAssert.AreEqual("Patient.identifier is required by TW Core Patient.", result.Issues[0].Message);
-        TestAssert.AreEqual(ValidationRuleSource.ImplementationGuide, result.Issues[0].Source);
-        TestAssert.AreEqual("tw.gov.mohw.twcore#1.0.0", result.Issues[0].PackageId);
-        TestAssert.AreEqual(
+        Assert.Equal("Patient.identifier", result.Issues[0].Path);
+        Assert.Equal(ValidationIssueCode.Cardinality, result.Issues[0].Code);
+        Assert.Equal(ValidationSeverity.Error, result.Issues[0].Severity);
+        Assert.Equal("Patient.identifier is required by TW Core Patient.", result.Issues[0].Message);
+        Assert.Equal(ValidationRuleSource.ImplementationGuide, result.Issues[0].Source);
+        Assert.Equal("tw.gov.mohw.twcore#1.0.0", result.Issues[0].PackageId);
+        Assert.Equal(
             "https://twcore.mohw.gov.tw/ig/twcore/StructureDefinition/Patient-twcore",
             result.Issues[0].ProfileUrl);
-        TestAssert.AreEqual("TWCORE-PAT-002", result.Issues[0].RuleId);
+        Assert.Equal("TWCORE-PAT-002", result.Issues[0].RuleId);
     }
 
-    public static void IssueDefaultsToBaseFhirSource()
+    [Fact]
+    public void IssueDefaultsToBaseFhirSource()
     {
         var issue = new ValidationIssue();
 
-        TestAssert.AreEqual(ValidationRuleSource.BaseFhir, issue.Source);
-        TestAssert.IsNull(issue.PackageId);
-        TestAssert.IsNull(issue.ProfileUrl);
-        TestAssert.IsNull(issue.RuleId);
+        Assert.Equal(ValidationRuleSource.BaseFhir, issue.Source);
+        Assert.Null(issue.PackageId);
+        Assert.Null(issue.ProfileUrl);
+        Assert.Null(issue.RuleId);
     }
 }

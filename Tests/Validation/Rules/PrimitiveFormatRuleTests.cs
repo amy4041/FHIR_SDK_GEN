@@ -1,17 +1,19 @@
 namespace MyFhirSdk.Tests.Validation.Rules;
 
-public static class PrimitiveFormatRuleTests
+public sealed class PrimitiveFormatRuleTests
 {
-    public static void ValidateReportsInvalidResourceId()
+    [Fact]
+    public void ValidateReportsInvalidResourceId()
     {
         var patient = new Patient { Id = "a/b" };
 
         var result = new FhirValidator().Validate(patient);
 
-        TestAssert.HasIssue(result, "Patient.id", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Patient.id", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidFhirDate()
+    [Fact]
+    public void ValidateReportsInvalidFhirDate()
     {
         var patient = new Patient
         {
@@ -20,10 +22,11 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(patient);
 
-        TestAssert.HasIssue(result, "Patient.birthDate", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Patient.birthDate", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidFhirCode()
+    [Fact]
+    public void ValidateReportsInvalidFhirCode()
     {
         var patient = new Patient
         {
@@ -32,10 +35,11 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(patient);
 
-        TestAssert.HasIssue(result, "Patient.gender", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Patient.gender", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidFhirUri()
+    [Fact]
+    public void ValidateReportsInvalidFhirUri()
     {
         var patient = new Patient
         {
@@ -47,10 +51,11 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(patient);
 
-        TestAssert.HasIssue(result, "Patient.managingOrganization.type", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Patient.managingOrganization.type", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidFhirMarkdown()
+    [Fact]
+    public void ValidateReportsInvalidFhirMarkdown()
     {
         var organization = new Organization
         {
@@ -59,10 +64,11 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(organization);
 
-        TestAssert.HasIssue(result, "Organization.description", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Organization.description", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidFhirUrl()
+    [Fact]
+    public void ValidateReportsInvalidFhirUrl()
     {
         var practitioner = new Practitioner
         {
@@ -77,10 +83,11 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(practitioner);
 
-        TestAssert.HasIssue(result, "Practitioner.photo[0].url", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Practitioner.photo[0].url", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidFhirCanonical()
+    [Fact]
+    public void ValidateReportsInvalidFhirCanonical()
     {
         var patient = new Patient
         {
@@ -95,10 +102,11 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(patient);
 
-        TestAssert.HasIssue(result, "Patient.extension[0].value", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Patient.extension[0].value", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidFhirId()
+    [Fact]
+    public void ValidateReportsInvalidFhirId()
     {
         var patient = new Patient
         {
@@ -113,20 +121,22 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(patient);
 
-        TestAssert.HasIssue(result, "Patient.extension[0].value", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Patient.extension[0].value", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidFhirDateTime()
+    [Fact]
+    public void ValidateReportsInvalidFhirDateTime()
     {
         var claim = CreateValidClaim();
         claim.Created = new FhirDateTime("2026-06-05T10:30:00");
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.created", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Claim.created", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidFhirInstant()
+    [Fact]
+    public void ValidateReportsInvalidFhirInstant()
     {
         var bundle = new Bundle
         {
@@ -136,10 +146,11 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(bundle);
 
-        TestAssert.HasIssue(result, "Bundle.timestamp", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Bundle.timestamp", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidFhirDecimal()
+    [Fact]
+    public void ValidateReportsInvalidFhirDecimal()
     {
         var bundle = new Bundle
         {
@@ -158,10 +169,11 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(bundle);
 
-        TestAssert.HasIssue(result, "Bundle.entry[0].search.score", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Bundle.entry[0].search.score", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidFhirInteger64()
+    [Fact]
+    public void ValidateReportsInvalidFhirInteger64()
     {
         var practitioner = new Practitioner
         {
@@ -176,10 +188,11 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(practitioner);
 
-        TestAssert.HasIssue(result, "Practitioner.photo[0].size", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Practitioner.photo[0].size", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidPositiveInt()
+    [Fact]
+    public void ValidateReportsInvalidPositiveInt()
     {
         var claim = CreateValidClaim();
         claim.Insurance =
@@ -194,10 +207,11 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.insurance[0].sequence", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Claim.insurance[0].sequence", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidUnsignedInt()
+    [Fact]
+    public void ValidateReportsInvalidUnsignedInt()
     {
         var bundle = new Bundle
         {
@@ -207,10 +221,11 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(bundle);
 
-        TestAssert.HasIssue(result, "Bundle.total", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Bundle.total", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateReportsInvalidFhirBase64Binary()
+    [Fact]
+    public void ValidateReportsInvalidFhirBase64Binary()
     {
         var practitioner = new Practitioner
         {
@@ -225,10 +240,11 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(practitioner);
 
-        TestAssert.HasIssue(result, "Practitioner.photo[0].data", ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(result, "Practitioner.photo[0].data", ValidationIssueCode.PrimitiveFormat);
     }
 
-    public static void ValidateDoesNotReportIssueForValidBooleanAndInteger()
+    [Fact]
+    public void ValidateDoesNotReportIssueForValidBooleanAndInteger()
     {
         var patient = new Patient
         {
@@ -238,7 +254,7 @@ public static class PrimitiveFormatRuleTests
 
         var result = new FhirValidator().Validate(patient);
 
-        TestAssert.IsTrue(result.IsValid);
+        Assert.True(result.IsValid);
     }
 
     private static Claim CreateValidClaim()

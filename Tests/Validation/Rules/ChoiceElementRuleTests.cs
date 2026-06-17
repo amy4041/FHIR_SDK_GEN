@@ -1,8 +1,9 @@
 namespace MyFhirSdk.Tests.Validation.Rules;
 
-public static class ChoiceElementRuleTests
+public sealed class ChoiceElementRuleTests
 {
-    public static void ValidateReportsPatientDeceasedChoiceConflict()
+    [Fact]
+    public void ValidateReportsPatientDeceasedChoiceConflict()
     {
         var patient = new Patient
         {
@@ -12,10 +13,11 @@ public static class ChoiceElementRuleTests
 
         var result = new FhirValidator().Validate(patient);
 
-        TestAssert.HasIssue(result, "Patient.deceased[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(result, "Patient.deceased[x]", ValidationIssueCode.ChoiceElement);
     }
 
-    public static void ValidateReportsPatientMultipleBirthChoiceConflict()
+    [Fact]
+    public void ValidateReportsPatientMultipleBirthChoiceConflict()
     {
         var patient = new Patient
         {
@@ -25,10 +27,11 @@ public static class ChoiceElementRuleTests
 
         var result = new FhirValidator().Validate(patient);
 
-        TestAssert.HasIssue(result, "Patient.multipleBirth[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(result, "Patient.multipleBirth[x]", ValidationIssueCode.ChoiceElement);
     }
 
-    public static void ValidateReportsPractitionerDeceasedChoiceConflict()
+    [Fact]
+    public void ValidateReportsPractitionerDeceasedChoiceConflict()
     {
         var practitioner = new Practitioner
         {
@@ -38,10 +41,11 @@ public static class ChoiceElementRuleTests
 
         var result = new FhirValidator().Validate(practitioner);
 
-        TestAssert.HasIssue(result, "Practitioner.deceased[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(result, "Practitioner.deceased[x]", ValidationIssueCode.ChoiceElement);
     }
 
-    public static void ValidateReportsClaimEventWhenChoiceMissingOrConflicting()
+    [Fact]
+    public void ValidateReportsClaimEventWhenChoiceMissingOrConflicting()
     {
         var missingChoiceClaim = CreateValidClaim();
         missingChoiceClaim.Event =
@@ -54,7 +58,7 @@ public static class ChoiceElementRuleTests
 
         var missingChoiceResult = new FhirValidator().Validate(missingChoiceClaim);
 
-        TestAssert.HasIssue(missingChoiceResult, "Claim.event[0].when[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(missingChoiceResult, "Claim.event[0].when[x]", ValidationIssueCode.ChoiceElement);
 
         var conflictingChoiceClaim = CreateValidClaim();
         conflictingChoiceClaim.Event =
@@ -69,10 +73,11 @@ public static class ChoiceElementRuleTests
 
         var conflictingChoiceResult = new FhirValidator().Validate(conflictingChoiceClaim);
 
-        TestAssert.HasIssue(conflictingChoiceResult, "Claim.event[0].when[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(conflictingChoiceResult, "Claim.event[0].when[x]", ValidationIssueCode.ChoiceElement);
     }
 
-    public static void ValidateReportsClaimSupportingInfoTimingChoiceConflict()
+    [Fact]
+    public void ValidateReportsClaimSupportingInfoTimingChoiceConflict()
     {
         var claim = CreateValidClaim();
         claim.SupportingInfo =
@@ -88,10 +93,11 @@ public static class ChoiceElementRuleTests
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.supportingInfo[0].timing[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(result, "Claim.supportingInfo[0].timing[x]", ValidationIssueCode.ChoiceElement);
     }
 
-    public static void ValidateReportsClaimSupportingInfoValueChoiceConflict()
+    [Fact]
+    public void ValidateReportsClaimSupportingInfoValueChoiceConflict()
     {
         var claim = CreateValidClaim();
         claim.SupportingInfo =
@@ -107,10 +113,11 @@ public static class ChoiceElementRuleTests
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.supportingInfo[0].value[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(result, "Claim.supportingInfo[0].value[x]", ValidationIssueCode.ChoiceElement);
     }
 
-    public static void ValidateReportsClaimDiagnosisChoiceMissingOrConflicting()
+    [Fact]
+    public void ValidateReportsClaimDiagnosisChoiceMissingOrConflicting()
     {
         var missingChoiceClaim = CreateValidClaim();
         missingChoiceClaim.Diagnosis =
@@ -123,7 +130,7 @@ public static class ChoiceElementRuleTests
 
         var missingChoiceResult = new FhirValidator().Validate(missingChoiceClaim);
 
-        TestAssert.HasIssue(missingChoiceResult, "Claim.diagnosis[0].diagnosis[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(missingChoiceResult, "Claim.diagnosis[0].diagnosis[x]", ValidationIssueCode.ChoiceElement);
 
         var conflictingChoiceClaim = CreateValidClaim();
         conflictingChoiceClaim.Diagnosis =
@@ -138,10 +145,11 @@ public static class ChoiceElementRuleTests
 
         var conflictingChoiceResult = new FhirValidator().Validate(conflictingChoiceClaim);
 
-        TestAssert.HasIssue(conflictingChoiceResult, "Claim.diagnosis[0].diagnosis[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(conflictingChoiceResult, "Claim.diagnosis[0].diagnosis[x]", ValidationIssueCode.ChoiceElement);
     }
 
-    public static void ValidateReportsClaimProcedureChoiceMissingOrConflicting()
+    [Fact]
+    public void ValidateReportsClaimProcedureChoiceMissingOrConflicting()
     {
         var missingChoiceClaim = CreateValidClaim();
         missingChoiceClaim.Procedure =
@@ -154,7 +162,7 @@ public static class ChoiceElementRuleTests
 
         var missingChoiceResult = new FhirValidator().Validate(missingChoiceClaim);
 
-        TestAssert.HasIssue(missingChoiceResult, "Claim.procedure[0].procedure[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(missingChoiceResult, "Claim.procedure[0].procedure[x]", ValidationIssueCode.ChoiceElement);
 
         var conflictingChoiceClaim = CreateValidClaim();
         conflictingChoiceClaim.Procedure =
@@ -169,10 +177,11 @@ public static class ChoiceElementRuleTests
 
         var conflictingChoiceResult = new FhirValidator().Validate(conflictingChoiceClaim);
 
-        TestAssert.HasIssue(conflictingChoiceResult, "Claim.procedure[0].procedure[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(conflictingChoiceResult, "Claim.procedure[0].procedure[x]", ValidationIssueCode.ChoiceElement);
     }
 
-    public static void ValidateReportsClaimAccidentLocationChoiceConflict()
+    [Fact]
+    public void ValidateReportsClaimAccidentLocationChoiceConflict()
     {
         var claim = CreateValidClaim();
         claim.Accident = new ClaimAccident
@@ -184,10 +193,11 @@ public static class ChoiceElementRuleTests
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.accident.location[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(result, "Claim.accident.location[x]", ValidationIssueCode.ChoiceElement);
     }
 
-    public static void ValidateReportsClaimItemServicedChoiceConflict()
+    [Fact]
+    public void ValidateReportsClaimItemServicedChoiceConflict()
     {
         var claim = CreateValidClaim();
         claim.Item =
@@ -202,10 +212,11 @@ public static class ChoiceElementRuleTests
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.item[0].serviced[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(result, "Claim.item[0].serviced[x]", ValidationIssueCode.ChoiceElement);
     }
 
-    public static void ValidateReportsClaimItemLocationChoiceConflict()
+    [Fact]
+    public void ValidateReportsClaimItemLocationChoiceConflict()
     {
         var claim = CreateValidClaim();
         claim.Item =
@@ -221,7 +232,7 @@ public static class ChoiceElementRuleTests
 
         var result = new FhirValidator().Validate(claim);
 
-        TestAssert.HasIssue(result, "Claim.item[0].location[x]", ValidationIssueCode.ChoiceElement);
+        ValidationAssert.HasIssue(result, "Claim.item[0].location[x]", ValidationIssueCode.ChoiceElement);
     }
 
     private static Claim CreateValidClaim()

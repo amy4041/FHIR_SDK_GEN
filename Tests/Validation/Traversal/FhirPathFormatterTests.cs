@@ -1,8 +1,9 @@
 namespace MyFhirSdk.Tests.Validation.Traversal;
 
-public static class FhirPathFormatterTests
+public sealed class FhirPathFormatterTests
 {
-    public static void ValidateUsesJsonPropertyNameAttributeInIssuePath()
+    [Fact]
+    public void ValidateUsesJsonPropertyNameAttributeInIssuePath()
     {
         var patient = new Patient
         {
@@ -15,7 +16,7 @@ public static class FhirPathFormatterTests
 
         var result = validator.Validate(patient);
 
-        TestAssert.IsFalse(result.IsValid);
-        TestAssert.HasIssue(result, "Patient.managingOrganization.reference", ValidationIssueCode.PrimitiveFormat);
+        Assert.False(result.IsValid);
+        ValidationAssert.HasIssue(result, "Patient.managingOrganization.reference", ValidationIssueCode.PrimitiveFormat);
     }
 }

@@ -1,21 +1,23 @@
 namespace MyFhirSdk.Tests.Validation;
 
-public static class FhirValidatorTests
+public sealed class FhirValidatorTests
 {
-    public static void ValidateRejectsNullResource()
+    [Fact]
+    public void ValidateRejectsNullResource()
     {
         var validator = new FhirValidator();
 
-        TestAssert.Throws<ArgumentNullException>(() => validator.Validate(null!));
+        Assert.Throws<ArgumentNullException>(() => validator.Validate(null!));
     }
 
-    public static void ValidateReturnsSuccessForEmptyOptionalPatient()
+    [Fact]
+    public void ValidateReturnsSuccessForEmptyOptionalPatient()
     {
         var validator = new FhirValidator();
 
         var result = validator.Validate(new Patient());
 
-        TestAssert.IsTrue(result.IsValid);
-        TestAssert.AreEqual(0, result.Issues.Count);
+        Assert.True(result.IsValid);
+        Assert.Empty(result.Issues);
     }
 }
