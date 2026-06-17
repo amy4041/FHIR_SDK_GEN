@@ -24,6 +24,15 @@ internal sealed class ResourceRuleRegistry
                 RequiredFieldRule<BundleLink>.For("relation", link => link.Relation),
                 RequiredFieldRule<BundleLink>.For("url", link => link.Url)
             ],
+            [typeof(BundleEntryRequest)] =
+            [
+                RequiredFieldRule<BundleEntryRequest>.For("method", request => request.Method),
+                RequiredFieldRule<BundleEntryRequest>.For("url", request => request.Url)
+            ],
+            [typeof(BundleEntryResponse)] =
+            [
+                RequiredFieldRule<BundleEntryResponse>.For("status", response => response.Status)
+            ],
             [typeof(Claim)] =
             [
                 RequiredFieldRule<Claim>.For("status", claim => claim.Status),
@@ -31,6 +40,91 @@ internal sealed class ResourceRuleRegistry
                 RequiredFieldRule<Claim>.For("use", claim => claim.Use),
                 RequiredFieldRule<Claim>.For("patient", claim => claim.Patient),
                 RequiredFieldRule<Claim>.For("created", claim => claim.Created)
+            ],
+            [typeof(ClaimPayee)] =
+            [
+                RequiredFieldRule<ClaimPayee>.For("type", payee => payee.Type)
+            ],
+            [typeof(ClaimEvent)] =
+            [
+                RequiredFieldRule<ClaimEvent>.For("type", claimEvent => claimEvent.Type),
+                ChoiceElementRule<ClaimEvent>.ExactlyOne(
+                    "when[x]",
+                    claimEvent => claimEvent.WhenDateTime,
+                    claimEvent => claimEvent.WhenPeriod)
+            ],
+            [typeof(ClaimCareTeam)] =
+            [
+                RequiredFieldRule<ClaimCareTeam>.For("sequence", careTeam => careTeam.Sequence),
+                RequiredFieldRule<ClaimCareTeam>.For("provider", careTeam => careTeam.Provider)
+            ],
+            [typeof(ClaimSupportingInfo)] =
+            [
+                RequiredFieldRule<ClaimSupportingInfo>.For("sequence", supportingInfo => supportingInfo.Sequence),
+                RequiredFieldRule<ClaimSupportingInfo>.For("category", supportingInfo => supportingInfo.Category),
+                ChoiceElementRule<ClaimSupportingInfo>.AtMostOne(
+                    "timing[x]",
+                    supportingInfo => supportingInfo.TimingDate,
+                    supportingInfo => supportingInfo.TimingPeriod),
+                ChoiceElementRule<ClaimSupportingInfo>.AtMostOne(
+                    "value[x]",
+                    supportingInfo => supportingInfo.ValueBoolean,
+                    supportingInfo => supportingInfo.ValueString,
+                    supportingInfo => supportingInfo.ValueQuantity,
+                    supportingInfo => supportingInfo.ValueAttachment,
+                    supportingInfo => supportingInfo.ValueReference,
+                    supportingInfo => supportingInfo.ValueIdentifier)
+            ],
+            [typeof(ClaimDiagnosis)] =
+            [
+                RequiredFieldRule<ClaimDiagnosis>.For("sequence", diagnosis => diagnosis.Sequence),
+                ChoiceElementRule<ClaimDiagnosis>.ExactlyOne(
+                    "diagnosis[x]",
+                    diagnosis => diagnosis.DiagnosisCodeableConcept,
+                    diagnosis => diagnosis.DiagnosisReference)
+            ],
+            [typeof(ClaimProcedure)] =
+            [
+                RequiredFieldRule<ClaimProcedure>.For("sequence", procedure => procedure.Sequence),
+                ChoiceElementRule<ClaimProcedure>.ExactlyOne(
+                    "procedure[x]",
+                    procedure => procedure.ProcedureCodeableConcept,
+                    procedure => procedure.ProcedureReference)
+            ],
+            [typeof(ClaimInsurance)] =
+            [
+                RequiredFieldRule<ClaimInsurance>.For("sequence", insurance => insurance.Sequence),
+                RequiredFieldRule<ClaimInsurance>.For("focal", insurance => insurance.Focal),
+                RequiredFieldRule<ClaimInsurance>.For("coverage", insurance => insurance.Coverage)
+            ],
+            [typeof(ClaimAccident)] =
+            [
+                RequiredFieldRule<ClaimAccident>.For("date", accident => accident.Date),
+                ChoiceElementRule<ClaimAccident>.AtMostOne(
+                    "location[x]",
+                    accident => accident.LocationAddress,
+                    accident => accident.LocationReference)
+            ],
+            [typeof(ClaimItem)] =
+            [
+                RequiredFieldRule<ClaimItem>.For("sequence", item => item.Sequence),
+                ChoiceElementRule<ClaimItem>.AtMostOne(
+                    "serviced[x]",
+                    item => item.ServicedDate,
+                    item => item.ServicedPeriod),
+                ChoiceElementRule<ClaimItem>.AtMostOne(
+                    "location[x]",
+                    item => item.LocationCodeableConcept,
+                    item => item.LocationAddress,
+                    item => item.LocationReference)
+            ],
+            [typeof(ClaimDetail)] =
+            [
+                RequiredFieldRule<ClaimDetail>.For("sequence", detail => detail.Sequence)
+            ],
+            [typeof(ClaimSubDetail)] =
+            [
+                RequiredFieldRule<ClaimSubDetail>.For("sequence", subDetail => subDetail.Sequence)
             ],
             [typeof(Coverage)] =
             [

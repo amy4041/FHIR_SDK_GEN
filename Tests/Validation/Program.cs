@@ -45,12 +45,32 @@ public static class Program
             Test("RequiredField reports missing Coverage class fields", RequiredFieldRuleTests.ValidateReportsMissingCoverageClassFields),
             Test("RequiredField reports missing Coverage paymentBy party", RequiredFieldRuleTests.ValidateReportsMissingCoveragePaymentByParty),
             Test("RequiredField reports missing Encounter location", RequiredFieldRuleTests.ValidateReportsMissingEncounterLocation),
+            Test("RequiredField reports missing Claim payee type", RequiredFieldRuleTests.ValidateReportsMissingClaimPayeeType),
+            Test("RequiredField reports missing Claim event type", RequiredFieldRuleTests.ValidateReportsMissingClaimEventType),
+            Test("RequiredField reports missing Claim care team fields", RequiredFieldRuleTests.ValidateReportsMissingClaimCareTeamFields),
+            Test("RequiredField reports missing Claim supporting info fields", RequiredFieldRuleTests.ValidateReportsMissingClaimSupportingInfoFields),
+            Test("RequiredField reports missing Claim diagnosis sequence", RequiredFieldRuleTests.ValidateReportsMissingClaimDiagnosisSequence),
+            Test("RequiredField reports missing Claim procedure sequence", RequiredFieldRuleTests.ValidateReportsMissingClaimProcedureSequence),
+            Test("RequiredField reports missing Claim insurance fields", RequiredFieldRuleTests.ValidateReportsMissingClaimInsuranceFields),
+            Test("RequiredField reports missing Claim accident date", RequiredFieldRuleTests.ValidateReportsMissingClaimAccidentDate),
+            Test("RequiredField reports missing Claim item sequence", RequiredFieldRuleTests.ValidateReportsMissingClaimItemSequence),
+            Test("RequiredField reports missing Claim detail sequences", RequiredFieldRuleTests.ValidateReportsMissingClaimDetailSequences),
+            Test("RequiredField reports missing Bundle entry request fields", RequiredFieldRuleTests.ValidateReportsMissingBundleEntryRequestFields),
+            Test("RequiredField reports missing Bundle entry response status", RequiredFieldRuleTests.ValidateReportsMissingBundleEntryResponseStatus),
             Test("Cardinality reports null repeated field", CardinalityRuleTests.ValidateReportsNullRepeatedField),
             Test("Cardinality reports null repeated item", CardinalityRuleTests.ValidateReportsNullRepeatedItem),
             Test("Cardinality reports empty required repeated field", CardinalityRuleTests.ValidateReportsEmptyRequiredRepeatedField),
             Test("ChoiceElement reports conflicting Patient deceased choices", ChoiceElementRuleTests.ValidateReportsPatientDeceasedChoiceConflict),
             Test("ChoiceElement reports conflicting Patient multipleBirth choices", ChoiceElementRuleTests.ValidateReportsPatientMultipleBirthChoiceConflict),
-            Test("ChoiceElement reports conflicting Practitioner deceased choices", ChoiceElementRuleTests.ValidateReportsPractitionerDeceasedChoiceConflict)
+            Test("ChoiceElement reports conflicting Practitioner deceased choices", ChoiceElementRuleTests.ValidateReportsPractitionerDeceasedChoiceConflict),
+            Test("ChoiceElement reports missing or conflicting Claim event when choice", ChoiceElementRuleTests.ValidateReportsClaimEventWhenChoiceMissingOrConflicting),
+            Test("ChoiceElement reports conflicting Claim supporting info timing choice", ChoiceElementRuleTests.ValidateReportsClaimSupportingInfoTimingChoiceConflict),
+            Test("ChoiceElement reports conflicting Claim supporting info value choice", ChoiceElementRuleTests.ValidateReportsClaimSupportingInfoValueChoiceConflict),
+            Test("ChoiceElement reports missing or conflicting Claim diagnosis choice", ChoiceElementRuleTests.ValidateReportsClaimDiagnosisChoiceMissingOrConflicting),
+            Test("ChoiceElement reports missing or conflicting Claim procedure choice", ChoiceElementRuleTests.ValidateReportsClaimProcedureChoiceMissingOrConflicting),
+            Test("ChoiceElement reports conflicting Claim accident location choice", ChoiceElementRuleTests.ValidateReportsClaimAccidentLocationChoiceConflict),
+            Test("ChoiceElement reports conflicting Claim item serviced choice", ChoiceElementRuleTests.ValidateReportsClaimItemServicedChoiceConflict),
+            Test("ChoiceElement reports conflicting Claim item location choice", ChoiceElementRuleTests.ValidateReportsClaimItemLocationChoiceConflict)
         };
 
         var failures = new List<string>();
