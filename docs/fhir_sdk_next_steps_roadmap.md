@@ -85,7 +85,8 @@ Done when:
 
 ### Phase 2 - Define IG Boundary
 
-Status: Planned
+Status: Finished
+
 
 Goal:
 
@@ -175,7 +176,7 @@ Possible design:
 
 Initial TW Core Patient POC implementation order:
 
-1. Add validation issue metadata:
+1. Add validation issue metadata: (Finished)
    - `ValidationRuleSource`
    - `ValidationIssue.Source`
    - `ValidationIssue.PackageId`
