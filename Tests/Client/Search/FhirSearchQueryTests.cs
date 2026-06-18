@@ -1,8 +1,9 @@
 namespace MyFhirSdk.Tests.Client.Search;
 
-public static class FhirSearchQueryTests
+public sealed class FhirSearchQueryTests
 {
-    public static void ToQueryStringBuildsParametersInInsertionOrder()
+    [Fact]
+    public void ToQueryStringBuildsParametersInInsertionOrder()
     {
         var query = FhirSearchQuery.Create()
             .Where("name", "John Smith")
@@ -11,20 +12,22 @@ public static class FhirSearchQueryTests
 
         var queryString = query.ToQueryString();
 
-        TestAssert.AreEqual("name=John%20Smith&_sort=birthdate&_count=20", queryString);
+        Assert.Equal("name=John%20Smith&_sort=birthdate&_count=20", queryString);
     }
 
-    public static void ToQueryStringReturnsEmptyStringForNoParameters()
+    [Fact]
+    public void ToQueryStringReturnsEmptyStringForNoParameters()
     {
         var query = FhirSearchQuery.Create();
 
-        TestAssert.AreEqual(string.Empty, query.ToQueryString());
+        Assert.Equal(string.Empty, query.ToQueryString());
     }
 
-    public static void CountRejectsNegativeValues()
+    [Fact]
+    public void CountRejectsNegativeValues()
     {
         var query = FhirSearchQuery.Create();
 
-        TestAssert.Throws<ArgumentOutOfRangeException>(() => query.Count(-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => query.Count(-1));
     }
 }

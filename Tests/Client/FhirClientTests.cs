@@ -1,8 +1,9 @@
 namespace MyFhirSdk.Tests.Client;
 
-public static class FhirClientTests
+public sealed class FhirClientTests
 {
-    public static async Task ReadAsyncSendsRequestAndParsesResponse()
+    [Fact]
+    public async Task ReadAsyncSendsRequestAndParsesResponse()
     {
         var patient = new Patient { Id = "123" };
         var parser = new FakeFhirParser();
@@ -11,31 +12,33 @@ public static class FhirClientTests
         sender.EnqueueResponse(CreateResponse(HttpStatusCode.OK, "{\"resourceType\":\"Patient\",\"id\":\"123\"}"));
         var client = CreateClient(sender, parser, authProvider: new BearerTokenAuthProvider("token"));
 
-        var actual = await client.ReadAsync<Patient>("123").ConfigureAwait(false);
+        var actual = await client.ReadAsync<Patient>("123");
 
-        TestAssert.AreSame(patient, actual!);
-        TestAssert.AreEqual(1, sender.SentRequests.Count);
+        Assert.Same(patient, actual!);
+        Assert.Single(sender.SentRequests);
         var request = sender.SentRequests[0];
-        TestAssert.AreEqual(HttpMethod.Get, request.Method);
-        TestAssert.AreEqual("https://example.org/fhir/Patient/123", request.RequestUri!.AbsoluteUri);
-        TestAssert.AreEqual("Bearer", request.Headers.Authorization!.Scheme);
-        TestAssert.AreEqual("token", request.Headers.Authorization.Parameter);
+        Assert.Equal(HttpMethod.Get, request.Method);
+        Assert.Equal("https://example.org/fhir/Patient/123", request.RequestUri!.AbsoluteUri);
+        Assert.Equal("Bearer", request.Headers.Authorization!.Scheme);
+        Assert.Equal("token", request.Headers.Authorization.Parameter);
     }
 
-    public static async Task ReadAsyncReturnsNullForNotFound()
+    [Fact]
+    public async Task ReadAsyncReturnsNullForNotFound()
     {
         var sender = new FakeFhirHttpSender();
         sender.EnqueueResponse(CreateResponse(HttpStatusCode.NotFound, "{\"resourceType\":\"OperationOutcome\"}"));
         var parser = new FakeFhirParser();
         var client = CreateClient(sender, parser);
 
-        var actual = await client.ReadAsync<Patient>("missing").ConfigureAwait(false);
+        var actual = await client.ReadAsync<Patient>("missing");
 
-        TestAssert.IsNull(actual);
-        TestAssert.AreEqual(0, parser.ParseCallCount);
+        Assert.Null(actual);
+        Assert.Equal(0, parser.ParseCallCount);
     }
 
-    public static async Task CreateAsyncSerializesAndSendsResource()
+    [Fact]
+    public async Task CreateAsyncSerializesAndSendsResource()
     {
         var resource = new Patient();
         var created = new Patient { Id = "created" };
@@ -49,21 +52,22 @@ public static class FhirClientTests
         sender.EnqueueResponse(CreateResponse(HttpStatusCode.Created, "{\"resourceType\":\"Patient\",\"id\":\"created\"}"));
         var client = CreateClient(sender, parser, serializer);
 
-        var actual = await client.CreateAsync(resource).ConfigureAwait(false);
+        var actual = await client.CreateAsync(resource);
 
-        TestAssert.AreSame(created, actual);
-        TestAssert.AreEqual(1, serializer.SerializeCallCount);
-        TestAssert.AreSame(resource, serializer.LastResource!);
-        TestAssert.AreEqual(1, sender.SentRequests.Count);
+        Assert.Same(created, actual);
+        Assert.Equal(1, serializer.SerializeCallCount);
+        Assert.Same(resource, serializer.LastResource!);
+        Assert.Single(sender.SentRequests);
 
         var request = sender.SentRequests[0];
-        TestAssert.AreEqual(HttpMethod.Post, request.Method);
-        TestAssert.AreEqual("https://example.org/fhir/Patient", request.RequestUri!.AbsoluteUri);
-        TestAssert.AreEqual(FhirHttpConstants.FhirJsonMediaType, request.Content!.Headers.ContentType!.MediaType);
-        TestAssert.AreEqual("{\"resourceType\":\"Patient\"}", await request.Content.ReadAsStringAsync().ConfigureAwait(false));
+        Assert.Equal(HttpMethod.Post, request.Method);
+        Assert.Equal("https://example.org/fhir/Patient", request.RequestUri!.AbsoluteUri);
+        Assert.Equal(FhirHttpConstants.FhirJsonMediaType, request.Content!.Headers.ContentType!.MediaType);
+        Assert.Equal("{\"resourceType\":\"Patient\"}", await request.Content.ReadAsStringAsync());
     }
 
-    public static async Task CreateAsyncDoesNotValidateWhenValidationDisabled()
+    [Fact]
+    public async Task CreateAsyncDoesNotValidateWhenValidationDisabled()
     {
         var resource = new Patient { Id = "bad/id" };
         var created = new Patient { Id = "created" };
@@ -81,15 +85,16 @@ public static class FhirClientTests
         };
         var client = CreateClient(sender, parser, serializer, validateBeforeSend: false, validator: validator);
 
-        var actual = await client.CreateAsync(resource).ConfigureAwait(false);
+        var actual = await client.CreateAsync(resource);
 
-        TestAssert.AreSame(created, actual);
-        TestAssert.AreEqual(0, validator.ValidateCallCount);
-        TestAssert.AreEqual(1, serializer.SerializeCallCount);
-        TestAssert.AreEqual(1, sender.SentRequests.Count);
+        Assert.Same(created, actual);
+        Assert.Equal(0, validator.ValidateCallCount);
+        Assert.Equal(1, serializer.SerializeCallCount);
+        Assert.Single(sender.SentRequests);
     }
 
-    public static async Task CreateAsyncValidatesBeforeSendingWhenEnabled()
+    [Fact]
+    public async Task CreateAsyncValidatesBeforeSendingWhenEnabled()
     {
         var resource = new Patient();
         var serializer = new FakeFhirSerializer();
@@ -102,18 +107,17 @@ public static class FhirClientTests
         };
         var client = CreateClient(sender, parser, serializer, validateBeforeSend: true, validator: validator);
 
-        var exception = await TestAssert
-            .ThrowsAsync<FhirValidationException>(() => client.CreateAsync(resource))
-            .ConfigureAwait(false);
+        var exception = await Assert.ThrowsAsync<FhirValidationException>(() => client.CreateAsync(resource));
 
-        TestAssert.AreSame(result, exception.Result);
-        TestAssert.AreEqual(1, validator.ValidateCallCount);
-        TestAssert.AreSame(resource, validator.LastResource!);
-        TestAssert.AreEqual(0, serializer.SerializeCallCount);
-        TestAssert.AreEqual(0, sender.SentRequests.Count);
+        Assert.Same(result, exception.Result);
+        Assert.Equal(1, validator.ValidateCallCount);
+        Assert.Same(resource, validator.LastResource!);
+        Assert.Equal(0, serializer.SerializeCallCount);
+        Assert.Empty(sender.SentRequests);
     }
 
-    public static async Task UpdateAsyncSerializesAndSendsResource()
+    [Fact]
+    public async Task UpdateAsyncSerializesAndSendsResource()
     {
         var resource = new Patient { Id = "updated" };
         var updated = new Patient { Id = "updated" };
@@ -127,27 +131,28 @@ public static class FhirClientTests
         sender.EnqueueResponse(CreateResponse(HttpStatusCode.OK, "{\"resourceType\":\"Patient\",\"id\":\"updated\"}"));
         var client = CreateClient(sender, parser, serializer);
 
-        var actual = await client.UpdateAsync(resource).ConfigureAwait(false);
+        var actual = await client.UpdateAsync(resource);
 
-        TestAssert.AreSame(updated, actual);
-        TestAssert.AreEqual(1, serializer.SerializeCallCount);
-        TestAssert.AreSame(resource, serializer.LastResource!);
-        TestAssert.AreEqual(1, sender.SentRequests.Count);
+        Assert.Same(updated, actual);
+        Assert.Equal(1, serializer.SerializeCallCount);
+        Assert.Same(resource, serializer.LastResource!);
+        Assert.Single(sender.SentRequests);
 
         var request = sender.SentRequests[0];
-        TestAssert.AreEqual(HttpMethod.Put, request.Method);
-        TestAssert.AreEqual("https://example.org/fhir/Patient/updated", request.RequestUri!.AbsoluteUri);
-        TestAssert.AreEqual(FhirHttpConstants.FhirJsonMediaType, request.Content!.Headers.ContentType!.MediaType);
-        TestAssert.IsTrue(
+        Assert.Equal(HttpMethod.Put, request.Method);
+        Assert.Equal("https://example.org/fhir/Patient/updated", request.RequestUri!.AbsoluteUri);
+        Assert.Equal(FhirHttpConstants.FhirJsonMediaType, request.Content!.Headers.ContentType!.MediaType);
+        Assert.True(
             request.Headers.TryGetValues(FhirHttpConstants.PreferHeaderName, out var values)
             && values.Contains(FhirHttpConstants.PreferReturnRepresentation),
             "Expected update request to prefer return=representation.");
-        TestAssert.AreEqual(
+        Assert.Equal(
             "{\"resourceType\":\"Patient\",\"id\":\"updated\"}",
-            await request.Content.ReadAsStringAsync().ConfigureAwait(false));
+            await request.Content.ReadAsStringAsync());
     }
 
-    public static async Task UpdateAsyncValidatesBeforeSendingWhenEnabled()
+    [Fact]
+    public async Task UpdateAsyncValidatesBeforeSendingWhenEnabled()
     {
         var resource = new Patient { Id = "updated" };
         var serializer = new FakeFhirSerializer();
@@ -160,30 +165,30 @@ public static class FhirClientTests
         };
         var client = CreateClient(sender, parser, serializer, validateBeforeSend: true, validator: validator);
 
-        var exception = await TestAssert
-            .ThrowsAsync<FhirValidationException>(() => client.UpdateAsync(resource))
-            .ConfigureAwait(false);
+        var exception = await Assert.ThrowsAsync<FhirValidationException>(() => client.UpdateAsync(resource));
 
-        TestAssert.AreSame(result, exception.Result);
-        TestAssert.AreEqual(1, validator.ValidateCallCount);
-        TestAssert.AreSame(resource, validator.LastResource!);
-        TestAssert.AreEqual(0, serializer.SerializeCallCount);
-        TestAssert.AreEqual(0, sender.SentRequests.Count);
+        Assert.Same(result, exception.Result);
+        Assert.Equal(1, validator.ValidateCallCount);
+        Assert.Same(resource, validator.LastResource!);
+        Assert.Equal(0, serializer.SerializeCallCount);
+        Assert.Empty(sender.SentRequests);
     }
 
-    public static async Task UpdateAsyncRequiresResourceId()
+    [Fact]
+    public async Task UpdateAsyncRequiresResourceId()
     {
         var resource = new Patient();
         var parser = new FakeFhirParser();
         var sender = new FakeFhirHttpSender();
         var client = CreateClient(sender, parser);
 
-        await TestAssert.ThrowsAsync<ArgumentException>(() => client.UpdateAsync(resource)).ConfigureAwait(false);
+        await Assert.ThrowsAsync<ArgumentException>(() => client.UpdateAsync(resource));
 
-        TestAssert.AreEqual(0, sender.SentRequests.Count);
+        Assert.Empty(sender.SentRequests);
     }
 
-    public static async Task ReadAsyncDoesNotValidateWhenValidationEnabled()
+    [Fact]
+    public async Task ReadAsyncDoesNotValidateWhenValidationEnabled()
     {
         var patient = new Patient { Id = "123" };
         var parser = new FakeFhirParser();
@@ -196,14 +201,15 @@ public static class FhirClientTests
         };
         var client = CreateClient(sender, parser, validateBeforeSend: true, validator: validator);
 
-        var actual = await client.ReadAsync<Patient>("123").ConfigureAwait(false);
+        var actual = await client.ReadAsync<Patient>("123");
 
-        TestAssert.AreSame(patient, actual!);
-        TestAssert.AreEqual(0, validator.ValidateCallCount);
-        TestAssert.AreEqual(1, sender.SentRequests.Count);
+        Assert.Same(patient, actual!);
+        Assert.Equal(0, validator.ValidateCallCount);
+        Assert.Single(sender.SentRequests);
     }
 
-    public static async Task SearchAsyncSendsStructuredSearchQuery()
+    [Fact]
+    public async Task SearchAsyncSendsStructuredSearchQuery()
     {
         var bundle = new Bundle();
         var parser = new FakeFhirParser();
@@ -215,14 +221,15 @@ public static class FhirClientTests
             .Where("name", "John")
             .Count(10);
 
-        var actual = await client.SearchAsync<Patient>(query).ConfigureAwait(false);
+        var actual = await client.SearchAsync<Patient>(query);
 
-        TestAssert.AreSame(bundle, actual);
-        TestAssert.AreEqual(1, sender.SentRequests.Count);
-        TestAssert.AreEqual("https://example.org/fhir/Patient?name=John&_count=10", sender.SentRequests[0].RequestUri!.AbsoluteUri);
+        Assert.Same(bundle, actual);
+        Assert.Single(sender.SentRequests);
+        Assert.Equal("https://example.org/fhir/Patient?name=John&_count=10", sender.SentRequests[0].RequestUri!.AbsoluteUri);
     }
 
-    public static async Task SearchAsyncDoesNotValidateWhenValidationEnabled()
+    [Fact]
+    public async Task SearchAsyncDoesNotValidateWhenValidationEnabled()
     {
         var bundle = new Bundle();
         var parser = new FakeFhirParser();
@@ -235,11 +242,11 @@ public static class FhirClientTests
         };
         var client = CreateClient(sender, parser, validateBeforeSend: true, validator: validator);
 
-        var actual = await client.SearchAsync<Patient>("name=John").ConfigureAwait(false);
+        var actual = await client.SearchAsync<Patient>("name=John");
 
-        TestAssert.AreSame(bundle, actual);
-        TestAssert.AreEqual(0, validator.ValidateCallCount);
-        TestAssert.AreEqual(1, sender.SentRequests.Count);
+        Assert.Same(bundle, actual);
+        Assert.Equal(0, validator.ValidateCallCount);
+        Assert.Single(sender.SentRequests);
     }
 
     private static FhirClient CreateClient(

@@ -1,40 +1,44 @@
 namespace MyFhirSdk.Tests.Client.Requests;
 
-public static class FhirRequestUriBuilderTests
+public sealed class FhirRequestUriBuilderTests
 {
-    public static void BuildResourceTypeUriPreservesBasePath()
+    [Fact]
+    public void BuildResourceTypeUriPreservesBasePath()
     {
         var builder = new FhirRequestUriBuilder(new Uri("https://example.org/base/fhir"));
 
         var uri = builder.BuildResourceTypeUri("Patient");
 
-        TestAssert.AreEqual("https://example.org/base/fhir/Patient", uri.AbsoluteUri);
+        Assert.Equal("https://example.org/base/fhir/Patient", uri.AbsoluteUri);
     }
 
-    public static void BuildResourceTypeUriHandlesTrailingSlash()
+    [Fact]
+    public void BuildResourceTypeUriHandlesTrailingSlash()
     {
         var builder = new FhirRequestUriBuilder(new Uri("https://example.org/fhir/"));
 
         var uri = builder.BuildResourceTypeUri("Patient");
 
-        TestAssert.AreEqual("https://example.org/fhir/Patient", uri.AbsoluteUri);
+        Assert.Equal("https://example.org/fhir/Patient", uri.AbsoluteUri);
     }
 
-    public static void BuildResourceInstanceUriEncodesResourceId()
+    [Fact]
+    public void BuildResourceInstanceUriEncodesResourceId()
     {
         var builder = new FhirRequestUriBuilder(new Uri("https://example.org/fhir"));
 
         var uri = builder.BuildResourceInstanceUri("Patient", "a/b");
 
-        TestAssert.AreEqual("https://example.org/fhir/Patient/a%2Fb", uri.AbsoluteUri);
+        Assert.Equal("https://example.org/fhir/Patient/a%2Fb", uri.AbsoluteUri);
     }
 
-    public static void BuildSearchUriTrimsLeadingQuestionMark()
+    [Fact]
+    public void BuildSearchUriTrimsLeadingQuestionMark()
     {
         var builder = new FhirRequestUriBuilder(new Uri("https://example.org/fhir"));
 
         var uri = builder.BuildSearchUri("Patient", "?name=John");
 
-        TestAssert.AreEqual("https://example.org/fhir/Patient?name=John", uri.AbsoluteUri);
+        Assert.Equal("https://example.org/fhir/Patient?name=John", uri.AbsoluteUri);
     }
 }

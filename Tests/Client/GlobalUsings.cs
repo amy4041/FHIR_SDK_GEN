@@ -15,3 +15,4 @@ global using MyFhirSdk.Serialization;
 global using MyFhirSdk.Validation;
 global using MyFhirSdk.Tests.Client;
 global using MyFhirSdk.Tests.Client.Fakes;
+global using Xunit;

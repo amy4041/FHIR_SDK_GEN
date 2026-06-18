@@ -1,8 +1,9 @@
 namespace MyFhirSdk.Tests.Client.Responses;
 
-public static class FhirResponseHandlerTests
+public sealed class FhirResponseHandlerTests
 {
-    public static async Task HandleRequiredResourceAsyncParsesSuccessfulBody()
+    [Fact]
+    public async Task HandleRequiredResourceAsyncParsesSuccessfulBody()
     {
         var parser = new FakeFhirParser();
         var expected = new Patient { Id = "123" };
@@ -10,36 +11,39 @@ public static class FhirResponseHandlerTests
         var handler = new FhirResponseHandler(parser);
         using var response = CreateResponse(HttpStatusCode.OK, "{\"resourceType\":\"Patient\",\"id\":\"123\"}");
 
-        var actual = await handler.HandleRequiredResourceAsync<Patient>(response).ConfigureAwait(false);
+        var actual = await handler.HandleRequiredResourceAsync<Patient>(response);
 
-        TestAssert.AreSame(expected, actual);
-        TestAssert.AreEqual(1, parser.ParseCallCount);
-        TestAssert.AreEqual("{\"resourceType\":\"Patient\",\"id\":\"123\"}", parser.LastJson);
-        TestAssert.AreEqual(typeof(Patient), parser.LastResourceType);
+        Assert.Same(expected, actual);
+        Assert.Equal(1, parser.ParseCallCount);
+        Assert.Equal("{\"resourceType\":\"Patient\",\"id\":\"123\"}", parser.LastJson);
+        Assert.Equal(typeof(Patient), parser.LastResourceType);
     }
 
-    public static async Task HandleOptionalResourceAsyncReturnsNullForNotFound()
+    [Fact]
+    public async Task HandleOptionalResourceAsyncReturnsNullForNotFound()
     {
         var parser = new FakeFhirParser();
         var handler = new FhirResponseHandler(parser);
         using var response = CreateResponse(HttpStatusCode.NotFound, "{\"resourceType\":\"OperationOutcome\"}");
 
-        var actual = await handler.HandleOptionalResourceAsync<Patient>(response).ConfigureAwait(false);
+        var actual = await handler.HandleOptionalResourceAsync<Patient>(response);
 
-        TestAssert.IsNull(actual);
-        TestAssert.AreEqual(0, parser.ParseCallCount);
+        Assert.Null(actual);
+        Assert.Equal(0, parser.ParseCallCount);
     }
 
-    public static async Task HandleRequiredResourceAsyncRejectsEmptyBody()
+    [Fact]
+    public async Task HandleRequiredResourceAsyncRejectsEmptyBody()
     {
         var handler = new FhirResponseHandler(new FakeFhirParser());
         using var response = CreateResponse(HttpStatusCode.OK, "");
 
-        await TestAssert.ThrowsAsync<FhirInvalidResponseException>(
-            () => handler.HandleRequiredResourceAsync<Patient>(response)).ConfigureAwait(false);
+        await Assert.ThrowsAsync<FhirInvalidResponseException>(
+            () => handler.HandleRequiredResourceAsync<Patient>(response));
     }
 
-    public static async Task HandleRequiredResourceAsyncThrowsHttpExceptionForNonSuccess()
+    [Fact]
+    public async Task HandleRequiredResourceAsyncThrowsHttpExceptionForNonSuccess()
     {
         var handler = new FhirResponseHandler(new FakeFhirParser());
         using var response = CreateResponse(
@@ -47,16 +51,17 @@ public static class FhirResponseHandlerTests
             "{\"resourceType\":\"OperationOutcome\"}",
             new HttpRequestMessage(HttpMethod.Post, "https://example.org/fhir/Patient"));
 
-        var exception = await TestAssert.ThrowsAsync<FhirHttpException>(
-            () => handler.HandleRequiredResourceAsync<Patient>(response)).ConfigureAwait(false);
+        var exception = await Assert.ThrowsAsync<FhirHttpException>(
+            () => handler.HandleRequiredResourceAsync<Patient>(response));
 
-        TestAssert.AreEqual(HttpStatusCode.BadRequest, exception.StatusCode);
-        TestAssert.AreEqual("{\"resourceType\":\"OperationOutcome\"}", exception.ResponseBody);
-        TestAssert.AreEqual(HttpMethod.Post, exception.Method);
-        TestAssert.AreEqual("https://example.org/fhir/Patient", exception.RequestUri!.AbsoluteUri);
+        Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
+        Assert.Equal("{\"resourceType\":\"OperationOutcome\"}", exception.ResponseBody);
+        Assert.Equal(HttpMethod.Post, exception.Method);
+        Assert.Equal("https://example.org/fhir/Patient", exception.RequestUri!.AbsoluteUri);
     }
 
-    public static async Task HandleRequiredResourceAsyncWrapsParserFailure()
+    [Fact]
+    public async Task HandleRequiredResourceAsyncWrapsParserFailure()
     {
         var parser = new FakeFhirParser
         {
@@ -65,11 +70,11 @@ public static class FhirResponseHandlerTests
         var handler = new FhirResponseHandler(parser);
         using var response = CreateResponse(HttpStatusCode.OK, "{\"resourceType\":\"Patient\"}");
 
-        var exception = await TestAssert.ThrowsAsync<FhirInvalidResponseException>(
-            () => handler.HandleRequiredResourceAsync<Patient>(response)).ConfigureAwait(false);
+        var exception = await Assert.ThrowsAsync<FhirInvalidResponseException>(
+            () => handler.HandleRequiredResourceAsync<Patient>(response));
 
-        TestAssert.IsNotNull(exception.InnerException);
-        TestAssert.AreEqual("Parse failed.", exception.InnerException!.Message);
+        Assert.NotNull(exception.InnerException);
+        Assert.Equal("Parse failed.", exception.InnerException!.Message);
     }
 
     private static HttpResponseMessage CreateResponse(

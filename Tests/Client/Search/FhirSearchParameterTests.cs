@@ -1,18 +1,20 @@
 namespace MyFhirSdk.Tests.Client.Search;
 
-public static class FhirSearchParameterTests
+public sealed class FhirSearchParameterTests
 {
-    public static void ToQueryStringEncodesNameAndValue()
+    [Fact]
+    public void ToQueryStringEncodesNameAndValue()
     {
         var parameter = new FhirSearchParameter("name", "John Smith");
 
         var queryString = parameter.ToQueryString();
 
-        TestAssert.AreEqual("name=John%20Smith", queryString);
+        Assert.Equal("name=John%20Smith", queryString);
     }
 
-    public static void ConstructorRejectsEmptyName()
+    [Fact]
+    public void ConstructorRejectsEmptyName()
     {
-        TestAssert.Throws<ArgumentException>(() => new FhirSearchParameter(" ", "John"));
+        Assert.Throws<ArgumentException>(() => new FhirSearchParameter(" ", "John"));
     }
 }

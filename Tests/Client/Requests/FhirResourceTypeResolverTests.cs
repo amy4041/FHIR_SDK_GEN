@@ -1,22 +1,24 @@
 namespace MyFhirSdk.Tests.Client.Requests;
 
-public static class FhirResourceTypeResolverTests
+public sealed class FhirResourceTypeResolverTests
 {
-    public static void GetResourceTypeFromGenericType()
+    [Fact]
+    public void GetResourceTypeFromGenericType()
     {
         var resolver = new FhirResourceTypeResolver();
 
         var resourceType = resolver.GetResourceType<Patient>();
 
-        TestAssert.AreEqual("Patient", resourceType);
+        Assert.Equal("Patient", resourceType);
     }
 
-    public static void GetResourceTypeFromResourceInstance()
+    [Fact]
+    public void GetResourceTypeFromResourceInstance()
     {
         var resolver = new FhirResourceTypeResolver();
 
         var resourceType = resolver.GetResourceType(new Bundle());
 
-        TestAssert.AreEqual("Bundle", resourceType);
+        Assert.Equal("Bundle", resourceType);
     }
 }

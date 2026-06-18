@@ -1,21 +1,23 @@
 namespace MyFhirSdk.Tests.Client.Authentication;
 
-public static class BearerTokenAuthProviderTests
+public sealed class BearerTokenAuthProviderTests
 {
-    public static async Task ApplyAsyncAddsAuthorizationHeader()
+    [Fact]
+    public async Task ApplyAsyncAddsAuthorizationHeader()
     {
         var provider = new BearerTokenAuthProvider("secret-token");
         using var request = new HttpRequestMessage(HttpMethod.Get, "https://example.org/fhir/Patient/123");
 
-        await provider.ApplyAsync(request).ConfigureAwait(false);
+        await provider.ApplyAsync(request);
 
-        TestAssert.IsNotNull(request.Headers.Authorization);
-        TestAssert.AreEqual("Bearer", request.Headers.Authorization!.Scheme);
-        TestAssert.AreEqual("secret-token", request.Headers.Authorization.Parameter);
+        Assert.NotNull(request.Headers.Authorization);
+        Assert.Equal("Bearer", request.Headers.Authorization!.Scheme);
+        Assert.Equal("secret-token", request.Headers.Authorization.Parameter);
     }
 
-    public static void ConstructorRejectsEmptyToken()
+    [Fact]
+    public void ConstructorRejectsEmptyToken()
     {
-        TestAssert.Throws<ArgumentException>(() => new BearerTokenAuthProvider(" "));
+        Assert.Throws<ArgumentException>(() => new BearerTokenAuthProvider(" "));
     }
 }
