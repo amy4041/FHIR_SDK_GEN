@@ -1,6 +1,12 @@
 using MyFhirSdk.Serialization.Json;
 
-internal sealed record JsonParserTestCase(
+public sealed record JsonParserTestCase(
     string FixtureFileName,
     string ResourceName,
-    Action<FhirJsonParser, string> AssertParsedResource);
+    Action<FhirJsonParser, string> AssertParsedResource)
+{
+    public override string ToString()
+    {
+        return FixtureFileName;
+    }
+}
