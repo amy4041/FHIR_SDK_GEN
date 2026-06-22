@@ -161,7 +161,7 @@ Done when:
 
 ### Phase 5 - Add IG/Profile Validation
 
-Status: Planned
+Status: In Progress
 
 Goal:
 
@@ -188,13 +188,13 @@ Initial TW Core Patient POC implementation order:
    - `Validation/Profiles/ProfileValidationContext.cs`
    - `Validation/Profiles/ProfileValidationOptions.cs`
    - `Validation/Profiles/ProfileValidator.cs`
-3. Add `ImplementationGuides/TwCore/TwCoreProfiles.cs`.
-4. Add `ImplementationGuides/TwCore/TwCorePackage.cs`.
-5. Add `ImplementationGuides/TwCore/Validation/TwCorePatientRules.cs` with only the initial identifier rules:
+3. Add `ImplementationGuides/TwCore/TwCoreProfiles.cs`. (Finished)
+4. Add `ImplementationGuides/TwCore/TwCorePackage.cs`. (Finished)
+5. Add `ImplementationGuides/TwCore/Validation/TwCorePatientRules.cs` with only the initial identifier rules: (Finished)
    - `TWCORE-PAT-002`: `Patient.identifier` must contain at least one item.
    - `TWCORE-PAT-003`: each `Patient.identifier[*].system` must be present.
    - `TWCORE-PAT-004`: each `Patient.identifier[*].value` must be present.
-6. Add TW Core Patient tests:
+6. Add TW Core Patient tests: (Finished)
    - `Tests/ImplementationGuides/TwCore/TwCorePackageTests.cs`
    - `Tests/ImplementationGuides/TwCore/Validation/TwCorePatientValidationTests.cs`
 7. Reassess the next TW Core Patient scope:
