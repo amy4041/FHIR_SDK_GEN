@@ -8,5 +8,6 @@ public enum ValidationIssueCode
     Required,
     Cardinality,
     PrimitiveFormat,
-    ChoiceElement
+    ChoiceElement,
+    Profile
 }

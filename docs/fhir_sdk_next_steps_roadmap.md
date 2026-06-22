@@ -182,7 +182,7 @@ Initial TW Core Patient POC implementation order:
    - `ValidationIssue.PackageId`
    - `ValidationIssue.ProfileUrl`
    - `ValidationIssue.RuleId`
-2. Add the generic profile framework:
+2. Add the generic profile framework: (Finished)
    - `Validation/Profiles/IImplementationGuidePackage.cs`
    - `Validation/Profiles/IProfileValidationRule.cs`
    - `Validation/Profiles/ProfileValidationContext.cs`
