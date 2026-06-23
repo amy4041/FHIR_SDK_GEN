@@ -1,6 +1,6 @@
 # MyFhirSdk Next Steps Roadmap
 
-Last updated: 2026-06-10
+Last updated: 2026-06-23
 
 ## Purpose
 
@@ -211,7 +211,7 @@ Done when:
 
 ### Phase 6 - Complete Client Inventory
 
-Status: Planned
+Status: Finished
 
 Goal:
 
