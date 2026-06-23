@@ -233,19 +233,38 @@ Done when:
 
 ### Phase 7 - Integration Smoke Test
 
-Status: Planned
+Status: Finished
 
 Goal:
 
 Verify the SDK against a real or test FHIR server flow.
 
-Candidate flow:
+Implemented flow:
 
 1. Create Patient
 2. Read Patient
 3. Search Patient
 4. Update Patient
 5. Parse Bundle result
+
+Implementation:
+
+- `Tests/Client/Integration/FhirClientIntegrationSmokeTests.cs`
+- `Tests/Client/Integration/IntegrationFactAttribute.cs`
+
+Run behavior:
+
+- Skipped by default when `MYFHIRSDK_INTEGRATION_BASE_URL` is not set.
+- Can be run manually against a configured FHIR R5 test server.
+- Supports optional bearer authentication with `MYFHIRSDK_INTEGRATION_BEARER_TOKEN`.
+- Uses a UUID-based Patient identifier marker to avoid mixing smoke test data with existing server data.
+
+Example manual run:
+
+```powershell
+$env:MYFHIRSDK_INTEGRATION_BASE_URL="https://hapi.fhir.org/baseR5"
+dotnet test MyFhirSdk.sln --filter Category=Integration
+```
 
 Done when:
 
