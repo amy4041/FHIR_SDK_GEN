@@ -30,4 +30,38 @@ public sealed class FhirSearchQueryTests
 
         Assert.Throws<ArgumentOutOfRangeException>(() => query.Count(-1));
     }
+
+    [Fact]
+    public void ToQueryStringSupportsRepeatedParameterNames()
+    {
+        var query = FhirSearchQuery.Create()
+            .Where("identifier", "a")
+            .Where("identifier", "b");
+
+        var queryString = query.ToQueryString();
+
+        Assert.Equal("identifier=a&identifier=b", queryString);
+    }
+
+    [Fact]
+    public void ToQueryStringPreservesTokenSearchValueFormat()
+    {
+        var query = FhirSearchQuery.Create()
+            .Where("identifier", "http://hospital.example/mrn|12345");
+
+        var queryString = query.ToQueryString();
+
+        Assert.Equal("identifier=http%3A%2F%2Fhospital.example%2Fmrn%7C12345", queryString);
+    }
+
+    [Fact]
+    public void ToQueryStringPreservesDateSearchValueFormat()
+    {
+        var query = FhirSearchQuery.Create()
+            .Where("birthdate", "ge1990-01-01");
+
+        var queryString = query.ToQueryString();
+
+        Assert.Equal("birthdate=ge1990-01-01", queryString);
+    }
 }

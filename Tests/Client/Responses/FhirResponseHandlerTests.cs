@@ -77,6 +77,23 @@ public sealed class FhirResponseHandlerTests
         Assert.Equal("Parse failed.", exception.InnerException!.Message);
     }
 
+    [Fact]
+    public async Task HandleBundleAsyncParsesSuccessfulBundle()
+    {
+        var parser = new FakeFhirParser();
+        var expected = new Bundle();
+        parser.AddResource(expected);
+        var handler = new FhirResponseHandler(parser);
+        using var response = CreateResponse(HttpStatusCode.OK, "{\"resourceType\":\"Bundle\"}");
+
+        var actual = await handler.HandleBundleAsync(response);
+
+        Assert.Same(expected, actual);
+        Assert.Equal(1, parser.ParseCallCount);
+        Assert.Equal("{\"resourceType\":\"Bundle\"}", parser.LastJson);
+        Assert.Equal(typeof(Bundle), parser.LastResourceType);
+    }
+
     private static HttpResponseMessage CreateResponse(
         HttpStatusCode statusCode,
         string body,

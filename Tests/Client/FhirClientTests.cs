@@ -229,6 +229,26 @@ public sealed class FhirClientTests
     }
 
     [Fact]
+    public async Task SearchAsyncSendsRawSearchQuery()
+    {
+        var bundle = new Bundle();
+        var parser = new FakeFhirParser();
+        parser.AddResource(bundle);
+        var sender = new FakeFhirHttpSender();
+        sender.EnqueueResponse(CreateResponse(HttpStatusCode.OK, "{\"resourceType\":\"Bundle\"}"));
+        var client = CreateClient(sender, parser);
+
+        var actual = await client.SearchAsync<Patient>("name=John");
+
+        Assert.Same(bundle, actual);
+        Assert.Single(sender.SentRequests);
+        var request = sender.SentRequests[0];
+        Assert.Equal(HttpMethod.Get, request.Method);
+        Assert.Equal("https://example.org/fhir/Patient?name=John", request.RequestUri!.AbsoluteUri);
+        Assert.Null(request.Headers.Authorization);
+    }
+
+    [Fact]
     public async Task SearchAsyncDoesNotValidateWhenValidationEnabled()
     {
         var bundle = new Bundle();
@@ -247,6 +267,23 @@ public sealed class FhirClientTests
         Assert.Same(bundle, actual);
         Assert.Equal(0, validator.ValidateCallCount);
         Assert.Single(sender.SentRequests);
+    }
+
+    [Fact]
+    public async Task ConstructorUsesNoAuthProviderWhenAuthProviderIsNull()
+    {
+        var patient = new Patient { Id = "123" };
+        var parser = new FakeFhirParser();
+        parser.AddResource(patient);
+        var sender = new FakeFhirHttpSender();
+        sender.EnqueueResponse(CreateResponse(HttpStatusCode.OK, "{\"resourceType\":\"Patient\",\"id\":\"123\"}"));
+        var client = CreateClient(sender, parser, authProvider: null);
+
+        var actual = await client.ReadAsync<Patient>("123");
+
+        Assert.Same(patient, actual!);
+        Assert.Single(sender.SentRequests);
+        Assert.Null(sender.SentRequests[0].Headers.Authorization);
     }
 
     private static FhirClient CreateClient(
