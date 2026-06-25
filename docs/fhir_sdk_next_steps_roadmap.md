@@ -161,7 +161,7 @@ Done when:
 
 ### Phase 5 - Add IG/Profile Validation
 
-Status: In Progress
+Status: Finished
 
 Goal:
 
@@ -197,7 +197,7 @@ Initial TW Core Patient POC implementation order:
 6. Add TW Core Patient tests: (Finished)
    - `Tests/ImplementationGuides/TwCore/TwCorePackageTests.cs`
    - `Tests/ImplementationGuides/TwCore/Validation/TwCorePatientValidationTests.cs`
-7. Reassess the next TW Core Patient scope:
+7. Reassess the next TW Core Patient scope: (Deferred to future IG enhancement)
    - name slices
    - identifier slices
    - `meta.profile` declared-profile validation
