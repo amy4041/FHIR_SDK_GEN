@@ -209,6 +209,12 @@ For servers that require bearer authentication:
 $env:MYFHIRSDK_INTEGRATION_BEARER_TOKEN="your-token"
 ```
 
+## Continuous Integration
+
+The GitHub Actions workflow at `.github/workflows/ci.yml` runs on push, pull request, and manual dispatch. It restores the solution, builds in `Release`, runs the xUnit suite, creates a NuGet package, and uploads the package as a workflow artifact.
+
+The workflow does not set `MYFHIRSDK_INTEGRATION_BASE_URL`, so integration smoke tests remain skipped in regular CI runs.
+
 ## Packaging
 
 Create a local NuGet package:
