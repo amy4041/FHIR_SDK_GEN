@@ -58,7 +58,8 @@ public sealed class FhirClientIntegrationSmokeTests
             new FhirClientOptions
             {
                 BaseAddress = new Uri(baseUrl!, UriKind.Absolute),
-                Timeout = TimeSpan.FromSeconds(30)
+                Timeout = TimeSpan.FromSeconds(30),
+                ValidateBeforeSend = true
             },
             authProvider: CreateAuthProvider());
     }
