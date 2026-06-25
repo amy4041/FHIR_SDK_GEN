@@ -1,6 +1,6 @@
 # MyFhirSdk Next Steps Roadmap
 
-Last updated: 2026-06-23
+Last updated: 2026-06-25
 
 ## Purpose
 
@@ -283,9 +283,9 @@ Make the SDK easier for other developers to use.
 
 Tasks:
 
-- Improve README.
-- Add usage examples.
-- Add CI.
+- Improve README. (Finished)
+- Add usage examples. (Finished)
+- Add CI. (Finished)
 - Add package metadata.
 - Prepare NuGet packaging.
 - Consider samples folder.
