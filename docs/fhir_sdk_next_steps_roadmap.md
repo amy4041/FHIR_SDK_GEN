@@ -263,7 +263,7 @@ Example manual run:
 
 ```powershell
 $env:MYFHIRSDK_INTEGRATION_BASE_URL="https://hapi.fhir.org/baseR5"
-dotnet test MyFhirSdk.sln --filter Category=Integration
+dotnet test Tests\Client\MyFhirSdk.Client.Tests.csproj --filter Category=Integration
 ```
 
 Done when:
