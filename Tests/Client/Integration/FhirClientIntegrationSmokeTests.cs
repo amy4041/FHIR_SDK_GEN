@@ -16,6 +16,7 @@ public sealed class FhirClientIntegrationSmokeTests
         using var httpClient = new HttpClient();
         var client = CreateClient(httpClient);
         var marker = "smoke-" + Guid.NewGuid().ToString("N");
+        Console.WriteLine($"marker: {marker}");
         var patient = CreateSmokeTestPatient(marker);
 
         var created = await client.CreateAsync(patient);
