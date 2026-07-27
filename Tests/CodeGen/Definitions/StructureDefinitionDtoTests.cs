@@ -1,0 +1,161 @@
+using System.Text.Json;
+using MyFhirSdk.CodeGen.Definitions;
+using Xunit;
+
+namespace MyFhirSdk.CodeGen.Tests.Definitions;
+
+public sealed class StructureDefinitionDtoTests
+{
+    [Fact]
+    public void Deserialize_WithSupportedFields_PreservesDefinitionData()
+    {
+        const string json =
+            """
+            {
+              "resourceType": "StructureDefinition",
+              "id": "HumanName",
+              "url": "http://hl7.org/fhir/StructureDefinition/HumanName",
+              "version": "5.0.0",
+              "name": "HumanName",
+              "type": "HumanName",
+              "kind": "complex-type",
+              "abstract": false,
+              "baseDefinition": "http://hl7.org/fhir/StructureDefinition/DataType",
+              "derivation": "specialization",
+              "snapshot": {
+                "element": [
+                  {
+                    "id": "HumanName",
+                    "path": "HumanName",
+                    "min": 0,
+                    "max": "*"
+                  },
+                  {
+                    "id": "HumanName.family",
+                    "path": "HumanName.family",
+                    "min": 0,
+                    "max": "1",
+                    "type": [
+                      {
+                        "code": "string",
+                        "profile": [
+                          "http://example.org/fhir/StructureDefinition/Profile"
+                        ],
+                        "targetProfile": [
+                          "http://example.org/fhir/StructureDefinition/TargetProfile"
+                        ]
+                      }
+                    ],
+                    "short": "Family name",
+                    "definition": "The family name.",
+                    "contentReference": "#HumanName.family",
+                    "sliceName": "official"
+                  }
+                ]
+              },
+              "differential": {
+                "element": [
+                  {
+                    "id": "HumanName",
+                    "path": "HumanName"
+                  },
+                  {
+                    "id": "HumanName.family",
+                    "path": "HumanName.family"
+                  }
+                ]
+              }
+            }
+            """;
+
+        var definition = JsonSerializer.Deserialize<StructureDefinitionDto>(json);
+
+        Assert.NotNull(definition);
+        Assert.Equal("StructureDefinition", definition.ResourceType);
+        Assert.Equal("HumanName", definition.Id);
+        Assert.Equal("http://hl7.org/fhir/StructureDefinition/HumanName", definition.Url);
+        Assert.Equal("5.0.0", definition.Version);
+        Assert.Equal("HumanName", definition.Name);
+        Assert.Equal("HumanName", definition.Type);
+        Assert.Equal("complex-type", definition.Kind);
+        Assert.Equal(false, definition.IsAbstract);
+        Assert.Equal(
+            "http://hl7.org/fhir/StructureDefinition/DataType",
+            definition.BaseDefinition);
+        Assert.Equal("specialization", definition.Derivation);
+
+        Assert.NotNull(definition.Snapshot?.Elements);
+        Assert.Equal(2, definition.Snapshot.Elements.Count);
+
+        var family = definition.Snapshot.Elements[1];
+        Assert.Equal("HumanName.family", family.Id);
+        Assert.Equal("HumanName.family", family.Path);
+        Assert.Equal("official", family.SliceName);
+        Assert.Equal(0, family.Min);
+        Assert.Equal("1", family.Max);
+        Assert.Equal("#HumanName.family", family.ContentReference);
+        Assert.Equal("Family name", family.Short);
+        Assert.Equal("The family name.", family.Definition);
+
+        var familyType = Assert.Single(Assert.IsType<List<ElementTypeDto>>(family.Types));
+        Assert.Equal("string", familyType.Code);
+        Assert.Equal(
+            ["http://example.org/fhir/StructureDefinition/Profile"],
+            familyType.Profiles);
+        Assert.Equal(
+            ["http://example.org/fhir/StructureDefinition/TargetProfile"],
+            familyType.TargetProfiles);
+
+        Assert.NotNull(definition.Differential?.Elements);
+        Assert.Equal(2, definition.Differential.Elements.Count);
+    }
+
+    [Fact]
+    public void Deserialize_WithUnknownProperties_IgnoresUnknownData()
+    {
+        const string json =
+            """
+            {
+              "resourceType": "StructureDefinition",
+              "unknownRoot": true,
+              "snapshot": {
+                "unknownSnapshot": "ignored",
+                "element": [
+                  {
+                    "id": "Period.start",
+                    "unknownElement": 42,
+                    "type": [
+                      {
+                        "code": "dateTime",
+                        "unknownType": {}
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+            """;
+
+        var definition = JsonSerializer.Deserialize<StructureDefinitionDto>(json);
+
+        Assert.NotNull(definition);
+        Assert.Equal("StructureDefinition", definition.ResourceType);
+        var element = Assert.Single(
+            Assert.IsType<List<ElementDefinitionDto>>(definition.Snapshot?.Elements));
+        var elementType = Assert.Single(
+            Assert.IsType<List<ElementTypeDto>>(element.Types));
+        Assert.Equal("dateTime", elementType.Code);
+    }
+
+    [Fact]
+    public void Deserialize_WithMissingFields_LeavesFieldsNullForLaterValidation()
+    {
+        var definition = JsonSerializer.Deserialize<StructureDefinitionDto>("{}");
+
+        Assert.NotNull(definition);
+        Assert.Null(definition.ResourceType);
+        Assert.Null(definition.IsAbstract);
+        Assert.Null(definition.Snapshot);
+        Assert.Null(definition.Differential);
+    }
+}
