@@ -124,6 +124,9 @@ public sealed class StructureDefinitionDtoTests
                   {
                     "id": "Period.start",
                     "unknownElement": 42,
+                    "slicing": {
+                      "ordered": false
+                    },
                     "type": [
                       {
                         "code": "dateTime",
@@ -142,6 +145,9 @@ public sealed class StructureDefinitionDtoTests
         Assert.Equal("StructureDefinition", definition.ResourceType);
         var element = Assert.Single(
             Assert.IsType<List<ElementDefinitionDto>>(definition.Snapshot?.Elements));
+        Assert.Equal(
+            JsonValueKind.Object,
+            element.Slicing?.ValueKind);
         var elementType = Assert.Single(
             Assert.IsType<List<ElementTypeDto>>(element.Types));
         Assert.Equal("dateTime", elementType.Code);

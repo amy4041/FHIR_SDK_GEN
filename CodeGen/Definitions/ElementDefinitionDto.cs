@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace MyFhirSdk.CodeGen.Definitions;
@@ -13,6 +14,9 @@ public sealed class ElementDefinitionDto
 
     [JsonPropertyName("sliceName")]
     public string? SliceName { get; init; }
+
+    [JsonPropertyName("slicing")]
+    public JsonElement? Slicing { get; init; }
 
     [JsonPropertyName("min")]
     public int? Min { get; init; }
