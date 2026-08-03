@@ -389,7 +389,59 @@ Renderer 不得再次修改已決定的 C# 名稱。
 Internal Model 仍保留 `Min`、`Max` 與 `IsRequired`，但 MVP 不生成 required 或
 collection min/max validation rule。
 
-### 6.6 Phase 3 測試
+### 6.6 實作 StructureDefinitionParser
+
+建立 `CodeGen/Parsing/StructureDefinitionParser.cs`，作為 Loader/DTO 與
+Internal Model 之間的組裝邊界。Parser 只負責解析 generator 輸入，
+不得與 SDK runtime 的 JSON Parser 混用。
+
+建議介面：
+
+```csharp
+GenerationResult<FhirTypeModel> Parse(
+    LoadedStructureDefinition loadedDefinition,
+    string targetNamespace,
+    IReadOnlySet<string> previewFhirTypeNames)
+```
+
+Parser 必須組合：
+
+- `StructureDefinitionElementSelector`。
+- `CSharpTypeMapper`。
+- `CSharpNameConverter`。
+- `CardinalityMapper`。
+
+Parsing 流程：
+
+1. 從 `LoadedStructureDefinition` 取得來源檔案與 definition。
+2. 驗證建立 Internal Model 所需的 `type`、`url`、`version`、
+   `baseDefinition` 與 `abstract`。
+3. 使用 `ConvertTypeName` 建立 class name，並決定 target namespace。
+4. MVP general-purpose complex datatype 的 base type 映射為 `DataType`；
+   未知或不支援的 `baseDefinition` 必須產生診斷。
+5. 呼叫 `StructureDefinitionElementSelector` 取得依 differential 順序排列、
+   並由 snapshot 補齊的 element。
+6. 對每個 selected element 使用 `ConvertPropertyName` 建立 property
+   name，並以同一個 ordinal name set 偵測型別內衝突。
+7. 只接受 selector 確認的單一 `type.code`，使用 `CSharpTypeMapper`
+   決定 primitive、正式 SDK complex type 或同批 preview type。
+8. 使用 snapshot element 的 `min` 與 `max` 呼叫 `CardinalityMapper`。
+9. 建立 `FhirPropertyModel`，保留 element id/path、FHIR/C# 名稱、
+   C# type、cardinality、documentation 與 order。
+10. 依 selector 已決定的 ordinal order 建立 properties，最後組成
+    immutable `FhirTypeModel`。
+
+診斷與失敗原則：
+
+- 未知 type mapping 產生 `FSG0009`。
+- property name 衝突產生 `FSG0010`。
+- 名稱、cardinality、base type 或必要欄位無法解析時，產生包含
+  source file、definition canonical、element id/path 的診斷。
+- 任一 element 失敗時，該 definition 不得回傳部分
+  `FhirTypeModel`；但應盡可能收集同一 definition 內的可定位診斷。
+- Parser 不得重新實作 Selector 或 Mapper 已決定的規則。
+
+### 6.7 Phase 3 測試
 
 - 全部 primitive mapping。
 - 已知 complex datatype mapping。
@@ -400,8 +452,14 @@ collection min/max validation rule。
 - snapshot 不重複輸出 inherited property。
 - slice、choice、contentReference 分別產生 `FSG0006`～`FSG0008`。
 - 無法由 differential id 在 snapshot 找到 element 時生成明確診斷。
+- Parser 能將有效 definition 組成包含固定順序 properties 的
+  `FhirTypeModel`。
+- Parser 的 property 型別、cardinality 與 documentation 來自 selector
+  配對的 snapshot element。
+- Parser 對同批 preview type 使用 target namespace。
+- 任一 property 解析失敗時，Parser 回傳診斷且不產生部分 model。
 
-### 6.7 Phase 3 驗收條件
+### 6.8 Phase 3 驗收條件
 
 - Parser 的輸出不包含尚未決定的 FHIR 規則。
 - Renderer 所需資訊都已存在 Internal Model。
