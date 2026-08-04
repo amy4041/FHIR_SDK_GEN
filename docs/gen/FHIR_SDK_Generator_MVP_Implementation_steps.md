@@ -398,7 +398,7 @@ Internal Model 之間的組裝邊界。Parser 只負責解析 generator 輸入�
 建議介面：
 
 ```csharp
-GenerationResult<FhirTypeModel> Parse(
+GenerationResult<FhirTypeModel?> Parse(
     LoadedStructureDefinition loadedDefinition,
     string targetNamespace,
     IReadOnlySet<string> previewFhirTypeNames)
@@ -438,7 +438,8 @@ Parsing 流程：
 - 名稱、cardinality、base type 或必要欄位無法解析時，產生包含
   source file、definition canonical、element id/path 的診斷。
 - 任一 element 失敗時，該 definition 不得回傳部分
-  `FhirTypeModel`；但應盡可能收集同一 definition 內的可定位診斷。
+  `FhirTypeModel`，且 result `Value` 必須為 `null`；但應盡可能收集同一
+  definition 內的可定位診斷。
 - Parser 不得重新實作 Selector 或 Mapper 已決定的規則。
 
 ### 6.7 Phase 3 測試
