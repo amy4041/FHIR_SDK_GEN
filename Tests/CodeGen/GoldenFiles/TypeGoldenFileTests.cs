@@ -11,16 +11,18 @@ public sealed class TypeGoldenFileTests
 {
     private const string TargetNamespace =
         "MyFhirSdk.GeneratorFixtures.Types";
+    private const string MvpPreviewTypeNames =
+        "Period,Coding,HumanName,Address,Identifier";
 
     public static TheoryData<string, string, string, string> TypeCases =>
         new()
         {
             // typeName, FHIR version, Golden File version directory, preview types
-            { "HumanName", "5.0.0", "R5", "HumanName" }
-
-            // Add another reviewed type after its fixture and Golden File exist:
-            // { "Period", "5.0.0", "R5", "Period" }
-            // { "Identifier", "5.0.0", "R5", "Identifier" }
+            { "Period", "5.0.0", "R5", MvpPreviewTypeNames },
+            { "Coding", "5.0.0", "R5", MvpPreviewTypeNames },
+            { "HumanName", "5.0.0", "R5", MvpPreviewTypeNames },
+            { "Address", "5.0.0", "R5", MvpPreviewTypeNames },
+            { "Identifier", "5.0.0", "R5", MvpPreviewTypeNames }
         };
 
     [Theory]
