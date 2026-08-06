@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using MyFhirSdk.Core;
 using MyFhirSdk.Primitives;
-using MyFhirSdk.Types;
 
 namespace MyFhirSdk.GeneratorFixtures.Types;
 
