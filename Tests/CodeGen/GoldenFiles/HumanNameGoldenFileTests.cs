@@ -37,7 +37,14 @@ public sealed class HumanNameGoldenFileTests
         var parseResult = new StructureDefinitionParser().Parse(
             loadedDefinition,
             TargetNamespace,
-            new HashSet<string>(StringComparer.Ordinal) { "HumanName" });
+            new HashSet<string>(StringComparer.Ordinal)
+            {
+                "Period",
+                "Coding",
+                "HumanName",
+                "Address",
+                "Identifier"
+            });
 
         Assert.True(parseResult.IsSuccess);
         Assert.Empty(parseResult.Diagnostics);
