@@ -2,7 +2,7 @@
 
 Version 1.0
 
-- 文件狀態：Proposed
+- 文件狀態：Completed
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
 - 依據文件：
   - `docs/gen/FHIR_SDK_Generator_MVP_Implementation.md`
@@ -769,6 +769,25 @@ dotnet run --project CodeGen/MyFhirSdk.CodeGen.csproj -- `
 - CLI 不會意外覆寫現有手寫模型。
 - 一般 `dotnet test` 不會自動修改 Golden File 或 Generated output。
 - 文件清楚標示 Resource、Profile、choice、slicing 與 validation metadata 尚未支援。
+
+### 14.1 MVP 驗證紀錄
+
+- 驗證日期：2026-08-12
+- 驗證提交：`b5ab83d`（`chore: remove temp file`）
+- GitHub Actions：重新執行成功，CI 狀態為綠燈。
+- Release build：`dotnet build MyFhirSdk.sln --configuration Release --no-restore`
+  通過，0 warnings、0 errors。
+- Solution tests：`dotnet test MyFhirSdk.sln --configuration Release --no-build --no-restore`
+  通過，共 286 個測試通過、0 個失敗；另有 1 個與 Generator MVP 無關的外部
+  Client integration smoke test 略過。
+- CodeGen tests：137 個測試全部通過，涵蓋五種 datatype Golden File exact
+  comparison、Roslyn compilation validation、Serializer/Parser round-trip、Validator
+  traversal、GeneratedFileWriter、CLI 與 determinism。
+- CLI smoke test：以固定 R5 fixtures 執行成功，exit code 為 `0`，並產生
+  `Period`、`Coding`、`HumanName`、`Address`、`Identifier` 五個 generated source
+  檔案。
+- 驗證結論：第 14 節列出的 MVP 完成條件全部符合，MVP 狀態確認為
+  `Completed`。
 
 ## 15. 後續階段
 
