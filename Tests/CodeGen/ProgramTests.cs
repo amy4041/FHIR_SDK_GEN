@@ -1,4 +1,6 @@
 using MyFhirSdk.CodeGen;
+using MyFhirSdk.CodeGen.Cli;
+using MyFhirSdk.CodeGen.Generation;
 using Xunit;
 
 namespace MyFhirSdk.CodeGen.Tests;
@@ -55,7 +57,7 @@ public sealed class ProgramTests
         using var output = new StringWriter();
         using var error = new StringWriter();
 
-        var exitCode = await Program.RunAsync(
+        var exitCode = await RunCliAsync(
             CreateArguments(GetFixtureDirectory(), outputRoot, "HumanName", "Address"),
             directory.RepositoryRoot,
             output,
@@ -86,12 +88,12 @@ public sealed class ProgramTests
         using var secondStandardOutput = new StringWriter();
         using var secondError = new StringWriter();
 
-        var firstExitCode = await Program.RunAsync(
+        var firstExitCode = await RunCliAsync(
             CreateArguments(firstInput, firstOutput, "Period", "HumanName", "Address"),
             directory.RepositoryRoot,
             firstStandardOutput,
             firstError);
-        var secondExitCode = await Program.RunAsync(
+        var secondExitCode = await RunCliAsync(
             CreateArguments(secondInput, secondOutput, "Address", "HumanName", "Period"),
             directory.RepositoryRoot,
             secondStandardOutput,
@@ -125,7 +127,7 @@ public sealed class ProgramTests
         using var output = new StringWriter();
         using var error = new StringWriter();
 
-        var exitCode = await Program.RunAsync(
+        var exitCode = await RunCliAsync(
             CreateArguments(GetFixtureDirectory(), outputRoot, "HumanName", "MissingType"),
             directory.RepositoryRoot,
             output,
@@ -150,7 +152,7 @@ public sealed class ProgramTests
             "HumanName");
         arguments[5] = "Invalid-Namespace";
 
-        var exitCode = await Program.RunAsync(
+        var exitCode = await RunCliAsync(
             arguments,
             directory.RepositoryRoot,
             output,
@@ -159,6 +161,17 @@ public sealed class ProgramTests
         Assert.Equal(1, exitCode);
         Assert.Contains("not a valid C# namespace", error.ToString(), StringComparison.Ordinal);
         Assert.False(Directory.Exists(Path.Combine(directory.Path, "generated")));
+    }
+
+    private static Task<int> RunCliAsync(
+        string[] args,
+        string repositoryRoot,
+        TextWriter output,
+        TextWriter error)
+    {
+        var generator = new FhirSdkGenerator(repositoryRoot);
+        var cli = new GeneratorCli(generator, output, error);
+        return cli.RunAsync(args);
     }
 
     private static string[] CreateArguments(
