@@ -1,0 +1,191 @@
+TYPE abstract class MyFhirSdk.Core.BackboneElement | Base=MyFhirSdk.Core.Element | Interfaces=-
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] ModifierExtension
+TYPE abstract class MyFhirSdk.Core.BackboneType | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] ModifierExtension
+TYPE abstract class MyFhirSdk.Core.Base | Base=MyFhirSdk.Core.FhirObject | Interfaces=-
+TYPE abstract class MyFhirSdk.Core.DataType | Base=MyFhirSdk.Core.Element | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE abstract class MyFhirSdk.Core.DomainResource | Base=MyFhirSdk.Core.Resource | Interfaces=-
+  PROPERTY MyFhirSdk.Core.Narrative Text
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] Extension
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] ModifierExtension
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Resource] Contained
+TYPE abstract class MyFhirSdk.Core.Element | Base=MyFhirSdk.Core.Base | Interfaces=-
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] Extension
+  PROPERTY System.String Id
+TYPE sealed class MyFhirSdk.Core.Extension | Base=MyFhirSdk.Core.Element | Interfaces=-
+  CONSTRUCTOR Void .ctor()
+  PROPERTY MyFhirSdk.Core.IFhirExtensionValue Value
+  PROPERTY System.String Url
+TYPE abstract class MyFhirSdk.Core.FhirObject | Base=System.Object | Interfaces=-
+TYPE class MyFhirSdk.Core.FhirSdkException | Base=System.Exception | Interfaces=System.Runtime.Serialization.ISerializable
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.String)
+  CONSTRUCTOR Void .ctor(System.String, System.Exception)
+TYPE interface MyFhirSdk.Core.IFhirExtensionValue | Base=- | Interfaces=-
+TYPE sealed class MyFhirSdk.Core.Meta | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.DataType] Security
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.DataType] Tag
+  PROPERTY System.Collections.Generic.IList`1[System.String] Profile
+  PROPERTY System.Nullable`1[System.DateTimeOffset] LastUpdated
+  PROPERTY System.String Source
+  PROPERTY System.String VersionId
+TYPE sealed class MyFhirSdk.Core.Narrative | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  PROPERTY System.String Div
+  PROPERTY System.String Status
+TYPE abstract class MyFhirSdk.Core.PrimitiveType`1 | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  METHOD System.String ToString()
+  PROPERTY Boolean HasValue
+  PROPERTY T Value
+TYPE abstract class MyFhirSdk.Core.Resource | Base=MyFhirSdk.Core.Base | Interfaces=-
+  PROPERTY MyFhirSdk.Core.Meta Meta
+  PROPERTY System.String Id
+  PROPERTY System.String ImplicitRules
+  PROPERTY System.String Language
+  PROPERTY System.String ResourceType
+TYPE sealed class MyFhirSdk.Primitives.FhirBase64Binary | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.String)
+TYPE sealed class MyFhirSdk.Primitives.FhirBoolean | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Boolean>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.Nullable`1[System.Boolean])
+  METHOD System.String ToString()
+TYPE sealed class MyFhirSdk.Primitives.FhirCanonical | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.String)
+TYPE sealed class MyFhirSdk.Primitives.FhirCode | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.String)
+TYPE sealed class MyFhirSdk.Primitives.FhirDate | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.String)
+TYPE sealed class MyFhirSdk.Primitives.FhirDateTime | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.String)
+TYPE sealed class MyFhirSdk.Primitives.FhirDecimal | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Decimal>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.Nullable`1[System.Decimal])
+  CONSTRUCTOR Void .ctor(System.String)
+  FIELD Int32 MaxExponentDigits
+  FIELD Int32 MaxFractionDigits
+  FIELD Int32 MaxIntegerDigits
+  METHOD System.String ToString()
+  PROPERTY System.String Literal
+TYPE sealed class MyFhirSdk.Primitives.FhirId | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.String)
+TYPE sealed class MyFhirSdk.Primitives.FhirInstant | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.String)
+TYPE sealed class MyFhirSdk.Primitives.FhirInteger | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Int32>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.Nullable`1[System.Int32])
+  METHOD System.String ToString()
+TYPE sealed class MyFhirSdk.Primitives.FhirInteger64 | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Int64>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.Nullable`1[System.Int64])
+  CONSTRUCTOR Void .ctor(System.String)
+  METHOD System.String ToString()
+  PROPERTY System.String Literal
+TYPE sealed class MyFhirSdk.Primitives.FhirMarkdown | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.String)
+  FIELD Int32 MaxLength
+TYPE sealed class MyFhirSdk.Primitives.FhirPositiveInt | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Int32>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.Nullable`1[System.Int32])
+  METHOD System.String ToString()
+TYPE sealed class MyFhirSdk.Primitives.FhirString | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.String)
+  FIELD Int32 MaxLength
+TYPE sealed class MyFhirSdk.Primitives.FhirUnsignedInt | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Int32>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.Nullable`1[System.Int32])
+  METHOD System.String ToString()
+TYPE sealed class MyFhirSdk.Primitives.FhirUri | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.String)
+TYPE sealed class MyFhirSdk.Primitives.FhirUrl | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(System.String)
+TYPE interface MyFhirSdk.Serialization.IFhirParser | Base=- | Interfaces=-
+  METHOD TResource Parse[TResource](System.String)
+TYPE interface MyFhirSdk.Serialization.IFhirSerializer | Base=- | Interfaces=-
+  METHOD System.String Serialize[TResource](TResource)
+TYPE sealed class MyFhirSdk.Serialization.Json.FhirJsonParser | Base=System.Object | Interfaces=MyFhirSdk.Serialization.IFhirParser
+  CONSTRUCTOR Void .ctor()
+  METHOD TResource Parse[TResource](System.String)
+TYPE sealed class MyFhirSdk.Serialization.Json.FhirJsonSerializer | Base=System.Object | Interfaces=MyFhirSdk.Serialization.IFhirSerializer
+  CONSTRUCTOR Void .ctor()
+  METHOD System.String Serialize[TResource](TResource)
+TYPE sealed class MyFhirSdk.Validation.FhirValidator | Base=System.Object | Interfaces=MyFhirSdk.Validation.IFhirValidator
+  CONSTRUCTOR Void .ctor()
+  METHOD MyFhirSdk.Validation.ValidationResult Validate(MyFhirSdk.Core.Resource)
+TYPE interface MyFhirSdk.Validation.IFhirValidator | Base=- | Interfaces=-
+  METHOD MyFhirSdk.Validation.ValidationResult Validate(MyFhirSdk.Core.Resource)
+TYPE interface MyFhirSdk.Validation.Profiles.IImplementationGuidePackage | Base=- | Interfaces=-
+  METHOD Boolean SupportsProfile(System.String)
+  METHOD System.Collections.Generic.IEnumerable`1[MyFhirSdk.Validation.Profiles.IProfileValidationRule] GetRules(System.String, System.Type)
+  PROPERTY System.Collections.Generic.IReadOnlyCollection`1[System.String] SupportedProfiles
+  PROPERTY System.String FhirVersion
+  PROPERTY System.String Name
+  PROPERTY System.String PackageId
+TYPE interface MyFhirSdk.Validation.Profiles.IProfileValidationRule | Base=- | Interfaces=-
+  METHOD Void Validate(MyFhirSdk.Validation.Profiles.ProfileValidationContext, System.Collections.Generic.ICollection`1[MyFhirSdk.Validation.ValidationIssue])
+  PROPERTY System.String RuleId
+TYPE sealed class MyFhirSdk.Validation.Profiles.ProfileValidationContext | Base=System.Object | Interfaces=-
+  CONSTRUCTOR Void .ctor()
+  PROPERTY MyFhirSdk.Core.Resource Resource
+  PROPERTY System.String PackageId
+  PROPERTY System.String ProfileUrl
+  PROPERTY System.String RuleId
+TYPE sealed class MyFhirSdk.Validation.Profiles.ProfileValidationOptions | Base=System.Object | Interfaces=-
+  CONSTRUCTOR Void .ctor()
+  PROPERTY MyFhirSdk.Validation.Profiles.ProfileValidationOptions Default
+  PROPERTY MyFhirSdk.Validation.Profiles.UnknownProfileBehavior UnknownDeclaredProfileBehavior
+  PROPERTY MyFhirSdk.Validation.Profiles.UnknownProfileBehavior UnknownExplicitProfileBehavior
+TYPE sealed class MyFhirSdk.Validation.Profiles.ProfileValidator | Base=System.Object | Interfaces=-
+  CONSTRUCTOR Void .ctor(MyFhirSdk.Validation.IFhirValidator, MyFhirSdk.Validation.Profiles.IImplementationGuidePackage[])
+  CONSTRUCTOR Void .ctor(MyFhirSdk.Validation.IFhirValidator, MyFhirSdk.Validation.Profiles.ProfileValidationOptions, MyFhirSdk.Validation.Profiles.IImplementationGuidePackage[])
+  METHOD MyFhirSdk.Validation.ValidationResult Validate(MyFhirSdk.Core.Resource, System.Collections.Generic.IEnumerable`1[System.String])
+  METHOD MyFhirSdk.Validation.ValidationResult Validate(MyFhirSdk.Core.Resource, System.String)
+  METHOD MyFhirSdk.Validation.ValidationResult ValidateDeclaredProfiles(MyFhirSdk.Core.Resource)
+TYPE enum MyFhirSdk.Validation.Profiles.UnknownProfileBehavior | Base=System.Enum | Interfaces=System.IComparable, System.IConvertible, System.IFormattable, System.ISpanFormattable
+  FIELD Int32 value__
+  FIELD MyFhirSdk.Validation.Profiles.UnknownProfileBehavior Error
+  FIELD MyFhirSdk.Validation.Profiles.UnknownProfileBehavior Ignore
+  FIELD MyFhirSdk.Validation.Profiles.UnknownProfileBehavior Warning
+TYPE sealed class MyFhirSdk.Validation.ValidationIssue | Base=System.Object | Interfaces=-
+  CONSTRUCTOR Void .ctor()
+  PROPERTY MyFhirSdk.Validation.ValidationIssueCode Code
+  PROPERTY MyFhirSdk.Validation.ValidationRuleSource Source
+  PROPERTY MyFhirSdk.Validation.ValidationSeverity Severity
+  PROPERTY System.String Message
+  PROPERTY System.String PackageId
+  PROPERTY System.String Path
+  PROPERTY System.String ProfileUrl
+  PROPERTY System.String RuleId
+TYPE enum MyFhirSdk.Validation.ValidationIssueCode | Base=System.Enum | Interfaces=System.IComparable, System.IConvertible, System.IFormattable, System.ISpanFormattable
+  FIELD Int32 value__
+  FIELD MyFhirSdk.Validation.ValidationIssueCode Cardinality
+  FIELD MyFhirSdk.Validation.ValidationIssueCode ChoiceElement
+  FIELD MyFhirSdk.Validation.ValidationIssueCode PrimitiveFormat
+  FIELD MyFhirSdk.Validation.ValidationIssueCode Profile
+  FIELD MyFhirSdk.Validation.ValidationIssueCode Required
+TYPE sealed class MyFhirSdk.Validation.ValidationResult | Base=System.Object | Interfaces=-
+  CONSTRUCTOR Void .ctor(System.Collections.Generic.IEnumerable`1[MyFhirSdk.Validation.ValidationIssue])
+  PROPERTY Boolean IsValid
+  PROPERTY MyFhirSdk.Validation.ValidationResult Success
+  PROPERTY System.Collections.Generic.IReadOnlyList`1[MyFhirSdk.Validation.ValidationIssue] Issues
+TYPE enum MyFhirSdk.Validation.ValidationRuleSource | Base=System.Enum | Interfaces=System.IComparable, System.IConvertible, System.IFormattable, System.ISpanFormattable
+  FIELD Int32 value__
+  FIELD MyFhirSdk.Validation.ValidationRuleSource BaseFhir
+  FIELD MyFhirSdk.Validation.ValidationRuleSource BusinessRule
+  FIELD MyFhirSdk.Validation.ValidationRuleSource ImplementationGuide
+TYPE enum MyFhirSdk.Validation.ValidationSeverity | Base=System.Enum | Interfaces=System.IComparable, System.IConvertible, System.IFormattable, System.ISpanFormattable
+  FIELD Int32 value__
+  FIELD MyFhirSdk.Validation.ValidationSeverity Error
+  FIELD MyFhirSdk.Validation.ValidationSeverity Information
+  FIELD MyFhirSdk.Validation.ValidationSeverity Warning
