@@ -9,6 +9,7 @@ Version 1.0
   - `docs/gen/FHIR_SDK_Generator_Implementation_Flow.md`
   - `docs/gen/FHIR_SDK_Generator_MVP_Implementation.md`
   - `docs/gen/FHIR_SDK_Generator_MVP_Implementation_steps.md`
+  - `docs/gen/MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md`
 
 ## 1. 文件目的
 
@@ -346,6 +347,9 @@ contract。Local tool 的發布不以完成此拆分為必要條件。
 ## 9. 建議遷移順序
 
 ### Phase A：固定 Runtime contract
+
+詳細工作分解、完成標準與驗收方式見
+`docs/gen/MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md`。
 
 1. 盤點 public API，定義 Runtime 必須保留的最小 base contracts。
 2. 定義 internal primitive definition、codec 與 validator contract。
