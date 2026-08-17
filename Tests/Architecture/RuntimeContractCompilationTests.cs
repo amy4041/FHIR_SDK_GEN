@@ -99,7 +99,7 @@ public sealed class RuntimeContractCompilationTests
                     (IFhirValidatablePrimitive)value;
             }
             """,
-            ["CS0122"]
+            ["CS0122", "CS0246"]
         },
         {
             """

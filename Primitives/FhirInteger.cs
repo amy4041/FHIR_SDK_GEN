@@ -6,7 +6,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR integer primitive backed by a signed 32-bit integer.
 /// </summary>
-public sealed class FhirInteger : PrimitiveType<int?>, IFhirValidatablePrimitive
+public sealed class FhirInteger : PrimitiveType<int?>
 {
     public FhirInteger()
     {
@@ -15,11 +15,6 @@ public sealed class FhirInteger : PrimitiveType<int?>, IFhirValidatablePrimitive
     public FhirInteger(int? value)
         : base(value)
     {
-    }
-
-    bool IFhirValidatablePrimitive.IsValid()
-    {
-        return true;
     }
 
     public override string ToString()

@@ -228,6 +228,13 @@ new DecimalPrimitiveCodec();
 
 ## 8. Work Package A2：建立 primitive definition/codec/validator contract
 
+- 實作狀態：Completed（2026-08-17）
+- Internal contracts：`Primitives/Runtime/PrimitiveContracts.cs`
+- Default registry：`Primitives/Runtime/PrimitiveRegistry.cs`
+- Codec/validator：`Primitives/Runtime/PrimitiveCodecs.cs`、
+  `Primitives/Runtime/PrimitiveValidators.cs`
+- Contract tests：`Tests/Architecture/PrimitiveRuntimeContractTests.cs`
+
 ### 8.1 目標
 
 將 primitive 的共同 value access、JSON codec、format validation 與型別 identity 分開，

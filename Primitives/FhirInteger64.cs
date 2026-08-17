@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text.RegularExpressions;
 using MyFhirSdk.Core;
 
 namespace MyFhirSdk.Primitives;
@@ -8,7 +7,7 @@ namespace MyFhirSdk.Primitives;
 /// FHIR integer64 primitive. JSON represents this value as a string to avoid
 /// precision loss in floating point implementations.
 /// </summary>
-public sealed partial class FhirInteger64 : PrimitiveType<long?>, IFhirValidatablePrimitive
+public sealed class FhirInteger64 : PrimitiveType<long?>
 {
     public FhirInteger64()
     {
@@ -35,23 +34,9 @@ public sealed partial class FhirInteger64 : PrimitiveType<long?>, IFhirValidatab
     /// </summary>
     public string? Literal { get; }
 
-    bool IFhirValidatablePrimitive.IsValid()
-    {
-        var literal = Literal ?? Value?.ToString(CultureInfo.InvariantCulture);
-        if (literal is null)
-        {
-            return true;
-        }
-
-        return Integer64Regex().IsMatch(literal)
-            && long.TryParse(literal, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out _);
-    }
-
     public override string ToString()
     {
         return Literal ?? Value?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
     }
 
-    [GeneratedRegex(@"^[0]|[-+]?[1-9][0-9]*$")]
-    private static partial Regex Integer64Regex();
 }

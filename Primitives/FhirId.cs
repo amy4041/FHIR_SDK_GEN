@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using MyFhirSdk.Core;
 
 namespace MyFhirSdk.Primitives;
@@ -6,7 +5,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR id primitive. Allows ASCII letters, digits, '-' and '.', up to 64 chars.
 /// </summary>
-public sealed partial class FhirId : PrimitiveType<string>, IFhirValidatablePrimitive
+public sealed class FhirId : PrimitiveType<string>
 {
     public FhirId()
     {
@@ -17,11 +16,4 @@ public sealed partial class FhirId : PrimitiveType<string>, IFhirValidatablePrim
     {
     }
 
-    bool IFhirValidatablePrimitive.IsValid()
-    {
-        return Value is null || IdRegex().IsMatch(Value);
-    }
-
-    [GeneratedRegex(@"^[A-Za-z0-9\-\.]{1,64}$")]
-    private static partial Regex IdRegex();
 }
