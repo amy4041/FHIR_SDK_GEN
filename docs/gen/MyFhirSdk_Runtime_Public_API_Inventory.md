@@ -1,12 +1,13 @@
 # MyFhirSdk Runtime Public API Inventory
 
-Version 1.0
+Version 1.1
 
-- 文件狀態：Baseline
+- 文件狀態：Phase A minimum contract fixed
 - Baseline commit：`d41881d`
-- Baseline branch：`feat/runtime-phase-a0-baseline`
+- A1 起始 commit：`a9da211`
+- 目前 branch：`feat/runtime-phase-a1-contract`
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
-- 對應工作：Runtime Phase A / Work Package A0
+- 對應工作：Runtime Phase A / Work Package A0、A1
 - 實作指引：
   `docs/gen/MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md`
 
@@ -62,6 +63,30 @@ property、field 與 event 的反射簽章。Nullable annotation 與 generic con
 | `Meta` | Bootstrap debt / Model-specific | R5 structure，目前由 `Resource.Meta` 直接引用 |
 | `Narrative` | Bootstrap debt / Model-specific | R5 structure，目前由 `DomainResource.Text` 直接引用 |
 
+### 3.1 A1 Core member ownership
+
+| Type/member | Owner | A1 決策 |
+|---|---|---|
+| `FhirObject` type | Runtime contract | 保留 public abstract，作為所有 FHIR object 的穩定根型別 |
+| `Base` type | Runtime contract | 保留 public abstract，作為 generated type hierarchy 的分類基底 |
+| `Element` type | Runtime contract | 保留 public abstract，generated datatype 必須可繼承 |
+| `Element.Id`、`Element.Extension` | R5 model shape / Bootstrap debt | Phase A 保留相容；未宣告為最終最小 Runtime 資料成員 |
+| `DataType` type 與 `IFhirExtensionValue` | Runtime contract | Generated datatype 與 extension `value[x]` 需要此分類契約 |
+| `BackboneType`、`BackboneElement` type | Runtime contract | 保留 public abstract，供 generated model hierarchy 繼承 |
+| `BackboneType.ModifierExtension`、`BackboneElement.ModifierExtension` | R5 model shape / Bootstrap debt | Phase A 暫留，待 model assembly 邊界確定後移交 |
+| `Resource` type、`Resource.ResourceType` | Runtime contract | Generated resource 必須繼承並提供穩定的 FHIR type identity |
+| `Resource.Id`、`Meta`、`ImplicitRules`、`Language` | R5 model shape / Bootstrap debt | Phase A 保留相容，不視為 Runtime engine implementation API |
+| `DomainResource` type | Runtime contract | Generated domain resources 的分類基底 |
+| `DomainResource.Text`、`Contained`、`Extension`、`ModifierExtension` | R5 model shape / Bootstrap debt | Phase A 暫留，最終由 R5 Models 擁有 |
+| `PrimitiveType<T>` type 與 protected constructors | Runtime contract | Generated primitive wrapper 必須能在外部 assembly 繼承與建構 |
+| `PrimitiveType<T>.Value`、`HasValue` | Runtime contract | Runtime parser、serializer、validator 與 generated wrapper 的共同 value contract |
+| `PrimitiveType<T>.ToString()` | SDK compatibility API | Phase A 保留既有行為；primitive wire format 不得依賴此方法 |
+| `Extension`、`Meta`、`Narrative` declarations | R5 model shape / Bootstrap debt | Phase A 不搬移、不複製；離開 bootstrap 前須由 model provider/assembly 接手 |
+
+上述「Runtime contract」會由 API snapshot 與 external consumer compilation test 保護；
+「Bootstrap debt」只代表目前 public 且必須維持相容，不代表其 declaration 最終應留在
+`MyFhirSdk.Runtime` assembly。
+
 ## 4. Primitive public API
 
 目前所有 primitive wrapper 都是 public sealed classes，具有 public 無參數/value
@@ -89,6 +114,10 @@ constructor，並繼承 `PrimitiveType<T>`。
 | `FhirJsonSerializer` | SDK public API | JSON serializer concrete implementation |
 | `FhirJsonParser` | SDK public API | JSON parser concrete implementation |
 
+A1 固定 `IFhirSerializer.Serialize<TResource>(TResource)` 與
+`IFhirParser.Parse<TResource>(string)`，並保留 `where TResource : Resource` generic
+constraint。這些是 SDK 使用者入口，也是 Runtime 與 generated Resource 的交界。
+
 下列實作細節必須保持 internal：JSON conventions、primitive codec、reflection cache、
 Resource/Datatype resolution、Extension `value[x]` lookup。
 
@@ -109,7 +138,33 @@ Resource/Datatype resolution、Extension `value[x]` lookup。
 目前部分列為 internal candidate 的 type 在 C# 可見性上已是 internal；snapshot 只會列出
 真正 exported types。分類表保留它們是為了後續 architecture review。
 
-## 7. Models、Client 與其他公開 API
+### 6.1 A1 Validator scope 決策
+
+- 最小 public validation 入口固定為
+  `ValidationResult IFhirValidator.Validate(Resource resource)`。
+- `FhirValidator` 維持相同的 `Validate(Resource)` concrete API。
+- A1 不新增 `Validate(FhirObject)`。DataType/primitive 單獨驗證的 path、null handling、
+  rule selection 尚未形成穩定語意；未來若完成設計，應以新增 overload 評估。
+- `ValidationResult`、`ValidationIssue`、issue enums 與 `FhirSdkException` 保留為 SDK
+  public result/error contract。
+- Profile validation API 為既有相容 surface，但不屬於 generated R5 Models 所需的最小
+  Runtime contract；未來可獨立封裝，不在 A1 收窄 accessibility。
+
+## 7. A1 internal implementation boundary
+
+下列能力不得成為 exported/public API：
+
+- primitive 自我驗證介面或 `IsValid()`；
+- primitive definition、codec、validator 與 registry；
+- 可由 SDK 使用者替換內建 primitive validator 的 registration API；
+- JSON convention、reflection cache、resource/datatype resolution helper；
+- object graph traversal 與內建 base validation rules。
+
+A1 不使用 `InternalsVisibleTo` 將上述能力暴露給 R5 Models。Generated models 只能依賴
+本文件標記的 public/protected Runtime contract。A2 新增 primitive internal contracts 時，也必須
+符合這項 boundary。
+
+## 8. Models、Client 與其他公開 API
 
 | API 群組 | 分類 | 後續處置 |
 |---|---|---|
@@ -122,7 +177,7 @@ Public API snapshot 涵蓋 `Core`、`Primitives`、`Serialization` 與 `Validati
 對應 Phase A 的 Runtime surface。Models、Client 與 Implementation Guides 仍由既有
 功能測試保護，不納入本次 Runtime contract approval scope。
 
-## 8. Characterization coverage matrix
+## 9. Characterization coverage matrix
 
 | 行為 | A0 狀態 | 驗證位置 |
 |---|---|---|
@@ -140,15 +195,23 @@ Public API snapshot 涵蓋 `Core`、`Primitives`、`Serialization` 與 `Validati
 | Required/choice issue path | 已覆蓋 | Validation rule tests |
 | Generated datatype runtime contract | 已覆蓋 | CodeGen runtime contract tests |
 | Public API change detection | A0 新增 | Architecture public API snapshot test |
+| External generated model/consumer compile | A1 新增 | `RuntimeContractCompilationTests` |
+| Internal primitive API compile rejection | A1 新增 | `RuntimeContractCompilationTests` |
+| Validator remains Resource-scoped | A1 新增 | `RuntimeContractAccessibilityTests` |
+| Internal implementation not exported | A1 新增 | `RuntimeContractAccessibilityTests` |
 
-## 9. A0 變更規則
+## 10. Phase A contract 變更規則
 
 - A0 不修改 production behavior。
 - Snapshot 更新必須與刻意的 public API 決策同一個 PR，並在 PR 說明差異。
 - Characterization test 只固定現有合約；若測試揭露 bug，先記錄問題，修正另開工作項目。
 - Phase A 後續工作包執行後，持續以本 inventory 與 snapshot 判斷相容性。
+- A1 固定的 minimum contract 若需修改，必須同時更新 API/compile tests，並說明 breaking
+  change 或相容策略。
+- Bootstrap debt 的 public API 在正式移交 R5 Models 前仍受相容性保護，不能只因為不屬於
+  最終 Runtime owner 就直接移除。
 
-## 10. A0 完成驗證
+## 11. A0 完成驗證
 
 - 驗證日期：2026-08-14
 - Release build：0 warnings、0 errors。
@@ -158,3 +221,27 @@ Public API snapshot 涵蓋 `Core`、`Primitives`、`Serialization` 與 `Validati
 - Parser tests：18 passed，包含 A0 新增的 4 個 characterization cases。
 - CodeGen tests：137 passed，MVP generated datatype contract 未受影響。
 - Production code：無異動。
+
+## 12. A1 contract 決策摘要
+
+- A1 未新增或移除 production public API，approved snapshot 維持不變。
+- Generated models 的最小依賴固定為 core hierarchy、`PrimitiveType<T>`、
+  `IFhirExtensionValue` 與 `ResourceType` contract。
+- SDK 使用者入口固定為 Parser、Serializer、Resource-scoped Validator，以及結構化
+  validation result/error contract。
+- Primitive validation、codec、definition、validator、registry 維持 internal；使用者只從
+  `FhirValidator` 取得 primitive validation issues。
+- `Extension`、`Meta`、`Narrative` 及 base class 上的 R5 properties 明確登記為 bootstrap
+  debt，A1 不提前搬移。
+- 既有 Profile validation public surface 為相容 API，不納入 generated models 的最小依賴。
+
+## 13. A1 完成驗證
+
+- 驗證日期：2026-08-17。
+- Release build：0 warnings、0 errors。
+- Solution tests：299 passed、0 failed、1 skipped。
+- Architecture tests：9 passed，包含 public API snapshot、external generated
+  model/consumer compilation、internal API compile rejection、Validator scope 與 exported
+  implementation boundary。
+- Parser、Serializer、Validation 與 CodeGen tests 全數通過。
+- Production code：無異動；approved public API snapshot 無變更。

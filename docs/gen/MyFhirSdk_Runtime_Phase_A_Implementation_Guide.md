@@ -176,6 +176,11 @@ dotnet test MyFhirSdk.sln --configuration Release --no-build
 
 ## 7. Work Package A1：固定最小 public Runtime contract
 
+- 實作狀態：Completed（2026-08-17）
+- Contract inventory：`docs/gen/MyFhirSdk_Runtime_Public_API_Inventory.md`
+- External compile tests：`Tests/Architecture/RuntimeContractCompilationTests.cs`
+- Accessibility tests：`Tests/Architecture/RuntimeContractAccessibilityTests.cs`
+
 ### 7.1 目標
 
 確認 generated models 與 SDK 使用者真正需要的 public contract，避免 internal Runtime
