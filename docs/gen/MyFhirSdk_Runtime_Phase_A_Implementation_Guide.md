@@ -507,14 +507,17 @@ PR 快速檢查，但正式規則應盡量由編譯或測試強制。
 
 ## 13. 建議實作順序與 PR 拆分
 
-| PR | 範圍 | 必要成果 |
+PR、branch 與 commit 說明皆以本文件的 Work Package 編號為準，避免另設一套 PR 編號。
+
+| Work Package | 範圍 | 必要成果 |
 |---|---|---|
-| A1 | Baseline、public API inventory、characterization tests | 無 production behavior change |
-| A2 | 最小 public contract 與 accessibility tests | public/internal 邊界固定 |
-| A3 | Primitive definition、validator registry | wrappers 不再擁有 validation algorithm |
-| A4 | Primitive codec migration | 無 primitive 類別名稱分支 |
-| A5 | Model metadata provider | Runtime engine 與 concrete R5 entries 分離 |
-| A6 | Architecture tests、cleanup、Phase B handoff | Phase A 驗收條件全部通過 |
+| A0 | Baseline、public API inventory、characterization tests | 無 production behavior change |
+| A1 | 最小 public contract 與 accessibility tests | public/internal 邊界固定 |
+| A2 | Primitive definition、codec、validator contract | wrappers 不再擁有 validation algorithm |
+| A3 | Primitive codec migration | 無 primitive 類別名稱分支 |
+| A4 | Model metadata provider | Runtime engine 與 concrete R5 entries 分離 |
+| A5 | Architecture 與 contract tests | 關鍵 Runtime 邊界皆有自動化測試保護 |
+| A6 | Cleanup、文件與 Phase B handoff | Phase A 驗收條件全部通過 |
 
 每個 PR 必須：
 
