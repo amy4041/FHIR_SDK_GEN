@@ -127,6 +127,11 @@ Phase B/C 將最下層的手寫 R5 metadata 改由 CodeGen 產生，而不更改
 
 ## 6. Work Package A0：建立基準與 public API inventory
 
+- 實作狀態：Completed（2026-08-14）
+- Baseline commit：`d41881d`
+- API inventory：`docs/gen/MyFhirSdk_Runtime_Public_API_Inventory.md`
+- API snapshot：`Tests/Architecture/ApprovedPublicApi.txt`
+
 ### 6.1 目標
 
 在 refactor 前固定目前行為、測試結果與 public surface，讓後續變更可以判斷是預期
