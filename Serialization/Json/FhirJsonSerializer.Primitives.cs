@@ -1,13 +1,17 @@
 using System.Text.Json;
 using MyFhirSdk.Core;
+using MyFhirSdk.Primitives;
 
 namespace MyFhirSdk.Serialization.Json;
 
 public sealed partial class FhirJsonSerializer
 {
+    private static readonly PrimitiveRegistry PrimitiveDefinitions =
+        PrimitiveRegistry.Default;
+
     private static bool WritePrimitiveProperty(Utf8JsonWriter writer, string propertyName, object primitive)
     {
-        var hasRawValue = FhirJsonConventions.HasPrimitiveRawValue(primitive);
+        var hasRawValue = HasPrimitiveRawValue(primitive);
         var hasMetadata = HasPrimitiveMetadata(primitive);
 
         if (!hasRawValue && !hasMetadata)
@@ -35,7 +39,8 @@ public sealed partial class FhirJsonSerializer
         string propertyName,
         List<object?> items)
     {
-        var hasAnyRawValue = items.Any(item => item is not null && FhirJsonConventions.HasPrimitiveRawValue(item));
+        var hasAnyRawValue = items.Any(
+            item => item is not null && HasPrimitiveRawValue(item));
         var hasAnyMetadata = items.Any(item => item is not null && HasPrimitiveMetadata(item));
 
         if (!hasAnyRawValue && !hasAnyMetadata)
@@ -101,24 +106,21 @@ public sealed partial class FhirJsonSerializer
         object primitive,
         bool writeNullWhenMissing)
     {
-        if (FhirJsonConventions.TryWritePrimitiveJsonValue(writer, primitive, writeNullWhenMissing))
-        {
-            return true;
-        }
+        var codec = PrimitiveDefinitions
+            .GetRequired(primitive.GetType())
+            .Codec;
+        var hasRawValue = codec.HasRawValue(primitive);
 
-        var rawValue = FhirJsonConventions.GetPrimitiveRawValue(primitive);
-        if (!FhirJsonConventions.HasRawJsonValue(rawValue))
-        {
-            if (writeNullWhenMissing)
-            {
-                writer.WriteNullValue();
-            }
+        codec.WriteRawValue(writer, primitive, writeNullWhenMissing);
+        return hasRawValue;
+    }
 
-            return false;
-        }
-
-        WriteSimpleValue(writer, rawValue!);
-        return true;
+    private static bool HasPrimitiveRawValue(object primitive)
+    {
+        return PrimitiveDefinitions
+            .GetRequired(primitive.GetType())
+            .Codec
+            .HasRawValue(primitive);
     }
 
     private static bool HasPrimitiveMetadata(object primitive)

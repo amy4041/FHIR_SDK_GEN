@@ -1,12 +1,15 @@
 using System.Collections;
-using System.Reflection;
 using System.Text.Json;
 using MyFhirSdk.Core;
+using MyFhirSdk.Primitives;
 
 namespace MyFhirSdk.Serialization.Json;
 
 public sealed partial class FhirJsonParser
 {
+    private static readonly PrimitiveRegistry PrimitiveDefinitions =
+        PrimitiveRegistry.Default;
+
     private static object? ReadPrimitiveValue(
         Type primitiveType,
         JsonElement? rawElement,
@@ -17,12 +20,10 @@ public sealed partial class FhirJsonParser
             return null;
         }
 
-        var primitive = CreatePrimitiveInstance(primitiveType, rawElement);
-
-        if (HasJsonValue(rawElement) && !CreatesPrimitiveFromRawElement(primitiveType))
-        {
-            SetPrimitiveRawValue(primitive, rawElement!.Value);
-        }
+        var definition = PrimitiveDefinitions.GetRequired(primitiveType);
+        var primitive = definition.Codec.CreatePrimitive(
+            primitiveType,
+            HasJsonValue(rawElement) ? rawElement : null);
 
         if (HasJsonValue(metadataElement))
         {
@@ -56,51 +57,6 @@ public sealed partial class FhirJsonParser
         }
     }
 
-    private static object CreatePrimitiveInstance(Type primitiveType, JsonElement? rawElement)
-    {
-        if (primitiveType.Name == "FhirDecimal" && HasJsonValue(rawElement))
-        {
-            if (rawElement!.Value.ValueKind != JsonValueKind.Number)
-            {
-                throw new FhirSdkException("FHIR decimal values must be JSON numbers.");
-            }
-
-            return Activator.CreateInstance(primitiveType, rawElement.Value.GetRawText())
-                ?? throw new FhirSdkException($"Could not create an instance of '{primitiveType.FullName}'.");
-        }
-
-        if (primitiveType.Name == "FhirInteger64" && HasJsonValue(rawElement))
-        {
-            if (rawElement!.Value.ValueKind != JsonValueKind.String)
-            {
-                throw new FhirSdkException("FHIR integer64 values must be JSON strings.");
-            }
-
-            return Activator.CreateInstance(primitiveType, rawElement.Value.GetString())
-                ?? throw new FhirSdkException($"Could not create an instance of '{primitiveType.FullName}'.");
-        }
-
-        return CreateInstance(primitiveType);
-    }
-
-    private static bool CreatesPrimitiveFromRawElement(Type primitiveType)
-    {
-        return primitiveType.Name is "FhirDecimal" or "FhirInteger64";
-    }
-
-    private static void SetPrimitiveRawValue(object primitive, JsonElement rawElement)
-    {
-        if (rawElement.ValueKind == JsonValueKind.Null)
-        {
-            return;
-        }
-
-        var valueProperty = GetRequiredPrimitiveValueProperty(primitive.GetType());
-        var value = ReadSimpleValue(valueProperty.PropertyType, rawElement);
-
-        valueProperty.SetValue(primitive, value);
-    }
-
     private static void ReadPrimitiveMetadata(object primitive, JsonElement metadataElement)
     {
         if (metadataElement.ValueKind == JsonValueKind.Null)
@@ -131,9 +87,4 @@ public sealed partial class FhirJsonParser
         return items;
     }
 
-    private static PropertyInfo GetRequiredPrimitiveValueProperty(Type primitiveType)
-    {
-        return FhirJsonConventions.GetPrimitiveValueProperty(primitiveType)
-            ?? throw new FhirSdkException($"FHIR primitive type '{primitiveType.Name}' does not expose a Value property.");
-    }
 }

@@ -1,14 +1,15 @@
 # MyFhirSdk Runtime Public API Inventory
 
-Version 1.2
+Version 1.3
 
 - 文件狀態：Phase A minimum contract fixed
 - Baseline commit：`d41881d`
 - A1 起始 commit：`a9da211`
 - A2 起始 commit：`b603161`
-- 目前 branch：`feat/runtime-phase-a2-primitive-contract`
+- A3 起始 commit：`3718972`
+- 目前 branch：`feat/runtime-phase-a3-primitive-codec-migration`
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
-- 對應工作：Runtime Phase A / Work Package A0、A1、A2
+- 對應工作：Runtime Phase A / Work Package A0、A1、A2、A3
 - 實作指引：
   `docs/gen/MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md`
 
@@ -205,6 +206,10 @@ Public API snapshot 涵蓋 `Core`、`Primitives`、`Serialization` 與 `Validati
 | Primitive validator valid/invalid matrix | A2 新增 | `PrimitiveRuntimeContractTests` |
 | Duplicate/missing registration failure | A2 新增 | `PrimitiveRuntimeContractTests` |
 | Resource/Element id path and message | A2 補強 | `PrimitiveFormatRuleTests` |
+| Parser general primitive token rejection | A3 新增 | `FhirJsonParserCharacterizationTests` |
+| Codec accepted/rejected token matrix | A3 補強 | `PrimitiveRuntimeContractTests` |
+| Decimal/integer64 codec integration | A3 完成 | Parser/Serializer primitive fixtures |
+| Metadata-only and primitive array alignment | A3 回歸 | Parser/Serializer element fixtures |
 
 ## 10. Phase A contract 變更規則
 
@@ -317,3 +322,35 @@ Registry construction 對 duplicate FHIR type name、duplicate wrapper type 直�
 - `ApprovedPublicApi.txt` 無變更，public API snapshot test 通過。
 - 所有 17 個 production wrapper 皆維持 `sealed`，且不再包含 `IsValid()` 或 regex
   validation algorithm。
+
+## 17. A3 primitive codec migration
+
+- `FhirJsonParser.Primitives` 先依 wrapper CLR type 從 `PrimitiveRegistry` 取得 definition，
+  再由 `IPrimitiveCodec.CreatePrimitive` 建立並設定 wrapper。
+- `FhirJsonSerializer.Primitives` 由 definition codec 判斷 raw value 是否存在，並呼叫
+  `WriteRawValue` 輸出正確 JSON token。
+- Parser/Serializer 主流程不再比較 `FhirDecimal`、`FhirInteger64` 類別名稱；新增特殊
+  primitive wire format 時只需提供 definition/codec，不修改主流程。
+- `FhirJsonConventions` 已移除 decimal/integer64 literal、raw value 與 write 特例，只保留
+  property naming、reflection cache、FHIR JSON convention 與通用型別判斷。
+- General string、boolean、integer codecs 明確檢查 JSON token kind；decimal 只接受 JSON
+  number，R5 integer64 只接受 JSON string。
+- JSON token/type 不符時拋出 `FhirSdkException`；可建立 wrapper、但不符合 FHIR lexical
+  constraint 的內容仍交由公開 `FhirValidator` 產生 `PrimitiveFormat` issue。
+- Decimal literal/trailing zero、integer64 string representation、null/metadata-only primitive
+  與 primitive array raw/metadata alignment 行為保持不變。
+- Production public API 與 approved snapshot 均無變更。
+
+## 18. A3 完成驗證
+
+- 驗證日期：2026-08-18。
+- Release build：0 warnings、0 errors。
+- Solution tests：362 passed、0 failed、1 skipped。
+- Parser tests：21 passed，包含 string、boolean、integer、decimal、integer64 錯誤 JSON
+  token rejection。
+- Serializer tests：14 passed，全部 golden JSON fixtures byte-for-byte 相容。
+- Architecture tests：67 passed，包含每個 codec group 的 accepted/rejected token contract。
+- Validation、CodeGen、Client 與 Implementation Guide tests 全數維持通過。
+- `Serialization`、`Validation` 靜態搜尋無 `FhirDecimal`／`FhirInteger64` 類別名稱分支，
+  亦無舊的 decimal/integer64 literal helper。
+- `ApprovedPublicApi.txt` 無變更，public API snapshot test 通過。

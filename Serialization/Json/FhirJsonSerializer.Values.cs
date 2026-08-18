@@ -140,7 +140,7 @@ public sealed partial class FhirJsonSerializer
 
         if (FhirJsonConventions.IsFhirPrimitive(value.GetType()))
         {
-            return FhirJsonConventions.HasPrimitiveRawValue(value) || HasPrimitiveMetadata(value);
+            return HasPrimitiveRawValue(value) || HasPrimitiveMetadata(value);
         }
 
         if (value is IEnumerable enumerable)
