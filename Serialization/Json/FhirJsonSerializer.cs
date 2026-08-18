@@ -155,7 +155,7 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
                 return false;
             }
 
-            if (FhirJsonConventions.HasPrimitiveRawValue(item) || HasPrimitiveMetadata(item))
+            if (HasPrimitiveRawValue(item) || HasPrimitiveMetadata(item))
             {
                 items.Add(item);
             }

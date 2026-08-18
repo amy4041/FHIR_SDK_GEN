@@ -3,6 +3,37 @@ using MyFhirSdk.Resources;
 
 public sealed class FhirJsonParserCharacterizationTests
 {
+    public static TheoryData<string, string> WrongPrimitiveTokenCases => new()
+    {
+        {
+            """
+            {
+              "resourceType": "Patient",
+              "active": "true"
+            }
+            """,
+            "Expected a JSON boolean value."
+        },
+        {
+            """
+            {
+              "resourceType": "Patient",
+              "birthDate": 20260818
+            }
+            """,
+            "Expected a JSON string value."
+        },
+        {
+            """
+            {
+              "resourceType": "Patient",
+              "multipleBirthInteger": "1"
+            }
+            """,
+            "Expected a JSON integer value."
+        }
+    };
+
     [Fact]
     public void Parse_AbstractResource_ResolvesConcreteResourceType()
     {
@@ -80,6 +111,21 @@ public sealed class FhirJsonParserCharacterizationTests
 
         Assert.Contains(
             "FHIR decimal values must be JSON numbers.",
+            exception.Message,
+            StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [MemberData(nameof(WrongPrimitiveTokenCases))]
+    public void Parse_PrimitiveFromWrongJsonToken_ThrowsFhirSdkException(
+        string json,
+        string expectedMessage)
+    {
+        var exception = Assert.Throws<FhirSdkException>(
+            () => new FhirJsonParser().Parse<Patient>(json));
+
+        Assert.Contains(
+            expectedMessage,
             exception.Message,
             StringComparison.Ordinal);
     }

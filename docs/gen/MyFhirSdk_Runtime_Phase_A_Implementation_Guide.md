@@ -331,6 +331,13 @@ rg "IFhirValidatablePrimitive|IsValid\(" Primitives
 
 ## 9. Work Package A3：移除 primitive 類別名稱分支
 
+- 實作狀態：Completed（2026-08-18）
+- Parser migration：`Serialization/Json/FhirJsonParser.Primitives.cs`
+- Serializer migration：`Serialization/Json/FhirJsonSerializer.Primitives.cs`
+- Codec token contract：`Primitives/Runtime/PrimitiveCodecs.cs`
+- Integration tests：`Tests/Parser/Json/FhirJsonParserCharacterizationTests.cs`、
+  `Tests/Architecture/PrimitiveRuntimeContractTests.cs`
+
 ### 9.1 目標
 
 讓 Serializer/Parser 透過 primitive definition/codec 處理特殊 wire format，不再將 C#

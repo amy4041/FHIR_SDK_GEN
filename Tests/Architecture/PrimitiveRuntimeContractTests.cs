@@ -89,6 +89,35 @@ public sealed class PrimitiveRuntimeContractTests
         { new FhirUrl("Patient/1"), false }
     };
 
+    public static TheoryData<Type, string, string> RejectedCodecTokenCases => new()
+    {
+        {
+            typeof(FhirString),
+            "1",
+            "Expected a JSON string value."
+        },
+        {
+            typeof(FhirBoolean),
+            "\"true\"",
+            "Expected a JSON boolean value."
+        },
+        {
+            typeof(FhirInteger),
+            "\"1\"",
+            "Expected a JSON integer value."
+        },
+        {
+            typeof(FhirDecimal),
+            "\"2.50\"",
+            "FHIR decimal values must be JSON numbers."
+        },
+        {
+            typeof(FhirInteger64),
+            "1048576",
+            "FHIR integer64 values must be JSON strings."
+        }
+    };
+
     [Fact]
     public void DefaultRegistryContainsCompleteUniqueDefinitionMatrix()
     {
@@ -144,6 +173,29 @@ public sealed class PrimitiveRuntimeContractTests
         }
 
         Assert.Equal(rawJson, Encoding.UTF8.GetString(stream.ToArray()));
+    }
+
+    [Theory]
+    [MemberData(nameof(RejectedCodecTokenCases))]
+    public void RegisteredCodecRejectsWrongJsonToken(
+        Type primitiveType,
+        string rawJson,
+        string expectedMessage)
+    {
+        var definition = GetDefinition(primitiveType);
+        var codec = GetProperty<object>(definition, "Codec");
+        using var document = JsonDocument.Parse(rawJson);
+        var rawElement = document.RootElement.Clone();
+
+        var exception = Assert.Throws<TargetInvocationException>(
+            () => Invoke(
+                codec,
+                "CreatePrimitive",
+                primitiveType,
+                rawElement));
+
+        var parserError = Assert.IsType<FhirSdkException>(exception.InnerException);
+        Assert.Equal(expectedMessage, parserError.Message);
     }
 
     [Theory]

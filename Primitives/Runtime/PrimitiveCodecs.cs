@@ -10,26 +10,31 @@ internal static class PrimitiveCodecs
     internal static IPrimitiveCodec String { get; } = new StandardPrimitiveCodec(
         JsonValueKind.String,
         element => element.GetString(),
-        (writer, value) => writer.WriteStringValue((string)value));
+        (writer, value) => writer.WriteStringValue((string)value),
+        "Expected a JSON string value.");
 
     internal static IPrimitiveCodec Boolean { get; } = new StandardPrimitiveCodec(
         JsonValueKind.True,
         element => element.GetBoolean(),
         (writer, value) => writer.WriteBooleanValue((bool)value),
+        "Expected a JSON boolean value.",
         JsonValueKind.False);
 
     internal static IPrimitiveCodec Integer { get; } = new StandardPrimitiveCodec(
         JsonValueKind.Number,
         element => element.GetInt32(),
-        (writer, value) => writer.WriteNumberValue((int)value));
+        (writer, value) => writer.WriteNumberValue((int)value),
+        "Expected a JSON integer value.");
 
     internal static IPrimitiveCodec Decimal { get; } = new LiteralPrimitiveCodec(
         JsonValueKind.Number,
-        writeAsJsonString: false);
+        writeAsJsonString: false,
+        "FHIR decimal values must be JSON numbers.");
 
     internal static IPrimitiveCodec Integer64 { get; } = new LiteralPrimitiveCodec(
         JsonValueKind.String,
-        writeAsJsonString: true);
+        writeAsJsonString: true,
+        "FHIR integer64 values must be JSON strings.");
 }
 
 internal sealed class StandardPrimitiveCodec : IPrimitiveCodec
@@ -38,16 +43,23 @@ internal sealed class StandardPrimitiveCodec : IPrimitiveCodec
     private readonly JsonValueKind? _alternateKind;
     private readonly Func<JsonElement, object?> _read;
     private readonly Action<Utf8JsonWriter, object> _write;
+    private readonly string _invalidJsonMessage;
 
     internal StandardPrimitiveCodec(
         JsonValueKind expectedKind,
         Func<JsonElement, object?> read,
         Action<Utf8JsonWriter, object> write,
+        string invalidJsonMessage,
         JsonValueKind? alternateKind = null)
     {
         _expectedKind = expectedKind;
         _read = read ?? throw new ArgumentNullException(nameof(read));
         _write = write ?? throw new ArgumentNullException(nameof(write));
+        _invalidJsonMessage = string.IsNullOrWhiteSpace(invalidJsonMessage)
+            ? throw new ArgumentException(
+                "Invalid JSON message is required.",
+                nameof(invalidJsonMessage))
+            : invalidJsonMessage;
         _alternateKind = alternateKind;
     }
 
@@ -63,7 +75,18 @@ internal sealed class StandardPrimitiveCodec : IPrimitiveCodec
         }
 
         EnsureExpectedKind(rawElement.Value);
-        PrimitiveValueAccess.GetAccessor(primitive).SetUntypedValue(_read(rawElement.Value));
+        try
+        {
+            PrimitiveValueAccess
+                .GetAccessor(primitive)
+                .SetUntypedValue(_read(rawElement.Value));
+        }
+        catch (Exception exception) when (
+            exception is InvalidOperationException or FormatException or OverflowException)
+        {
+            throw new FhirSdkException(_invalidJsonMessage, exception);
+        }
+
         return primitive;
     }
 
@@ -99,8 +122,7 @@ internal sealed class StandardPrimitiveCodec : IPrimitiveCodec
         if (element.ValueKind != _expectedKind &&
             element.ValueKind != _alternateKind)
         {
-            throw new FhirSdkException(
-                $"FHIR primitive value must be JSON {_expectedKind}.");
+            throw new FhirSdkException(_invalidJsonMessage);
         }
     }
 }
@@ -109,13 +131,20 @@ internal sealed class LiteralPrimitiveCodec : IPrimitiveCodec
 {
     private readonly JsonValueKind _expectedKind;
     private readonly bool _writeAsJsonString;
+    private readonly string _invalidJsonMessage;
 
     internal LiteralPrimitiveCodec(
         JsonValueKind expectedKind,
-        bool writeAsJsonString)
+        bool writeAsJsonString,
+        string invalidJsonMessage)
     {
         _expectedKind = expectedKind;
         _writeAsJsonString = writeAsJsonString;
+        _invalidJsonMessage = string.IsNullOrWhiteSpace(invalidJsonMessage)
+            ? throw new ArgumentException(
+                "Invalid JSON message is required.",
+                nameof(invalidJsonMessage))
+            : invalidJsonMessage;
     }
 
     public object CreatePrimitive(Type primitiveType, JsonElement? rawElement)
@@ -129,8 +158,7 @@ internal sealed class LiteralPrimitiveCodec : IPrimitiveCodec
 
         if (rawElement.Value.ValueKind != _expectedKind)
         {
-            throw new FhirSdkException(
-                $"FHIR primitive value must be JSON {_expectedKind}.");
+            throw new FhirSdkException(_invalidJsonMessage);
         }
 
         var literal = _expectedKind == JsonValueKind.String
