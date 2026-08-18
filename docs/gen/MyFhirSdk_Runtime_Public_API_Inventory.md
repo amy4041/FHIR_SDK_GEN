@@ -1,13 +1,14 @@
 # MyFhirSdk Runtime Public API Inventory
 
-Version 1.1
+Version 1.2
 
 - 文件狀態：Phase A minimum contract fixed
 - Baseline commit：`d41881d`
 - A1 起始 commit：`a9da211`
-- 目前 branch：`feat/runtime-phase-a1-contract`
+- A2 起始 commit：`b603161`
+- 目前 branch：`feat/runtime-phase-a2-primitive-contract`
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
-- 對應工作：Runtime Phase A / Work Package A0、A1
+- 對應工作：Runtime Phase A / Work Package A0、A1、A2
 - 實作指引：
   `docs/gen/MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md`
 
@@ -199,6 +200,11 @@ Public API snapshot 涵蓋 `Core`、`Primitives`、`Serialization` 與 `Validati
 | Internal primitive API compile rejection | A1 新增 | `RuntimeContractCompilationTests` |
 | Validator remains Resource-scoped | A1 新增 | `RuntimeContractAccessibilityTests` |
 | Internal implementation not exported | A1 新增 | `RuntimeContractAccessibilityTests` |
+| Primitive definition matrix | A2 新增 | `PrimitiveRuntimeContractTests` |
+| Primitive codec JSON round-trip matrix | A2 新增 | `PrimitiveRuntimeContractTests` |
+| Primitive validator valid/invalid matrix | A2 新增 | `PrimitiveRuntimeContractTests` |
+| Duplicate/missing registration failure | A2 新增 | `PrimitiveRuntimeContractTests` |
+| Resource/Element id path and message | A2 補強 | `PrimitiveFormatRuleTests` |
 
 ## 10. Phase A contract 變更規則
 
@@ -245,3 +251,69 @@ Public API snapshot 涵蓋 `Core`、`Primitives`、`Serialization` 與 `Validati
   implementation boundary。
 - Parser、Serializer、Validation 與 CodeGen tests 全數通過。
 - Production code：無異動；approved public API snapshot 無變更。
+
+## 14. A2 primitive Runtime contract
+
+A2 新增下列 internal contracts；全部位於 `MyFhirSdk.Primitives`，不屬於 exported API：
+
+- `IPrimitiveValueAccessor`：由 `PrimitiveType<T>` 顯式實作，提供受控的 untyped value
+  讀寫及 CLR value type，不要求外部 generated wrapper 實作 internal interface。
+- `IPrimitiveDefinition`：連結 FHIR type name、wrapper type、CLR value type、codec 與
+  validator。
+- `IPrimitiveCodec`：建立 wrapper、判斷 raw value、讀寫 JSON primitive value。
+- `IPrimitiveValidator`：驗證 wrapper 或 base property 的 raw value。
+- `PrimitiveRegistry`：以 FHIR type name 或 wrapper CLR type 查找唯一 definition。
+
+Default registry 固定以下 17 筆 definition：
+
+| FHIR type | Wrapper | CLR value | Codec group |
+|---|---|---|---|
+| `base64Binary` | `FhirBase64Binary` | `string` | string |
+| `boolean` | `FhirBoolean` | `bool?` | boolean |
+| `canonical` | `FhirCanonical` | `string` | string |
+| `code` | `FhirCode` | `string` | string |
+| `date` | `FhirDate` | `string` | string |
+| `dateTime` | `FhirDateTime` | `string` | string |
+| `decimal` | `FhirDecimal` | `decimal?` | literal-preserving JSON number |
+| `id` | `FhirId` | `string` | string |
+| `instant` | `FhirInstant` | `string` | string |
+| `integer` | `FhirInteger` | `int?` | JSON number |
+| `integer64` | `FhirInteger64` | `long?` | literal-preserving JSON string |
+| `markdown` | `FhirMarkdown` | `string` | string |
+| `positiveInt` | `FhirPositiveInt` | `int?` | JSON number |
+| `string` | `FhirString` | `string` | string |
+| `unsignedInt` | `FhirUnsignedInt` | `int?` | JSON number |
+| `uri` | `FhirUri` | `string` | string |
+| `url` | `FhirUrl` | `string` | string |
+
+Registry construction 對 duplicate FHIR type name、duplicate wrapper type 直接拋出
+`InvalidOperationException`；required lookup 缺少 registration 時拋出
+`KeyNotFoundException`，不使用 fallback。
+
+## 15. A2 migration boundary
+
+- 所有 primitive wrapper 已移除 `IFhirValidatablePrimitive` 與 `IsValid()` 實作。
+- `IFhirValidatablePrimitive` 已刪除；format algorithms 集中於 internal validators。
+- `PrimitiveFormatRule` 透過 registry/definition 驗證，不再依賴 concrete wrapper
+  validation interface。
+- `Resource.Id` 與 `Element.Id` 直接使用 `id` definition 的 raw-value validator，不再暫時
+  建立 `FhirId`。
+- Parser/Serializer 在 A2 尚未切換至 registry codec；A3 將以這次建立的 codec contract
+  移除 `FhirDecimal`、`FhirInteger64` 類別名稱分支。
+- A2 修正既有 base64 validator 使用零長度 destination buffer 的問題；合法非空
+  base64（例如 `QQ==`）現在可正確通過公開 `FhirValidator`。
+- Production public API 沒有新增或移除，approved snapshot 維持不變。
+
+## 16. A2 完成驗證
+
+- 驗證日期：2026-08-17。
+- Release build：0 warnings、0 errors。
+- Solution tests：354 passed、0 failed、1 skipped。
+- Architecture tests：62 passed，包含 17 筆 definition matrix、17 組 codec JSON
+  round-trip、32 組 validator valid/invalid cases，以及 duplicate/missing registration。
+- Validation tests：72 passed，包含 Resource/Element `id` path/message 相容與合法
+  base64 regression case。
+- Parser、Serializer 與 CodeGen tests 全數通過；A2 未提前執行 A3 codec migration。
+- `ApprovedPublicApi.txt` 無變更，public API snapshot test 通過。
+- 所有 17 個 production wrapper 皆維持 `sealed`，且不再包含 `IsValid()` 或 regex
+  validation algorithm。

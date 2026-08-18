@@ -5,7 +5,7 @@ namespace MyFhirSdk.Primitives;
 /// <summary>
 /// FHIR boolean primitive. Valid values are true or false when present.
 /// </summary>
-public sealed class FhirBoolean : PrimitiveType<bool?>, IFhirValidatablePrimitive
+public sealed class FhirBoolean : PrimitiveType<bool?>
 {
     public FhirBoolean()
     {
@@ -14,11 +14,6 @@ public sealed class FhirBoolean : PrimitiveType<bool?>, IFhirValidatablePrimitiv
     public FhirBoolean(bool? value)
         : base(value)
     {
-    }
-
-    bool IFhirValidatablePrimitive.IsValid()
-    {
-        return true;
     }
 
     public override string ToString()

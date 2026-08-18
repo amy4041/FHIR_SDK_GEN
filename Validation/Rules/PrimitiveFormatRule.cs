@@ -6,6 +6,8 @@ namespace MyFhirSdk.Validation.Rules;
 
 internal static class PrimitiveFormatRule
 {
+    private static readonly PrimitiveRegistry Registry = PrimitiveRegistry.Default;
+
     public static void Validate(
         FhirObjectGraphNode node,
         ICollection<ValidationIssue> issues)
@@ -34,7 +36,7 @@ internal static class PrimitiveFormatRule
         string path,
         ICollection<ValidationIssue> issues)
     {
-        if (((IFhirValidatablePrimitive)new FhirId(id)).IsValid())
+        if (Registry.GetRequired("id").Validator.IsValidValue(id))
         {
             return;
         }
@@ -52,12 +54,13 @@ internal static class PrimitiveFormatRule
         FhirObjectGraphNode node,
         ICollection<ValidationIssue> issues)
     {
-        if (node.Value is not IFhirValidatablePrimitive primitive)
+        if (node.Value is not IPrimitiveValueAccessor)
         {
             return;
         }
 
-        if (primitive.IsValid())
+        var definition = Registry.GetRequired(node.Value.GetType());
+        if (definition.Validator.IsValid(node.Value))
         {
             return;
         }

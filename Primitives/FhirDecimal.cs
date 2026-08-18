@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text.RegularExpressions;
 using MyFhirSdk.Core;
 
 namespace MyFhirSdk.Primitives;
@@ -8,7 +7,7 @@ namespace MyFhirSdk.Primitives;
 /// FHIR decimal primitive. FHIR decimals are JSON numbers with a decimal
 /// representation and constrained precision.
 /// </summary>
-public sealed partial class FhirDecimal : PrimitiveType<decimal?>, IFhirValidatablePrimitive
+public sealed class FhirDecimal : PrimitiveType<decimal?>
 {
     public const int MaxIntegerDigits = 18;
     public const int MaxFractionDigits = 17;
@@ -40,17 +39,9 @@ public sealed partial class FhirDecimal : PrimitiveType<decimal?>, IFhirValidata
     /// </summary>
     public string? Literal { get; }
 
-    bool IFhirValidatablePrimitive.IsValid()
-    {
-        var literal = Literal ?? Value?.ToString(CultureInfo.InvariantCulture);
-        return literal is null || DecimalRegex().IsMatch(literal);
-    }
-
     public override string ToString()
     {
         return Literal ?? Value?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
     }
 
-    [GeneratedRegex(@"^-?(0|[1-9][0-9]{0,17})(\.[0-9]{1,17})?([eE][+-]?[0-9]{1,9})?$")]
-    private static partial Regex DecimalRegex();
 }

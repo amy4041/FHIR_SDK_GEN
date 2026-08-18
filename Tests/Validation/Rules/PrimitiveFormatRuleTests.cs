@@ -10,6 +10,33 @@ public sealed class PrimitiveFormatRuleTests
         var result = new FhirValidator().Validate(patient);
 
         ValidationAssert.HasIssue(result, "Patient.id", ValidationIssueCode.PrimitiveFormat);
+        var issue = Assert.Single(
+            result.Issues,
+            issue => issue.Path == "Patient.id" &&
+                issue.Code == ValidationIssueCode.PrimitiveFormat);
+        Assert.Equal("Patient.id has invalid FHIR id format.", issue.Message);
+    }
+
+    [Fact]
+    public void ValidateReportsInvalidElementIdWithCompatiblePathAndMessage()
+    {
+        var patient = new Patient
+        {
+            Extension =
+            [
+                new Extension { Id = "a/b" }
+            ]
+        };
+
+        var result = new FhirValidator().Validate(patient);
+
+        var issue = Assert.Single(
+            result.Issues,
+            issue => issue.Path == "Patient.extension[0].id" &&
+                issue.Code == ValidationIssueCode.PrimitiveFormat);
+        Assert.Equal(
+            "Patient.extension[0].id has invalid FHIR id format.",
+            issue.Message);
     }
 
     [Fact]
@@ -241,6 +268,25 @@ public sealed class PrimitiveFormatRuleTests
         var result = new FhirValidator().Validate(practitioner);
 
         ValidationAssert.HasIssue(result, "Practitioner.photo[0].data", ValidationIssueCode.PrimitiveFormat);
+    }
+
+    [Fact]
+    public void ValidateAcceptsValidFhirBase64Binary()
+    {
+        var practitioner = new Practitioner
+        {
+            Photo =
+            [
+                new Attachment
+                {
+                    Data = new FhirBase64Binary("QQ==")
+                }
+            ]
+        };
+
+        var result = new FhirValidator().Validate(practitioner);
+
+        Assert.True(result.IsValid);
     }
 
     [Fact]
