@@ -1,15 +1,16 @@
 # MyFhirSdk Runtime Public API Inventory
 
-Version 1.3
+Version 1.4
 
 - 文件狀態：Phase A minimum contract fixed
 - Baseline commit：`d41881d`
 - A1 起始 commit：`a9da211`
 - A2 起始 commit：`b603161`
 - A3 起始 commit：`3718972`
-- 目前 branch：`feat/runtime-phase-a3-primitive-codec-migration`
+- A4 起始 commit：`1da1b27`
+- 目前 branch：`feat/runtime-phase-a4-model-metadata-provider`
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
-- 對應工作：Runtime Phase A / Work Package A0、A1、A2、A3
+- 對應工作：Runtime Phase A / Work Package A0、A1、A2、A3、A4
 - 實作指引：
   `docs/gen/MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md`
 
@@ -354,3 +355,38 @@ Registry construction 對 duplicate FHIR type name、duplicate wrapper type 直�
 - `Serialization`、`Validation` 靜態搜尋無 `FhirDecimal`／`FhirInteger64` 類別名稱分支，
   亦無舊的 decimal/integer64 literal helper。
 - `ApprovedPublicApi.txt` 無變更，public API snapshot test 通過。
+
+## 19. A4 model metadata provider boundary
+
+- `IModelMetadataProvider` 是 Parser/Serializer 使用的 internal query contract；
+  `IValidationRuleProvider` 是 Validator 使用的 internal rule lookup contract。
+- `ImmutableModelMetadataProvider` 在初始化時建立 readonly maps，並對 Resource name/type、
+  declared property、Extension parser property 與 CLR type 的重複或衝突明確失敗。
+- Resource lookup 使用 ordinal FHIR type name；datatype candidates 依完整 CLR type name
+  ordinal 排序，維持 deterministic resolution。
+- `R5ModelMetadataProvider` 是 Phase A 的手寫 R5 composition root，集中目前仍需的 model
+  assembly scan 與 R5 特例；後續可由 CodeGen 產生相同 contract 的 entries/provider。
+- `R5ValidationRuleEntries` 擁有 Bundle、Claim、Coverage、Encounter、Patient、Practitioner
+  等 concrete model rule 綁定；Runtime `ResourceRuleRegistry` 只執行 lookup。
+- Parser、Serializer、Validator 只保存 provider contract；public parameterless constructor
+  使用 default R5 provider，internal constructor 供 Architecture tests 注入 fake provider。
+- 為保持外部 generated model 相容性，已知 concrete `TResource` 可由 default provider
+  即時建立 descriptor；依 JSON `resourceType` 解析 abstract Resource 時仍只接受 inventory
+  中的明確 registration。
+- 所有新增 contract 與 provider 均為 internal；`ApprovedPublicApi.txt` 無變更。
+
+## 20. A4 完成驗證
+
+- 驗證日期：2026-08-18。
+- Release build：0 warnings、0 errors。
+- Solution tests：368 passed、0 failed、1 skipped。
+- Architecture tests：73 passed，包含 fake provider 的 Parser、Serializer、Validator
+  injection，以及 duplicate/missing metadata failure。
+- Parser tests：21 passed；Serializer tests：14 passed；Validation tests：72 passed；
+  CodeGen tests：137 passed。
+- generated datatype/resource serialize-parse round trip 維持通過，證明 default provider
+  沒有要求外部 concrete generated resource 先加入手寫 R5 inventory。
+- `Serialization` 與 `Validation` engine 未命中 concrete `MyFhirSdk.Resources`／
+  `MyFhirSdk.Types`、`typeof(Patient)`、`typeof(Bundle)`、`typeof(SimpleQuantity)` 或
+  assembly model scan；允許的 R5-specific 命中皆集中於 `ModelMetadata/R5`。
+- Public API snapshot 與 Runtime implementation accessibility tests 通過。

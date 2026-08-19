@@ -6,7 +6,7 @@ namespace MyFhirSdk.Serialization.Json;
 
 public sealed partial class FhirJsonSerializer
 {
-    private static void WriteValue(Utf8JsonWriter writer, object value)
+    private void WriteValue(Utf8JsonWriter writer, object value)
     {
         if (value is string stringValue)
         {
@@ -111,7 +111,7 @@ public sealed partial class FhirJsonSerializer
         JsonSerializer.Serialize(writer, value, value.GetType());
     }
 
-    private static List<object?> GetSerializableItems(IEnumerable enumerable)
+    private List<object?> GetSerializableItems(IEnumerable enumerable)
     {
         var items = new List<object?>();
 
@@ -126,7 +126,7 @@ public sealed partial class FhirJsonSerializer
         return items;
     }
 
-    private static bool HasSerializableValue(object? value)
+    private bool HasSerializableValue(object? value)
     {
         if (value is null)
         {
@@ -169,7 +169,7 @@ public sealed partial class FhirJsonSerializer
         return HasSerializableObjectProperties(value);
     }
 
-    private static bool HasSerializableObjectProperties(object value)
+    private bool HasSerializableObjectProperties(object value)
     {
         foreach (var property in FhirJsonConventions.GetSerializableProperties(value.GetType()))
         {

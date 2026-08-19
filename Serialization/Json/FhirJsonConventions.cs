@@ -43,16 +43,6 @@ internal static class FhirJsonConventions
         return "_" + propertyName;
     }
 
-    internal static string GetExtensionValuePropertyName(object value)
-    {
-        return GetExtensionValuePropertyName(value.GetType());
-    }
-
-    internal static string GetExtensionValuePropertyName(Type type)
-    {
-        return FhirExtensionValuePropertyNames.GetPropertyName(type);
-    }
-
     internal static string GetResourceTypeName(Resource resource)
     {
         return string.IsNullOrWhiteSpace(resource.ResourceType)

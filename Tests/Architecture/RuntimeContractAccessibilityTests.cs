@@ -21,7 +21,16 @@ public sealed class RuntimeContractAccessibilityTests
         "PrimitiveCodecs",
         "PrimitiveValidators",
         "StandardPrimitiveCodec",
-        "LiteralPrimitiveCodec"
+        "LiteralPrimitiveCodec",
+        "IModelMetadataProvider",
+        "ImmutableModelMetadataProvider",
+        "ResourceTypeMetadata",
+        "DeclaredDataTypeMetadata",
+        "ExtensionValueMetadata",
+        "R5ModelMetadataProvider",
+        "R5ValidationRuleEntries",
+        "IValidationRuleProvider",
+        "ResourceRuleRegistry"
     ];
 
     [Fact]

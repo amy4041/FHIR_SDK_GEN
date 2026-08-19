@@ -384,6 +384,8 @@ Production code預期無命中。另執行：
 
 ## 10. Work Package A4：分離 model metadata provider 與 Runtime engine
 
+- 實作狀態：Completed（2026-08-18）
+
 ### 10.1 目標
 
 讓 Parser、Serializer 與 Validator 只依賴 metadata/provider contract，不直接掃描或
@@ -448,6 +450,24 @@ tests 決定，但必須符合：
 - fake provider contract tests 通過。
 - 搜尋 Runtime engine 的 concrete model references；只允許集中式手寫 R5 provider
   在過渡期命中。
+
+### 10.7 實作結果
+
+- 新增 internal `IModelMetadataProvider` 與 immutable metadata registry，提供 Resource
+  name/type/factory、declared datatype、Extension `value[x]` 雙向對照。
+- 新增 internal `IValidationRuleProvider`；`ResourceRuleRegistry` 僅負責不可變 rule
+  lookup，不再列舉 concrete R5 model。
+- R5 專屬 assembly scan、`Meta.security/tag -> Coding`、`SimpleQuantity ->
+  valueQuantity` 與 Resource validation rule entries，集中於 `ModelMetadata/R5`。
+- Parser、Serializer、Validator 的 public parameterless constructor 維持不變，並以
+  internal constructor 支援 provider injection；未新增 production public API。
+- concrete generated `TResource` 可由 default provider 建立臨時 descriptor，因此外部
+  generated model 不必先加入手寫 R5 inventory；abstract Resource 解析仍要求明確註冊。
+- `ModelMetadataProviderTests` 以 Architecture test assembly 內的 fake model/provider
+  驗證 parser、serializer、validator injection、duplicate 與 missing metadata failure。
+- Release build：0 warnings、0 errors；Solution tests：368 passed、0 failed、1 skipped。
+- `Serialization`、`Validation` engine 靜態搜尋無 concrete `Resources`／`Types` 引用；
+  model-specific 命中只存在於 `ModelMetadata/R5`。
 
 ## 11. Work Package A5：加入架構與契約測試
 

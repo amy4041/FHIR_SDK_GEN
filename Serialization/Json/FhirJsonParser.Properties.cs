@@ -8,7 +8,7 @@ namespace MyFhirSdk.Serialization.Json;
 
 public sealed partial class FhirJsonParser
 {
-    private static void ReadObjectProperties(JsonElement objectElement, object target)
+    private void ReadObjectProperties(JsonElement objectElement, object target)
     {
         EnsureObject(objectElement, target.GetType().Name);
 
@@ -33,6 +33,7 @@ public sealed partial class FhirJsonParser
 
             var propertyValue = ReadPropertyValue(
                 property.PropertyType,
+                property.DeclaringType ?? target.GetType(),
                 propertyName,
                 hasRawValue ? rawElement : null,
                 hasMetadata ? metadataElement : null);
@@ -44,15 +45,16 @@ public sealed partial class FhirJsonParser
         }
     }
 
-    private static object? ReadPropertyValue(
+    private object? ReadPropertyValue(
         Type propertyType,
+        Type declaringType,
         string propertyName,
         JsonElement? rawElement,
         JsonElement? metadataElement)
     {
         if (TryGetListElementType(propertyType, out var elementType))
         {
-            return ReadListValue(elementType, propertyName, rawElement, metadataElement);
+            return ReadListValue(elementType, declaringType, propertyName, rawElement, metadataElement);
         }
 
         if (FhirJsonConventions.IsFhirPrimitive(propertyType))
@@ -65,11 +67,12 @@ public sealed partial class FhirJsonParser
             return null;
         }
 
-        return ReadSingleValue(propertyType, propertyName, rawElement!.Value);
+        return ReadSingleValue(propertyType, declaringType, propertyName, rawElement!.Value);
     }
 
-    private static object ReadListValue(
+    private object ReadListValue(
         Type elementType,
+        Type declaringType,
         string propertyName,
         JsonElement? rawElement,
         JsonElement? metadataElement)
@@ -97,7 +100,7 @@ public sealed partial class FhirJsonParser
                 continue;
             }
 
-            var itemValue = ReadSingleValue(elementType, propertyName, item);
+            var itemValue = ReadSingleValue(elementType, declaringType, propertyName, item);
             if (itemValue is not null)
             {
                 list.Add(itemValue);
@@ -107,7 +110,11 @@ public sealed partial class FhirJsonParser
         return list;
     }
 
-    private static object? ReadSingleValue(Type targetType, string propertyName, JsonElement element)
+    private object? ReadSingleValue(
+        Type targetType,
+        Type declaringType,
+        string propertyName,
+        JsonElement element)
     {
         if (element.ValueKind == JsonValueKind.Null)
         {
@@ -126,14 +133,14 @@ public sealed partial class FhirJsonParser
 
         EnsureObject(element, propertyName);
 
-        var concreteType = ResolveObjectType(targetType, element, propertyName);
+        var concreteType = ResolveObjectType(targetType, declaringType, element, propertyName);
         var value = CreateInstance(concreteType);
         ReadObjectProperties(element, value);
 
         return value;
     }
 
-    private static void TryReadExtensionValueProperty(
+    private void TryReadExtensionValueProperty(
         JsonElement objectElement,
         Extension extension,
         PropertyInfo property)
@@ -155,6 +162,7 @@ public sealed partial class FhirJsonParser
             var hasMetadata = objectElement.TryGetProperty(metadataPropertyName, out var metadataElement);
             var propertyValue = ReadPropertyValue(
                 valueType,
+                property.DeclaringType ?? typeof(Extension),
                 FhirJsonConventions.GetJsonPropertyName(property),
                 hasRawValue ? rawElement : null,
                 hasMetadata ? metadataElement : null);
