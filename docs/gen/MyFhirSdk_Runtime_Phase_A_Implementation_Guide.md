@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime Phase A：固定 Runtime Contract 實作指引
 
-Version 1.0
+Version 1.1
 
-- 文件狀態：Proposed
+- 文件狀態：Implemented；A6 PR CI 通過後完成 Phase A
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
 - 上位架構文件：
   `docs/gen/MyFhirSdk_Runtime_R5_Models_CodeGen_Boundaries.md`
@@ -471,7 +471,7 @@ tests 決定，但必須符合：
 
 ## 11. Work Package A5：加入架構與契約測試
 
-- 實作狀態：Implemented（2026-08-19；等待 PR CI 完成 Windows/Linux 驗證）
+- 實作狀態：Completed（2026-08-19，PR #6）
 
 ### 11.1 目標
 
@@ -528,9 +528,13 @@ PR 快速檢查，但正式規則應盡量由編譯或測試強制。
 - GitHub Actions 改為 `ubuntu-latest`／`windows-latest` matrix；NuGet package 僅由 Ubuntu
   job 建立與上傳一次。
 - Windows Release 本機驗證：0 warnings、0 errors；378 passed、0 failed、1 skipped；
-  Architecture tests 83 passed。PR CI 綠燈後可將狀態改為 `Completed`。
+  Architecture tests 83 passed。
+- PR #6 GitHub Actions 的 `ubuntu-latest` 與 `windows-latest` matrix 均通過；Ubuntu
+  package artifact 建立成功。
 
 ## 12. Work Package A6：清理、文件與 Phase B handoff
+
+- 實作狀態：Implemented（2026-08-19；等待 PR CI）
 
 ### 12.1 目標
 
@@ -567,6 +571,27 @@ PR 快速檢查，但正式規則應盡量由編譯或測試強制。
 - 全 solution build/test 通過。
 - 以一個手寫的薄 wrapper 模擬 Phase B output，證明只依賴 public Runtime contract 即可
   編譯，並能被 Runtime serializer/parser/validator 處理。
+
+### 12.5 實作結果
+
+- 移除無 production caller 的 `PrimitiveRegistry.TryGet`。
+- Parser、Serializer、Validator 與 `PrimitiveFormatRule` 不再各自保存 static registry；
+  改由 composition root 使用 immutable default，internal constructor 可注入 definition
+  registry，public API 與預設行為不變。
+- 新增 `PhaseBPrimitiveHandoffTests`：手寫薄 wrapper 只繼承 public
+  `PrimitiveType<string>`，並以 Runtime definition/codec/validator 完成 serialize、parse、
+  valid/invalid validation。
+- 新增 `MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md`，固定 17 筆 primitive matrix、
+  policy schema、literal preservation、registry composition、assembly 過渡策略、bootstrap
+  debt、驗收測試與 Phase B Definition of Done。
+- 上位責任邊界文件由 Proposed 更新為 Phase A Implemented，移除已解決的 A3/A4 差距，
+  未完成項目均指派 Phase B、Phase C 或 ADR owner。
+- README 補上 public `FhirValidator.Validate(Resource)`、internal primitive behavior、
+  generated model boundary、Architecture tests 與 Windows/Linux CI 說明。
+- Cleanup audit 確認 `PrimitiveRegistry.Default`、literal reflection、R5 provider scan 與
+  CodeGen MVP mappings 均為刻意保留且已有明確 owner；沒有無期限、無 owner 的 adapter。
+- Release build：0 warnings、0 errors；380 passed、0 failed、1 skipped；Architecture tests
+  85 passed。A6 PR 的 Windows/Linux matrix 通過後將 A6 與 Phase A 改為 `Completed`。
 
 ## 13. 建議實作順序與 PR 拆分
 
@@ -675,8 +700,8 @@ MyFhirSdk_Runtime_R5_Models_CodeGen_Boundaries.md
 MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md
 └─ 本文件：Runtime contract refactor 的實作與驗收
 
-MyFhirSdk_Primitive_Generation_Phase_B_Implementation_Guide.md（後續）
-└─ primitive policy、model、renderer、generated registry
+MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md
+└─ primitive matrix、policy schema、bootstrap debt、Phase B 驗收與相容切換
 
 MyFhirSdk_R5_Models_Generation_Phase_C_Implementation_Guide.md（後續）
 └─ full datatype/Resource/dependency graph generation

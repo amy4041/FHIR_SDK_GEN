@@ -80,14 +80,6 @@ internal sealed class PrimitiveRegistry
                 $"Primitive wrapper type '{primitiveType.FullName}' is not registered.");
     }
 
-    internal bool TryGet(
-        Type primitiveType,
-        out IPrimitiveDefinition? definition)
-    {
-        ArgumentNullException.ThrowIfNull(primitiveType);
-        return _byPrimitiveType.TryGetValue(primitiveType, out definition);
-    }
-
     private static IPrimitiveDefinition[] CreateDefinitions()
     {
         return

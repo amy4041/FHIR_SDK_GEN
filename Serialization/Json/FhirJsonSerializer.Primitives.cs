@@ -6,9 +6,6 @@ namespace MyFhirSdk.Serialization.Json;
 
 public sealed partial class FhirJsonSerializer
 {
-    private static readonly PrimitiveRegistry PrimitiveDefinitions =
-        PrimitiveRegistry.Default;
-
     private bool WritePrimitiveProperty(Utf8JsonWriter writer, string propertyName, object primitive)
     {
         var hasRawValue = HasPrimitiveRawValue(primitive);
@@ -101,12 +98,12 @@ public sealed partial class FhirJsonSerializer
         writer.WriteEndObject();
     }
 
-    private static bool WritePrimitiveRawValue(
+    private bool WritePrimitiveRawValue(
         Utf8JsonWriter writer,
         object primitive,
         bool writeNullWhenMissing)
     {
-        var codec = PrimitiveDefinitions
+        var codec = _primitiveDefinitions
             .GetRequired(primitive.GetType())
             .Codec;
         var hasRawValue = codec.HasRawValue(primitive);
@@ -115,9 +112,9 @@ public sealed partial class FhirJsonSerializer
         return hasRawValue;
     }
 
-    private static bool HasPrimitiveRawValue(object primitive)
+    private bool HasPrimitiveRawValue(object primitive)
     {
-        return PrimitiveDefinitions
+        return _primitiveDefinitions
             .GetRequired(primitive.GetType())
             .Codec
             .HasRawValue(primitive);
