@@ -122,6 +122,54 @@ public sealed class RuntimeContractCompilationTests
             }
             """,
             ["CS0122", "CS0246"]
+        },
+        {
+            """
+            using MyFhirSdk.Primitives;
+
+            public static class ExternalConsumer
+            {
+                public static object GetDefinitionContract() =>
+                    typeof(IPrimitiveDefinition);
+            }
+            """,
+            ["CS0122", "CS0246"]
+        },
+        {
+            """
+            using MyFhirSdk.Primitives;
+
+            public static class ExternalConsumer
+            {
+                public static object GetCodecContract() =>
+                    typeof(IPrimitiveCodec);
+            }
+            """,
+            ["CS0122", "CS0246"]
+        },
+        {
+            """
+            using MyFhirSdk.Primitives;
+
+            public static class ExternalConsumer
+            {
+                public static object GetValidatorContract() =>
+                    typeof(IPrimitiveValidator);
+            }
+            """,
+            ["CS0122", "CS0246"]
+        },
+        {
+            """
+            using MyFhirSdk.ModelMetadata;
+
+            public static class ExternalConsumer
+            {
+                public static object GetMetadataProvider() =>
+                    typeof(IModelMetadataProvider);
+            }
+            """,
+            ["CS0122", "CS0246"]
         }
     };
 
