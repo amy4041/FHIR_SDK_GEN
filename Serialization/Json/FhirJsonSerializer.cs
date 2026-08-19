@@ -2,6 +2,8 @@ using System.Collections;
 using System.Text;
 using System.Text.Json;
 using MyFhirSdk.Core;
+using MyFhirSdk.ModelMetadata;
+using MyFhirSdk.ModelMetadata.R5;
 
 namespace MyFhirSdk.Serialization.Json;
 
@@ -14,6 +16,19 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
     {
         Indented = false
     };
+
+    private readonly IModelMetadataProvider _metadataProvider;
+
+    public FhirJsonSerializer()
+        : this(R5ModelMetadataProvider.Default)
+    {
+    }
+
+    internal FhirJsonSerializer(IModelMetadataProvider metadataProvider)
+    {
+        _metadataProvider = metadataProvider
+            ?? throw new ArgumentNullException(nameof(metadataProvider));
+    }
 
     public string Serialize<TResource>(TResource resource)
         where TResource : Resource
@@ -29,7 +44,7 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
         return Encoding.UTF8.GetString(stream.ToArray());
     }
 
-    private static void WriteResourceValue(Utf8JsonWriter writer, Resource resource)
+    private void WriteResourceValue(Utf8JsonWriter writer, Resource resource)
     {
         writer.WriteStartObject();
         writer.WriteString("resourceType", FhirJsonConventions.GetResourceTypeName(resource));
@@ -37,7 +52,7 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
         writer.WriteEndObject();
     }
 
-    private static void WriteObjectValue(Utf8JsonWriter writer, object value)
+    private void WriteObjectValue(Utf8JsonWriter writer, object value)
     {
         if (value is Resource resource)
         {
@@ -50,7 +65,7 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
         writer.WriteEndObject();
     }
 
-    private static void WriteObjectProperties(Utf8JsonWriter writer, object value)
+    private void WriteObjectProperties(Utf8JsonWriter writer, object value)
     {
         foreach (var property in FhirJsonConventions.GetSerializableProperties(value.GetType()))
         {
@@ -67,17 +82,20 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
         }
     }
 
-    private static bool TryWriteExtensionValueProperty(Utf8JsonWriter writer, object? value)
+    private bool TryWriteExtensionValueProperty(Utf8JsonWriter writer, object? value)
     {
         if (!HasSerializableValue(value))
         {
             return false;
         }
 
-        return TryWriteProperty(writer, FhirJsonConventions.GetExtensionValuePropertyName(value!), value);
+        return TryWriteProperty(
+            writer,
+            _metadataProvider.GetRequiredExtensionValuePropertyName(value!.GetType()),
+            value);
     }
 
-    private static bool TryWriteProperty(Utf8JsonWriter writer, string propertyName, object? value)
+    private bool TryWriteProperty(Utf8JsonWriter writer, string propertyName, object? value)
     {
         if (!HasSerializableValue(value))
         {
@@ -112,7 +130,7 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
         return true;
     }
 
-    private static bool WriteArrayProperty(Utf8JsonWriter writer, string propertyName, IEnumerable enumerable)
+    private bool WriteArrayProperty(Utf8JsonWriter writer, string propertyName, IEnumerable enumerable)
     {
         if (TryGetPrimitiveArrayItems(enumerable, out var primitiveItems))
         {
@@ -137,7 +155,7 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
         return true;
     }
 
-    private static bool TryGetPrimitiveArrayItems(IEnumerable enumerable, out List<object?> items)
+    private bool TryGetPrimitiveArrayItems(IEnumerable enumerable, out List<object?> items)
     {
         items = [];
 

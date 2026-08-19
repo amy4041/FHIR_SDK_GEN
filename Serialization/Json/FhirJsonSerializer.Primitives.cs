@@ -9,7 +9,7 @@ public sealed partial class FhirJsonSerializer
     private static readonly PrimitiveRegistry PrimitiveDefinitions =
         PrimitiveRegistry.Default;
 
-    private static bool WritePrimitiveProperty(Utf8JsonWriter writer, string propertyName, object primitive)
+    private bool WritePrimitiveProperty(Utf8JsonWriter writer, string propertyName, object primitive)
     {
         var hasRawValue = HasPrimitiveRawValue(primitive);
         var hasMetadata = HasPrimitiveMetadata(primitive);
@@ -34,7 +34,7 @@ public sealed partial class FhirJsonSerializer
         return true;
     }
 
-    private static bool WritePrimitiveArrayProperty(
+    private bool WritePrimitiveArrayProperty(
         Utf8JsonWriter writer,
         string propertyName,
         List<object?> items)
@@ -87,7 +87,7 @@ public sealed partial class FhirJsonSerializer
         return true;
     }
 
-    private static void WritePrimitiveMetadataObject(Utf8JsonWriter writer, Element element)
+    private void WritePrimitiveMetadataObject(Utf8JsonWriter writer, Element element)
     {
         writer.WriteStartObject();
 
@@ -123,7 +123,7 @@ public sealed partial class FhirJsonSerializer
             .HasRawValue(primitive);
     }
 
-    private static bool HasPrimitiveMetadata(object primitive)
+    private bool HasPrimitiveMetadata(object primitive)
     {
         return primitive is Element element &&
             (!string.IsNullOrEmpty(element.Id) || HasSerializableValue(element.Extension));

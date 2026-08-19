@@ -10,7 +10,7 @@ public sealed partial class FhirJsonParser
     private static readonly PrimitiveRegistry PrimitiveDefinitions =
         PrimitiveRegistry.Default;
 
-    private static object? ReadPrimitiveValue(
+    private object? ReadPrimitiveValue(
         Type primitiveType,
         JsonElement? rawElement,
         JsonElement? metadataElement)
@@ -33,7 +33,7 @@ public sealed partial class FhirJsonParser
         return primitive;
     }
 
-    private static void ReadPrimitiveListValue(
+    private void ReadPrimitiveListValue(
         IList list,
         Type primitiveType,
         string propertyName,
@@ -57,7 +57,7 @@ public sealed partial class FhirJsonParser
         }
     }
 
-    private static void ReadPrimitiveMetadata(object primitive, JsonElement metadataElement)
+    private void ReadPrimitiveMetadata(object primitive, JsonElement metadataElement)
     {
         if (metadataElement.ValueKind == JsonValueKind.Null)
         {

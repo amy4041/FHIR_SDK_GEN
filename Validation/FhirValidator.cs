@@ -1,4 +1,5 @@
 using MyFhirSdk.Core;
+using MyFhirSdk.ModelMetadata.R5;
 using MyFhirSdk.Validation.Rules;
 using MyFhirSdk.Validation.Traversal;
 
@@ -9,22 +10,22 @@ namespace MyFhirSdk.Validation;
 /// </summary>
 public sealed class FhirValidator : IFhirValidator
 {
-    private readonly ResourceRuleRegistry _ruleRegistry;
+    private readonly IValidationRuleProvider _ruleProvider;
     private readonly FhirObjectGraphWalker _walker;
 
     /// <summary>
     /// Creates a validator with the default MVP rule registry.
     /// </summary>
     public FhirValidator()
-        : this(ResourceRuleRegistry.CreateDefault(), new FhirObjectGraphWalker())
+        : this(R5ModelMetadataProvider.Default, new FhirObjectGraphWalker())
     {
     }
 
     internal FhirValidator(
-        ResourceRuleRegistry ruleRegistry,
+        IValidationRuleProvider ruleProvider,
         FhirObjectGraphWalker walker)
     {
-        _ruleRegistry = ruleRegistry ?? throw new ArgumentNullException(nameof(ruleRegistry));
+        _ruleProvider = ruleProvider ?? throw new ArgumentNullException(nameof(ruleProvider));
         _walker = walker ?? throw new ArgumentNullException(nameof(walker));
     }
 
@@ -39,7 +40,7 @@ public sealed class FhirValidator : IFhirValidator
         {
             PrimitiveFormatRule.Validate(node, issues);
 
-            foreach (var rule in _ruleRegistry.GetRules(node.Value.GetType()))
+            foreach (var rule in _ruleProvider.GetRules(node.Value.GetType()))
             {
                 rule.Validate(node, issues);
             }

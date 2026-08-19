@@ -1,5 +1,7 @@
 using System.Text.Json;
 using MyFhirSdk.Core;
+using MyFhirSdk.ModelMetadata;
+using MyFhirSdk.ModelMetadata.R5;
 
 namespace MyFhirSdk.Serialization.Json;
 
@@ -8,8 +10,18 @@ namespace MyFhirSdk.Serialization.Json;
 /// </summary>
 public sealed partial class FhirJsonParser : IFhirParser
 {
-    private static readonly IReadOnlyDictionary<string, Type> ResourceTypesByName = BuildResourceTypesByName();
-    private static readonly Type[] ComplexDataTypes = BuildComplexDataTypes();
+    private readonly IModelMetadataProvider _metadataProvider;
+
+    public FhirJsonParser()
+        : this(R5ModelMetadataProvider.Default)
+    {
+    }
+
+    internal FhirJsonParser(IModelMetadataProvider metadataProvider)
+    {
+        _metadataProvider = metadataProvider
+            ?? throw new ArgumentNullException(nameof(metadataProvider));
+    }
 
     public TResource Parse<TResource>(string json)
         where TResource : Resource
@@ -22,13 +34,13 @@ public sealed partial class FhirJsonParser : IFhirParser
         return (TResource)resource;
     }
 
-    private static Resource ReadResource(JsonElement element, Type expectedType)
+    private Resource ReadResource(JsonElement element, Type expectedType)
     {
         EnsureObject(element, "FHIR resource");
 
         var resourceTypeName = ReadResourceTypeName(element);
-        var resourceType = ResolveResourceType(resourceTypeName, expectedType);
-        var resource = (Resource)CreateInstance(resourceType);
+        var resourceMetadata = ResolveResourceType(resourceTypeName, expectedType);
+        var resource = resourceMetadata.CreateResource();
 
         ReadObjectProperties(element, resource);
 
@@ -52,42 +64,42 @@ public sealed partial class FhirJsonParser : IFhirParser
         return resourceTypeName;
     }
 
-    private static Type ResolveResourceType(string resourceTypeName, Type expectedType)
+    private ResourceTypeMetadata ResolveResourceType(string resourceTypeName, Type expectedType)
     {
         if (IsConcreteType(expectedType))
         {
-            var expectedResource = (Resource)CreateInstance(expectedType);
-            var expectedResourceTypeName = FhirJsonConventions.GetResourceTypeName(expectedResource);
+            var expectedResource = _metadataProvider.GetRequiredResource(expectedType);
 
-            if (!string.Equals(resourceTypeName, expectedResourceTypeName, StringComparison.Ordinal))
+            if (!string.Equals(resourceTypeName, expectedResource.FhirTypeName, StringComparison.Ordinal))
             {
                 throw new FhirSdkException(
-                    $"FHIR JSON resourceType '{resourceTypeName}' does not match expected resource type '{expectedResourceTypeName}'.");
+                    $"FHIR JSON resourceType '{resourceTypeName}' does not match expected resource type '{expectedResource.FhirTypeName}'.");
             }
 
-            return expectedType;
+            return expectedResource;
         }
 
-        if (!ResourceTypesByName.TryGetValue(resourceTypeName, out var resourceType))
-        {
-            throw new FhirSdkException($"FHIR JSON resourceType '{resourceTypeName}' is not supported by this SDK.");
-        }
+        var resource = _metadataProvider.GetRequiredResource(resourceTypeName);
 
-        if (!expectedType.IsAssignableFrom(resourceType))
+        if (!expectedType.IsAssignableFrom(resource.ResourceType))
         {
             throw new FhirSdkException(
                 $"FHIR JSON resourceType '{resourceTypeName}' cannot be assigned to '{expectedType.Name}'.");
         }
 
-        return resourceType;
+        return resource;
     }
 
-    private static bool TryResolveExtensionValueType(string propertyName, out Type valueType)
+    private bool TryResolveExtensionValueType(string propertyName, out Type valueType)
     {
-        return FhirExtensionValuePropertyNames.TryGetParserExtensionValueType(propertyName, out valueType);
+        return _metadataProvider.TryGetExtensionValueType(propertyName, out valueType);
     }
 
-    private static Type ResolveObjectType(Type declaredType, JsonElement element, string propertyName)
+    private Type ResolveObjectType(
+        Type declaredType,
+        Type declaringType,
+        JsonElement element,
+        string propertyName)
     {
         if (IsConcreteType(declaredType))
         {
@@ -97,31 +109,32 @@ public sealed partial class FhirJsonParser : IFhirParser
         if (typeof(Resource).IsAssignableFrom(declaredType))
         {
             var resourceTypeName = ReadResourceTypeName(element);
-            return ResolveResourceType(resourceTypeName, declaredType);
+            return ResolveResourceType(resourceTypeName, declaredType).ResourceType;
         }
 
         if (declaredType == typeof(DataType))
         {
-            return ResolveDataType(element, propertyName);
+            return ResolveDataType(declaringType, element, propertyName);
         }
 
         throw new FhirSdkException($"Cannot infer a concrete type for JSON property '{propertyName}' declared as '{declaredType.Name}'.");
     }
 
-    private static Type ResolveDataType(JsonElement element, string propertyName)
+    private Type ResolveDataType(
+        Type declaringType,
+        JsonElement element,
+        string propertyName)
     {
-        if (string.Equals(propertyName, "security", StringComparison.Ordinal) ||
-            string.Equals(propertyName, "tag", StringComparison.Ordinal))
+        if (_metadataProvider.TryGetDeclaredDataType(
+            declaringType,
+            propertyName,
+            out var declaredDataType))
         {
-            var codingType = typeof(Resource).Assembly.GetType("MyFhirSdk.Types.Coding");
-            if (codingType is not null)
-            {
-                return codingType;
-            }
+            return declaredDataType;
         }
 
         var jsonPropertyNames = GetObjectPropertyNames(element);
-        var matchingTypes = ComplexDataTypes
+        var matchingTypes = _metadataProvider.ConcreteDataTypes
             .Select(type => new
             {
                 Type = type,
@@ -211,33 +224,4 @@ public sealed partial class FhirJsonParser : IFhirParser
             type.GetConstructor(Type.EmptyTypes) is not null;
     }
 
-    private static IReadOnlyDictionary<string, Type> BuildResourceTypesByName()
-    {
-        var resourceTypes = new Dictionary<string, Type>(StringComparer.Ordinal);
-
-        foreach (var type in typeof(Resource).Assembly.GetTypes())
-        {
-            if (!typeof(Resource).IsAssignableFrom(type) || !IsConcreteType(type))
-            {
-                continue;
-            }
-
-            var resource = (Resource)CreateInstance(type);
-            var resourceTypeName = FhirJsonConventions.GetResourceTypeName(resource);
-
-            resourceTypes[resourceTypeName] = type;
-        }
-
-        return resourceTypes;
-    }
-
-    private static Type[] BuildComplexDataTypes()
-    {
-        return typeof(Resource).Assembly.GetTypes()
-            .Where(type => typeof(DataType).IsAssignableFrom(type))
-            .Where(IsConcreteType)
-            .Where(type => !FhirJsonConventions.IsFhirPrimitive(type))
-            .OrderBy(type => type.Name, StringComparer.Ordinal)
-            .ToArray();
-    }
 }
