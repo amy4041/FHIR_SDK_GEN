@@ -1,10 +1,10 @@
 # MyFhirSdk Primitive Generation Phase B Handoff
 
-Version 1.0
+Version 1.1
 
 - 文件狀態：Ready for Phase B implementation
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
-- Phase A 基準：Work Package A0-A6
+- Phase A 基準：Completed（A0-A6，A6 merge commit `7cb4159`）
 - 上位邊界：`MyFhirSdk_Runtime_R5_Models_CodeGen_Boundaries.md`
 - 實作指引：`MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md`
 

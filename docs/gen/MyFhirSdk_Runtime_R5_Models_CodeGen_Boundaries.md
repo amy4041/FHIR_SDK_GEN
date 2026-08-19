@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime、R5 Models 與 CodeGen 責任邊界
 
-Version 1.1
+Version 1.2
 
-- 文件狀態：Implemented for Runtime Phase A；Phase B/C 目標邊界已確認
+- 文件狀態：Runtime Phase A Completed；Phase B handoff ready
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
 - 目標交付形式：`MyFhirSdk.CodeGen` 作為 .NET local tool
 - 相關文件：
@@ -366,7 +366,7 @@ Validator 與 concrete R5 metadata 分離。目前仍有以下已指派 owner �
 4. 將 model-specific registry 與通用 engine 分離。
 5. 維持現有手寫 models 作為 regression oracle，不立即刪除。
 
-Phase A 的 contract、provider injection 與 architecture gates 已實作；A6 完成後以
+Phase A 的 contract、provider injection、architecture gates 與 A6 handoff 已完成；後續以
 `MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md` 作為 Phase B 唯一 primitive policy
 交接基準。
 

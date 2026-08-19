@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime Public API Inventory
 
-Version 1.6
+Version 1.7
 
-- 文件狀態：Phase A minimum contract fixed
+- 文件狀態：Runtime Phase A Completed（2026-08-19）
 - Baseline commit：`d41881d`
 - A1 起始 commit：`a9da211`
 - A2 起始 commit：`b603161`
@@ -10,7 +10,8 @@ Version 1.6
 - A4 起始 commit：`1da1b27`
 - A5 起始 commit：`80c3ca9`
 - A6 起始 commit：`fcd80ba`
-- 目前 branch：`feat/runtime-phase-a6-cleanup-phase-b-handoff`
+- A6 merge commit：`7cb4159`（PR #7）
+- 目前 branch：`docs/runtime-phase-a-completion`
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
 - 對應工作：Runtime Phase A / Work Package A0、A1、A2、A3、A4、A5、A6
 - 實作指引：
@@ -449,15 +450,14 @@ Registry construction 對 duplicate FHIR type name、duplicate wrapper type 直�
   Runtime→Models 循環；實體 assembly split 必須在 Phase C/D 先完成 ADR。
 - Cleanup audit 對保留項目逐一指定 owner：primitive policy/mapping 屬 Phase B、R5 provider
   與 complex inventory 屬 Phase C、assembly seam 與 foundational types ownership 屬 ADR。
-- 上位邊界文件狀態更新為 Runtime Phase A Implemented；README 與實作對 public validation
+- 上位邊界文件狀態更新為 Runtime Phase A Completed；README 與實作對 public validation
   入口、internal primitive behavior、model metadata boundary 的描述一致。
 - Production public API 與 approved snapshot 無變更。
 
 ## 24. A6 驗證狀態
 
 - 驗證日期：2026-08-19。
-- 實作狀態：Implemented；等待 A6 PR GitHub Actions Windows/Linux matrix 後改為
-  `Completed`。
+- 實作狀態：Completed（PR #7）。
 - Windows Release build：0 warnings、0 errors。
 - Windows solution tests：380 passed、0 failed、1 skipped。
 - Architecture tests：85 passed、0 failed；新增兩個 Phase B thin-wrapper handoff cases。
@@ -467,3 +467,5 @@ Registry construction 對 duplicate FHIR type name、duplicate wrapper type 直�
   分支、concrete R5 model reference 或 static engine registry。
 - Public API snapshot、external consumer compilation、dependency architecture、primitive
   matrix/codec/validator、metadata provider 與 generated datatype contracts 全數通過。
+- PR #7 的 Ubuntu、Windows Release build/test jobs 均通過，Ubuntu package artifact 建立
+  成功。Runtime Phase A 全部 Work Packages A0-A6 完成，可進入 Phase B。
