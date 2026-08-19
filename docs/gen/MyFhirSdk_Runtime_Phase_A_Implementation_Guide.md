@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime Phase A：固定 Runtime Contract 實作指引
 
-Version 1.1
+Version 1.2
 
-- 文件狀態：Implemented；A6 PR CI 通過後完成 Phase A
+- 文件狀態：Completed（2026-08-19）
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
 - 上位架構文件：
   `docs/gen/MyFhirSdk_Runtime_R5_Models_CodeGen_Boundaries.md`
@@ -534,7 +534,7 @@ PR 快速檢查，但正式規則應盡量由編譯或測試強制。
 
 ## 12. Work Package A6：清理、文件與 Phase B handoff
 
-- 實作狀態：Implemented（2026-08-19；等待 PR CI）
+- 實作狀態：Completed（2026-08-19，PR #7）
 
 ### 12.1 目標
 
@@ -591,7 +591,9 @@ PR 快速檢查，但正式規則應盡量由編譯或測試強制。
 - Cleanup audit 確認 `PrimitiveRegistry.Default`、literal reflection、R5 provider scan 與
   CodeGen MVP mappings 均為刻意保留且已有明確 owner；沒有無期限、無 owner 的 adapter。
 - Release build：0 warnings、0 errors；380 passed、0 failed、1 skipped；Architecture tests
-  85 passed。A6 PR 的 Windows/Linux matrix 通過後將 A6 與 Phase A 改為 `Completed`。
+  85 passed。
+- PR #7 GitHub Actions 的 `ubuntu-latest` 與 `windows-latest` build/test jobs 均通過；
+  Ubuntu package artifact 建立成功。A6 與 Runtime Phase A 驗收完成。
 
 ## 13. 建議實作順序與 PR 拆分
 
