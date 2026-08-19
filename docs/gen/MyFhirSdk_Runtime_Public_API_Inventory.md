@@ -1,6 +1,6 @@
 # MyFhirSdk Runtime Public API Inventory
 
-Version 1.4
+Version 1.5
 
 - 文件狀態：Phase A minimum contract fixed
 - Baseline commit：`d41881d`
@@ -8,9 +8,10 @@ Version 1.4
 - A2 起始 commit：`b603161`
 - A3 起始 commit：`3718972`
 - A4 起始 commit：`1da1b27`
-- 目前 branch：`feat/runtime-phase-a4-model-metadata-provider`
+- A5 起始 commit：`80c3ca9`
+- 目前 branch：`feat/runtime-phase-a5-architecture-contract-tests`
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
-- 對應工作：Runtime Phase A / Work Package A0、A1、A2、A3、A4
+- 對應工作：Runtime Phase A / Work Package A0、A1、A2、A3、A4、A5
 - 實作指引：
   `docs/gen/MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md`
 
@@ -176,7 +177,8 @@ A1 不使用 `InternalsVisibleTo` 將上述能力暴露給 R5 Models。Generated
 | `MyFhirSdk.Client.*` | Separate package | 不屬於最小 Runtime，長期拆為 Client package |
 | `ImplementationGuides.*` | Separate package / Model-specific | 不屬於最小 Runtime |
 
-Public API snapshot 涵蓋 `Core`、`Primitives`、`Serialization` 與 `Validation` namespaces，
+Public API snapshot 涵蓋 `Core`、`ModelMetadata`、`Primitives`、`Serialization` 與
+`Validation` namespaces，
 對應 Phase A 的 Runtime surface。Models、Client 與 Implementation Guides 仍由既有
 功能測試保護，不納入本次 Runtime contract approval scope。
 
@@ -211,6 +213,9 @@ Public API snapshot 涵蓋 `Core`、`Primitives`、`Serialization` 與 `Validati
 | Codec accepted/rejected token matrix | A3 補強 | `PrimitiveRuntimeContractTests` |
 | Decimal/integer64 codec integration | A3 完成 | Parser/Serializer primitive fixtures |
 | Metadata-only and primitive array alignment | A3 回歸 | Parser/Serializer element fixtures |
+| Metadata provider injection/failure | A4/A5 新增 | `ModelMetadataProviderTests` |
+| Concrete R5 dependency prohibition | A5 新增 | `RuntimeModelDependencyTests` |
+| Concrete primitive wrapper branch prohibition | A5 新增 | `RuntimeModelDependencyTests` |
 
 ## 10. Phase A contract 變更規則
 
@@ -390,3 +395,38 @@ Registry construction 對 duplicate FHIR type name、duplicate wrapper type 直�
   `MyFhirSdk.Types`、`typeof(Patient)`、`typeof(Bundle)`、`typeof(SimpleQuantity)` 或
   assembly model scan；允許的 R5-specific 命中皆集中於 `ModelMetadata/R5`。
 - Public API snapshot 與 Runtime implementation accessibility tests 通過。
+
+## 21. A5 architecture and contract gates
+
+- Public API：approved snapshot 現在也涵蓋 `MyFhirSdk.ModelMetadata`；provider contracts
+  若意外改為 public，snapshot/accessibility tests 會失敗。
+- Accessibility：external Roslyn compilation cases 明確拒絕 `IPrimitiveDefinition`、
+  `IPrimitiveCodec`、`IPrimitiveValidator` 與 `IModelMetadataProvider`。
+- Dependency：`RuntimeModelDependencyTests` 分析 compiled assembly signature 與 IL token，
+  禁止 Serialization/Validation 引用 concrete R5 Resources/Types。
+- Primitive dispatch：相同 IL gate 禁止 Runtime engine 引用 concrete primitive wrappers，
+  防止類別名稱與 `typeof(FhirDecimal)` 類型分支回流。
+- Primitive registration/codec：沿用 `PrimitiveRuntimeContractTests` 的完整、唯一、ordinal
+  ordering、token rejection、parse/write/round-trip 與 validator matrix。
+- Validation：外部 consumer 無法呼叫 primitive `IsValid()`；primitive issue 只由公開
+  `FhirValidator.Validate(Resource)` 回傳。
+- Metadata provider：涵蓋 unknown、duplicate、conflict、factory exception、錯誤 factory
+  result 與 deterministic datatype ordering。
+- Generated model：沿用 `GeneratedDatatypeRuntimeContractTests`，持續驗證外部 generated
+  datatype/resource 的 serialize、parse、validate 與 round trip。
+- 刻意違規 fixture 在 method body 建立 `Patient`，dependency scanner test 確認該 reference
+  會被偵測，避免只有「目前沒有違規」但 scanner 本身無效。
+
+## 22. A5 驗證狀態
+
+- 驗證日期：2026-08-19。
+- 實作狀態：Implemented；等待 PR GitHub Actions 完成 Windows/Linux matrix 後改為
+  `Completed`。
+- Windows Release build：0 warnings、0 errors。
+- Windows solution tests：378 passed、0 failed、1 skipped。
+- Architecture tests：83 passed、0 failed，較 A4 增加 10 個 contract/architecture cases。
+- Parser tests：21 passed；Serializer tests：14 passed；Validation tests：72 passed；
+  CodeGen tests：137 passed。
+- Public API snapshot 無變更，production code 無行為修改。
+- GitHub Actions 已設定 `ubuntu-latest` 與 `windows-latest` matrix；package 只在 Ubuntu
+  job 建立，避免重複 artifact。

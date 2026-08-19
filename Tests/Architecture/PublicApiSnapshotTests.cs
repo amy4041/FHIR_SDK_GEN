@@ -69,6 +69,10 @@ public sealed class PublicApiSnapshotTests
         var typeNamespace = type.Namespace ?? string.Empty;
 
         return typeNamespace == "MyFhirSdk.Core" ||
+            typeNamespace == "MyFhirSdk.ModelMetadata" ||
+            typeNamespace.StartsWith(
+                "MyFhirSdk.ModelMetadata.",
+                StringComparison.Ordinal) ||
             typeNamespace == "MyFhirSdk.Primitives" ||
             typeNamespace == "MyFhirSdk.Serialization" ||
             typeNamespace.StartsWith(

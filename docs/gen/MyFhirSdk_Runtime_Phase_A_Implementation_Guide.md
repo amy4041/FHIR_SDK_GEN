@@ -471,6 +471,8 @@ tests 決定，但必須符合：
 
 ## 11. Work Package A5：加入架構與契約測試
 
+- 實作狀態：Implemented（2026-08-19；等待 PR CI 完成 Windows/Linux 驗證）
+
 ### 11.1 目標
 
 用自動化測試防止未來功能開發重新把 concrete model、public primitive validation 或
@@ -505,6 +507,28 @@ PR 快速檢查，但正式規則應盡量由編譯或測試強制。
 - 刻意建立測試分支違反規則，確認相應 test 會失敗，再撤回違規變更。
 - Release configuration 執行全 solution tests。
 - CI 在 Windows/Linux 至少現有目標平台上結果一致。
+
+### 11.5 實作結果
+
+- 新增 `RuntimeModelDependencyTests`，直接分析 compiled assembly 的 member signature、
+  generic type、exception clause 與 IL metadata token，不依賴 source text 或 `rg`。
+- Serialization/Validation Runtime engine 若引用 concrete `MyFhirSdk.Resources`、
+  `MyFhirSdk.Types`，architecture test 會失敗；R5-specific bindings 只允許存在於
+  `ModelMetadata/R5`。
+- 同一 dependency gate 禁止 Runtime engine 直接引用任何 concrete primitive wrapper，
+  確保 primitive behavior 持續經 definition/codec/validator contract dispatch。
+- 測試 assembly 內包含刻意 `new Patient()` 的違規 fixture，證明 dependency scanner
+  能抓到 method body 中的 concrete model coupling。
+- Public API snapshot 範圍加入 `MyFhirSdk.ModelMetadata`，避免 internal provider contract
+  日後意外成為 exported API。
+- External consumer compilation tests 補上 primitive definition、codec、validator 與 model
+  metadata provider contract 的不可存取案例。
+- Metadata provider contract tests 補上 factory exception、錯誤 factory return type 與
+  datatype candidate deterministic ordering。
+- GitHub Actions 改為 `ubuntu-latest`／`windows-latest` matrix；NuGet package 僅由 Ubuntu
+  job 建立與上傳一次。
+- Windows Release 本機驗證：0 warnings、0 errors；378 passed、0 failed、1 skipped；
+  Architecture tests 83 passed。PR CI 綠燈後可將狀態改為 `Completed`。
 
 ## 12. Work Package A6：清理、文件與 Phase B handoff
 

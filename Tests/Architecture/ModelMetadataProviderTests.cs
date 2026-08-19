@@ -131,6 +131,56 @@ public sealed class ModelMetadataProviderTests
         Assert.Contains("Duplicate parser Extension value property", exception.Message);
     }
 
+    [Fact]
+    public void ResourceMetadata_WrapsFactoryFailureWithResourceContext()
+    {
+        var metadata = new ResourceTypeMetadata(
+            "FakeResource",
+            typeof(FakeResource),
+            () => throw new InvalidOperationException("factory failure"));
+
+        var exception = Assert.Throws<FhirSdkException>(metadata.CreateResource);
+
+        Assert.Contains("FakeResource", exception.Message);
+        var factoryFailure = Assert.IsType<InvalidOperationException>(
+            exception.InnerException);
+        Assert.Equal("factory failure", factoryFailure.Message);
+    }
+
+    [Fact]
+    public void ResourceMetadata_RejectsFactoryReturningWrongResourceType()
+    {
+        var metadata = new ResourceTypeMetadata(
+            "FakeResource",
+            typeof(FakeResource),
+            () => new OtherFakeResource());
+
+        var exception = Assert.Throws<FhirSdkException>(metadata.CreateResource);
+
+        Assert.Contains(typeof(FakeResource).FullName!, exception.Message);
+    }
+
+    [Fact]
+    public void Provider_OrdersDatatypeCandidatesDeterministically()
+    {
+        var provider = new ImmutableModelMetadataProvider(
+            [
+                new ResourceTypeMetadata(
+                    "FakeResource",
+                    typeof(FakeResource),
+                    () => new FakeResource())
+            ],
+            [typeof(OtherFakeDataType), typeof(FakeDataType)],
+            [],
+            []);
+
+        Assert.Equal(
+            provider.ConcreteDataTypes.OrderBy(
+                type => type.FullName,
+                StringComparer.Ordinal),
+            provider.ConcreteDataTypes);
+    }
+
     private static ImmutableModelMetadataProvider CreateProvider(
         IReadOnlyList<DeclaredDataTypeMetadata>? declaredDataTypes = null,
         IReadOnlyList<ExtensionValueMetadata>? extensionValues = null)
