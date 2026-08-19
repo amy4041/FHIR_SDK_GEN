@@ -7,9 +7,6 @@ namespace MyFhirSdk.Serialization.Json;
 
 public sealed partial class FhirJsonParser
 {
-    private static readonly PrimitiveRegistry PrimitiveDefinitions =
-        PrimitiveRegistry.Default;
-
     private object? ReadPrimitiveValue(
         Type primitiveType,
         JsonElement? rawElement,
@@ -20,7 +17,7 @@ public sealed partial class FhirJsonParser
             return null;
         }
 
-        var definition = PrimitiveDefinitions.GetRequired(primitiveType);
+        var definition = _primitiveDefinitions.GetRequired(primitiveType);
         var primitive = definition.Codec.CreatePrimitive(
             primitiveType,
             HasJsonValue(rawElement) ? rawElement : null);

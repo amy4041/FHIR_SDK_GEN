@@ -25,6 +25,7 @@ The SDK is still in pre-release shape. It is useful for MVP flows and SDK develo
 | `Resources/` | Typed FHIR resource models |
 | `Types/` | FHIR complex datatypes |
 | `Primitives/` | FHIR primitive wrappers |
+| `ModelMetadata/` | Internal model metadata contracts and transitional R5 provider composition |
 | `Serialization/Json/` | FHIR JSON parser and serializer |
 | `Client/` | REST client, search, authentication, request, and response handling |
 | `Validation/` | Base validation and profile validation framework |
@@ -112,6 +113,25 @@ if (!result.IsValid)
 ```
 
 Base validation is kept separate from implementation-guide and local business rules.
+
+`FhirValidator.Validate(Resource)` is the supported public validation entry point. Primitive
+format validation is included while walking the Resource graph; primitive wrappers do not expose
+`IsValid()` and SDK consumers cannot replace the internal primitive codecs or validators.
+
+## Runtime and Generated Models
+
+The Runtime contract keeps model execution separate from model declarations:
+
+- generated models depend on the public `Core` hierarchy, including `Resource`, `DataType`, and
+  `PrimitiveType<T>`;
+- JSON parsing, serialization, validation traversal, primitive codecs, validators, registries,
+  and model metadata lookup remain Runtime implementation details;
+- primitive wrappers are thin type declarations and must not contain validation algorithms;
+- model-specific R5 metadata is currently concentrated under `ModelMetadata/R5` and is intended
+  to be replaced by generated entries in a later phase.
+
+See `docs/gen/MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md` for the fixed primitive matrix,
+generation policy, literal-preservation rules, bootstrap debt, and Phase B acceptance criteria.
 
 ## TW Core Profile Validation
 
@@ -211,7 +231,7 @@ $env:MYFHIRSDK_INTEGRATION_BEARER_TOKEN="your-token"
 
 ## Continuous Integration
 
-The GitHub Actions workflow at `.github/workflows/ci.yml` runs on push, pull request, and manual dispatch. It restores the solution, builds in `Release`, runs the xUnit suite, creates a NuGet package, and uploads the package as a workflow artifact.
+The GitHub Actions workflow at `.github/workflows/ci.yml` runs on push, pull request, and manual dispatch. Ubuntu and Windows jobs restore the solution, build in `Release`, and run the xUnit suite. The Ubuntu job also creates a NuGet package and uploads it as a workflow artifact.
 
 The workflow does not set `MYFHIRSDK_INTEGRATION_BASE_URL`, so integration smoke tests remain skipped in regular CI runs.
 
@@ -240,5 +260,6 @@ dotnet pack MyFhirSdk.csproj -c Release
 - JSON fixture tests cover serializer and parser behavior end to end.
 - The REST client is designed around replaceable serializer, parser, HTTP sender, response handler, validator, and authentication collaborators.
 - Current IG work starts with TW Core Patient validation and can be extended by adding packages and profile rules under `Validation/Profiles/`.
+- Runtime public/API, accessibility, compiled dependency, primitive registry, codec, provider, and generated-style wrapper boundaries are protected by `Tests/Architecture/`.
 
 See the `docs/` folder for deeper architecture notes and the active roadmap.

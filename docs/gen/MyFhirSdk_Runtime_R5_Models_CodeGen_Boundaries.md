@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime、R5 Models 與 CodeGen 責任邊界
 
-Version 1.0
+Version 1.1
 
-- 文件狀態：Proposed
+- 文件狀態：Implemented for Runtime Phase A；Phase B/C 目標邊界已確認
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
 - 目標交付形式：`MyFhirSdk.CodeGen` 作為 .NET local tool
 - 相關文件：
@@ -10,6 +10,7 @@ Version 1.0
   - `docs/gen/FHIR_SDK_Generator_MVP_Implementation.md`
   - `docs/gen/FHIR_SDK_Generator_MVP_Implementation_steps.md`
   - `docs/gen/MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md`
+  - `docs/gen/MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md`
 
 ## 1. 文件目的
 
@@ -94,11 +95,11 @@ Primitive runtime 維持手寫，負責 primitive「如何運作」：
 Primitive format validation 不放在 public primitive interface。對外只提供統一驗證入口：
 
 ```csharp
-ValidationResult Validate(FhirObject value);
+ValidationResult Validate(Resource resource);
 ```
 
 使用者可以取得 primitive validation issue，但不能呼叫、替換或修改內部 primitive
-validator。建議的內部契約為：
+validator。Phase A 已實作的內部契約為：
 
 ```csharp
 internal interface IPrimitiveCodec
@@ -114,12 +115,14 @@ internal interface IPrimitiveValidator
 internal interface IPrimitiveDefinition
 {
     string FhirTypeName { get; }
+    Type PrimitiveType { get; }
+    Type ValueType { get; }
     IPrimitiveCodec Codec { get; }
     IPrimitiveValidator Validator { get; }
 }
 ```
 
-實際 API 可在實作階段調整，但可見性與責任邊界不得改變：行為 contract 保持
+可見性與責任邊界不得改變：行為 contract 保持
 `internal`，FHIR primitive wrapper 保持薄且不公開 `IsValid()`。
 
 ### 3.3 Serialization 與 parsing engine
@@ -333,14 +336,20 @@ contract。Local tool 的發布不以完成此拆分為必要條件。
 
 ## 8. 目前實作與目標架構的差距
 
-目前 MVP 可運作，但仍有以下過渡性依賴：
+Phase A 已移除 Parser/Serializer primitive 類別名稱分支，並把 Parser、Serializer、
+Validator 與 concrete R5 metadata 分離。目前仍有以下已指派 owner 的後續工作：
 
 - `MyFhirSdk.CodeGen` 以 `ProjectReference` 依賴整個 `MyFhirSdk.csproj`。
 - Roslyn validator 直接使用 `DataType` 所在的現有 SDK assembly。
-- `CSharpTypeMapper` 寫死 primitive mapping 與手寫 complex type whitelist。
+- `CSharpTypeMapper` 的 primitive mapping 由 Phase B versioned generation policy 取代；
+  手寫 complex type whitelist 由 Phase C definition inventory 取代。
 - generated datatype 依賴目前手寫的 `Core`、`Primitives` 與部分 `Types`。
-- Parser/Serializer 對 `FhirDecimal`、`FhirInteger64` 存在類別名稱判斷。
-- Resource parser、extension type 與 validation rule registry 仍含手寫 model 清單。
+- 17 個 primitive wrapper declarations 與 default registry entries 仍為手寫，交由 Phase B
+  依 `MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md` 生成。
+- R5 resource、datatype、extension 與 validation entries 已集中於 `ModelMetadata/R5`，但
+  仍是手寫/assembly scan，交由 Phase C generated provider 取代。
+- Runtime、R5 Models 目前仍編譯於單一 SDK assembly；bootstrap debt 與未來 assembly seam
+  已在 Phase B handoff 登錄，不在 Phase A 強制拆分。
 
 上述項目不影響已完成的五種 datatype MVP，但必須在完整 SDK generation 前逐步移除。
 
@@ -356,6 +365,10 @@ contract。Local tool 的發布不以完成此拆分為必要條件。
 3. 移除 Parser/Serializer 依 primitive 類別名稱分支的行為。
 4. 將 model-specific registry 與通用 engine 分離。
 5. 維持現有手寫 models 作為 regression oracle，不立即刪除。
+
+Phase A 的 contract、provider injection 與 architecture gates 已實作；A6 完成後以
+`MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md` 作為 Phase B 唯一 primitive policy
+交接基準。
 
 ### Phase B：建立 primitive generation
 
@@ -408,7 +421,7 @@ Local tool 的技術包裝可提早進行，但正式支援範圍必須清楚標
 | FHIR object 最小執行 contract | 手寫 | 使用 | 映射 |
 | primitive value/metadata 機制 | 手寫 | 使用 | 不實作 |
 | primitive codec/format validation | 手寫、internal | 不實作 | 選擇 policy key |
-| primitive wrapper declaration | 不手寫 | generated | 生成 |
+| primitive wrapper declaration | Phase A 手寫 oracle；Phase B 後不手寫 | generated | 生成 |
 | complex datatype/Resource property | 不手寫 | generated | 生成 |
 | serializer/parser engine | 手寫 | 提供 metadata | 不實作 |
 | Resource/type registry entries | 執行 registry | generated | 生成 |

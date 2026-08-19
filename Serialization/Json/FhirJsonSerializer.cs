@@ -4,6 +4,7 @@ using System.Text.Json;
 using MyFhirSdk.Core;
 using MyFhirSdk.ModelMetadata;
 using MyFhirSdk.ModelMetadata.R5;
+using MyFhirSdk.Primitives;
 
 namespace MyFhirSdk.Serialization.Json;
 
@@ -18,16 +19,26 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
     };
 
     private readonly IModelMetadataProvider _metadataProvider;
+    private readonly PrimitiveRegistry _primitiveDefinitions;
 
     public FhirJsonSerializer()
-        : this(R5ModelMetadataProvider.Default)
+        : this(R5ModelMetadataProvider.Default, PrimitiveRegistry.Default)
     {
     }
 
     internal FhirJsonSerializer(IModelMetadataProvider metadataProvider)
+        : this(metadataProvider, PrimitiveRegistry.Default)
+    {
+    }
+
+    internal FhirJsonSerializer(
+        IModelMetadataProvider metadataProvider,
+        PrimitiveRegistry primitiveDefinitions)
     {
         _metadataProvider = metadataProvider
             ?? throw new ArgumentNullException(nameof(metadataProvider));
+        _primitiveDefinitions = primitiveDefinitions
+            ?? throw new ArgumentNullException(nameof(primitiveDefinitions));
     }
 
     public string Serialize<TResource>(TResource resource)

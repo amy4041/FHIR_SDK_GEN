@@ -6,27 +6,36 @@ namespace MyFhirSdk.Validation.Rules;
 
 internal static class PrimitiveFormatRule
 {
-    private static readonly PrimitiveRegistry Registry = PrimitiveRegistry.Default;
-
     public static void Validate(
         FhirObjectGraphNode node,
-        ICollection<ValidationIssue> issues)
+        ICollection<ValidationIssue> issues,
+        PrimitiveRegistry primitiveDefinitions)
     {
-        ValidateId(node, issues);
-        ValidatePrimitive(node, issues);
+        ArgumentNullException.ThrowIfNull(primitiveDefinitions);
+        ValidateId(node, issues, primitiveDefinitions);
+        ValidatePrimitive(node, issues, primitiveDefinitions);
     }
 
     private static void ValidateId(
         FhirObjectGraphNode node,
-        ICollection<ValidationIssue> issues)
+        ICollection<ValidationIssue> issues,
+        PrimitiveRegistry primitiveDefinitions)
     {
         switch (node.Value)
         {
             case Resource resource:
-                AddInvalidIdIssueIfNeeded(resource.Id, FhirPathFormatter.Combine(node.Path, "id"), issues);
+                AddInvalidIdIssueIfNeeded(
+                    resource.Id,
+                    FhirPathFormatter.Combine(node.Path, "id"),
+                    issues,
+                    primitiveDefinitions);
                 break;
             case Element element:
-                AddInvalidIdIssueIfNeeded(element.Id, FhirPathFormatter.Combine(node.Path, "id"), issues);
+                AddInvalidIdIssueIfNeeded(
+                    element.Id,
+                    FhirPathFormatter.Combine(node.Path, "id"),
+                    issues,
+                    primitiveDefinitions);
                 break;
         }
     }
@@ -34,9 +43,10 @@ internal static class PrimitiveFormatRule
     private static void AddInvalidIdIssueIfNeeded(
         string? id,
         string path,
-        ICollection<ValidationIssue> issues)
+        ICollection<ValidationIssue> issues,
+        PrimitiveRegistry primitiveDefinitions)
     {
-        if (Registry.GetRequired("id").Validator.IsValidValue(id))
+        if (primitiveDefinitions.GetRequired("id").Validator.IsValidValue(id))
         {
             return;
         }
@@ -52,14 +62,15 @@ internal static class PrimitiveFormatRule
 
     private static void ValidatePrimitive(
         FhirObjectGraphNode node,
-        ICollection<ValidationIssue> issues)
+        ICollection<ValidationIssue> issues,
+        PrimitiveRegistry primitiveDefinitions)
     {
         if (node.Value is not IPrimitiveValueAccessor)
         {
             return;
         }
 
-        var definition = Registry.GetRequired(node.Value.GetType());
+        var definition = primitiveDefinitions.GetRequired(node.Value.GetType());
         if (definition.Validator.IsValid(node.Value))
         {
             return;

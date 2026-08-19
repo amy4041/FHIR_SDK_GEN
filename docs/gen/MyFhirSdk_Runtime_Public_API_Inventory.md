@@ -1,6 +1,6 @@
 # MyFhirSdk Runtime Public API Inventory
 
-Version 1.5
+Version 1.6
 
 - 文件狀態：Phase A minimum contract fixed
 - Baseline commit：`d41881d`
@@ -9,9 +9,10 @@ Version 1.5
 - A3 起始 commit：`3718972`
 - A4 起始 commit：`1da1b27`
 - A5 起始 commit：`80c3ca9`
-- 目前 branch：`feat/runtime-phase-a5-architecture-contract-tests`
+- A6 起始 commit：`fcd80ba`
+- 目前 branch：`feat/runtime-phase-a6-cleanup-phase-b-handoff`
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
-- 對應工作：Runtime Phase A / Work Package A0、A1、A2、A3、A4、A5
+- 對應工作：Runtime Phase A / Work Package A0、A1、A2、A3、A4、A5、A6
 - 實作指引：
   `docs/gen/MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md`
 
@@ -420,8 +421,7 @@ Registry construction 對 duplicate FHIR type name、duplicate wrapper type 直�
 ## 22. A5 驗證狀態
 
 - 驗證日期：2026-08-19。
-- 實作狀態：Implemented；等待 PR GitHub Actions 完成 Windows/Linux matrix 後改為
-  `Completed`。
+- 實作狀態：Completed（PR #6）。
 - Windows Release build：0 warnings、0 errors。
 - Windows solution tests：378 passed、0 failed、1 skipped。
 - Architecture tests：83 passed、0 failed，較 A4 增加 10 個 contract/architecture cases。
@@ -430,3 +430,40 @@ Registry construction 對 duplicate FHIR type name、duplicate wrapper type 直�
 - Public API snapshot 無變更，production code 無行為修改。
 - GitHub Actions 已設定 `ubuntu-latest` 與 `windows-latest` matrix；package 只在 Ubuntu
   job 建立，避免重複 artifact。
+- PR #6 的 Ubuntu、Windows build/test jobs 均通過，Ubuntu package artifact 建立成功。
+
+## 23. A6 cleanup and Phase B handoff
+
+- `PrimitiveRegistry.TryGet` 無 production caller，已移除；missing primitive 必須經
+  `GetRequired` 明確失敗。
+- Parser、Serializer、Validator 與 `PrimitiveFormatRule` 改持有由 internal constructor
+  注入的 `PrimitiveRegistry`，不再各自抓取 static registry field。Public constructors
+  仍使用 immutable `PrimitiveRegistry.Default`，未開放 SDK 使用者 mutation。
+- `PhaseBPrimitiveHandoffTests` 的薄 wrapper declaration 只依賴 public
+  `PrimitiveType<string>`；測試 composition 注入 generated-style definition 後，可完成
+  JSON serialize/parse、有效 validation 與無效 format issue。
+- `MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md` 固定 17 筆 definition matrix、policy
+  schema、wrapper/literal shape、registry composition、bootstrap debt、驗收測試與 Phase B
+  Definition of Done。
+- Phase B 初期仍編譯於目前單一 SDK assembly，避免公開 internal codec/validator 或形成
+  Runtime→Models 循環；實體 assembly split 必須在 Phase C/D 先完成 ADR。
+- Cleanup audit 對保留項目逐一指定 owner：primitive policy/mapping 屬 Phase B、R5 provider
+  與 complex inventory 屬 Phase C、assembly seam 與 foundational types ownership 屬 ADR。
+- 上位邊界文件狀態更新為 Runtime Phase A Implemented；README 與實作對 public validation
+  入口、internal primitive behavior、model metadata boundary 的描述一致。
+- Production public API 與 approved snapshot 無變更。
+
+## 24. A6 驗證狀態
+
+- 驗證日期：2026-08-19。
+- 實作狀態：Implemented；等待 A6 PR GitHub Actions Windows/Linux matrix 後改為
+  `Completed`。
+- Windows Release build：0 warnings、0 errors。
+- Windows solution tests：380 passed、0 failed、1 skipped。
+- Architecture tests：85 passed、0 failed；新增兩個 Phase B thin-wrapper handoff cases。
+- Parser tests：21 passed；Serializer tests：14 passed；Validation tests：72 passed；
+  CodeGen tests：137 passed。
+- Runtime engine 掃描未命中舊 extension/resource discovery helper、primitive wrapper 類別
+  分支、concrete R5 model reference 或 static engine registry。
+- Public API snapshot、external consumer compilation、dependency architecture、primitive
+  matrix/codec/validator、metadata provider 與 generated datatype contracts 全數通過。
