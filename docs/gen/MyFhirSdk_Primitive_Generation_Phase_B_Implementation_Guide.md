@@ -2,7 +2,7 @@
 
 Version 1.0
 
-- 文件狀態：Ready for review；Phase B production implementation 前應核准
+- 文件狀態：In implementation（B0 local baseline completed；cross-platform CI pending）
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
 - Phase A 基準：Completed（A0-A6，A6 merge commit `7cb4159`）
 - 上位架構文件：
@@ -353,6 +353,49 @@ JSON round-trip 與 CodeGen MVP 的基準，並核准 Phase B 的輸入、輸出
 - `PhaseBPrimitiveHandoffTests` 通過。
 - CodeGen MVP golden、Roslyn、CLI tests 通過。
 - Release solution build/test 為 baseline green。
+
+### 7.5 B0 核准決策與實作結果
+
+B0 以 commit `59d1793` 作為 production baseline，採用下列決策：
+
+| Decision | B0 disposition |
+|---|---|
+| Policy format/path | JSON；`CodeGen/Policy/primitive-generation-policy.json` |
+| Formal generated root | `Generated/R5/Primitives/` |
+| Generated artifact ownership | source 與 manifest 提交 Git；B5/B6 啟用正式輸出時調整 `.gitignore` |
+| Registry composition | 現有單一 SDK assembly 內的 partial `PrimitiveRegistry` seam |
+| Wrapper/registry migration | B6 以單一可回復 change set 原子切換，不允許 duplicate 或 missing type 的中間狀態 |
+| Official input | `hl7.fhir.r5.core#5.0.0`；21 個 `kind = primitive-type` fixtures 固定於 repository |
+| Public API compatibility | 保留既有 constants 與 presentation-only `ToString()` observable behavior |
+
+Public compatibility policy 使用受限資料，不接受任意 C# snippet：
+
+- `toStringBehavior` 只允許 `inherited`、`boolean-lowercase`、`invariant-value`、
+  `literal-or-invariant-value`。
+- `publicConstants` 只允許結構化的 name、CLR integral type 與 constant value，並驗證 C#
+  identifier、唯一性與 numeric range。
+- compatibility behavior 不得執行 JSON codec、format validation、registry lookup 或建立
+  validation issue。
+
+現有 public compatibility members 已同步固定於 Phase B handoff 3.3。完整官方 inventory
+比 Runtime handoff matrix 多出 `oid`、`time`、`uuid`、`xhtml`；B1 policy 必須將它們標示
+為 unsupported 並記錄「Phase A Runtime 尚無核准的 CLR/codec/validator contract」，除非先
+另行擴充並核准 Runtime contract，不得由 CodeGen 猜測 mapping。
+
+B0 新增的 automated gates：
+
+- `PrimitiveWrapperBaselineTests`：固定 17 個 public sealed wrapper、base/value type、
+  constructors、`Literal`、public constants、declared `ToString()` 與 invariant/literal 行為。
+- `PrimitiveStructureDefinitionFixtureTests`：固定 21 個官方 R5 primitive identities、
+  canonical、version、file name 與 SHA-256 bytes。
+- `ApprovedPublicApi.txt` 未變更；production source 未變更。
+
+Windows local baseline（.NET 9、Release）：
+
+- B0 修改前：build 0 warnings、0 errors；380 passed、0 failed、1 skipped。
+- B0 targeted tests：Architecture 92 passed；CodeGen 139 passed。
+- B0 修改後：build 0 warnings、0 errors；389 passed、0 failed、1 skipped。
+- Linux 結果由 branch CI 補齊；CI 通過後可將 B0 cross-platform gate 標示完成。
 
 ## 8. Work Package B1：建立 versioned primitive policy
 
