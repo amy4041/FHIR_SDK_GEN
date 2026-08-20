@@ -11,6 +11,7 @@ Version 1.2
   - `docs/gen/FHIR_SDK_Generator_MVP_Implementation_steps.md`
   - `docs/gen/MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md`
   - `docs/gen/MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md`
+  - `docs/gen/MyFhirSdk_Primitive_Generation_Phase_B_Implementation_Guide.md`
 
 ## 1. 文件目的
 

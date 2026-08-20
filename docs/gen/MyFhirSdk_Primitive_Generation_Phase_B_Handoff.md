@@ -6,7 +6,9 @@ Version 1.1
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
 - Phase A 基準：Completed（A0-A6，A6 merge commit `7cb4159`）
 - 上位邊界：`MyFhirSdk_Runtime_R5_Models_CodeGen_Boundaries.md`
-- 實作指引：`MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md`
+- 前階段實作指引：`MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md`
+- Phase B 實作指引：
+  `MyFhirSdk_Primitive_Generation_Phase_B_Implementation_Guide.md`
 
 ## 1. 目的
 
@@ -98,6 +100,26 @@ public string? Literal { get; }
 Runtime `LiteralPrimitiveCodec` 會以 string constructor 建立 wrapper，並讀取 public
 `Literal` property 保留原始 representation。這是 Phase B 必須生成的 wrapper shape；
 不得將 trailing zero、exponent 或 integer64 string representation 正規化後再輸出。
+
+### 3.3 B0 核准的 public API 相容成員
+
+3.1 的薄 wrapper 原則不授權 Phase B 無聲移除已進入 public API snapshot 的 declarative
+constants 或 presentation-only `ToString()` behavior。Generated wrappers 必須保留下列
+B0 compatibility contract：
+
+| Wrapper | Compatibility member / behavior |
+|---|---|
+| `FhirString` | `MaxLength = 1048576` |
+| `FhirMarkdown` | `MaxLength = 1048576` |
+| `FhirDecimal` | `MaxIntegerDigits = 18`、`MaxFractionDigits = 17`、`MaxExponentDigits = 9` |
+| `FhirBoolean` | `ToString()` 輸出 lowercase `true`/`false`，null 輸出空字串 |
+| `FhirInteger`、`FhirPositiveInt`、`FhirUnsignedInt` | `ToString()` 使用 invariant value representation |
+| `FhirDecimal`、`FhirInteger64` | `ToString()` 優先輸出 `Literal`，否則使用 invariant value representation |
+
+這些成員只提供 public API 與字串呈現相容性，不得執行 JSON token selection、registry
+lookup、format validation 或產生 validation issue。Policy 應使用封閉的 behavior key 與
+結構化 constant data 表達，不得注入任意 C# source。未來若要移除，必須另有明確的
+breaking API decision 並核准 public API snapshot 差異。
 
 ## 4. Generation policy schema
 
