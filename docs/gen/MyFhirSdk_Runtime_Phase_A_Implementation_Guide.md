@@ -705,6 +705,9 @@ MyFhirSdk_Runtime_Phase_A_Implementation_Guide.md
 MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md
 └─ primitive matrix、policy schema、bootstrap debt、Phase B 驗收與相容切換
 
+MyFhirSdk_Primitive_Generation_Phase_B_Implementation_Guide.md
+└─ primitive generation 的 B0-B7 實作、測試與切換順序
+
 MyFhirSdk_R5_Models_Generation_Phase_C_Implementation_Guide.md（後續）
 └─ full datatype/Resource/dependency graph generation
 
