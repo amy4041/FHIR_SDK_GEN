@@ -5,6 +5,7 @@ namespace MyFhirSdk.CodeGen.Policy;
 public sealed class ValidatedPrimitiveGenerationPolicy
 {
     internal ValidatedPrimitiveGenerationPolicy(
+        string sourceFile,
         int schemaVersion,
         string policyVersion,
         string fhirVersion,
@@ -12,6 +13,7 @@ public sealed class ValidatedPrimitiveGenerationPolicy
         string primitiveNamespace,
         IEnumerable<ValidatedPrimitivePolicyEntry> primitives)
     {
+        SourceFile = sourceFile;
         SchemaVersion = schemaVersion;
         PolicyVersion = policyVersion;
         FhirVersion = fhirVersion;
@@ -20,6 +22,8 @@ public sealed class ValidatedPrimitiveGenerationPolicy
         Primitives = new ReadOnlyCollection<ValidatedPrimitivePolicyEntry>(
             primitives.ToArray());
     }
+
+    public string SourceFile { get; }
 
     public int SchemaVersion { get; }
 

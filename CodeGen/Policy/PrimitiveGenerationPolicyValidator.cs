@@ -156,6 +156,7 @@ public sealed class PrimitiveGenerationPolicyValidator
         }
 
         var validatedPolicy = new ValidatedPrimitiveGenerationPolicy(
+            source,
             document.SchemaVersion!.Value,
             document.PolicyVersion!,
             document.FhirVersion!,

@@ -20,4 +20,9 @@ public static class GeneratorDiagnosticCodes
     public const string DuplicatePrimitivePolicyEntry = "FSG0016";
     public const string UnknownPrimitivePolicyKey = "FSG0017";
     public const string InvalidPrimitiveLiteralPolicy = "FSG0018";
+    public const string InvalidPrimitiveInventory = "FSG0019";
+    public const string DuplicatePrimitiveInventoryEntry = "FSG0020";
+    public const string MissingPrimitivePolicyEntry = "FSG0021";
+    public const string ExtraPrimitivePolicyEntry = "FSG0022";
+    public const string PrimitivePolicyIdentityMismatch = "FSG0023";
 }
