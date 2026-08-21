@@ -153,6 +153,7 @@ primitives:
 - JSON raw token；
 - Runtime codec key、validator key；
 - literal preservation 與額外 constructor/property shape；
+- B0 核准的封閉 `toStringBehavior` 與結構化 public constants；
 - `supported` 或具理由的 `unsupported` 狀態。
 
 ### 4.1 Policy validation rules
@@ -166,6 +167,10 @@ Generation 開始前必須驗證：
 5. `integer64-literal` 必須搭配 JSON string、`long?` 與 literal preservation。
 6. 非 literal codec 不得要求 `Literal` property。
 7. output 依 FHIR type name ordinal 排序，重複或缺漏不得 fallback。
+8. `toStringBehavior`、JSON token、CLR type、codec 與 validator key 必須來自封閉集合，
+   且組合必須相容。
+9. public constants 只能使用結構化 identifier、integral CLR type 與範圍內 constant value；
+   不得包含任意 C# source。
 
 目前 `CSharpTypeMapper.PrimitiveTypeNames` 是 MVP 過渡 mapping，且未涵蓋完整官方 R5
 primitive inventory。Phase B 應由 validated policy 取代這份 mapping，不在 mapper 中再增加

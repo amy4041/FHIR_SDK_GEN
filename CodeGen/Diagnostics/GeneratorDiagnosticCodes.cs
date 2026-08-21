@@ -14,4 +14,10 @@ public static class GeneratorDiagnosticCodes
     public const string CSharpNameConflict = "FSG0010";
     public const string UnsafeOutputPath = "FSG0011";
     public const string CompilationFailure = "FSG0012";
+    public const string PrimitivePolicyReadFailure = "FSG0013";
+    public const string UnsupportedPrimitivePolicySchema = "FSG0014";
+    public const string InvalidPrimitivePolicy = "FSG0015";
+    public const string DuplicatePrimitivePolicyEntry = "FSG0016";
+    public const string UnknownPrimitivePolicyKey = "FSG0017";
+    public const string InvalidPrimitiveLiteralPolicy = "FSG0018";
 }
