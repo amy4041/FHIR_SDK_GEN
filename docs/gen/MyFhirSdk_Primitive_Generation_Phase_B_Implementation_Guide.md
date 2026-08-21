@@ -2,7 +2,7 @@
 
 Version 1.0
 
-- 文件狀態：In implementation（B0 local baseline completed；cross-platform CI pending）
+- 文件狀態：In implementation（B0 completed；B1 local completed，cross-platform CI pending）
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
 - Phase A 基準：Completed（A0-A6，A6 merge commit `7cb4159`）
 - 上位架構文件：
@@ -395,7 +395,7 @@ Windows local baseline（.NET 9、Release）：
 - B0 修改前：build 0 warnings、0 errors；380 passed、0 failed、1 skipped。
 - B0 targeted tests：Architecture 92 passed；CodeGen 139 passed。
 - B0 修改後：build 0 warnings、0 errors；389 passed、0 failed、1 skipped。
-- Linux 結果由 branch CI 補齊；CI 通過後可將 B0 cross-platform gate 標示完成。
+- PR #9 的 Windows/Linux CI 均通過；B0 cross-platform gate 完成。
 
 ## 8. Work Package B1：建立 versioned primitive policy
 
@@ -467,6 +467,35 @@ codec implementation 或 validation algorithm。
 - 每條 validation rule 至少一個 invalid case。
 - ordinal/case-sensitive duplicate tests。
 - shuffled policy input 產生相同 validated order。
+
+### 8.6 B1 實作結果
+
+B1 建立 `CodeGen/Policy/primitive-generation-policy.json` 作為唯一 versioned primitive
+policy，並新增：
+
+- strict JSON DTO：未知 property、malformed JSON、missing file 與 cancellation 都有明確
+  loader contract。
+- `PrimitiveGenerationPolicyLoader`：回傳 `GenerationResult`，不使用 mutable static state。
+- `PrimitiveGenerationPolicyValidator`：在 renderer 前驗證 schema、semantic version、
+  required fields、C# namespace/identifier、ordinal uniqueness、cross-platform output filename、
+  supported/unsupported shape、封閉 key、literal contract、codec/token/CLR、validator/backing、
+  `ToString()` behavior 與 public constants。
+- immutable `ValidatedPrimitiveGenerationPolicy`：entries 與 constants defensive copy，並將
+  JSON string keys 轉成封閉 enums；後續 renderer 不接收未驗證 DTO。
+- 專用 diagnostics `FSG0013`–`FSG0018`，錯誤排序 deterministic。
+
+正式 policy 共 21 筆，依 FHIR type name ordinal 排序：
+
+- 17 筆 supported entries 與 Phase B handoff matrix 完全一致。
+- `oid`、`time`、`uuid`、`xhtml` 明確標示 unsupported 並記錄缺少核准 Runtime contract。
+- `FhirString`、`FhirMarkdown`、`FhirDecimal` constants 與六個 wrappers 的 B0
+  `ToString()` compatibility behavior 使用受限結構化 policy 表達。
+
+B1 保留 `CSharpTypeMapper.PrimitiveTypeNames`，未修改 Runtime、Parser、Serializer、Validator
+或 wrappers；mapper 切換仍屬 B7。
+
+Windows local Release 驗收：build 0 warnings、0 errors；426 passed、0 failed、1 skipped；
+其中 CodeGen tests 176 passed。Push 後由 branch CI 補齊 Windows/Linux cross-platform gate。
 
 ## 9. Work Package B2：載入官方 R5 primitive inventory
 
