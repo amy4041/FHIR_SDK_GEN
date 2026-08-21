@@ -32,6 +32,146 @@ public sealed class StructureDefinitionLoaderTests
     }
 
     [Fact]
+    public async Task LoadAsync_WithExplicitComplexTypeProfile_LoadsComplexTypeDefinition()
+    {
+        var fixturePath = GetFixturePath(
+            "Valid",
+            "StructureDefinition-HumanName.json");
+
+        var result = await _loader.LoadAsync(
+            fixturePath,
+            FhirVersion,
+            StructureDefinitionLoadProfile.ComplexType);
+
+        Assert.True(result.IsSuccess);
+        var loaded = Assert.Single(result.Value);
+        Assert.Equal("complex-type", loaded.Definition.Kind);
+    }
+
+    [Fact]
+    public async Task LoadAsync_WithPrimitiveTypeProfile_LoadsOfficialPrimitiveInventory()
+    {
+        var fixturePath = GetFixturePath("Primitives", "R5");
+
+        var result = await _loader.LoadAsync(
+            fixturePath,
+            FhirVersion,
+            StructureDefinitionLoadProfile.PrimitiveType);
+
+        Assert.True(result.IsSuccess);
+        Assert.Empty(result.Diagnostics);
+        Assert.Equal(
+            [
+                "base64Binary",
+                "boolean",
+                "canonical",
+                "code",
+                "date",
+                "dateTime",
+                "decimal",
+                "id",
+                "instant",
+                "integer",
+                "integer64",
+                "markdown",
+                "oid",
+                "positiveInt",
+                "string",
+                "time",
+                "unsignedInt",
+                "uri",
+                "url",
+                "uuid",
+                "xhtml"
+            ],
+            result.Value.Select(item => item.Definition.Type));
+        Assert.All(
+            result.Value,
+            loaded => Assert.Equal("primitive-type", loaded.Definition.Kind));
+    }
+
+    [Fact]
+    public async Task LoadAsync_WithPrimitiveTypeProfile_RejectsComplexTypeDefinition()
+    {
+        var fixturePath = GetFixturePath(
+            "Valid",
+            "StructureDefinition-HumanName.json");
+
+        var result = await _loader.LoadAsync(
+            fixturePath,
+            FhirVersion,
+            StructureDefinitionLoadProfile.PrimitiveType);
+
+        Assert.False(result.IsSuccess);
+        Assert.Empty(result.Value);
+        Assert.Contains(
+            result.Diagnostics,
+            diagnostic =>
+                diagnostic.Code == GeneratorDiagnosticCodes.UnsupportedDefinition);
+    }
+
+    [Fact]
+    public async Task LoadAsync_WithDefaultProfile_RejectsPrimitiveTypeDefinition()
+    {
+        var fixturePath = GetFixturePath(
+            "Primitives",
+            "R5",
+            "StructureDefinition-boolean.json");
+
+        var result = await _loader.LoadAsync(fixturePath, FhirVersion);
+
+        Assert.False(result.IsSuccess);
+        Assert.Empty(result.Value);
+        Assert.Contains(
+            result.Diagnostics,
+            diagnostic =>
+                diagnostic.Code == GeneratorDiagnosticCodes.UnsupportedDefinition);
+    }
+
+    [Fact]
+    public async Task LoadAsync_WithPrimitiveTypeProfile_AppliesCommonValidation()
+    {
+        using var directory = new TemporaryDirectory();
+        var sourceFile = await directory.WriteAsync(
+            "boolean.json",
+            CreateValidDefinitionJson(
+                "boolean",
+                version: "4.0.1",
+                kind: "primitive-type",
+                includeSnapshot: false));
+
+        var result = await _loader.LoadAsync(
+            sourceFile,
+            FhirVersion,
+            StructureDefinitionLoadProfile.PrimitiveType);
+
+        Assert.False(result.IsSuccess);
+        Assert.Empty(result.Value);
+        Assert.Contains(
+            result.Diagnostics,
+            diagnostic =>
+                diagnostic.Code == GeneratorDiagnosticCodes.FhirVersionMismatch);
+        Assert.Contains(
+            result.Diagnostics,
+            diagnostic =>
+                diagnostic.Code == GeneratorDiagnosticCodes.MissingSnapshot);
+    }
+
+    [Fact]
+    public async Task LoadAsync_WithUnknownProfile_ThrowsArgumentOutOfRangeException()
+    {
+        var fixturePath = GetFixturePath(
+            "Valid",
+            "StructureDefinition-HumanName.json");
+
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
+            () => _loader.LoadAsync(
+                fixturePath,
+                FhirVersion,
+                (StructureDefinitionLoadProfile)int.MaxValue));
+    }
+
+    [Fact]
     public async Task LoadAsync_WithDirectory_LoadsJsonFilesInOrdinalPathOrder()
     {
         using var directory = new TemporaryDirectory();

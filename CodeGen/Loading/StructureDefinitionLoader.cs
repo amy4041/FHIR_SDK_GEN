@@ -11,6 +11,20 @@ public sealed class StructureDefinitionLoader
         string expectedFhirVersion,
         CancellationToken cancellationToken = default)
     {
+        return await LoadAsync(
+            inputPath,
+            expectedFhirVersion,
+            StructureDefinitionLoadProfile.ComplexType,
+            cancellationToken);
+    }
+
+    public async Task<GenerationResult<IReadOnlyList<LoadedStructureDefinition>>> LoadAsync(
+        string inputPath,
+        string expectedFhirVersion,
+        StructureDefinitionLoadProfile loadProfile,
+        CancellationToken cancellationToken = default)
+    {
+        var expectedKind = GetExpectedKind(loadProfile);
         var definitions = new List<LoadedStructureDefinition>();
         var diagnostics = new List<GeneratorDiagnostic>();
 
@@ -50,6 +64,7 @@ public sealed class StructureDefinitionLoader
                 definition,
                 sourceFile,
                 expectedFhirVersion,
+                expectedKind,
                 diagnostics);
 
             if (diagnostics.Count == diagnosticCountBeforeValidation)
@@ -148,6 +163,7 @@ public sealed class StructureDefinitionLoader
         StructureDefinitionDto definition,
         string sourceFile,
         string expectedFhirVersion,
+        string expectedKind,
         ICollection<GeneratorDiagnostic> diagnostics)
     {
         if (!string.Equals(
@@ -225,14 +241,15 @@ public sealed class StructureDefinitionLoader
         if (!string.IsNullOrWhiteSpace(definition.Kind) &&
             !string.Equals(
                 definition.Kind,
-                "complex-type",
+                expectedKind,
                 StringComparison.Ordinal))
         {
             diagnostics.Add(CreateDefinitionDiagnostic(
                 GeneratorDiagnosticCodes.UnsupportedDefinition,
                 sourceFile,
                 definition,
-                $"StructureDefinition kind '{definition.Kind}' is not supported."));
+                $"StructureDefinition kind '{definition.Kind}' is not supported by this " +
+                $"load profile; expected '{expectedKind}'."));
         }
 
         if (!string.IsNullOrWhiteSpace(definition.Derivation) &&
@@ -247,6 +264,19 @@ public sealed class StructureDefinitionLoader
                 definition,
                 $"StructureDefinition derivation '{definition.Derivation}' is not supported."));
         }
+    }
+
+    private static string GetExpectedKind(StructureDefinitionLoadProfile loadProfile)
+    {
+        return loadProfile switch
+        {
+            StructureDefinitionLoadProfile.ComplexType => "complex-type",
+            StructureDefinitionLoadProfile.PrimitiveType => "primitive-type",
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(loadProfile),
+                loadProfile,
+                "The StructureDefinition load profile is not supported.")
+        };
     }
 
     private static void RequireText(
