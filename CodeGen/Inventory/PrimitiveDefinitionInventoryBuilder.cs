@@ -8,8 +8,6 @@ public sealed class PrimitiveDefinitionInventoryBuilder
 {
     private const string StructureDefinitionResourceType = "StructureDefinition";
     private const string PrimitiveTypeKind = "primitive-type";
-    private const string CanonicalPrefix =
-        "http://hl7.org/fhir/StructureDefinition/";
 
     public GenerationResult<PrimitiveDefinitionInventory?> Build(
         IReadOnlyList<LoadedStructureDefinition> definitions,
@@ -173,23 +171,6 @@ public sealed class PrimitiveDefinitionInventoryBuilder
                 $"'{expectedFhirVersion}'."));
         }
 
-        if (!string.IsNullOrWhiteSpace(definition.Type) &&
-            !string.IsNullOrWhiteSpace(definition.Url))
-        {
-            var expectedCanonical = CanonicalPrefix + definition.Type;
-            if (!string.Equals(
-                    definition.Url,
-                    expectedCanonical,
-                    StringComparison.Ordinal))
-            {
-                diagnostics.Add(CreateDiagnostic(
-                    GeneratorDiagnosticCodes.InvalidPrimitiveInventory,
-                    sourceFile,
-                    definition,
-                    $"Primitive '{definition.Type}' canonical '{definition.Url}' does " +
-                    $"not match '{expectedCanonical}'."));
-            }
-        }
     }
 
     private static void RequireText(

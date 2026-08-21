@@ -123,7 +123,7 @@ public sealed class PrimitiveDefinitionInventoryBuilderTests
     }
 
     [Fact]
-    public void Build_WithCanonicalThatDoesNotMatchType_ReturnsFsg0019()
+    public void Build_PreservesCanonicalForPolicyCoverageValidation()
     {
         var definition = CreateLoadedDefinition(
             "sample.json",
@@ -132,14 +132,12 @@ public sealed class PrimitiveDefinitionInventoryBuilderTests
 
         var result = _builder.Build([definition], FhirVersion);
 
-        Assert.False(result.IsSuccess);
-        Assert.Null(result.Value);
-        Assert.Contains(
-            result.Diagnostics,
-            diagnostic =>
-                diagnostic.Code ==
-                    GeneratorDiagnosticCodes.InvalidPrimitiveInventory &&
-                diagnostic.Message.Contains("does not match", StringComparison.Ordinal));
+        Assert.True(result.IsSuccess);
+        var inventory = Assert.IsType<PrimitiveDefinitionInventory>(result.Value);
+        var item = Assert.Single(inventory.Items);
+        Assert.Equal(
+            "http://example.org/StructureDefinition/sample",
+            item.Canonical);
     }
 
     [Fact]
