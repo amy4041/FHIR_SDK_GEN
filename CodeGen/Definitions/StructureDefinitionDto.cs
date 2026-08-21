@@ -20,6 +20,9 @@ public sealed class StructureDefinitionDto
     [JsonPropertyName("name")]
     public string? Name { get; init; }
 
+    [JsonPropertyName("description")]
+    public string? Description { get; init; }
+
     [JsonPropertyName("type")]
     public string? Type { get; init; }
 
