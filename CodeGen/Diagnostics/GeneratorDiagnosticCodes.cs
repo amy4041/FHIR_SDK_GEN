@@ -26,4 +26,5 @@ public static class GeneratorDiagnosticCodes
     public const string ExtraPrimitivePolicyEntry = "FSG0022";
     public const string PrimitivePolicyIdentityMismatch = "FSG0023";
     public const string InvalidPrimitiveWrapperModel = "FSG0024";
+    public const string InvalidPrimitiveRegistryModel = "FSG0025";
 }
