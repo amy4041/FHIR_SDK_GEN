@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 
 namespace MyFhirSdk.Primitives;
 
-internal sealed class PrimitiveRegistry
+internal sealed partial class PrimitiveRegistry
 {
     private readonly IReadOnlyDictionary<string, IPrimitiveDefinition> _byFhirTypeName;
     private readonly IReadOnlyDictionary<Type, IPrimitiveDefinition> _byPrimitiveType;
@@ -82,7 +82,24 @@ internal sealed class PrimitiveRegistry
 
     private static IPrimitiveDefinition[] CreateDefinitions()
     {
-        return
+        var definitions = new List<IPrimitiveDefinition>();
+        AddGeneratedDefinitions(definitions);
+
+        if (definitions.Count == 0)
+        {
+            AddHandwrittenDefinitions(definitions);
+        }
+
+        return definitions.ToArray();
+    }
+
+    static partial void AddGeneratedDefinitions(
+        List<IPrimitiveDefinition> definitions);
+
+    private static void AddHandwrittenDefinitions(
+        List<IPrimitiveDefinition> definitions)
+    {
+        definitions.AddRange(
         [
             Define<FhirBase64Binary, string>(
                 "base64Binary",
@@ -152,7 +169,7 @@ internal sealed class PrimitiveRegistry
                 "url",
                 PrimitiveCodecs.String,
                 PrimitiveValidators.Url)
-        ];
+        ]);
     }
 
     private static IPrimitiveDefinition Define<TPrimitive, TValue>(
