@@ -34,5 +34,9 @@
     <None Update="GoldenFiles\**\*.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Generated\R5\Primitives\*">
+      <Link>CommittedGenerated\R5\Primitives\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

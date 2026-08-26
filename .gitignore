@@ -160,7 +160,11 @@ pnpm-debug.log*
 # =========================
 # Generated files
 # =========================
-Generated/
+Generated/*
+!Generated/R5/
+Generated/R5/*
+!Generated/R5/Primitives/
+!Generated/R5/Primitives/**
 wwwroot/dist/
 wwwroot/lib/
 
