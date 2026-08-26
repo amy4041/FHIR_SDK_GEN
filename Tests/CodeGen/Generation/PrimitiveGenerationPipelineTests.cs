@@ -1,6 +1,7 @@
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Security.Cryptography;
 using MyFhirSdk.CodeGen.Generation;
 using MyFhirSdk.CodeGen.Models;
 using Xunit;
@@ -129,6 +130,41 @@ public sealed class PrimitiveGenerationPipelineTests : IDisposable
         Assert.Equal("keep", await File.ReadAllTextAsync(marker));
         Assert.Equal(["keep.txt"], Directory.EnumerateFiles(output).Select(Path.GetFileName));
     }
+
+    [Fact]
+    public async Task BuildAsync_OfficialR5Batch_MatchesCommittedGeneratedOutput()
+    {
+        Directory.CreateDirectory(_testRoot);
+        var result = await CreatePipeline().BuildAsync(CreateOptions(
+            Path.Combine(_testRoot, "unused-output")));
+        Assert.True(result.IsSuccess, FormatDiagnostics(result.Diagnostics));
+        var batch = Assert.IsType<PrimitiveGenerationBatch>(result.Value);
+        var committedRoot = Path.Combine(
+            AppContext.BaseDirectory,
+            "CommittedGenerated",
+            "R5",
+            "Primitives");
+        var committedFiles = Directory.EnumerateFiles(committedRoot)
+            .OrderBy(Path.GetFileName, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.Equal(
+            batch.Artifacts.Select(artifact => artifact.FileName),
+            committedFiles.Select(Path.GetFileName));
+        foreach (var artifact in batch.Artifacts)
+        {
+            var expectedBytes = Encoding.UTF8.GetBytes(
+                NormalizeNewlines(artifact.Content));
+            var actualBytes = await File.ReadAllBytesAsync(Path.Combine(
+                committedRoot,
+                artifact.FileName));
+            Assert.Equal(expectedBytes, actualBytes);
+        }
+    }
+
+    private static string NormalizeNewlines(string value) => value
+        .Replace("\r\n", "\n", StringComparison.Ordinal)
+        .Replace('\r', '\n');
 
     public void Dispose()
     {
