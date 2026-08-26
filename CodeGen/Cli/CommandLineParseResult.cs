@@ -5,7 +5,8 @@ namespace MyFhirSdk.CodeGen.Cli;
 public sealed record CommandLineParseResult(
     GeneratorOptions? Options,
     string? Error,
-    bool ShowHelp)
+    bool ShowHelp,
+    PrimitiveGenerationOptions? PrimitiveOptions = null)
 {
-    public bool IsSuccess => Options is not null;
+    public bool IsSuccess => Options is not null || PrimitiveOptions is not null;
 }

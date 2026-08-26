@@ -6,6 +6,7 @@ namespace MyFhirSdk.CodeGen.Cli;
 public sealed class GeneratorCli
 {
     private readonly FhirSdkGenerator _generator;
+    private readonly PrimitiveGenerationPipeline? _primitivePipeline;
     private readonly TextWriter _output;
     private readonly TextWriter _error;
     private readonly GeneratorCommandLineParser _commandLineParser;
@@ -14,13 +15,15 @@ public sealed class GeneratorCli
         FhirSdkGenerator generator,
         TextWriter output,
         TextWriter error,
-        GeneratorCommandLineParser? commandLineParser = null)
+        GeneratorCommandLineParser? commandLineParser = null,
+        PrimitiveGenerationPipeline? primitivePipeline = null)
     {
         ArgumentNullException.ThrowIfNull(generator);
         ArgumentNullException.ThrowIfNull(output);
         ArgumentNullException.ThrowIfNull(error);
 
         _generator = generator;
+        _primitivePipeline = primitivePipeline;
         _output = output;
         _error = error;
         _commandLineParser = commandLineParser ?? new GeneratorCommandLineParser();
@@ -47,9 +50,26 @@ public sealed class GeneratorCli
             return 1;
         }
 
-        var generationResult = await _generator.GenerateAsync(
-            parseResult.Options!,
-            cancellationToken);
+        GenerationResult<IReadOnlyList<string>> generationResult;
+        if (parseResult.PrimitiveOptions is not null)
+        {
+            if (_primitivePipeline is null)
+            {
+                await _error.WriteLineAsync(
+                    "Primitive generation mode is not configured.");
+                return 1;
+            }
+
+            generationResult = await _primitivePipeline.GenerateAsync(
+                parseResult.PrimitiveOptions,
+                cancellationToken);
+        }
+        else
+        {
+            generationResult = await _generator.GenerateAsync(
+                parseResult.Options!,
+                cancellationToken);
+        }
         if (!generationResult.IsSuccess)
         {
             await WriteDiagnosticsAsync(generationResult.Diagnostics);

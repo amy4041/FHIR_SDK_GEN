@@ -12,7 +12,15 @@ public sealed class GeneratedFileWriter
         throwOnInvalidBytes: true);
 
     private static readonly string[] ProtectedSourceDirectories =
-        ["core", "Types", "Resources", "Serialization", "Validation"];
+    [
+        "core",
+        "Types",
+        "Resources",
+        "Serialization",
+        "Validation",
+        "CodeGen",
+        Path.Combine("Primitives", "Runtime")
+    ];
 
     private readonly string _repositoryRoot;
     private readonly StringComparison _pathComparison;
@@ -38,6 +46,24 @@ public sealed class GeneratedFileWriter
     {
         ArgumentNullException.ThrowIfNull(generatedSources);
 
+        return await WriteArtifactsAsync(
+            outputRoot,
+            generatedSources
+                .Select(source => source is null
+                    ? null!
+                    : new GeneratedArtifact(source.FileName, source.Source))
+                .ToArray(),
+            cancellationToken);
+    }
+
+    public async Task<GenerationResult<IReadOnlyList<string>>> WriteArtifactsAsync(
+        string outputRoot,
+        IReadOnlyList<GeneratedArtifact> generatedArtifacts,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(generatedArtifacts);
+        cancellationToken.ThrowIfCancellationRequested();
+
         var outputPathResult = ValidateOutputRoot(outputRoot);
         if (!outputPathResult.IsSuccess)
         {
@@ -45,7 +71,7 @@ public sealed class GeneratedFileWriter
         }
 
         var outputPath = outputPathResult.Path!;
-        var sourceResult = PrepareSources(generatedSources, outputPath);
+        var sourceResult = PrepareArtifacts(generatedArtifacts, outputPath);
         if (!sourceResult.IsSuccess)
         {
             return Failure(sourceResult.Diagnostic!);
@@ -125,6 +151,8 @@ public sealed class GeneratedFileWriter
                     source.Bytes,
                     cancellationToken);
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (Directory.Exists(outputPath))
             {
@@ -214,7 +242,7 @@ public sealed class GeneratedFileWriter
         {
             var protectedPath = NormalizeDirectoryPath(
                 Path.Combine(_repositoryRoot, directoryName));
-            if (PathsEqual(outputPath, protectedPath))
+            if (IsSameOrChildPath(outputPath, protectedPath))
             {
                 return OutputPathValidation.Failure(CreateDiagnostic(
                     outputPath,
@@ -233,34 +261,34 @@ public sealed class GeneratedFileWriter
         return OutputPathValidation.Success(outputPath);
     }
 
-    private SourcePreparation PrepareSources(
-        IReadOnlyList<GeneratedSource> generatedSources,
+    private SourcePreparation PrepareArtifacts(
+        IReadOnlyList<GeneratedArtifact> generatedArtifacts,
         string outputPath)
     {
-        if (generatedSources.Count == 0)
+        if (generatedArtifacts.Count == 0)
         {
             return SourcePreparation.Failure(CreateDiagnostic(
                 outputPath,
-                "The generated source batch must contain at least one file."));
+                "The generated artifact batch must contain at least one file."));
         }
 
         var fileNames = new HashSet<string>(_fileNameComparer);
-        var preparedSources = new List<PreparedSource>(generatedSources.Count);
+        var preparedSources = new List<PreparedSource>(generatedArtifacts.Count);
 
-        foreach (var source in generatedSources)
+        foreach (var source in generatedArtifacts)
         {
             if (source is null)
             {
                 return SourcePreparation.Failure(CreateDiagnostic(
                     outputPath,
-                    "The generated source batch contains a null item."));
+                    "The generated artifact batch contains a null item."));
             }
 
             if (!IsSafeFileName(source.FileName))
             {
                 return SourcePreparation.Failure(CreateDiagnostic(
                     source.FileName ?? outputPath,
-                    "Generated source file names must be plain file names " +
+                    "Generated artifact file names must be plain file names " +
                     "without rooted paths or directory traversal."));
             }
 
@@ -268,18 +296,18 @@ public sealed class GeneratedFileWriter
             {
                 return SourcePreparation.Failure(CreateDiagnostic(
                     source.FileName,
-                    $"Generated source file name '{source.FileName}' is " +
+                    $"Generated artifact file name '{source.FileName}' is " +
                     "duplicated."));
             }
 
-            if (source.Source is null)
+            if (source.Content is null)
             {
                 return SourcePreparation.Failure(CreateDiagnostic(
                     source.FileName,
-                    $"Generated source '{source.FileName}' has no content."));
+                    $"Generated artifact '{source.FileName}' has no content."));
             }
 
-            var content = NormalizeNewlines(source.Source);
+            var content = NormalizeNewlines(source.Content);
             try
             {
                 preparedSources.Add(new PreparedSource(
@@ -290,7 +318,7 @@ public sealed class GeneratedFileWriter
             {
                 return SourcePreparation.Failure(CreateDiagnostic(
                     source.FileName,
-                    $"Generated source '{source.FileName}' is not valid " +
+                    $"Generated artifact '{source.FileName}' is not valid " +
                     $"Unicode text: {exception.Message}"));
             }
         }
@@ -407,6 +435,13 @@ public sealed class GeneratedFileWriter
     private bool PathsEqual(string left, string right)
     {
         return string.Equals(left, right, _pathComparison);
+    }
+
+    private bool IsSameOrChildPath(string candidate, string parent)
+    {
+        return PathsEqual(candidate, parent) || candidate.StartsWith(
+            parent + Path.DirectorySeparatorChar,
+            _pathComparison);
     }
 
     private static string NormalizeDirectoryPath(string path)

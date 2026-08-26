@@ -39,7 +39,20 @@ public static class GeneratorExitCodeMapper
                 GeneratorDiagnosticCodes.InvalidInput or
                 GeneratorDiagnosticCodes.FhirVersionMismatch or
                 GeneratorDiagnosticCodes.MissingSnapshot or
-                GeneratorDiagnosticCodes.MissingDifferential))
+                GeneratorDiagnosticCodes.MissingDifferential or
+                GeneratorDiagnosticCodes.PrimitivePolicyReadFailure or
+                GeneratorDiagnosticCodes.UnsupportedPrimitivePolicySchema or
+                GeneratorDiagnosticCodes.InvalidPrimitivePolicy or
+                GeneratorDiagnosticCodes.DuplicatePrimitivePolicyEntry or
+                GeneratorDiagnosticCodes.UnknownPrimitivePolicyKey or
+                GeneratorDiagnosticCodes.InvalidPrimitiveLiteralPolicy or
+                GeneratorDiagnosticCodes.InvalidPrimitiveInventory or
+                GeneratorDiagnosticCodes.DuplicatePrimitiveInventoryEntry or
+                GeneratorDiagnosticCodes.MissingPrimitivePolicyEntry or
+                GeneratorDiagnosticCodes.ExtraPrimitivePolicyEntry or
+                GeneratorDiagnosticCodes.PrimitivePolicyIdentityMismatch or
+                GeneratorDiagnosticCodes.InvalidPrimitiveWrapperModel or
+                GeneratorDiagnosticCodes.InvalidPrimitiveRegistryModel))
         {
             return 2;
         }
