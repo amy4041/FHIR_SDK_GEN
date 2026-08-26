@@ -163,6 +163,70 @@ public sealed class ProgramTests
         Assert.False(Directory.Exists(Path.Combine(directory.Path, "generated")));
     }
 
+    [Fact]
+    public async Task RunAsync_PrimitiveMode_GeneratesCompleteBatch()
+    {
+        using var directory = new TestDirectory();
+        var outputRoot = Path.Combine(directory.Path, "primitives");
+        using var output = new StringWriter();
+        using var error = new StringWriter();
+        var generator = new FhirSdkGenerator(directory.RepositoryRoot);
+        var cli = new GeneratorCli(
+            generator,
+            output,
+            error,
+            primitivePipeline: new PrimitiveGenerationPipeline(
+                directory.RepositoryRoot));
+
+        var exitCode = await cli.RunAsync(
+        [
+            "--mode", "primitive",
+            "--input", GetPrimitiveFixtureDirectory(),
+            "--policy", GetPrimitivePolicyPath(),
+            "--output", outputRoot,
+            "--fhir-version", "5.0.0",
+            "--package-id", "hl7.fhir.r5.core",
+            "--package-version", "5.0.0"
+        ]);
+
+        Assert.Equal(0, exitCode);
+        Assert.Empty(error.ToString());
+        Assert.Equal(19, Directory.EnumerateFiles(outputRoot).Count());
+        Assert.Contains(
+            "primitive-generation-manifest.json",
+            output.ToString(),
+            StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task RunAsync_PrimitiveModeWithInvalidPolicy_ReturnsInputExitCode()
+    {
+        using var directory = new TestDirectory();
+        using var output = new StringWriter();
+        using var error = new StringWriter();
+        var generator = new FhirSdkGenerator(directory.RepositoryRoot);
+        var cli = new GeneratorCli(
+            generator,
+            output,
+            error,
+            primitivePipeline: new PrimitiveGenerationPipeline(
+                directory.RepositoryRoot));
+
+        var exitCode = await cli.RunAsync(
+        [
+            "--mode", "primitive",
+            "--input", GetPrimitiveFixtureDirectory(),
+            "--policy", Path.Combine(directory.Path, "missing-policy.json"),
+            "--output", Path.Combine(directory.Path, "primitives"),
+            "--fhir-version", "5.0.0",
+            "--package-id", "hl7.fhir.r5.core",
+            "--package-version", "5.0.0"
+        ]);
+
+        Assert.Equal(2, exitCode);
+        Assert.Contains("[FSG0013]", error.ToString(), StringComparison.Ordinal);
+    }
+
     private static Task<int> RunCliAsync(
         string[] args,
         string repositoryRoot,
@@ -203,6 +267,18 @@ public sealed class ProgramTests
             "StructureDefinitions",
             "Valid");
     }
+
+    private static string GetPrimitiveFixtureDirectory() => Path.Combine(
+        AppContext.BaseDirectory,
+        "Fixtures",
+        "StructureDefinitions",
+        "Primitives",
+        "R5");
+
+    private static string GetPrimitivePolicyPath() => Path.Combine(
+        AppContext.BaseDirectory,
+        "Policy",
+        "primitive-generation-policy.json");
 
     private static void CopyFixtures(string destination, bool reverse)
     {

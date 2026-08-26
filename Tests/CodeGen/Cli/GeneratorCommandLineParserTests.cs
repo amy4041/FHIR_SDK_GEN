@@ -62,4 +62,55 @@ public sealed class GeneratorCommandLineParserTests
             "FHIR type 'Address' may only be specified once.",
             result.Error);
     }
+
+    [Fact]
+    public void Parse_PrimitiveMode_ReturnsPrimitiveOptions()
+    {
+        var result = _parser.Parse(
+        [
+            "--mode", "primitive",
+            "--input", "definitions",
+            "--policy", "policy.json",
+            "--output", "Generated/R5/Primitives",
+            "--fhir-version", "5.0.0",
+            "--package-id", "hl7.fhir.r5.core",
+            "--package-version", "5.0.0"
+        ]);
+
+        Assert.True(result.IsSuccess);
+        Assert.Null(result.Options);
+        var options = Assert.IsType<PrimitiveGenerationOptions>(
+            result.PrimitiveOptions);
+        Assert.Equal("definitions", options.DefinitionsPath);
+        Assert.Equal("policy.json", options.PolicyPath);
+        Assert.Equal("hl7.fhir.r5.core", options.FhirPackageId);
+        Assert.Equal("5.0.0", options.FhirPackageVersion);
+        Assert.Equal("1.0.0", options.CodeGenVersion);
+    }
+
+    [Fact]
+    public void Parse_PrimitiveModeWithoutPolicy_ReturnsStableError()
+    {
+        var result = _parser.Parse(
+        [
+            "--mode", "primitive",
+            "--input", "definitions",
+            "--output", "Generated/R5/Primitives",
+            "--fhir-version", "5.0.0",
+            "--package-id", "hl7.fhir.r5.core",
+            "--package-version", "5.0.0"
+        ]);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Required option '--policy' was not provided.", result.Error);
+    }
+
+    [Fact]
+    public void Parse_UnknownMode_ReturnsStableError()
+    {
+        var result = _parser.Parse(["--mode", "automatic"]);
+
+        Assert.False(result.IsSuccess);
+        Assert.Contains("Unknown generator mode 'automatic'", result.Error);
+    }
 }

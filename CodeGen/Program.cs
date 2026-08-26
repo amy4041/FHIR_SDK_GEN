@@ -10,7 +10,12 @@ public static class Program
         var repositoryRoot = RepositoryRootLocator.Find(
             Directory.GetCurrentDirectory());
         var generator = new FhirSdkGenerator(repositoryRoot);
-        var cli = new GeneratorCli(generator, Console.Out, Console.Error);
+        var primitivePipeline = new PrimitiveGenerationPipeline(repositoryRoot);
+        var cli = new GeneratorCli(
+            generator,
+            Console.Out,
+            Console.Error,
+            primitivePipeline: primitivePipeline);
 
         return cli.RunAsync(args).GetAwaiter().GetResult();
     }
