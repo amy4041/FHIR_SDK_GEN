@@ -114,6 +114,43 @@ public sealed class GeneratedFileWriterTests : IDisposable
         Assert.False(Directory.Exists(outputRoot));
     }
 
+    [Theory]
+    [InlineData("CodeGen", "Generated")]
+    [InlineData("Primitives", "Runtime")]
+    public async Task WriteAsync_ProtectedPhaseBSourceTree_ReturnsFsg0011(
+        string firstSegment,
+        string secondSegment)
+    {
+        var outputRoot = Path.Combine(
+            _repositoryRoot,
+            firstSegment,
+            secondSegment);
+
+        var result = await CreateWriter().WriteAsync(
+            outputRoot,
+            [Source("FhirString.g.cs", "class FhirString { }")]);
+
+        AssertUnsafeOutput(result, Path.GetFullPath(outputRoot));
+        Assert.False(Directory.Exists(outputRoot));
+    }
+
+    [Fact]
+    public async Task WriteAsync_FormalPrimitiveOutput_IsAllowed()
+    {
+        var outputRoot = Path.Combine(
+            _repositoryRoot,
+            "Generated",
+            "R5",
+            "Primitives");
+
+        var result = await CreateWriter().WriteAsync(
+            outputRoot,
+            [Source("FhirString.g.cs", "class FhirString { }")]);
+
+        Assert.True(result.IsSuccess, FormatDiagnostics(result.Diagnostics));
+        Assert.True(File.Exists(Path.Combine(outputRoot, "FhirString.g.cs")));
+    }
+
     [Fact]
     public async Task WriteAsync_ParentTraversal_ReturnsFsg0011()
     {
