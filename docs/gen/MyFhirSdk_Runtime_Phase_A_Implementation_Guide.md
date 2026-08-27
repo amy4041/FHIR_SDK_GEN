@@ -708,8 +708,8 @@ MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md
 MyFhirSdk_Primitive_Generation_Phase_B_Implementation_Guide.md
 └─ primitive generation 的 B0-B7 實作、測試與切換順序
 
-MyFhirSdk_R5_Models_Generation_Phase_C_Implementation_Guide.md（後續）
-└─ full datatype/Resource/dependency graph generation
+MyFhirSdk_R5_Models_Generation_Phase_C_Implementation_Guide.md
+└─ full datatype/Resource/dependency graph generation 的 C0-C9 實作與驗收
 
 MyFhirSdk_CodeGen_Local_Tool_Release_Guide.md（後續）
 └─ PackAsTool、manifest、versioning、publish/upgrade smoke test

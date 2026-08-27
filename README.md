@@ -136,6 +136,8 @@ Phase B generated primitive wrappers are committed under `Generated/R5/Primitive
 mapping derives from the validated versioned policy rather than a static primitive dictionary.
 See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Handoff.md` for the Phase C consumer contract,
 remaining complex-model ownership, and entry gates.
+See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Implementation_Guide.md` for the proposed
+C0-C9 implementation order, gates, artifact layout, testing, and rollback strategy.
 
 ## TW Core Profile Validation
 

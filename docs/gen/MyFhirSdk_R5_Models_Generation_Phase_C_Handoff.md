@@ -6,6 +6,8 @@ Version 1.0
 - FHIR baseline: R5 `5.0.0`, package `hl7.fhir.r5.core#5.0.0`
 - Primitive policy: `CodeGen/Policy/primitive-generation-policy.json`
 - Formal primitive output: `Generated/R5/Primitives/`
+- Implementation guide:
+  `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Implementation_Guide.md`
 
 ## 1. Purpose
 
