@@ -112,7 +112,7 @@ public sealed class RoslynCompilationValidatorTests
                 FormatDiagnostics(loadResult.Diagnostics));
 
             var loadedDefinition = Assert.Single(loadResult.Value);
-            var parseResult = new StructureDefinitionParser().Parse(
+            var parseResult = PrimitivePolicyTestContext.CreateParser().Parse(
                 loadedDefinition,
                 TargetNamespace,
                 MvpPreviewTypes);

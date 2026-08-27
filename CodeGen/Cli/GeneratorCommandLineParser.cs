@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using MyFhirSdk.CodeGen.Generation;
+using MyFhirSdk.CodeGen.Policy;
 
 namespace MyFhirSdk.CodeGen.Cli;
 
@@ -15,6 +16,7 @@ public sealed class GeneratorCommandLineParser
             --output <path> \
             --namespace <namespace> \
             --fhir-version <version> \
+            [--policy <primitive-policy-path>] \
             --type <fhir-type> [--type <fhir-type> ...]
 
           # Phase B primitive batch mode
@@ -83,6 +85,7 @@ public sealed class GeneratorCommandLineParser
         string? outputPath = null;
         string? targetNamespace = null;
         string? fhirVersion = null;
+        string? policyPath = null;
         var typeNames = new HashSet<string>(StringComparer.Ordinal);
 
         for (var index = 0; index < args.Count; index += 2)
@@ -101,6 +104,7 @@ public sealed class GeneratorCommandLineParser
                 "--output" when outputPath is not null => option,
                 "--namespace" when targetNamespace is not null => option,
                 "--fhir-version" when fhirVersion is not null => option,
+                "--policy" when policyPath is not null => option,
                 _ => null
             };
             if (duplicateOption is not null)
@@ -122,6 +126,9 @@ public sealed class GeneratorCommandLineParser
                     break;
                 case "--fhir-version":
                     fhirVersion = value;
+                    break;
+                case "--policy":
+                    policyPath = value;
                     break;
                 case "--type":
                     if (!typeNames.Add(value))
@@ -175,7 +182,8 @@ public sealed class GeneratorCommandLineParser
                 fhirVersion,
                 typeNames.OrderBy(
                     typeName => typeName,
-                    StringComparer.Ordinal).ToArray()),
+                    StringComparer.Ordinal).ToArray(),
+                policyPath ?? PrimitiveGenerationPolicyDefaults.GetPath()),
             null,
             ShowHelp: false);
     }

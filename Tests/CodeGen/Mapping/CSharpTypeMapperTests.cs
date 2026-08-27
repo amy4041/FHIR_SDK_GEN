@@ -5,7 +5,8 @@ namespace MyFhirSdk.CodeGen.Tests.Mapping;
 
 public sealed class CSharpTypeMapperTests
 {
-    private readonly CSharpTypeMapper _mapper = new();
+    private readonly CSharpTypeMapper _mapper =
+        PrimitivePolicyTestContext.CreateTypeMapper();
 
     [Theory]
     [InlineData("boolean", "FhirBoolean")]
@@ -16,6 +17,7 @@ public sealed class CSharpTypeMapperTests
     [InlineData("url", "FhirUrl")]
     [InlineData("canonical", "FhirCanonical")]
     [InlineData("integer", "FhirInteger")]
+    [InlineData("integer64", "FhirInteger64")]
     [InlineData("decimal", "FhirDecimal")]
     [InlineData("date", "FhirDate")]
     [InlineData("dateTime", "FhirDateTime")]
@@ -56,6 +58,28 @@ public sealed class CSharpTypeMapperTests
         Assert.Equal("MyFhirSdk.Types", resolvedMapping.RequiredUsing);
         Assert.True(resolvedMapping.RequiresUsing);
         Assert.False(resolvedMapping.IsPreviewType);
+    }
+
+    [Fact]
+    public void PrimitiveMappings_AreDerivedFromSupportedValidatedPolicyEntries()
+    {
+        var mappings = PrimitivePolicyTestContext.GetMappingView().Mappings;
+
+        Assert.Equal(17, mappings.Count);
+        Assert.Equal(
+            mappings.OrderBy(mapping => mapping.FhirTypeName, StringComparer.Ordinal),
+            mappings);
+        Assert.Contains(
+            mappings,
+            mapping => mapping is
+            {
+                FhirTypeName: "integer64",
+                WrapperName: "FhirInteger64",
+                Namespace: "MyFhirSdk.Primitives"
+            });
+        Assert.DoesNotContain(
+            mappings,
+            mapping => mapping.FhirTypeName is "oid" or "time" or "uuid" or "xhtml");
     }
 
     [Fact]
@@ -114,6 +138,10 @@ public sealed class CSharpTypeMapperTests
     [InlineData("")]
     [InlineData("unknownType")]
     [InlineData("String")]
+    [InlineData("oid")]
+    [InlineData("time")]
+    [InlineData("uuid")]
+    [InlineData("xhtml")]
     public void TryMap_WithUnknownType_ReturnsFalse(string? fhirTypeCode)
     {
         var wasMapped = _mapper.TryMap(fhirTypeCode, out var mapping);

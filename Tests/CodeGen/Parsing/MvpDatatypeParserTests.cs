@@ -166,7 +166,7 @@ public sealed class MvpDatatypeParserTests
         Assert.Empty(loadResult.Diagnostics);
         var loadedDefinition = Assert.Single(loadResult.Value);
 
-        var parseResult = new StructureDefinitionParser().Parse(
+        var parseResult = PrimitivePolicyTestContext.CreateParser().Parse(
             loadedDefinition,
             TargetNamespace,
             MvpPreviewTypes);

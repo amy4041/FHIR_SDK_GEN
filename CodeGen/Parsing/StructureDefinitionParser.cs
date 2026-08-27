@@ -18,14 +18,16 @@ public sealed class StructureDefinitionParser
     private readonly CardinalityMapper _cardinalityMapper;
 
     public StructureDefinitionParser(
+        CSharpTypeMapper typeMapper,
         StructureDefinitionElementSelector? elementSelector = null,
-        CSharpTypeMapper? typeMapper = null,
         CSharpNameConverter? nameConverter = null,
         CardinalityMapper? cardinalityMapper = null)
     {
+        ArgumentNullException.ThrowIfNull(typeMapper);
+
         _elementSelector =
             elementSelector ?? new StructureDefinitionElementSelector();
-        _typeMapper = typeMapper ?? new CSharpTypeMapper();
+        _typeMapper = typeMapper;
         _nameConverter = nameConverter ?? new CSharpNameConverter();
         _cardinalityMapper = cardinalityMapper ?? new CardinalityMapper();
     }
