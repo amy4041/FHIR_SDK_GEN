@@ -34,7 +34,7 @@ public sealed class HumanNameGoldenFileTests
         Assert.Empty(loadResult.Diagnostics);
         var loadedDefinition = Assert.Single(loadResult.Value);
 
-        var parseResult = new StructureDefinitionParser().Parse(
+        var parseResult = PrimitivePolicyTestContext.CreateParser().Parse(
             loadedDefinition,
             TargetNamespace,
             new HashSet<string>(StringComparer.Ordinal)

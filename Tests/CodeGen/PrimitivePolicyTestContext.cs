@@ -1,0 +1,45 @@
+using MyFhirSdk.CodeGen.Mapping;
+using MyFhirSdk.CodeGen.Parsing;
+using MyFhirSdk.CodeGen.Policy;
+using Xunit;
+
+namespace MyFhirSdk.CodeGen.Tests;
+
+internal static class PrimitivePolicyTestContext
+{
+    private static readonly Lazy<PrimitiveTypeMappingView> MappingView = new(
+        LoadMappingView);
+
+    internal static CSharpTypeMapper CreateTypeMapper() =>
+        new(MappingView.Value);
+
+    internal static PrimitiveTypeMappingView GetMappingView() =>
+        MappingView.Value;
+
+    internal static StructureDefinitionParser CreateParser() =>
+        new(CreateTypeMapper());
+
+    private static PrimitiveTypeMappingView LoadMappingView()
+    {
+        var policyPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Policy",
+            "primitive-generation-policy.json");
+        var loadResult = new PrimitiveGenerationPolicyLoader()
+            .LoadAsync(policyPath)
+            .GetAwaiter()
+            .GetResult();
+        Assert.True(
+            loadResult.IsSuccess,
+            string.Join(Environment.NewLine, loadResult.Diagnostics));
+        var validationResult = new PrimitiveGenerationPolicyValidator().Validate(
+            Assert.IsType<PrimitiveGenerationPolicyDocument>(loadResult.Value),
+            policyPath);
+        Assert.True(
+            validationResult.IsSuccess,
+            string.Join(Environment.NewLine, validationResult.Diagnostics));
+        return new PrimitiveTypeMappingView(
+            Assert.IsType<ValidatedPrimitiveGenerationPolicy>(
+                validationResult.Value));
+    }
+}

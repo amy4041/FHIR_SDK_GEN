@@ -1,8 +1,10 @@
 using MyFhirSdk.CodeGen.Compilation;
 using MyFhirSdk.CodeGen.Diagnostics;
 using MyFhirSdk.CodeGen.Loading;
+using MyFhirSdk.CodeGen.Mapping;
 using MyFhirSdk.CodeGen.Models;
 using MyFhirSdk.CodeGen.Parsing;
+using MyFhirSdk.CodeGen.Policy;
 using MyFhirSdk.CodeGen.Rendering;
 using MyFhirSdk.CodeGen.Writing;
 
@@ -11,7 +13,8 @@ namespace MyFhirSdk.CodeGen.Generation;
 public sealed class FhirSdkGenerator
 {
     private readonly StructureDefinitionLoader _loader;
-    private readonly StructureDefinitionParser _parser;
+    private readonly PrimitiveGenerationPolicyLoader _policyLoader;
+    private readonly PrimitiveGenerationPolicyValidator _policyValidator;
     private readonly CSharpClassRenderer _renderer;
     private readonly RoslynCompilationValidator _compilationValidator;
     private readonly GeneratedFileWriter _writer;
@@ -19,7 +22,8 @@ public sealed class FhirSdkGenerator
     public FhirSdkGenerator(string repositoryRoot)
         : this(
             new StructureDefinitionLoader(),
-            new StructureDefinitionParser(),
+            new PrimitiveGenerationPolicyLoader(),
+            new PrimitiveGenerationPolicyValidator(),
             new CSharpClassRenderer(),
             new RoslynCompilationValidator(),
             new GeneratedFileWriter(repositoryRoot))
@@ -28,19 +32,22 @@ public sealed class FhirSdkGenerator
 
     public FhirSdkGenerator(
         StructureDefinitionLoader loader,
-        StructureDefinitionParser parser,
+        PrimitiveGenerationPolicyLoader policyLoader,
+        PrimitiveGenerationPolicyValidator policyValidator,
         CSharpClassRenderer renderer,
         RoslynCompilationValidator compilationValidator,
         GeneratedFileWriter writer)
     {
         ArgumentNullException.ThrowIfNull(loader);
-        ArgumentNullException.ThrowIfNull(parser);
+        ArgumentNullException.ThrowIfNull(policyLoader);
+        ArgumentNullException.ThrowIfNull(policyValidator);
         ArgumentNullException.ThrowIfNull(renderer);
         ArgumentNullException.ThrowIfNull(compilationValidator);
         ArgumentNullException.ThrowIfNull(writer);
 
         _loader = loader;
-        _parser = parser;
+        _policyLoader = policyLoader;
+        _policyValidator = policyValidator;
         _renderer = renderer;
         _compilationValidator = compilationValidator;
         _writer = writer;
@@ -51,6 +58,40 @@ public sealed class FhirSdkGenerator
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(options);
+
+        var policyLoadResult = await _policyLoader.LoadAsync(
+            options.PrimitivePolicyPath,
+            cancellationToken);
+        if (!policyLoadResult.IsSuccess || policyLoadResult.Value is null)
+        {
+            return Failure(policyLoadResult.Diagnostics);
+        }
+
+        var policyResult = _policyValidator.Validate(
+            policyLoadResult.Value,
+            Path.GetFullPath(options.PrimitivePolicyPath));
+        if (!policyResult.IsSuccess || policyResult.Value is null)
+        {
+            return Failure(policyResult.Diagnostics);
+        }
+
+        if (!string.Equals(
+                policyResult.Value.FhirVersion,
+                options.FhirVersion,
+                StringComparison.Ordinal))
+        {
+            return Failure([new GeneratorDiagnostic(
+                GeneratorDiagnosticCodes.FhirVersionMismatch,
+                GeneratorDiagnosticSeverity.Error,
+                $"Primitive policy FHIR version " +
+                $"'{policyResult.Value.FhirVersion}' does not match requested " +
+                $"version '{options.FhirVersion}'.",
+                policyResult.Value.SourceFile,
+                DefinitionVersion: policyResult.Value.FhirVersion)]);
+        }
+
+        var parser = new StructureDefinitionParser(
+            new CSharpTypeMapper(new PrimitiveTypeMappingView(policyResult.Value)));
 
         var loadResult = await _loader.LoadAsync(
             options.InputPath,
@@ -67,7 +108,7 @@ public sealed class FhirSdkGenerator
             return Failure(selectionResult.Diagnostics);
         }
 
-        var modelResult = ParseModels(selectionResult.Value, options);
+        var modelResult = ParseModels(selectionResult.Value, options, parser);
         if (!modelResult.IsSuccess)
         {
             return Failure(modelResult.Diagnostics);
@@ -140,9 +181,10 @@ public sealed class FhirSdkGenerator
             diagnostics.ToArray());
     }
 
-    private GenerationResult<IReadOnlyList<FhirTypeModel>> ParseModels(
+    private static GenerationResult<IReadOnlyList<FhirTypeModel>> ParseModels(
         IReadOnlyList<LoadedStructureDefinition> selectedDefinitions,
-        GeneratorOptions options)
+        GeneratorOptions options,
+        StructureDefinitionParser parser)
     {
         var previewTypeNames = options.TypeNames.ToHashSet(StringComparer.Ordinal);
         var models = new List<FhirTypeModel>();
@@ -150,7 +192,7 @@ public sealed class FhirSdkGenerator
 
         foreach (var loadedDefinition in selectedDefinitions)
         {
-            var parseResult = _parser.Parse(
+            var parseResult = parser.Parse(
                 loadedDefinition,
                 options.TargetNamespace,
                 previewTypeNames);

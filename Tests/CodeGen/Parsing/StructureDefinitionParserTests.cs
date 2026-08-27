@@ -13,7 +13,8 @@ public sealed class StructureDefinitionParserTests
     private const string TargetNamespace =
         "MyFhirSdk.GeneratorFixtures.Types";
 
-    private readonly StructureDefinitionParser _parser = new();
+    private readonly StructureDefinitionParser _parser =
+        PrimitivePolicyTestContext.CreateParser();
 
     [Fact]
     public void Parse_WithOfficialHumanNameFixture_ReturnsCompleteTypeModel()

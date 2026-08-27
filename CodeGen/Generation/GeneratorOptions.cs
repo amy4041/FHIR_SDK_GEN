@@ -5,4 +5,5 @@ public sealed record GeneratorOptions(
     string OutputPath,
     string TargetNamespace,
     string FhirVersion,
-    IReadOnlyList<string> TypeNames);
+    IReadOnlyList<string> TypeNames,
+    string PrimitivePolicyPath);

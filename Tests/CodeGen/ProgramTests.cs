@@ -164,6 +164,35 @@ public sealed class ProgramTests
     }
 
     [Fact]
+    public async Task RunAsync_DatatypePreviewWithMissingPolicy_LeavesOutputUntouched()
+    {
+        using var directory = new TestDirectory();
+        var outputRoot = Path.Combine(directory.Path, "generated");
+        Directory.CreateDirectory(outputRoot);
+        var marker = Path.Combine(outputRoot, "keep.txt");
+        await File.WriteAllTextAsync(marker, "keep");
+        using var output = new StringWriter();
+        using var error = new StringWriter();
+        var arguments = CreateArguments(
+            GetFixtureDirectory(),
+            outputRoot,
+            "HumanName").ToList();
+        arguments.Add("--policy");
+        arguments.Add(Path.Combine(directory.Path, "missing-policy.json"));
+
+        var exitCode = await RunCliAsync(
+            arguments.ToArray(),
+            directory.RepositoryRoot,
+            output,
+            error);
+
+        Assert.Equal(2, exitCode);
+        Assert.Contains("[FSG0013]", error.ToString(), StringComparison.Ordinal);
+        Assert.Equal("keep", await File.ReadAllTextAsync(marker));
+        Assert.Equal(["keep.txt"], Directory.EnumerateFiles(outputRoot).Select(Path.GetFileName));
+    }
+
+    [Fact]
     public async Task RunAsync_PrimitiveMode_GeneratesCompleteBatch()
     {
         using var directory = new TestDirectory();

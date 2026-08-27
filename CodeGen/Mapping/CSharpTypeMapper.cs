@@ -4,29 +4,7 @@ namespace MyFhirSdk.CodeGen.Mapping;
 
 public sealed class CSharpTypeMapper
 {
-    private const string PrimitiveNamespace = "MyFhirSdk.Primitives";
     private const string ComplexTypeNamespace = "MyFhirSdk.Types";
-
-    private static readonly IReadOnlyDictionary<string, string> PrimitiveTypeNames =
-        new Dictionary<string, string>(StringComparer.Ordinal)
-        {
-            ["boolean"] = "FhirBoolean",
-            ["string"] = "FhirString",
-            ["code"] = "FhirCode",
-            ["id"] = "FhirId",
-            ["uri"] = "FhirUri",
-            ["url"] = "FhirUrl",
-            ["canonical"] = "FhirCanonical",
-            ["integer"] = "FhirInteger",
-            ["decimal"] = "FhirDecimal",
-            ["date"] = "FhirDate",
-            ["dateTime"] = "FhirDateTime",
-            ["instant"] = "FhirInstant",
-            ["positiveInt"] = "FhirPositiveInt",
-            ["unsignedInt"] = "FhirUnsignedInt",
-            ["base64Binary"] = "FhirBase64Binary",
-            ["markdown"] = "FhirMarkdown"
-        };
 
     private static readonly IReadOnlySet<string> DefaultComplexTypeNames =
         new HashSet<string>(StringComparer.Ordinal)
@@ -52,11 +30,16 @@ public sealed class CSharpTypeMapper
 
     private readonly IReadOnlySet<string> _knownComplexTypeNames;
     private readonly CSharpNameConverter _nameConverter;
+    private readonly PrimitiveTypeMappingView _primitiveMappings;
 
     public CSharpTypeMapper(
+        PrimitiveTypeMappingView primitiveMappings,
         IEnumerable<string>? knownComplexTypeNames = null,
         CSharpNameConverter? nameConverter = null)
     {
+        ArgumentNullException.ThrowIfNull(primitiveMappings);
+
+        _primitiveMappings = primitiveMappings;
         _knownComplexTypeNames = new HashSet<string>(
             knownComplexTypeNames ?? DefaultComplexTypeNames,
             StringComparer.Ordinal);
@@ -103,12 +86,12 @@ public sealed class CSharpTypeMapper
             return false;
         }
 
-        if (PrimitiveTypeNames.TryGetValue(fhirTypeCode, out var primitiveTypeName))
+        if (_primitiveMappings.TryGet(fhirTypeCode, out var primitiveMapping))
         {
             mapping = CreateMapping(
                 fhirTypeCode,
-                primitiveTypeName,
-                PrimitiveNamespace,
+                primitiveMapping.WrapperName,
+                primitiveMapping.Namespace,
                 CSharpTypeCategory.Primitive,
                 isPreviewType: false);
             return true;

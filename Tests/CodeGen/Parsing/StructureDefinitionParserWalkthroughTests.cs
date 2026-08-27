@@ -38,7 +38,7 @@ public sealed class StructureDefinitionParserWalkthroughTests
 
         PrintPropertyMappings(selectionResult.Value);
 
-        var parser = new StructureDefinitionParser();
+        var parser = PrimitivePolicyTestContext.CreateParser();
         IReadOnlySet<string> previewTypes =
             new HashSet<string>(StringComparer.Ordinal)
             {
@@ -91,7 +91,7 @@ public sealed class StructureDefinitionParserWalkthroughTests
         IReadOnlyList<SelectedElementDefinition> selectedElements)
     {
         var nameConverter = new CSharpNameConverter();
-        var typeMapper = new CSharpTypeMapper();
+        var typeMapper = PrimitivePolicyTestContext.CreateTypeMapper();
         var cardinalityMapper = new CardinalityMapper();
         var existingNames = new HashSet<string>(StringComparer.Ordinal);
 

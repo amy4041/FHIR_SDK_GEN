@@ -17,6 +17,7 @@ public sealed class GeneratorCommandLineParserTests
             "--output", "generated",
             "--namespace", "MyFhirSdk.Generated.Types",
             "--fhir-version", "5.0.0",
+            "--policy", "primitive-policy.json",
             "--type", "Period",
             "--type", "Address"
         ]);
@@ -29,6 +30,7 @@ public sealed class GeneratorCommandLineParserTests
         Assert.Equal("generated", options.OutputPath);
         Assert.Equal("MyFhirSdk.Generated.Types", options.TargetNamespace);
         Assert.Equal("5.0.0", options.FhirVersion);
+        Assert.Equal("primitive-policy.json", options.PrimitivePolicyPath);
         Assert.Equal(["Address", "Period"], options.TypeNames);
     }
 

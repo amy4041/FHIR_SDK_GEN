@@ -342,11 +342,12 @@ Validator 與 concrete R5 metadata 分離。目前仍有以下已指派 owner �
 
 - `MyFhirSdk.CodeGen` 以 `ProjectReference` 依賴整個 `MyFhirSdk.csproj`。
 - Roslyn validator 直接使用 `DataType` 所在的現有 SDK assembly。
-- `CSharpTypeMapper` 的 primitive mapping 由 Phase B versioned generation policy 取代；
-  手寫 complex type whitelist 由 Phase C definition inventory 取代。
+- `CSharpTypeMapper` 的 primitive mapping 已由 Phase B versioned generation policy 衍生的
+  `PrimitiveTypeMappingView` 取代；手寫 complex type whitelist 仍由 Phase C definition
+  inventory/dependency graph 取代。
 - generated datatype 依賴目前手寫的 `Core`、`Primitives` 與部分 `Types`。
-- 17 個 primitive wrapper declarations 與 default registry entries 仍為手寫，交由 Phase B
-  依 `MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md` 生成。
+- 17 個 primitive wrapper declarations 與 default registry composition 已由 Phase B 生成並
+  編譯於主 SDK；正式 artifacts 位於 `Generated/R5/Primitives/`。
 - R5 resource、datatype、extension 與 validation entries 已集中於 `ModelMetadata/R5`，但
   仍是手寫/assembly scan，交由 Phase C generated provider 取代。
 - Runtime、R5 Models 目前仍編譯於單一 SDK assembly；bootstrap debt 與未來 assembly seam
@@ -378,6 +379,11 @@ Phase A 的 contract、provider injection、architecture gates 與 A6 handoff �
 3. 生成 primitive wrappers 與 internal registry。
 4. 以現有 primitive tests 驗證行為完全相容。
 5. generated wrappers 通過後再移除對應手寫 wrapper。
+
+Phase B 已完成。`CodeGen/Policy/primitive-generation-policy.json` 是唯一 primitive decision
+source；Phase C 必須依
+`docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Handoff.md` 消費 validated policy view，不能
+重建 primitive mapping。
 
 ### Phase C：完整 model generation
 

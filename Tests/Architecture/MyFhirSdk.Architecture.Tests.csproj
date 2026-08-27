@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\CodeGen\MyFhirSdk.CodeGen.csproj" />
     <ProjectReference Include="..\..\MyFhirSdk.csproj" />
   </ItemGroup>
 
