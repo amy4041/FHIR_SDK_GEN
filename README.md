@@ -132,6 +132,10 @@ The Runtime contract keeps model execution separate from model declarations:
 
 See `docs/gen/MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md` for the fixed primitive matrix,
 generation policy, literal-preservation rules, bootstrap debt, and Phase B acceptance criteria.
+Phase B generated primitive wrappers are committed under `Generated/R5/Primitives`; CodeGen type
+mapping derives from the validated versioned policy rather than a static primitive dictionary.
+See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Handoff.md` for the Phase C consumer contract,
+remaining complex-model ownership, and entry gates.
 
 ## TW Core Profile Validation
 

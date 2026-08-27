@@ -760,6 +760,23 @@ datatype preview，不能用 type name 是否剛好為 primitive 來隱式切換
 - 完整 Release build/test 與 deterministic regeneration 通過。
 - 文件連結、版本與 generated manifest 一致。
 
+### 14.5 B7 實作結果
+
+B7 將 `CSharpTypeMapper` 的 primitive mapping 改為必要注入的
+`PrimitiveTypeMappingView`。該 view 只可由
+`ValidatedPrimitiveGenerationPolicy` 建立，僅包含 supported entries，並保留 policy 的
+primitive namespace 與 wrapper name。舊的 static `PrimitiveTypeNames` dictionary 已移除，
+`integer64` 因此不再遺漏，`oid`、`time`、`uuid`、`xhtml` 仍依 policy 明確不映射。
+
+Datatype preview pipeline 會在 parse 前載入並驗證同一份 primitive policy；CLI 可使用
+`--policy` 指定版本，未指定時使用隨 CodeGen 發布的 repository policy。Policy read、schema、
+identity 或 FHIR version 錯誤均在 render/write 前失敗。
+
+保留的 `DefaultComplexTypeNames` 不是 primitive decision source，而是 MVP complex datatype
+scope gate，其移除 owner 為 Phase C。完整 consumer contract、bootstrap debt owner 與 entry
+gate 記錄於 `MyFhirSdk_R5_Models_Generation_Phase_C_Handoff.md`。Architecture test 禁止
+`PrimitiveTypeNames` 或等價 static string dictionary 回歸。
+
 ## 15. 建議實作順序與 PR 拆分
 
 PR、branch 與 commit 說明使用本文件 Work Package 編號，避免建立另一套編號：

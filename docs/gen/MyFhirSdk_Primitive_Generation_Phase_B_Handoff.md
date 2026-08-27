@@ -172,9 +172,10 @@ Generation 開始前必須驗證：
 9. public constants 只能使用結構化 identifier、integral CLR type 與範圍內 constant value；
    不得包含任意 C# source。
 
-目前 `CSharpTypeMapper.PrimitiveTypeNames` 是 MVP 過渡 mapping，且未涵蓋完整官方 R5
-primitive inventory。Phase B 應由 validated policy 取代這份 mapping，不在 mapper 中再增加
-第二套 primitive 決策來源。
+B7 已移除 MVP 過渡用的 `CSharpTypeMapper.PrimitiveTypeNames`。Mapper 現在必須注入由
+`ValidatedPrimitiveGenerationPolicy` 衍生的 `PrimitiveTypeMappingView`，不再維護第二套
+primitive 決策來源；Phase C consumer contract 見
+`MyFhirSdk_R5_Models_Generation_Phase_C_Handoff.md`。
 
 ## 5. Registry composition 與 assembly 過渡策略
 
@@ -230,11 +231,11 @@ Phase A 已讓 Parser、Serializer、Validator 透過 internal `PrimitiveRegistr
 ## 8. Phase B Definition of Done
 
 - 官方 primitive inventory 與 versioned policy 一一對應，unsupported 項目有明確理由。
-- 17 個既有 wrappers 的 generated declarations 與 public API snapshot 相容。
+- 17 個 generated wrappers 已編譯於主 SDK，且與 public API snapshot 相容。
 - generated registry entries 與本文件 matrix 完全一致且 deterministic。
 - 所有 Phase A contract tests、Parser/Serializer/Validation/CodeGen tests 通過。
 - generated output 連續執行兩次 byte-for-byte 相同。
-- generated wrappers 通過後才移除手寫 declarations；不得同時保留重複型別。
+- 手寫 wrapper declarations 與 registry fallback 已移除，沒有重複型別。
 - 未公開 internal codec/validator/registry，未新增 primitive `IsValid()`。
 - 文件記錄 FHIR、policy、CodeGen 與 Runtime contract versions。
 
@@ -248,7 +249,7 @@ Phase A 已讓 Parser、Serializer、Validator 透過 internal `PrimitiveRegistr
 | `PrimitiveRegistry.Default` | Retained intentionally | 唯一 immutable default composition root；Phase B 取代 entries，不開放使用者 mutation |
 | `Literal` reflection in literal codec/validator | Retained as contract | `decimal`/`integer64` 跨 generated wrapper 的 literal-preservation mechanism；由本文件 3.2 固定 shape |
 | `R5ModelMetadataProvider` assembly scan | Retained with Phase C owner | 已隔離於 `ModelMetadata/R5`，不在 Runtime engine；Phase C generated provider 取代 |
-| `CSharpTypeMapper.PrimitiveTypeNames` | Retained with Phase B owner | MVP generator 尚在使用；Phase B validated policy 必須取代，不能再擴充第二套 mapping |
+| `CSharpTypeMapper.PrimitiveTypeNames` | Removed in B7 | `PrimitiveTypeMappingView` 只由 validated policy 衍生；architecture gate 禁止 static mapping 回歸 |
 | `CSharpTypeMapper` complex whitelist | Retained with Phase C owner | MVP datatype scope仍需要；完整 definition inventory 後移除 |
 
 A6 audit 未發現其他可安全移除且無 owner 的 transitional adapter、舊 primitive 類別名稱
@@ -258,29 +259,29 @@ A6 audit 未發現其他可安全移除且無 owner 的 transitional adapter、�
 
 ### Runtime
 
-- [ ] Generated wrapper 只依賴 approved public Core contract。
-- [ ] Codec、validator、definition、registry 仍為 internal，沒有 `IsValid()` public API。
-- [ ] Generated definition matrix 與本文件 17 筆相符，duplicate/missing 明確失敗。
-- [ ] Public API snapshot 的任何差異都有明確相容性決策。
+- [x] Generated wrapper 只依賴 approved public Core contract。
+- [x] Codec、validator、definition、registry 仍為 internal，沒有 `IsValid()` public API。
+- [x] Generated definition matrix 與本文件 17 筆相符，duplicate/missing 明確失敗。
+- [x] Public API snapshot 的任何差異都有明確相容性決策。
 
 ### Serialization
 
-- [ ] Parser/Serializer 不引用 concrete wrapper 類別或 wrapper name。
-- [ ] 每個 codec 的 accepted/rejected JSON token matrix 通過。
-- [ ] primitive raw/metadata array alignment 與 metadata-only cases 通過。
-- [ ] `decimal`、`integer64` serialize-parse-serialize 保持原始 literal。
+- [x] Parser/Serializer 不引用 concrete wrapper 類別或 wrapper name。
+- [x] 每個 codec 的 accepted/rejected JSON token matrix 通過。
+- [x] primitive raw/metadata array alignment 與 metadata-only cases 通過。
+- [x] `decimal`、`integer64` serialize-parse-serialize 保持原始 literal。
 
 ### Validation
 
-- [ ] 使用者只經 `FhirValidator.Validate(Resource)` 取得 primitive issue。
-- [ ] 每個 validator key 有 valid/invalid cases，issue path/message 維持相容。
-- [ ] generated wrapper 使用 Runtime validator，wrapper 本身沒有 validation algorithm。
-- [ ] Resource/Element `id` 仍使用同一 `id` definition。
+- [x] 使用者只經 `FhirValidator.Validate(Resource)` 取得 primitive issue。
+- [x] 每個 validator key 有 valid/invalid cases，issue path/message 維持相容。
+- [x] generated wrapper 使用 Runtime validator，wrapper 本身沒有 validation algorithm。
+- [x] Resource/Element `id` 仍使用同一 `id` definition。
 
 ### CodeGen
 
-- [ ] 官方 primitive inventory 每筆都有 supported/unsupported policy。
-- [ ] `CSharpTypeMapper` primitive dictionary 已由單一 versioned policy 取代。
-- [ ] wrapper 與 registry composition output deterministic 且 Roslyn compilation 通過。
-- [ ] manifest 記錄 FHIR、policy、CodeGen 與 Runtime contract version。
-- [ ] 連續兩次 generation byte-for-byte 相同，且不覆寫手寫 Runtime source。
+- [x] 官方 primitive inventory 每筆都有 supported/unsupported policy。
+- [x] `CSharpTypeMapper` primitive dictionary 已由單一 versioned policy 取代。
+- [x] wrapper 與 registry composition output deterministic 且 Roslyn compilation 通過。
+- [x] manifest 記錄 FHIR、policy、CodeGen 與 Runtime contract version。
+- [x] 連續兩次 generation byte-for-byte 相同，且不覆寫手寫 Runtime source。
