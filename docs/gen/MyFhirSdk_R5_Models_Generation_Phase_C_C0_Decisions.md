@@ -1,6 +1,6 @@
 # MyFhirSdk R5 Models Generation Phase C0 Baseline 與決策
 
-Version 0.2
+Version 0.3
 
 - 文件狀態：In Progress
 - 適用範圍：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、MyFhirSdk、.NET 9
@@ -20,8 +20,8 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 |---|---|---|
 | Phase B primitive regeneration | Passed | `Generated/R5/Primitives` regeneration 無 git diff |
 | Official R5 package identity | Passed | C0-001 lock 與離線 identity tests |
-| Release solution tests | Passed | 503 passed、0 failed、1 skipped |
-| R5 model public API snapshot | Pending | C0 後續工作 |
+| Release solution tests | Passed | 507 passed、0 failed、1 skipped |
+| R5 model public API snapshot | Passed | 獨立 approved snapshot、完整範圍與 determinism tests |
 | Deterministic inventory reconnaissance | Passed | Approved JSON snapshot、reordered-input 與 two-run tests |
 
 ## 3. 決策摘要
@@ -29,7 +29,7 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 | ID | 決策 | 狀態 |
 |---|---|---|
 | C0-001 | Official R5 package input、identity 與 offline CI policy | Accepted |
-| C0-002 | R5 model public API baseline 與 disposition | Pending |
+| C0-002 | R5 model public API baseline 與 disposition | Accepted |
 | C0-003 | Assembly、base 與 bootstrap ownership | Pending |
 | C0-004 | Namespace、filename 與 collision naming | Pending |
 | C0-005 | Backbone naming 與 public placement | Pending |
@@ -162,8 +162,66 @@ Tests 必須證明：
 - 同一 package 連續兩次分析後輸出相同；
 - JSON 採 ordinal ordering、UTF-8/LF 語意，且不包含時間戳、絕對路徑或隨機值。
 
-## 6. 待決事項
+## 6. C0-002：R5 model public API baseline
 
-C0-002 至 C0-007 必須根據 model API snapshot、official package reconnaissance 與 Runtime
+- 狀態：Accepted
+- Approved snapshot：`Tests/Architecture/ApprovedR5ModelApi.txt`
+- Formatter：`Tests/Architecture/R5ModelPublicApiSnapshot.cs`
+- Tests：`Tests/Architecture/R5ModelPublicApiSnapshotTests.cs`
+
+### 6.1 Baseline 範圍
+
+Snapshot 固定目前 68 個公開 model types：
+
+| Namespace / scope | 型別數 |
+|---|---:|
+| `MyFhirSdk.Types` | 17 |
+| `MyFhirSdk.Resources` | 39 |
+| 明確選取的 `MyFhirSdk.Core` model/bootstrap contracts | 12 |
+
+Core 範圍為 `BackboneElement`、`BackboneType`、`Base`、`DataType`、
+`DomainResource`、`Element`、`Extension`、`FhirObject`、
+`IFhirExtensionValue`、`Meta`、`Narrative` 與 `Resource`。這些型別雖與既有
+Runtime public API snapshot 部分重疊，仍刻意納入本 baseline，以保護 model inheritance
+與 bootstrap 邊界。
+
+Approved snapshot 目前固定 67 個 public/protected constructors 與 420 個 properties，並
+記錄：
+
+- 型別的 accessibility、class/interface/enum/abstract/sealed、base type 與公開 interface；
+- constructor 與 property 的 public/protected accessibility；
+- property type、nullable annotation、集合泛型形狀與 getter/setter accessibility；
+- property 的 abstract/virtual/override dispatch；
+- `JsonPropertyName` 所指定的 wire name。
+
+### 6.2 決策與 disposition
+
+1. 此 snapshot 是後續 Phase C generation 的相容性 regression oracle。C1-C7 的變更若造成
+   public model API 差異，必須在同一 change set 中說明差異、更新對應 C0 決策並明確審核
+   snapshot，不能以自動重產方式直接接受。
+2. `Types`、`Resources` 與上述 Core contracts 是「目前需保護的公開面」，不代表 C0-002
+   已決定其永久 assembly、source ownership 或生成責任；這些由 C0-003 至 C0-006 決定。
+3. Primitive public API 已由 Phase B baseline 保護，因此不重複納入。Runtime services、
+   serialization、validation 與非公開 metadata 仍由既有
+   `Tests/Architecture/ApprovedPublicApi.txt` 保護。
+4. Snapshot 保存現況，不宣告所有手寫 shape 都是最終正確設計。例如 `SimpleQuantity`
+   在官方 package 中屬 constraint Profile，bootstrap/core 型別亦可能維持手寫；C1
+   inventory 與後續 ownership 決策必須先明確處置，不能由 baseline 反推生成範圍。
+
+### 6.3 驗證與更新規則
+
+Tests 必須證明：
+
+- 實際公開面與 approved snapshot 完全相同；
+- scope 恰為 68 個型別，且三個 namespace/scope 的數量固定；
+- 反轉型別輸入順序後輸出不變；
+- nullable、集合、JSON wire name 與 abstract/override 等相容性關鍵 shape 被 formatter
+  明確記錄。
+
+Snapshot 採 ordinal ordering 與 LF，且不包含時間戳、絕對路徑或隨機值。
+
+## 7. 待決事項
+
+C0-003 至 C0-007 必須根據 model API snapshot、official package reconnaissance 與 Runtime
 capability evidence 逐項核准。未核准前，C1-C7 不得自行推導 public API、base/bootstrap、
 Backbone、choice/open type 或 validation disposition。

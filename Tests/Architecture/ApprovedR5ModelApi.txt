@@ -1,0 +1,555 @@
+TYPE public abstract class MyFhirSdk.Core.BackboneElement | Base=MyFhirSdk.Core.Element | Interfaces=-
+  CONSTRUCTOR protected .ctor()
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Core.Extension> ModifierExtension | get=public | set=public | dispatch=none | JsonName=-
+TYPE public abstract class MyFhirSdk.Core.BackboneType | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR protected .ctor()
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Core.Extension> ModifierExtension | get=public | set=public | dispatch=none | JsonName=-
+TYPE public abstract class MyFhirSdk.Core.Base | Base=MyFhirSdk.Core.FhirObject | Interfaces=-
+  CONSTRUCTOR protected .ctor()
+TYPE public abstract class MyFhirSdk.Core.DataType | Base=MyFhirSdk.Core.Element | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR protected .ctor()
+TYPE public abstract class MyFhirSdk.Core.DomainResource | Base=MyFhirSdk.Core.Resource | Interfaces=-
+  CONSTRUCTOR protected .ctor()
+  PROPERTY MyFhirSdk.Core.Narrative? Text | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Core.Extension> Extension | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Core.Extension> ModifierExtension | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Core.Resource> Contained | get=public | set=public | dispatch=none | JsonName=-
+TYPE public abstract class MyFhirSdk.Core.Element | Base=MyFhirSdk.Core.Base | Interfaces=-
+  CONSTRUCTOR protected .ctor()
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Core.Extension> Extension | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String? Id | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Core.Extension | Base=MyFhirSdk.Core.Element | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Core.IFhirExtensionValue? Value | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String? Url | get=public | set=public | dispatch=none | JsonName=-
+TYPE public abstract class MyFhirSdk.Core.FhirObject | Base=System.Object | Interfaces=-
+  CONSTRUCTOR protected .ctor()
+TYPE public interface MyFhirSdk.Core.IFhirExtensionValue | Base=- | Interfaces=-
+TYPE public sealed class MyFhirSdk.Core.Meta | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Core.DataType> Security | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Core.DataType> Tag | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<System.String> Profile | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.DateTimeOffset? LastUpdated | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String? Source | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String? VersionId | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Core.Narrative | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY System.String? Div | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String? Status | get=public | set=public | dispatch=none | JsonName=-
+TYPE public abstract class MyFhirSdk.Core.Resource | Base=MyFhirSdk.Core.Base | Interfaces=-
+  CONSTRUCTOR protected .ctor()
+  PROPERTY MyFhirSdk.Core.Meta? Meta | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String ResourceType | get=public | set=- | dispatch=abstract | JsonName=-
+  PROPERTY System.String? Id | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String? ImplicitRules | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String? Language | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.Bundle | Base=MyFhirSdk.Core.Resource | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Core.Resource? Issues | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirInstant? Timestamp | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirUnsignedInt? Total | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Identifier? Identifier | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Signature? Signature | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.BundleEntry> Entry | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.BundleLink> Link | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String ResourceType | get=public | set=- | dispatch=override | JsonName=resourceType
+TYPE public sealed class MyFhirSdk.Resources.BundleEntry | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Core.Resource? Resource | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirUri? FullUrl | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Resources.BundleEntryRequest? Request | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Resources.BundleEntryResponse? Response | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Resources.BundleEntrySearch? Search | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.BundleLink> Link | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.BundleEntryRequest | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Method | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirInstant? IfModifiedSince | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? IfMatch | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? IfNoneExist | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? IfNoneMatch | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirUri? Url | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.BundleEntryResponse | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Core.Resource? Outcome | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirInstant? LastModified | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Etag | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Status | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirUri? Location | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.BundleEntrySearch | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Mode | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDecimal? Score | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.BundleLink | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Relation | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirUri? Url | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.Claim | Base=MyFhirSdk.Core.DomainResource | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Status | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Use | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDateTime? Created | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Resources.ClaimAccident? Accident | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Resources.ClaimPayee? Payee | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? DiagnosisRelatedGroup | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? FundsReserve | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Priority | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? SubType | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? PatientPaid | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? Total | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? BillablePeriod | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Enterer | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Facility | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Insurer | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? OriginalPrescription | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Patient | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Prescription | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Provider | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Referral | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.ClaimCareTeam> CareTeam | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.ClaimDiagnosis> Diagnosis | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.ClaimEvent> Event | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.ClaimInsurance> Insurance | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.ClaimItem> Item | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.ClaimProcedure> Procedure | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.ClaimRelated> Related | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.ClaimSupportingInfo> SupportingInfo | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Identifier> Identifier | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Identifier> TraceNumber | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> Encounter | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String ResourceType | get=public | set=- | dispatch=override | JsonName=resourceType
+TYPE public sealed class MyFhirSdk.Resources.ClaimAccident | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirDate? Date | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Address? LocationAddress | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? LocationReference | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.ClaimBodySite | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> SubSite | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableReference> Site | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.ClaimCareTeam | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirBoolean? Responsible | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? Sequence | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Role | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Specialty | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Provider | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.ClaimDetail | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirDecimal? Factor | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? Sequence | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Category | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? ProductOrService | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? ProductOrServiceEnd | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Revenue | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? Net | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? PatientPaid | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? Tax | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? UnitPrice | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.SimpleQuantity? Quantity | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.ClaimSubDetail> SubDetail | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> Modifier | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> ProgramCode | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Identifier> TraceNumber | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> Udi | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.ClaimDiagnosis | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? Sequence | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? DiagnosisCodeableConcept | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? OnAdmission | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? DiagnosisReference | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> Type | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.ClaimEvent | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirDateTime? WhenDateTime | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? WhenPeriod | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.ClaimInsurance | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirBoolean? Focal | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? Sequence | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? BusinessArrangement | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Identifier? Identifier | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? ClaimResponse | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Coverage | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Primitives.FhirString> PreAuthRef | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.ClaimItem | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirDate? ServicedDate | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDecimal? Factor | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? Sequence | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Address? LocationAddress | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Category | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? LocationCodeableConcept | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? ProductOrService | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? ProductOrServiceEnd | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Revenue | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? Net | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? PatientPaid | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? Tax | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? UnitPrice | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? ServicedPeriod | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? LocationReference | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.SimpleQuantity? Quantity | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Primitives.FhirPositiveInt> CareTeamSequence | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Primitives.FhirPositiveInt> DiagnosisSequence | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Primitives.FhirPositiveInt> InformationSequence | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Primitives.FhirPositiveInt> ProcedureSequence | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.ClaimBodySite> BodySite | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.ClaimDetail> Detail | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> Modifier | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> ProgramCode | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Identifier> TraceNumber | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> Encounter | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> Request | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> Udi | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.ClaimPayee | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Party | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.ClaimProcedure | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirDateTime? Date | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? Sequence | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? ProcedureCodeableConcept | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? ProcedureReference | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> Udi | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.ClaimRelated | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Relationship | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Identifier? Reference | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Claim | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.ClaimSubDetail | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirDecimal? Factor | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? Sequence | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Category | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? ProductOrService | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? ProductOrServiceEnd | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Revenue | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? Net | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? PatientPaid | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? Tax | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? UnitPrice | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.SimpleQuantity? Quantity | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> Modifier | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> ProgramCode | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Identifier> TraceNumber | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> Udi | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.ClaimSupportingInfo | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirBoolean? ValueBoolean | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDate? TimingDate | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? Sequence | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? ValueString | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Attachment? ValueAttachment | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Category | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Code | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Reason | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Identifier? ValueIdentifier | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? TimingPeriod | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Quantity? ValueQuantity | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? ValueReference | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.Coverage | Base=MyFhirSdk.Core.DomainResource | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirBoolean? Subrogation | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Kind | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Status | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? Order | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Dependent | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Network | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Relationship | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? Period | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Beneficiary | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? InsurancePlan | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Insurer | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? PolicyHolder | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Subscriber | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.CoverageClass> Class | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.CoverageCostToBeneficiary> CostToBeneficiary | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.CoveragePaymentBy> PaymentBy | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Identifier> Identifier | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Identifier> SubscriberId | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> Contract | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String ResourceType | get=public | set=- | dispatch=override | JsonName=resourceType
+TYPE public sealed class MyFhirSdk.Resources.CoverageClass | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirString? Name | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Identifier? Value | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.CoverageCostToBeneficiary | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Category | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Network | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Term | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Unit | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Money? ValueMoney | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.SimpleQuantity? ValueQuantity | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.CoverageCostToBeneficiaryException> Exception | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.CoverageCostToBeneficiaryException | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? Period | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.CoveragePaymentBy | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirString? Responsibility | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Party | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.Encounter | Base=MyFhirSdk.Core.DomainResource | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Status | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDateTime? PlannedEndDate | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDateTime? PlannedStartDate | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Resources.EncounterAdmission? Admission | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Priority | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? SubjectStatus | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Duration? Length | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? ActualPeriod | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? PartOf | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? ServiceProvider | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Subject | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.EncounterDiagnosis> Diagnosis | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.EncounterLocation> Location | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.EncounterParticipant> Participant | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.EncounterReason> Reason | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> Class | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> DietPreference | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> SpecialArrangement | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> SpecialCourtesy | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableReference> ServiceType | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Identifier> Identifier | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> Account | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> Appointment | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> BasedOn | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> CareTeam | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> EpisodeOfCare | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.VirtualServiceDetail> VirtualService | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String ResourceType | get=public | set=- | dispatch=override | JsonName=resourceType
+TYPE public sealed class MyFhirSdk.Resources.EncounterAdmission | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Types.CodeableConcept? AdmitSource | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? DischargeDisposition | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? ReAdmission | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Identifier? PreAdmissionIdentifier | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Destination | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Origin | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.EncounterDiagnosis | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> Use | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableReference> Condition | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.EncounterLocation | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Status | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Form | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? Period | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Location | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.EncounterParticipant | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Types.Period? Period | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Actor | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> Type | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.EncounterReason | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> Use | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableReference> Value | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.Organization | Base=MyFhirSdk.Core.DomainResource | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirBoolean? Active | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirMarkdown? Description | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Name | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? PartOf | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Primitives.FhirString> Alias | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.OrganizationQualification> Qualification | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.ExtendedContactDetail> Contact | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Identifier> Identifier | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> Endpoint | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String ResourceType | get=public | set=- | dispatch=override | JsonName=resourceType
+TYPE public sealed class MyFhirSdk.Resources.OrganizationQualification | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Code | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? Period | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Issuer | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Identifier> Identifier | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.Patient | Base=MyFhirSdk.Core.DomainResource | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirBoolean? Active | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirBoolean? DeceasedBoolean | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirBoolean? MultipleBirthBoolean | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Gender | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDate? BirthDate | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDateTime? DeceasedDateTime | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirInteger? MultipleBirthInteger | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? MaritalStatus | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? ManagingOrganization | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.PatientCommunication> Communication | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.PatientContact> Contact | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Address> Address | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.ContactPoint> Telecom | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.HumanName> Name | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Identifier> Identifier | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Reference> GeneralPractitioner | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String ResourceType | get=public | set=- | dispatch=override | JsonName=resourceType
+TYPE public sealed class MyFhirSdk.Resources.PatientCommunication | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirBoolean? Preferred | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Language | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.PatientContact | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Gender | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Address? Address | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.HumanName? Name | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? Period | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Organization | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.CodeableConcept> Relationship | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.ContactPoint> Telecom | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.Practitioner | Base=MyFhirSdk.Core.DomainResource | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirBoolean? Active | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirBoolean? DeceasedBoolean | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Gender | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDate? BirthDate | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDateTime? DeceasedDateTime | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.PractitionerCommunication> Communication | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Resources.PractitionerQualification> Qualification | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Address> Address | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Attachment> Photo | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.ContactPoint> Telecom | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.HumanName> Name | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Identifier> Identifier | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.String ResourceType | get=public | set=- | dispatch=override | JsonName=resourceType
+TYPE public sealed class MyFhirSdk.Resources.PractitionerCommunication | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirBoolean? Preferred | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Language | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Resources.PractitionerQualification | Base=MyFhirSdk.Core.BackboneElement | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Code | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? Period | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Issuer | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Identifier> Identifier | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.Address | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Use | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? City | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Country | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? District | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? PostalCode | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? State | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Text | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? Period | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Primitives.FhirString> Line | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.Attachment | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirBase64Binary? Data | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirBase64Binary? Hash | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? ContentType | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Language | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDateTime? Creation | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDecimal? Duration | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirInteger64? Size | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? Frames | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? Height | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? Pages | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? Width | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Title | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirUrl? Url | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.CodeableConcept | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirString? Text | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Coding> Coding | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.CodeableReference | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Concept | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Reference | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.Coding | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirBoolean? UserSelected | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Code | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Display | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Version | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirUri? System | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.ContactPoint | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirCode? System | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Use | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirInteger? Rank | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Value | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? Period | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.Duration | Base=MyFhirSdk.Types.Quantity | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+TYPE public sealed class MyFhirSdk.Types.ExtendedContactDetail | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Types.Address? Address | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Purpose | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? Period | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Organization | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.ContactPoint> Telecom | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.HumanName> Name | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.HumanName | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Use | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Family | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Text | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? Period | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Primitives.FhirString> Given | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Primitives.FhirString> Prefix | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Primitives.FhirString> Suffix | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.Identifier | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Use | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Value | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirUri? System | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.CodeableConcept? Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Period? Period | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Assigner | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.Money | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Currency | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDecimal? Value | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.Period | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirDateTime? End | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDateTime? Start | get=public | set=public | dispatch=none | JsonName=-
+TYPE public class MyFhirSdk.Types.Quantity | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Code | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? Comparator | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirDecimal? Value | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? Unit | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirUri? System | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.Reference | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirString? Display | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? ReferenceValue | get=public | set=public | dispatch=none | JsonName=reference
+  PROPERTY MyFhirSdk.Primitives.FhirUri? Type | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Identifier? Identifier | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.Signature | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirBase64Binary? Data | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? SigFormat | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirCode? TargetFormat | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirInstant? When | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? OnBehalfOf | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Reference? Who | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Types.Coding> Type | get=public | set=public | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Types.SimpleQuantity | Base=MyFhirSdk.Types.Quantity | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+TYPE public sealed class MyFhirSdk.Types.VirtualServiceDetail | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR public .ctor()
+  PROPERTY MyFhirSdk.Primitives.FhirPositiveInt? MaxParticipants | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? AddressString | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirString? SessionKey | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Primitives.FhirUrl? AddressUrl | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.Coding? ChannelType | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.ContactPoint? AddressContactPoint | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY MyFhirSdk.Types.ExtendedContactDetail? AddressExtendedContactDetail | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Collections.Generic.IList<MyFhirSdk.Primitives.FhirUrl> AdditionalInfo | get=public | set=public | dispatch=none | JsonName=-

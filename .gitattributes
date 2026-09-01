@@ -1,2 +1,3 @@
 Generated/R5/Primitives/* text eol=lf
 Tests/CodeGen/Fixtures/FhirPackages/R5/*.approved.json text eol=lf
+Tests/Architecture/ApprovedR5ModelApi.txt text eol=lf
