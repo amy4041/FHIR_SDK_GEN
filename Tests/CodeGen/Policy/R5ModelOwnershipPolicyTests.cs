@@ -78,7 +78,7 @@ public sealed class R5ModelOwnershipPolicyTests
             .EnumerateArray()
             .ToArray();
 
-        Assert.Equal(10, nodes.Length);
+        Assert.Equal(11, nodes.Length);
         Assert.Equal(
             [
                 "Base",
@@ -86,6 +86,7 @@ public sealed class R5ModelOwnershipPolicyTests
                 "BackboneElement",
                 "BackboneType",
                 "DataType",
+                "PrimitiveType",
                 "Resource",
                 "DomainResource",
                 "Extension",
@@ -126,6 +127,11 @@ public sealed class R5ModelOwnershipPolicyTests
             nodes.Count(node =>
                 node.GetProperty("declarationOwner").GetString() ==
                 "r5-versioned-bootstrap"));
+        Assert.Single(
+            nodes,
+            node =>
+                node.GetProperty("declarationOwner").GetString() ==
+                "runtime-primitive-bootstrap");
     }
 
     [Fact]

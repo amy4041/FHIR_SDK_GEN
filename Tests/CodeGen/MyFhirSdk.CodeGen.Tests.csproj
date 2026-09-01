@@ -42,6 +42,10 @@
       <Link>Policy\r5-model-ownership-policy.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\CodeGen\Policy\r5-model-naming-policy.json">
+      <Link>Policy\r5-model-naming-policy.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="GoldenFiles\**\*.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

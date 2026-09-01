@@ -78,6 +78,16 @@
       "generationDisposition": "external-handwritten"
     },
     {
+      "fhirType": "PrimitiveType",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/PrimitiveType",
+      "kind": "complex-type",
+      "abstract": true,
+      "baseCanonical": "http://hl7.org/fhir/StructureDefinition/DataType",
+      "clrType": "MyFhirSdk.Core.PrimitiveType`1",
+      "declarationOwner": "runtime-primitive-bootstrap",
+      "generationDisposition": "external-handwritten"
+    },
+    {
       "fhirType": "Resource",
       "canonical": "http://hl7.org/fhir/StructureDefinition/Resource",
       "kind": "resource",

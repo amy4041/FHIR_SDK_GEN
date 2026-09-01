@@ -1,6 +1,6 @@
 # MyFhirSdk R5 Models Generation Phase C0 Baseline 與決策
 
-Version 0.4
+Version 0.5
 
 - 文件狀態：In Progress
 - 適用範圍：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、MyFhirSdk、.NET 9
@@ -20,7 +20,7 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 |---|---|---|
 | Phase B primitive regeneration | Passed | `Generated/R5/Primitives` regeneration 無 git diff |
 | Official R5 package identity | Passed | C0-001 lock 與離線 identity tests |
-| Release solution tests | Passed | 511 passed、0 failed、1 skipped |
+| Release solution tests | Passed | 516 passed、0 failed、1 skipped |
 | R5 model public API snapshot | Passed | 獨立 approved snapshot、完整範圍與 determinism tests |
 | Deterministic inventory reconnaissance | Passed | Approved JSON snapshot、reordered-input 與 two-run tests |
 
@@ -31,7 +31,7 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 | C0-001 | Official R5 package input、identity 與 offline CI policy | Accepted |
 | C0-002 | R5 model public API baseline 與 disposition | Accepted |
 | C0-003 | Assembly、base 與 bootstrap ownership | Accepted |
-| C0-004 | Namespace、filename 與 collision naming | Pending |
+| C0-004 | Namespace、filename 與 collision naming | Accepted |
 | C0-005 | Backbone naming 與 public placement | Pending |
 | C0-006 | Choice/open type public representation | Pending |
 | C0-007 | Validation capability matrix | Pending |
@@ -248,7 +248,7 @@ Runtime reference 延至 Phase D local-tool packaging 前重新評估。
 
 ### 7.2 Runtime-only contracts
 
-下列型別沒有對應的 R5 model declaration，持續由 Runtime 手寫擁有：
+下列 CLR 型別不由一般 R5 model class generator 宣告，持續由 Runtime 手寫擁有：
 
 | CLR contract | Role |
 |---|---|
@@ -260,7 +260,7 @@ CodeGen 可以引用及映射這些 contracts，但不得生成同名 declaratio
 
 ### 7.3 Official definition external nodes
 
-下列 10 個 official StructureDefinitions 必須進入 C1 inventory 與 C2 dependency graph，但
+下列 11 個 official StructureDefinitions 必須進入 C1 inventory 與 C2 dependency graph，但
 其 class declaration 在 Phase C 標記為 `external-handwritten`：
 
 | FHIR type | Kind | Abstract | Declaration owner |
@@ -270,20 +270,23 @@ CodeGen 可以引用及映射這些 contracts，但不得生成同名 declaratio
 | `BackboneElement` | `complex-type` | yes | Runtime foundation bootstrap |
 | `BackboneType` | `complex-type` | yes | Runtime foundation bootstrap |
 | `DataType` | `complex-type` | yes | Runtime foundation bootstrap |
+| `PrimitiveType` | `complex-type` | yes | Runtime primitive bootstrap |
 | `Resource` | `resource` | yes | Runtime foundation bootstrap |
 | `DomainResource` | `resource` | yes | Runtime foundation bootstrap |
 | `Extension` | `complex-type` | no | R5 versioned bootstrap |
 | `Meta` | `complex-type` | no | R5 versioned bootstrap |
 | `Narrative` | `complex-type` | no | R5 versioned bootstrap |
 
-前七個型別同時承擔 generated model 的繼承 contract。後三個型別雖是 concrete R5
+七個 foundation 型別承擔 generated model 的繼承 contract；official `PrimitiveType`
+映射至 Runtime 的 `PrimitiveType<T>`，其 closed generic base 由 Phase B primitive policy
+決定。後三個型別雖是 concrete R5
 datatypes，但目前被 base properties 直接引用，且 `Extension` 參與 Parser/Serializer 的
 choice dispatch，因此本階段保留為版本化 bootstrap，可避免同名 declaration、bootstrap
 reference cycle 與未核准的 C0-002 API 差異。
 
 ### 7.4 Generation 與 graph 規則
 
-1. Inventory 必須保留並驗證上述 10 個 official definitions；不得因其 declaration 不生成
+1. Inventory 必須保留並驗證上述 11 個 official definitions；不得因其 declaration 不生成
    而在載入階段略過。
 2. Dependency graph 必須以 canonical 將這些 definitions 建成可解析的 external nodes，
    並映射至 policy 指定的 CLR type。
@@ -302,14 +305,113 @@ reference cycle 與未核准的 C0-002 API 差異。
 Policy tests 必須證明：
 
 - assembly mode、Runtime contracts 與拆分 ADR gate 均明確且唯一；
-- 10 個 external definition nodes 的 canonical 與 CLR identity 不重複；
+- 11 個 external definition nodes 的 canonical 唯一；除 official `PrimitiveType` 刻意映射
+  至既有 Runtime generic contract 外，CLR ownership 必須明確；
 - policy identity、kind、abstract 與 base canonical 符合 C0-001 固定的 official package；
 - 所有 policy CLR types 存在於目前 `MyFhirSdk` assembly；
 - migration rules 禁止 Phase C 產生重複 bootstrap declarations，並要求 inventory/graph
   保留及解析這些 nodes。
 
-## 8. 待決事項
+## 8. C0-004：Namespace、filename 與 collision naming
 
-C0-004 至 C0-007 必須根據 model API snapshot、official package reconnaissance 與 Runtime
-capability evidence 逐項核准。未核准前，C1-C7 不得自行推導 namespace/filename、Backbone
-placement、choice/open type 或 validation disposition。
+- 狀態：Accepted
+- Decision source：`CodeGen/Policy/r5-model-naming-policy.json`
+- Tests：`Tests/CodeGen/Policy/R5ModelNamingPolicyTests.cs`
+
+### 8.1 Namespace 與 output directory
+
+| Category | Namespace | Repository output |
+|---|---|---|
+| Phase B supported primitive wrappers | `MyFhirSdk.Primitives` | `Generated/R5/Primitives` |
+| Complex datatype specialization，排除 external nodes | `MyFhirSdk.Types` | `Generated/R5/Types` |
+| Resource specialization，排除 external nodes | `MyFhirSdk.Resources` | `Generated/R5/Resources` |
+| Generated R5 model metadata | `MyFhirSdk.ModelMetadata.R5` | `Generated/R5/ModelMetadata` |
+| C0-003 external definitions | 由 ownership policy 指定 | 不輸出 declaration |
+| Resource-owned Backbone | C0-005 決定 | C0-005 決定 |
+
+Phase C 不為 datatype 或 Resource 建立每型別子 namespace，也不依 package entry path、base
+type 或 reference target 改變 namespace。Constraint Profiles 與 logical models 不在 Phase C
+model declaration scope，因此不取得 fallback namespace。
+
+### 8.2 Top-level type 與 filename 規則
+
+1. Complex datatype 與 Resource 的 C# type name 由官方 `StructureDefinition.type` 經
+   `CSharpNameConverter.ConvertTypeName` 取得。
+2. Primitive wrapper name 只由 Phase B primitive generation policy 決定，不重新推導。
+3. 每個 top-level model file 只含一個 public top-level model declaration，檔名固定為
+   `{CSharpTypeName}.g.cs`。
+4. Model metadata 檔名採 `{ArtifactIdentity}.g.cs`；manifest 固定為
+   `model-generation-manifest.json`。
+5. Artifact path 使用 repository-relative `/` 語意，必須同時符合 Windows/Linux portable
+   filename 規則；禁止 rooted path、`..`、Windows device name 與其他 unsafe segment。
+6. Symbol identity 使用 ordinal comparison；output path uniqueness 使用
+   ordinal-ignore-case comparison；輸出與 diagnostics 使用 ordinal ordering。
+
+Official package reconnaissance 在排除 C0-003 的 11 個 external definitions 後得到：
+
+| Generation category | Top-level candidates |
+|---|---:|
+| Complex datatypes | 39 |
+| Resources，包含 abstract Resource specializations | 160 |
+| 合計 | 199 |
+
+199 個候選經核准 namespace 與 converter 映射後，沒有 fully-qualified type identity collision，
+也沒有 case-insensitive output path collision。
+
+### 8.3 Property 與 wire name
+
+- 一般 property name 由完整 element id 的最後一段經
+  `CSharpNameConverter.ConvertPropertyName` 取得。
+- FHIR JSON wire name 永遠保存官方 element name，不能從衝突後的 CLR 名稱反推。
+- 當核准的 CLR rename 無法還原 wire name 時，generated property 必須明確使用
+  `JsonPropertyName` 或等價 generated metadata。
+- 不允許依輸入順序加入 `2`、`3` 等自動 suffix，也不允許靜默遮蔽 inherited member。
+
+Official specialization definitions 的 direct、non-choice members 只有兩個名稱與 declaring
+type 相撞，核准 mapping 如下：
+
+| Element id | CLR property | JSON name | 理由 |
+|---|---|---|---|
+| `Expression.expression` | `ExpressionValue` | `expression` | 避免 `Expression.Expression` |
+| `Reference.reference` | `ReferenceValue` | `reference` | 避免 `Reference.Reference`，維持 C0-002 API |
+
+Concrete Resource 另保留 synthetic `ResourceType` member：public read-only override，JSON
+name 為 `resourceType`。若官方或 generated member 與 `ResourceType` 相撞，必須失敗，不
+得改名或覆蓋。
+
+### 8.4 Collision gate
+
+在 render/write 前必須完成以下 collision checks：
+
+1. fully-qualified top-level CLR identity；
+2. portable、case-insensitive output path；
+3. property 與 declaring type name；
+4. 同一 declaring type 的 declared members；
+5. 完整 inheritance closure 的 inherited members；
+6. `ResourceType` 等 synthetic/reserved members；
+7. C0-005/C0-006 決定後的 Backbone 與 choice member identities。
+
+只有 policy 中列出的 explicit rename 可以解決已知 collision。其他 collision 必須產生依
+element identity ordinal 排序的 diagnostic，並在 render/write 前失敗。
+
+### 8.5 延後但不可自行推導的項目
+
+- Resource-owned Backbone 的 namespace、public identity、filename 與 placement 由 C0-005
+  決定。
+- Choice member 與 open type 的 property naming/representation 由 C0-006 決定。
+- `Extension.value[x]` 維持 C0-003 bootstrap declaration；其 open-type representation
+  仍屬 C0-006，不由本 naming policy 改變。
+
+### 8.6 C0-003 reconnaissance correction
+
+C0-004 全 package naming reconnaissance 發現 official
+`http://hl7.org/fhir/StructureDefinition/PrimitiveType`。C0-003 ownership policy 已補為第
+11 個 external definition node，映射至 Runtime `PrimitiveType<T>` bootstrap；否則它會被
+錯誤規劃為 `MyFhirSdk.Types.PrimitiveType.g.cs`。Ownership tests 會直接對 official
+package 驗證此 identity、kind、abstract 與 base canonical。
+
+## 9. 待決事項
+
+C0-005 至 C0-007 必須根據 model API snapshot、official package reconnaissance 與 Runtime
+capability evidence 逐項核准。未核准前，C1-C7 不得自行推導 Backbone placement、
+choice/open type 或 validation disposition。
