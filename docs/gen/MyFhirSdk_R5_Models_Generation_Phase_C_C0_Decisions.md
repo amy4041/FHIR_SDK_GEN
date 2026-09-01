@@ -1,6 +1,6 @@
 # MyFhirSdk R5 Models Generation Phase C0 Baseline 與決策
 
-Version 0.3
+Version 0.4
 
 - 文件狀態：In Progress
 - 適用範圍：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、MyFhirSdk、.NET 9
@@ -20,7 +20,7 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 |---|---|---|
 | Phase B primitive regeneration | Passed | `Generated/R5/Primitives` regeneration 無 git diff |
 | Official R5 package identity | Passed | C0-001 lock 與離線 identity tests |
-| Release solution tests | Passed | 507 passed、0 failed、1 skipped |
+| Release solution tests | Passed | 511 passed、0 failed、1 skipped |
 | R5 model public API snapshot | Passed | 獨立 approved snapshot、完整範圍與 determinism tests |
 | Deterministic inventory reconnaissance | Passed | Approved JSON snapshot、reordered-input 與 two-run tests |
 
@@ -30,7 +30,7 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 |---|---|---|
 | C0-001 | Official R5 package input、identity 與 offline CI policy | Accepted |
 | C0-002 | R5 model public API baseline 與 disposition | Accepted |
-| C0-003 | Assembly、base 與 bootstrap ownership | Pending |
+| C0-003 | Assembly、base 與 bootstrap ownership | Accepted |
 | C0-004 | Namespace、filename 與 collision naming | Pending |
 | C0-005 | Backbone naming 與 public placement | Pending |
 | C0-006 | Choice/open type public representation | Pending |
@@ -220,8 +220,96 @@ Tests 必須證明：
 
 Snapshot 採 ordinal ordering 與 LF，且不包含時間戳、絕對路徑或隨機值。
 
-## 7. 待決事項
+## 7. C0-003：Assembly、base 與 bootstrap ownership
 
-C0-003 至 C0-007 必須根據 model API snapshot、official package reconnaissance 與 Runtime
-capability evidence 逐項核准。未核准前，C1-C7 不得自行推導 public API、base/bootstrap、
-Backbone、choice/open type 或 validation disposition。
+- 狀態：Accepted
+- Decision source：`CodeGen/Policy/r5-model-ownership-policy.json`
+- Tests：`Tests/CodeGen/Policy/R5ModelOwnershipPolicyTests.cs`
+
+### 7.1 Assembly 決策
+
+Phase C 維持目前的單一 SDK assembly：
+
+| Artifact / responsibility | Phase C assembly |
+|---|---|
+| Runtime contracts 與 engines | `MyFhirSdk` |
+| Generated R5 primitives、Types、Resources、Backbones 與 metadata | `MyFhirSdk` |
+| Generator executable | `MyFhirSdk.CodeGen` |
+
+Runtime 與 R5 Models 在 Phase C 是邏輯責任邊界，不是實體 assembly 邊界。不得在 C1-C9
+自行新增 `MyFhirSdk.Runtime` 或 `MyFhirSdk.R5.Models` project，也不得移動 public types
+造成 assembly-qualified identity 改變。拆分 assembly 必須另立 ADR，說明 package/versioning、
+dependency direction、metadata composition、migration 與 API compatibility。
+
+`MyFhirSdk.CodeGen` 在 Phase C 可繼續以 ProjectReference 參考 `MyFhirSdk.csproj`，供
+Roslyn compilation 與 Runtime contract validation 使用。這不授權 CodeGen 以現有手寫
+`Types` 或 `Resources` 作 inventory、mapping 或 dependency 真相。是否改為較小的明確
+Runtime reference 延至 Phase D local-tool packaging 前重新評估。
+
+### 7.2 Runtime-only contracts
+
+下列型別沒有對應的 R5 model declaration，持續由 Runtime 手寫擁有：
+
+| CLR contract | Role |
+|---|---|
+| `MyFhirSdk.Core.FhirObject` | SDK model root |
+| `MyFhirSdk.Core.IFhirExtensionValue` | Extension value dispatch marker |
+| `MyFhirSdk.Core.PrimitiveType<T>` | generated primitive wrapper base |
+
+CodeGen 可以引用及映射這些 contracts，但不得生成同名 declaration。
+
+### 7.3 Official definition external nodes
+
+下列 10 個 official StructureDefinitions 必須進入 C1 inventory 與 C2 dependency graph，但
+其 class declaration 在 Phase C 標記為 `external-handwritten`：
+
+| FHIR type | Kind | Abstract | Declaration owner |
+|---|---|---:|---|
+| `Base` | `complex-type` | yes | Runtime foundation bootstrap |
+| `Element` | `complex-type` | yes | Runtime foundation bootstrap |
+| `BackboneElement` | `complex-type` | yes | Runtime foundation bootstrap |
+| `BackboneType` | `complex-type` | yes | Runtime foundation bootstrap |
+| `DataType` | `complex-type` | yes | Runtime foundation bootstrap |
+| `Resource` | `resource` | yes | Runtime foundation bootstrap |
+| `DomainResource` | `resource` | yes | Runtime foundation bootstrap |
+| `Extension` | `complex-type` | no | R5 versioned bootstrap |
+| `Meta` | `complex-type` | no | R5 versioned bootstrap |
+| `Narrative` | `complex-type` | no | R5 versioned bootstrap |
+
+前七個型別同時承擔 generated model 的繼承 contract。後三個型別雖是 concrete R5
+datatypes，但目前被 base properties 直接引用，且 `Extension` 參與 Parser/Serializer 的
+choice dispatch，因此本階段保留為版本化 bootstrap，可避免同名 declaration、bootstrap
+reference cycle 與未核准的 C0-002 API 差異。
+
+### 7.4 Generation 與 graph 規則
+
+1. Inventory 必須保留並驗證上述 10 個 official definitions；不得因其 declaration 不生成
+   而在載入階段略過。
+2. Dependency graph 必須以 canonical 將這些 definitions 建成可解析的 external nodes，
+   並映射至 policy 指定的 CLR type。
+3. Phase C 不得為 external definition node render class declaration；若 full batch 出現
+   同一 CLR identity 的 generated source，必須在 write 前失敗。
+4. Generated datatypes、Resources 與 Backbones 可以繼承或引用 external nodes。
+5. Declaration ownership 不等於 metadata ownership。C6 仍可為 external bootstrap types
+   生成 parser、serializer 或 validation metadata，但不得重新宣告 class。
+6. C7 manifest 必須記錄 ownership policy identity，並區分 generated declarations 與
+   external definition dependencies。
+7. C8 不刪除上述手寫 declarations。未來若要生成其中任一型別，必須先核准 migration
+   decision，更新 policy、C0-002 API snapshot、Runtime contract tests 與原子切換計畫。
+
+### 7.5 驗證與退出條件
+
+Policy tests 必須證明：
+
+- assembly mode、Runtime contracts 與拆分 ADR gate 均明確且唯一；
+- 10 個 external definition nodes 的 canonical 與 CLR identity 不重複；
+- policy identity、kind、abstract 與 base canonical 符合 C0-001 固定的 official package；
+- 所有 policy CLR types 存在於目前 `MyFhirSdk` assembly；
+- migration rules 禁止 Phase C 產生重複 bootstrap declarations，並要求 inventory/graph
+  保留及解析這些 nodes。
+
+## 8. 待決事項
+
+C0-004 至 C0-007 必須根據 model API snapshot、official package reconnaissance 與 Runtime
+capability evidence 逐項核准。未核准前，C1-C7 不得自行推導 namespace/filename、Backbone
+placement、choice/open type 或 validation disposition。
