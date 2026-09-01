@@ -1,6 +1,6 @@
 # MyFhirSdk R5 Models Generation Phase C0 Baseline 與決策
 
-Version 0.1
+Version 0.2
 
 - 文件狀態：In Progress
 - 適用範圍：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、MyFhirSdk、.NET 9
@@ -20,9 +20,9 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 |---|---|---|
 | Phase B primitive regeneration | Passed | `Generated/R5/Primitives` regeneration 無 git diff |
 | Official R5 package identity | Passed | C0-001 lock 與離線 identity tests |
-| Release solution tests | Passed | 500 passed、0 failed、1 skipped |
+| Release solution tests | Passed | 503 passed、0 failed、1 skipped |
 | R5 model public API snapshot | Pending | C0 後續工作 |
-| Deterministic inventory reconnaissance | Pending | C0 後續工作 |
+| Deterministic inventory reconnaissance | Passed | Approved JSON snapshot、reordered-input 與 two-run tests |
 
 ## 3. 決策摘要
 
@@ -84,7 +84,85 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 
 C0-001 在上述測試通過且完整 solution tests 無回歸後完成。
 
-## 5. 待決事項
+## 5. Deterministic inventory reconnaissance
+
+- 狀態：Completed
+- Approved snapshot：
+  `Tests/CodeGen/Fixtures/FhirPackages/R5/structuredefinition-reconnaissance.approved.json`
+- Analyzer：`Tests/CodeGen/Reconnaissance/R5PackageReconnaissance.cs`
+- Tests：`Tests/CodeGen/Reconnaissance/R5PackageReconnaissanceTests.cs`
+
+Reconnaissance 直接串流讀取 C0-001 固定的 `.tgz`，只納入 JSON 內容中
+`resourceType == StructureDefinition` 的 entry。它不以檔名或 `.index.json` 作為 definition
+分類真相，且不把結果接入 production generator。
+
+### 5.1 Definition inventory 結果
+
+| 分類 | 數量 |
+|---|---:|
+| 全部 StructureDefinitions | 307 |
+| `complex-type` | 51 |
+| `logical` | 10 |
+| `primitive-type` | 21 |
+| `resource` | 225 |
+| `specialization` | 230 |
+| `constraint` | 66 |
+| derivation missing | 11 |
+| abstract | 11 |
+| concrete | 296 |
+
+`specialization` 由 47 個 complex types、21 個 primitives 與 162 個 Resources 組成。這 230
+個 definitions 的 type、canonical 與 source identity 均完整唯一，且全部包含 snapshot。
+
+完整 package 中有兩個缺少 version 與 snapshot 的 definitions：
+
+- `package/StructureDefinition-example-composition.json`
+- `package/StructureDefinition-example-section-library.json`
+
+兩者皆為 `kind = resource`、`derivation = constraint`，不屬於 Phase C specialization model
+generation candidates。C1 仍須先明確分類，不能因缺少 snapshot 而靜默略過。
+
+### 5.2 Model shape 結果
+
+| Shape | 全部 definitions | Specializations |
+|---|---:|---:|
+| Snapshot elements | 15464 | 9554 |
+| Choice elements | 486 | 261 |
+| Choice type alternatives | 2518 | 1359 |
+| `contentReference` elements | 153 | 78 |
+| Slicing elements | 255 | 66 |
+| Constraints | 17843 | 10971 |
+| Binding elements | 2574 | 1650 |
+| Fixed elements | 87 | 0 |
+| Pattern elements | 33 | 0 |
+
+Approved snapshot 另保存上述 shape 依 kind 的分布、完整 base canonical 分布、missing identity
+source 與 duplicate type source 明細。
+
+### 5.3 對 C1-C3 的約束
+
+1. 完整 package 的 `type` 只有 241 個唯一值；constraint Profiles 合法重用 base model
+   type，因此 C1 不得在分類前以 `type` 作為全 package 唯一 key。
+2. 全部 307 個 canonical 與 source identity 均唯一；C1 應保存並驗證這兩種 identity。
+3. Specialization definitions 的 230 個 type 均唯一；constraint、logical、primitive 與
+   model specialization 必須在建立 generation scope 前分流。
+4. `Base` 是唯一缺少 `baseDefinition` 的 root definition；其他 missing derivation 包含
+   `Base` 與 10 個 logical definitions，C1 必須明確分類而非推測。
+5. Choice、`contentReference`、slicing 與 constraints 的實際數量證明 C3 IR 必須直接表達
+   這些 shape，不能延續 MVP 的 single-type/direct-child 假設。
+6. Reconnaissance snapshot 只作為 regression evidence，不是 C1 production inventory 或
+   mapping 輸入。
+
+### 5.4 Determinism gate
+
+Tests 必須證明：
+
+- 正式 package 重新分析後與 approved JSON snapshot byte-for-byte 相同；
+- definitions 反轉輸入順序後輸出相同；
+- 同一 package 連續兩次分析後輸出相同；
+- JSON 採 ordinal ordering、UTF-8/LF 語意，且不包含時間戳、絕對路徑或隨機值。
+
+## 6. 待決事項
 
 C0-002 至 C0-007 必須根據 model API snapshot、official package reconnaissance 與 Runtime
 capability evidence 逐項核准。未核准前，C1-C7 不得自行推導 public API、base/bootstrap、
