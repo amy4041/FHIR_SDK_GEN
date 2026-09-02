@@ -20,10 +20,15 @@ public sealed class PrimitiveMappingArchitectureTests
 
         Assert.Empty(staticPrimitiveDictionaries);
         Assert.Null(mapperType.GetField("PrimitiveTypeNames", staticFields));
+        Assert.Null(mapperType.GetField("DefaultComplexTypeNames", staticFields));
         var constructor = Assert.Single(mapperType.GetConstructors());
         Assert.Equal(
             typeof(PrimitiveTypeMappingView),
             constructor.GetParameters()[0].ParameterType);
+        Assert.Equal(
+            typeof(DefinitionTypeMappingView),
+            constructor.GetParameters()[1].ParameterType);
+        Assert.False(constructor.GetParameters()[1].HasDefaultValue);
     }
 
     private static bool IsStringDictionary(Type type)
