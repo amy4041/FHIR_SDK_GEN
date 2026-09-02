@@ -11,13 +11,37 @@ internal static class PrimitivePolicyTestContext
         LoadMappingView);
 
     internal static CSharpTypeMapper CreateTypeMapper() =>
-        new(MappingView.Value);
+        new(
+            MappingView.Value,
+            new DefinitionTypeMappingView(KnownComplexTypeNames.Select(typeName =>
+                new DefinitionTypeMapping(typeName, typeName, "MyFhirSdk.Types"))));
 
     internal static PrimitiveTypeMappingView GetMappingView() =>
         MappingView.Value;
 
     internal static StructureDefinitionParser CreateParser() =>
         new(CreateTypeMapper());
+
+    private static readonly string[] KnownComplexTypeNames =
+    [
+        "Address",
+        "Attachment",
+        "CodeableConcept",
+        "CodeableReference",
+        "Coding",
+        "ContactPoint",
+        "Duration",
+        "ExtendedContactDetail",
+        "HumanName",
+        "Identifier",
+        "Money",
+        "Period",
+        "Quantity",
+        "Reference",
+        "Signature",
+        "SimpleQuantity",
+        "VirtualServiceDetail"
+    ];
 
     private static PrimitiveTypeMappingView LoadMappingView()
     {

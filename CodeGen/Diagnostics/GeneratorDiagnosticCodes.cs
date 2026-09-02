@@ -31,4 +31,11 @@ public static class GeneratorDiagnosticCodes
     public const string DefinitionPackageIdentityMismatch = "FSG0027";
     public const string InvalidDefinitionInventory = "FSG0028";
     public const string DuplicateDefinitionInventoryEntry = "FSG0029";
+    public const string ModelOwnershipPolicyReadFailure = "FSG0030";
+    public const string InvalidDependencyGraph = "FSG0031";
+    public const string MissingDependency = "FSG0032";
+    public const string IncompatibleInheritance = "FSG0033";
+    public const string InheritanceCycle = "FSG0034";
+    public const string UnsupportedPrimitiveReference = "FSG0035";
+    public const string InvalidGenerationScope = "FSG0036";
 }

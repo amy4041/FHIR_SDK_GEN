@@ -4,45 +4,20 @@ namespace MyFhirSdk.CodeGen.Mapping;
 
 public sealed class CSharpTypeMapper
 {
-    private const string ComplexTypeNamespace = "MyFhirSdk.Types";
-
-    private static readonly IReadOnlySet<string> DefaultComplexTypeNames =
-        new HashSet<string>(StringComparer.Ordinal)
-        {
-            "Address",
-            "Attachment",
-            "CodeableConcept",
-            "CodeableReference",
-            "Coding",
-            "ContactPoint",
-            "Duration",
-            "ExtendedContactDetail",
-            "HumanName",
-            "Identifier",
-            "Money",
-            "Period",
-            "Quantity",
-            "Reference",
-            "Signature",
-            "SimpleQuantity",
-            "VirtualServiceDetail"
-        };
-
-    private readonly IReadOnlySet<string> _knownComplexTypeNames;
+    private readonly DefinitionTypeMappingView _definitionMappings;
     private readonly CSharpNameConverter _nameConverter;
     private readonly PrimitiveTypeMappingView _primitiveMappings;
 
     public CSharpTypeMapper(
         PrimitiveTypeMappingView primitiveMappings,
-        IEnumerable<string>? knownComplexTypeNames = null,
+        DefinitionTypeMappingView definitionMappings,
         CSharpNameConverter? nameConverter = null)
     {
         ArgumentNullException.ThrowIfNull(primitiveMappings);
+        ArgumentNullException.ThrowIfNull(definitionMappings);
 
         _primitiveMappings = primitiveMappings;
-        _knownComplexTypeNames = new HashSet<string>(
-            knownComplexTypeNames ?? DefaultComplexTypeNames,
-            StringComparer.Ordinal);
+        _definitionMappings = definitionMappings;
         _nameConverter = nameConverter ?? new CSharpNameConverter();
     }
 
@@ -99,7 +74,8 @@ public sealed class CSharpTypeMapper
 
         var isPreviewType =
             previewFhirTypeNames?.Contains(fhirTypeCode) == true;
-        if (!isPreviewType && !_knownComplexTypeNames.Contains(fhirTypeCode))
+        DefinitionTypeMapping? definitionMapping = null;
+        if (!isPreviewType && !_definitionMappings.TryGet(fhirTypeCode, out definitionMapping))
         {
             return false;
         }
@@ -110,12 +86,11 @@ public sealed class CSharpTypeMapper
             return false;
         }
 
-        var targetNamespace = isPreviewType
-            ? previewNamespace!
-            : ComplexTypeNamespace;
+        var typeName = isPreviewType ? nameResult.Name! : definitionMapping!.TypeName;
+        var targetNamespace = isPreviewType ? previewNamespace! : definitionMapping!.Namespace;
         mapping = CreateMapping(
             fhirTypeCode,
-            nameResult.Name!,
+            typeName,
             targetNamespace,
             CSharpTypeCategory.Complex,
             isPreviewType);

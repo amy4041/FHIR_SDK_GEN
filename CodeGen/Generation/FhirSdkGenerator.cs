@@ -90,9 +90,6 @@ public sealed class FhirSdkGenerator
                 DefinitionVersion: policyResult.Value.FhirVersion)]);
         }
 
-        var parser = new StructureDefinitionParser(
-            new CSharpTypeMapper(new PrimitiveTypeMappingView(policyResult.Value)));
-
         var loadResult = await _loader.LoadAsync(
             options.InputPath,
             options.FhirVersion,
@@ -101,6 +98,23 @@ public sealed class FhirSdkGenerator
         {
             return Failure(loadResult.Diagnostics);
         }
+
+        var loadedDefinitionMappings = loadResult.Value
+            .Select(definition => definition.Definition)
+            .Where(definition =>
+                string.Equals(definition.Kind, "complex-type", StringComparison.Ordinal) &&
+                !string.IsNullOrWhiteSpace(definition.Type))
+            .GroupBy(definition => definition.Type!, StringComparer.Ordinal)
+            .Select(group => new DefinitionTypeMapping(
+                group.Key,
+                group.Key,
+                "MyFhirSdk.Types"))
+            .OrderBy(mapping => mapping.FhirTypeName, StringComparer.Ordinal)
+            .ToArray();
+        var parser = new StructureDefinitionParser(
+            new CSharpTypeMapper(
+                new PrimitiveTypeMappingView(policyResult.Value),
+                new DefinitionTypeMappingView(loadedDefinitionMappings)));
 
         var selectionResult = SelectDefinitions(loadResult.Value, options);
         if (!selectionResult.IsSuccess)
