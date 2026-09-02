@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "fhirVersion": "5.0.0",
+  "comparers": {
+    "symbolIdentity": "ordinal",
+    "outputPathIdentity": "ordinal-ignore-case",
+    "deterministicOrdering": "ordinal"
+  },
+  "namespaceRules": [
+    {
+      "category": "primitive-wrapper",
+      "scope": "phase-b-policy-supported-primitive",
+      "namespace": "MyFhirSdk.Primitives",
+      "outputDirectory": "Generated/R5/Primitives",
+      "typeNameSource": "primitive-generation-policy"
+    },
+    {
+      "category": "complex-datatype",
+      "scope": "complex-type-specialization-non-external",
+      "namespace": "MyFhirSdk.Types",
+      "outputDirectory": "Generated/R5/Types",
+      "typeNameSource": "fhir-type-via-csharp-name-converter"
+    },
+    {
+      "category": "resource",
+      "scope": "resource-specialization-non-external",
+      "namespace": "MyFhirSdk.Resources",
+      "outputDirectory": "Generated/R5/Resources",
+      "typeNameSource": "fhir-type-via-csharp-name-converter"
+    },
+    {
+      "category": "model-metadata",
+      "scope": "generated-r5-model-metadata",
+      "namespace": "MyFhirSdk.ModelMetadata.R5",
+      "outputDirectory": "Generated/R5/ModelMetadata",
+      "typeNameSource": "artifact-identity-via-csharp-name-converter"
+    },
+    {
+      "category": "external-definition",
+      "scope": "r5-model-ownership-policy-external-node",
+      "namespace": "from-r5-model-ownership-policy",
+      "outputDirectory": null,
+      "typeNameSource": "from-r5-model-ownership-policy"
+    },
+    {
+      "category": "backbone",
+      "scope": "resource-owned-backbone-from-r5-backbone-policy",
+      "namespace": "MyFhirSdk.Resources",
+      "outputDirectory": "Generated/R5/Resources",
+      "typeNameSource": "r5-backbone-policy"
+    }
+  ],
+  "fileNaming": {
+    "modelFilePattern": "{CSharpTypeName}.g.cs",
+    "resourceOwnerSource": "csharp-resource-type-name",
+    "resourceOwnerDirectoryPattern": "{ResourceOwner}",
+    "resourceModelPathPattern": "Generated/R5/Resources/{ResourceOwner}/{CSharpTypeName}.g.cs",
+    "metadataFilePattern": "{ArtifactIdentity}.g.cs",
+    "onePublicTopLevelTypePerModelFile": true,
+    "manifestFileName": "model-generation-manifest.json",
+    "pathSeparator": "/",
+    "portableFileNamePolicy": "windows-linux",
+    "rejectRootedOrTraversalSegments": true,
+    "rejectWindowsDeviceNames": true
+  },
+  "identifierRules": {
+    "typeConverter": "CSharpNameConverter.ConvertTypeName",
+    "propertyConverter": "CSharpNameConverter.ConvertPropertyName",
+    "jsonWireNameSource": "exact-fhir-element-name",
+    "jsonPropertyNameEmission": "required-when-wire-name-is-not-recoverable",
+    "automaticNumericSuffixesAllowed": false
+  },
+  "collisionRules": {
+    "checkFullyQualifiedTypeIdentity": true,
+    "checkOutputPathIdentity": true,
+    "checkDeclaringTypeName": true,
+    "checkDeclaredMembers": true,
+    "checkInheritedMembers": true,
+    "checkSyntheticMembers": true,
+    "unapprovedCollisionDisposition": "fail-before-render",
+    "diagnosticOrdering": "ordinal-element-identity"
+  },
+  "explicitMemberRenames": [
+    {
+      "elementId": "Expression.expression",
+      "clrName": "ExpressionValue",
+      "jsonName": "expression",
+      "reason": "member-name-matches-declaring-type"
+    },
+    {
+      "elementId": "Reference.reference",
+      "clrName": "ReferenceValue",
+      "jsonName": "reference",
+      "reason": "member-name-matches-declaring-type"
+    }
+  ],
+  "syntheticMembers": [
+    {
+      "category": "concrete-resource",
+      "clrName": "ResourceType",
+      "jsonName": "resourceType",
+      "shape": "public-readonly-override",
+      "collisionDisposition": "fail-before-render"
+    }
+  ],
+  "resolvedDecisions": {
+    "choiceMemberNamingAndRepresentation": "r5-choice-open-type-policy.json",
+    "openTypeNamingAndRepresentation": "r5-choice-open-type-policy.json"
+  }
+}

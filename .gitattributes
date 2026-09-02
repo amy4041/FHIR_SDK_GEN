@@ -1,1 +1,8 @@
 Generated/R5/Primitives/* text eol=lf
+Tests/CodeGen/Fixtures/FhirPackages/R5/*.approved.json text eol=lf
+Tests/Architecture/ApprovedR5ModelApi.txt text eol=lf
+CodeGen/Policy/r5-model-ownership-policy.json text eol=lf
+CodeGen/Policy/r5-model-naming-policy.json text eol=lf
+CodeGen/Policy/r5-backbone-policy.json text eol=lf
+CodeGen/Policy/r5-choice-open-type-policy.json text eol=lf
+CodeGen/Policy/r5-validation-capability-policy.json text eol=lf

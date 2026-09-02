@@ -31,6 +31,33 @@
     <None Update="Fixtures\StructureDefinitions\Primitives\R5\SHA256SUMS.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Fixtures\FhirPackages\**\*.tgz">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\CodeGen\Policy\r5-package-lock.json">
+      <Link>Policy\r5-package-lock.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\CodeGen\Policy\r5-model-ownership-policy.json">
+      <Link>Policy\r5-model-ownership-policy.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\CodeGen\Policy\r5-model-naming-policy.json">
+      <Link>Policy\r5-model-naming-policy.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\CodeGen\Policy\r5-backbone-policy.json">
+      <Link>Policy\r5-backbone-policy.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\CodeGen\Policy\r5-choice-open-type-policy.json">
+      <Link>Policy\r5-choice-open-type-policy.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\CodeGen\Policy\r5-validation-capability-policy.json">
+      <Link>Policy\r5-validation-capability-policy.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="GoldenFiles\**\*.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

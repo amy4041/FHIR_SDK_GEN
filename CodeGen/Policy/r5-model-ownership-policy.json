@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "fhirVersion": "5.0.0",
+  "assemblyLayout": {
+    "phaseCMode": "single-sdk-assembly",
+    "sdkAssemblyName": "MyFhirSdk",
+    "generatedModelsAssemblyName": "MyFhirSdk",
+    "codeGenAssemblyName": "MyFhirSdk.CodeGen",
+    "codeGenRuntimeReference": "sdk-project-reference",
+    "splitRequiresAdr": true
+  },
+  "runtimeContracts": [
+    {
+      "clrType": "MyFhirSdk.Core.FhirObject",
+      "role": "model-root",
+      "declarationOwner": "runtime-handwritten"
+    },
+    {
+      "clrType": "MyFhirSdk.Core.IFhirExtensionValue",
+      "role": "extension-value-marker",
+      "declarationOwner": "runtime-handwritten"
+    },
+    {
+      "clrType": "MyFhirSdk.Core.PrimitiveType`1",
+      "role": "primitive-wrapper-base",
+      "declarationOwner": "runtime-handwritten"
+    }
+  ],
+  "externalDefinitionNodes": [
+    {
+      "fhirType": "Base",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/Base",
+      "kind": "complex-type",
+      "abstract": true,
+      "baseCanonical": null,
+      "clrType": "MyFhirSdk.Core.Base",
+      "declarationOwner": "runtime-foundation-bootstrap",
+      "generationDisposition": "external-handwritten"
+    },
+    {
+      "fhirType": "Element",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/Element",
+      "kind": "complex-type",
+      "abstract": true,
+      "baseCanonical": "http://hl7.org/fhir/StructureDefinition/Base",
+      "clrType": "MyFhirSdk.Core.Element",
+      "declarationOwner": "runtime-foundation-bootstrap",
+      "generationDisposition": "external-handwritten"
+    },
+    {
+      "fhirType": "BackboneElement",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/BackboneElement",
+      "kind": "complex-type",
+      "abstract": true,
+      "baseCanonical": "http://hl7.org/fhir/StructureDefinition/Element",
+      "clrType": "MyFhirSdk.Core.BackboneElement",
+      "declarationOwner": "runtime-foundation-bootstrap",
+      "generationDisposition": "external-handwritten"
+    },
+    {
+      "fhirType": "BackboneType",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/BackboneType",
+      "kind": "complex-type",
+      "abstract": true,
+      "baseCanonical": "http://hl7.org/fhir/StructureDefinition/DataType",
+      "clrType": "MyFhirSdk.Core.BackboneType",
+      "declarationOwner": "runtime-foundation-bootstrap",
+      "generationDisposition": "external-handwritten"
+    },
+    {
+      "fhirType": "DataType",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/DataType",
+      "kind": "complex-type",
+      "abstract": true,
+      "baseCanonical": "http://hl7.org/fhir/StructureDefinition/Element",
+      "clrType": "MyFhirSdk.Core.DataType",
+      "declarationOwner": "runtime-foundation-bootstrap",
+      "generationDisposition": "external-handwritten"
+    },
+    {
+      "fhirType": "PrimitiveType",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/PrimitiveType",
+      "kind": "complex-type",
+      "abstract": true,
+      "baseCanonical": "http://hl7.org/fhir/StructureDefinition/DataType",
+      "clrType": "MyFhirSdk.Core.PrimitiveType`1",
+      "declarationOwner": "runtime-primitive-bootstrap",
+      "generationDisposition": "external-handwritten"
+    },
+    {
+      "fhirType": "Resource",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/Resource",
+      "kind": "resource",
+      "abstract": true,
+      "baseCanonical": "http://hl7.org/fhir/StructureDefinition/Base",
+      "clrType": "MyFhirSdk.Core.Resource",
+      "declarationOwner": "runtime-foundation-bootstrap",
+      "generationDisposition": "external-handwritten"
+    },
+    {
+      "fhirType": "DomainResource",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+      "kind": "resource",
+      "abstract": true,
+      "baseCanonical": "http://hl7.org/fhir/StructureDefinition/Resource",
+      "clrType": "MyFhirSdk.Core.DomainResource",
+      "declarationOwner": "runtime-foundation-bootstrap",
+      "generationDisposition": "external-handwritten"
+    },
+    {
+      "fhirType": "Extension",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/Extension",
+      "kind": "complex-type",
+      "abstract": false,
+      "baseCanonical": "http://hl7.org/fhir/StructureDefinition/DataType",
+      "clrType": "MyFhirSdk.Core.Extension",
+      "declarationOwner": "r5-versioned-bootstrap",
+      "generationDisposition": "external-handwritten"
+    },
+    {
+      "fhirType": "Meta",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/Meta",
+      "kind": "complex-type",
+      "abstract": false,
+      "baseCanonical": "http://hl7.org/fhir/StructureDefinition/DataType",
+      "clrType": "MyFhirSdk.Core.Meta",
+      "declarationOwner": "r5-versioned-bootstrap",
+      "generationDisposition": "external-handwritten"
+    },
+    {
+      "fhirType": "Narrative",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/Narrative",
+      "kind": "complex-type",
+      "abstract": false,
+      "baseCanonical": "http://hl7.org/fhir/StructureDefinition/DataType",
+      "clrType": "MyFhirSdk.Core.Narrative",
+      "declarationOwner": "r5-versioned-bootstrap",
+      "generationDisposition": "external-handwritten"
+    }
+  ],
+  "migrationPolicy": {
+    "phaseCMayGenerateExternalDefinitionDeclarations": false,
+    "inventoryMustRetainExternalDefinitions": true,
+    "graphMustResolveExternalDefinitions": true,
+    "generatedModelsMayReferenceExternalDefinitions": true,
+    "codeGenRuntimeReferenceReassessmentPhase": "Phase D"
+  }
+}

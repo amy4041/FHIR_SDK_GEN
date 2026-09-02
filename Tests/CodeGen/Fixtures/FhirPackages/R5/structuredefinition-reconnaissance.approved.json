@@ -1,0 +1,719 @@
+{
+  "schemaVersion": 1,
+  "package": {
+    "packageId": "hl7.fhir.r5.core",
+    "packageVersion": "5.0.0",
+    "packageType": "Core",
+    "license": "CC0-1.0",
+    "fhirVersions": [
+      "5.0.0"
+    ],
+    "archiveSha256": "74b27cd1bfce9e80eaceac431edf230b0945a443564fbf5512f82e5fa50a80d4"
+  },
+  "definitions": {
+    "total": 307,
+    "byKind": [
+      {
+        "value": "complex-type",
+        "count": 51
+      },
+      {
+        "value": "logical",
+        "count": 10
+      },
+      {
+        "value": "primitive-type",
+        "count": 21
+      },
+      {
+        "value": "resource",
+        "count": 225
+      }
+    ],
+    "byDerivation": [
+      {
+        "value": "<missing>",
+        "count": 11
+      },
+      {
+        "value": "constraint",
+        "count": 66
+      },
+      {
+        "value": "specialization",
+        "count": 230
+      }
+    ],
+    "byKindAndDerivation": [
+      {
+        "value": "complex-type|<missing>",
+        "count": 1
+      },
+      {
+        "value": "complex-type|constraint",
+        "count": 3
+      },
+      {
+        "value": "complex-type|specialization",
+        "count": 47
+      },
+      {
+        "value": "logical|<missing>",
+        "count": 10
+      },
+      {
+        "value": "primitive-type|specialization",
+        "count": 21
+      },
+      {
+        "value": "resource|constraint",
+        "count": 63
+      },
+      {
+        "value": "resource|specialization",
+        "count": 162
+      }
+    ],
+    "byVersion": [
+      {
+        "value": "5.0.0",
+        "count": 305
+      },
+      {
+        "value": "<missing>",
+        "count": 2
+      }
+    ],
+    "abstractCount": 11,
+    "concreteCount": 296,
+    "missingAbstractFlagCount": 0,
+    "missingDerivationSources": [
+      "package/StructureDefinition-Base.json",
+      "package/StructureDefinition-Definition.json",
+      "package/StructureDefinition-Event.json",
+      "package/StructureDefinition-FiveWs.json",
+      "package/StructureDefinition-Participant.json",
+      "package/StructureDefinition-ParticipantContactable.json",
+      "package/StructureDefinition-ParticipantLiving.json",
+      "package/StructureDefinition-Product.json",
+      "package/StructureDefinition-Publishable.json",
+      "package/StructureDefinition-Request.json",
+      "package/StructureDefinition-Shareable.json"
+    ],
+    "missingBaseDefinitionSources": [
+      "package/StructureDefinition-Base.json"
+    ],
+    "missingSnapshotSources": [
+      "package/StructureDefinition-example-composition.json",
+      "package/StructureDefinition-example-section-library.json"
+    ],
+    "specializationMissingSnapshotSources": []
+  },
+  "shapeUsage": {
+    "definitionCount": 307,
+    "snapshotElementCount": 15464,
+    "definitionsWithChoiceElements": 175,
+    "choiceElementCount": 486,
+    "choiceTypeAlternativeCount": 2518,
+    "definitionsWithContentReferences": 80,
+    "contentReferenceElementCount": 153,
+    "definitionsWithSlicing": 104,
+    "slicingElementCount": 255,
+    "definitionsWithConstraints": 305,
+    "constraintCount": 17843,
+    "definitionsWithBindings": 264,
+    "bindingElementCount": 2574,
+    "definitionsWithFixedValues": 25,
+    "fixedElementCount": 87,
+    "definitionsWithPatternValues": 16,
+    "patternElementCount": 33
+  },
+  "shapeUsageByKind": [
+    {
+      "kind": "complex-type",
+      "metrics": {
+        "definitionCount": 51,
+        "snapshotElementCount": 613,
+        "definitionsWithChoiceElements": 11,
+        "choiceElementCount": 24,
+        "choiceTypeAlternativeCount": 558,
+        "definitionsWithContentReferences": 0,
+        "contentReferenceElementCount": 0,
+        "definitionsWithSlicing": 50,
+        "slicingElementCount": 76,
+        "definitionsWithConstraints": 51,
+        "constraintCount": 718,
+        "definitionsWithBindings": 33,
+        "bindingElementCount": 80,
+        "definitionsWithFixedValues": 0,
+        "fixedElementCount": 0,
+        "definitionsWithPatternValues": 0,
+        "patternElementCount": 0
+      }
+    },
+    {
+      "kind": "logical",
+      "metrics": {
+        "definitionCount": 10,
+        "snapshotElementCount": 152,
+        "definitionsWithChoiceElements": 5,
+        "choiceElementCount": 10,
+        "choiceTypeAlternativeCount": 22,
+        "definitionsWithContentReferences": 0,
+        "contentReferenceElementCount": 0,
+        "definitionsWithSlicing": 0,
+        "slicingElementCount": 0,
+        "definitionsWithConstraints": 10,
+        "constraintCount": 154,
+        "definitionsWithBindings": 8,
+        "bindingElementCount": 26,
+        "definitionsWithFixedValues": 0,
+        "fixedElementCount": 0,
+        "definitionsWithPatternValues": 0,
+        "patternElementCount": 0
+      }
+    },
+    {
+      "kind": "primitive-type",
+      "metrics": {
+        "definitionCount": 21,
+        "snapshotElementCount": 84,
+        "definitionsWithChoiceElements": 0,
+        "choiceElementCount": 0,
+        "choiceTypeAlternativeCount": 0,
+        "definitionsWithContentReferences": 0,
+        "contentReferenceElementCount": 0,
+        "definitionsWithSlicing": 0,
+        "slicingElementCount": 0,
+        "definitionsWithConstraints": 21,
+        "constraintCount": 63,
+        "definitionsWithBindings": 0,
+        "bindingElementCount": 0,
+        "definitionsWithFixedValues": 0,
+        "fixedElementCount": 0,
+        "definitionsWithPatternValues": 0,
+        "patternElementCount": 0
+      }
+    },
+    {
+      "kind": "resource",
+      "metrics": {
+        "definitionCount": 225,
+        "snapshotElementCount": 14615,
+        "definitionsWithChoiceElements": 159,
+        "choiceElementCount": 452,
+        "choiceTypeAlternativeCount": 1938,
+        "definitionsWithContentReferences": 80,
+        "contentReferenceElementCount": 153,
+        "definitionsWithSlicing": 54,
+        "slicingElementCount": 179,
+        "definitionsWithConstraints": 223,
+        "constraintCount": 16908,
+        "definitionsWithBindings": 223,
+        "bindingElementCount": 2468,
+        "definitionsWithFixedValues": 25,
+        "fixedElementCount": 87,
+        "definitionsWithPatternValues": 16,
+        "patternElementCount": 33
+      }
+    }
+  ],
+  "specializationShapeUsage": {
+    "definitionCount": 230,
+    "snapshotElementCount": 9554,
+    "definitionsWithChoiceElements": 118,
+    "choiceElementCount": 261,
+    "choiceTypeAlternativeCount": 1359,
+    "definitionsWithContentReferences": 38,
+    "contentReferenceElementCount": 78,
+    "definitionsWithSlicing": 48,
+    "slicingElementCount": 66,
+    "definitionsWithConstraints": 230,
+    "constraintCount": 10971,
+    "definitionsWithBindings": 192,
+    "bindingElementCount": 1650,
+    "definitionsWithFixedValues": 0,
+    "fixedElementCount": 0,
+    "definitionsWithPatternValues": 0,
+    "patternElementCount": 0
+  },
+  "specializationShapeUsageByKind": [
+    {
+      "kind": "complex-type",
+      "metrics": {
+        "definitionCount": 47,
+        "snapshotElementCount": 499,
+        "definitionsWithChoiceElements": 10,
+        "choiceElementCount": 18,
+        "choiceTypeAlternativeCount": 322,
+        "definitionsWithContentReferences": 0,
+        "contentReferenceElementCount": 0,
+        "definitionsWithSlicing": 47,
+        "slicingElementCount": 64,
+        "definitionsWithConstraints": 47,
+        "constraintCount": 572,
+        "definitionsWithBindings": 30,
+        "bindingElementCount": 67,
+        "definitionsWithFixedValues": 0,
+        "fixedElementCount": 0,
+        "definitionsWithPatternValues": 0,
+        "patternElementCount": 0
+      }
+    },
+    {
+      "kind": "primitive-type",
+      "metrics": {
+        "definitionCount": 21,
+        "snapshotElementCount": 84,
+        "definitionsWithChoiceElements": 0,
+        "choiceElementCount": 0,
+        "choiceTypeAlternativeCount": 0,
+        "definitionsWithContentReferences": 0,
+        "contentReferenceElementCount": 0,
+        "definitionsWithSlicing": 0,
+        "slicingElementCount": 0,
+        "definitionsWithConstraints": 21,
+        "constraintCount": 63,
+        "definitionsWithBindings": 0,
+        "bindingElementCount": 0,
+        "definitionsWithFixedValues": 0,
+        "fixedElementCount": 0,
+        "definitionsWithPatternValues": 0,
+        "patternElementCount": 0
+      }
+    },
+    {
+      "kind": "resource",
+      "metrics": {
+        "definitionCount": 162,
+        "snapshotElementCount": 8971,
+        "definitionsWithChoiceElements": 108,
+        "choiceElementCount": 243,
+        "choiceTypeAlternativeCount": 1037,
+        "definitionsWithContentReferences": 38,
+        "contentReferenceElementCount": 78,
+        "definitionsWithSlicing": 1,
+        "slicingElementCount": 2,
+        "definitionsWithConstraints": 162,
+        "constraintCount": 10336,
+        "definitionsWithBindings": 162,
+        "bindingElementCount": 1583,
+        "definitionsWithFixedValues": 0,
+        "fixedElementCount": 0,
+        "definitionsWithPatternValues": 0,
+        "patternElementCount": 0
+      }
+    }
+  ],
+  "baseDefinitions": [
+    {
+      "value": "<missing>",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/ActivityDefinition",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/ArtifactAssessment",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/BackboneType",
+      "count": 5
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/Base",
+      "count": 12
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/Bundle",
+      "count": 8
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/CodeSystem",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/Composition",
+      "count": 4
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/ConceptMap",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/DataType",
+      "count": 35
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/DiagnosticReport",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+      "count": 157
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/Element",
+      "count": 3
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/ElementDefinition",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/FamilyMemberHistory",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/Group",
+      "count": 2
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/GuidanceResponse",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/Library",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/Measure",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/NamingSystem",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/Observation",
+      "count": 6
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/PlanDefinition",
+      "count": 3
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/PrimitiveType",
+      "count": 11
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/Provenance",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/Quantity",
+      "count": 6
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/RequestOrchestration",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/Resource",
+      "count": 4
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/TestScript",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/ValueSet",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/integer",
+      "count": 2
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/logiclibrary",
+      "count": 3
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/shareableactivitydefinition",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/shareablecodesystem",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/shareableconceptmap",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/shareablelibrary",
+      "count": 4
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/shareablemeasure",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/shareablenamingsystem",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/shareableplandefinition",
+      "count": 1
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/shareablevalueset",
+      "count": 3
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/string",
+      "count": 3
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/uri",
+      "count": 4
+    },
+    {
+      "value": "http://hl7.org/fhir/StructureDefinition/vitalsigns",
+      "count": 10
+    }
+  ],
+  "identity": {
+    "uniqueTypeCount": 241,
+    "uniqueCanonicalCount": 307,
+    "uniqueSourceIdentityCount": 307,
+    "missingTypeSources": [],
+    "missingCanonicalSources": [],
+    "missingVersionSources": [
+      "package/StructureDefinition-example-composition.json",
+      "package/StructureDefinition-example-section-library.json"
+    ],
+    "missingKindSources": [],
+    "duplicateTypes": [
+      {
+        "value": "ActivityDefinition",
+        "count": 3,
+        "sources": [
+          "package/StructureDefinition-ActivityDefinition.json",
+          "package/StructureDefinition-publishableactivitydefinition.json",
+          "package/StructureDefinition-shareableactivitydefinition.json"
+        ]
+      },
+      {
+        "value": "ArtifactAssessment",
+        "count": 2,
+        "sources": [
+          "package/StructureDefinition-ArtifactAssessment.json",
+          "package/StructureDefinition-ebmrecommendation.json"
+        ]
+      },
+      {
+        "value": "Bundle",
+        "count": 9,
+        "sources": [
+          "package/StructureDefinition-Bundle.json",
+          "package/StructureDefinition-batch-bundle.json",
+          "package/StructureDefinition-batch-response-bundle.json",
+          "package/StructureDefinition-document-bundle.json",
+          "package/StructureDefinition-history-bundle.json",
+          "package/StructureDefinition-search-set-bundle.json",
+          "package/StructureDefinition-subscription-notification-bundle.json",
+          "package/StructureDefinition-transaction-bundle.json",
+          "package/StructureDefinition-transaction-response-bundle.json"
+        ]
+      },
+      {
+        "value": "CodeSystem",
+        "count": 3,
+        "sources": [
+          "package/StructureDefinition-CodeSystem.json",
+          "package/StructureDefinition-publishablecodesystem.json",
+          "package/StructureDefinition-shareablecodesystem.json"
+        ]
+      },
+      {
+        "value": "Composition",
+        "count": 5,
+        "sources": [
+          "package/StructureDefinition-Composition.json",
+          "package/StructureDefinition-catalog.json",
+          "package/StructureDefinition-clinicaldocument.json",
+          "package/StructureDefinition-example-composition.json",
+          "package/StructureDefinition-example-section-library.json"
+        ]
+      },
+      {
+        "value": "ConceptMap",
+        "count": 3,
+        "sources": [
+          "package/StructureDefinition-ConceptMap.json",
+          "package/StructureDefinition-publishableconceptmap.json",
+          "package/StructureDefinition-shareableconceptmap.json"
+        ]
+      },
+      {
+        "value": "DiagnosticReport",
+        "count": 2,
+        "sources": [
+          "package/StructureDefinition-DiagnosticReport.json",
+          "package/StructureDefinition-lipidprofile.json"
+        ]
+      },
+      {
+        "value": "ElementDefinition",
+        "count": 2,
+        "sources": [
+          "package/StructureDefinition-ElementDefinition.json",
+          "package/StructureDefinition-elementdefinition-de.json"
+        ]
+      },
+      {
+        "value": "FamilyMemberHistory",
+        "count": 2,
+        "sources": [
+          "package/StructureDefinition-FamilyMemberHistory.json",
+          "package/StructureDefinition-familymemberhistory-genetic.json"
+        ]
+      },
+      {
+        "value": "Group",
+        "count": 3,
+        "sources": [
+          "package/StructureDefinition-Group.json",
+          "package/StructureDefinition-actualgroup.json",
+          "package/StructureDefinition-groupdefinition.json"
+        ]
+      },
+      {
+        "value": "GuidanceResponse",
+        "count": 2,
+        "sources": [
+          "package/StructureDefinition-GuidanceResponse.json",
+          "package/StructureDefinition-cdshooksguidanceresponse.json"
+        ]
+      },
+      {
+        "value": "Library",
+        "count": 9,
+        "sources": [
+          "package/StructureDefinition-Library.json",
+          "package/StructureDefinition-cqllibrary.json",
+          "package/StructureDefinition-elmlibrary.json",
+          "package/StructureDefinition-fhirpathlibrary.json",
+          "package/StructureDefinition-logiclibrary.json",
+          "package/StructureDefinition-modelinfolibrary.json",
+          "package/StructureDefinition-moduledefinitionlibrary.json",
+          "package/StructureDefinition-publishablelibrary.json",
+          "package/StructureDefinition-shareablelibrary.json"
+        ]
+      },
+      {
+        "value": "Measure",
+        "count": 3,
+        "sources": [
+          "package/StructureDefinition-Measure.json",
+          "package/StructureDefinition-publishablemeasure.json",
+          "package/StructureDefinition-shareablemeasure.json"
+        ]
+      },
+      {
+        "value": "NamingSystem",
+        "count": 3,
+        "sources": [
+          "package/StructureDefinition-NamingSystem.json",
+          "package/StructureDefinition-publishablenamingsystem.json",
+          "package/StructureDefinition-shareablenamingsystem.json"
+        ]
+      },
+      {
+        "value": "Observation",
+        "count": 17,
+        "sources": [
+          "package/StructureDefinition-Observation.json",
+          "package/StructureDefinition-bmi.json",
+          "package/StructureDefinition-bodyheight.json",
+          "package/StructureDefinition-bodytemp.json",
+          "package/StructureDefinition-bodyweight.json",
+          "package/StructureDefinition-bp.json",
+          "package/StructureDefinition-cholesterol.json",
+          "package/StructureDefinition-devicemetricobservation.json",
+          "package/StructureDefinition-hdlcholesterol.json",
+          "package/StructureDefinition-headcircum.json",
+          "package/StructureDefinition-heartrate.json",
+          "package/StructureDefinition-ldlcholesterol.json",
+          "package/StructureDefinition-oxygensat.json",
+          "package/StructureDefinition-resprate.json",
+          "package/StructureDefinition-triglyceride.json",
+          "package/StructureDefinition-vitalsigns.json",
+          "package/StructureDefinition-vitalspanel.json"
+        ]
+      },
+      {
+        "value": "PlanDefinition",
+        "count": 5,
+        "sources": [
+          "package/StructureDefinition-PlanDefinition.json",
+          "package/StructureDefinition-cdshooksserviceplandefinition.json",
+          "package/StructureDefinition-computableplandefinition.json",
+          "package/StructureDefinition-publishableplandefinition.json",
+          "package/StructureDefinition-shareableplandefinition.json"
+        ]
+      },
+      {
+        "value": "Provenance",
+        "count": 2,
+        "sources": [
+          "package/StructureDefinition-Provenance.json",
+          "package/StructureDefinition-provenance-relevant-history.json"
+        ]
+      },
+      {
+        "value": "Quantity",
+        "count": 3,
+        "sources": [
+          "package/StructureDefinition-MoneyQuantity.json",
+          "package/StructureDefinition-Quantity.json",
+          "package/StructureDefinition-SimpleQuantity.json"
+        ]
+      },
+      {
+        "value": "RequestOrchestration",
+        "count": 2,
+        "sources": [
+          "package/StructureDefinition-RequestOrchestration.json",
+          "package/StructureDefinition-cdshooksrequestorchestration.json"
+        ]
+      },
+      {
+        "value": "TestScript",
+        "count": 2,
+        "sources": [
+          "package/StructureDefinition-TestScript.json",
+          "package/StructureDefinition-shareabletestscript.json"
+        ]
+      },
+      {
+        "value": "ValueSet",
+        "count": 5,
+        "sources": [
+          "package/StructureDefinition-ValueSet.json",
+          "package/StructureDefinition-computablevalueset.json",
+          "package/StructureDefinition-executablevalueset.json",
+          "package/StructureDefinition-publishablevalueset.json",
+          "package/StructureDefinition-shareablevalueset.json"
+        ]
+      }
+    ],
+    "duplicateCanonicals": [],
+    "duplicateSourceIdentities": []
+  },
+  "specializationIdentity": {
+    "uniqueTypeCount": 230,
+    "uniqueCanonicalCount": 230,
+    "uniqueSourceIdentityCount": 230,
+    "missingTypeSources": [],
+    "missingCanonicalSources": [],
+    "missingVersionSources": [],
+    "missingKindSources": [],
+    "duplicateTypes": [],
+    "duplicateCanonicals": [],
+    "duplicateSourceIdentities": []
+  }
+}
