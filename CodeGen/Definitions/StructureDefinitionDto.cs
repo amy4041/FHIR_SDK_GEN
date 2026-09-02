@@ -17,6 +17,9 @@ public sealed class StructureDefinitionDto
     [JsonPropertyName("version")]
     public string? Version { get; init; }
 
+    [JsonPropertyName("fhirVersion")]
+    public string? FhirVersion { get; init; }
+
     [JsonPropertyName("name")]
     public string? Name { get; init; }
 

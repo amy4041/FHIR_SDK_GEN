@@ -16,6 +16,7 @@ public sealed class StructureDefinitionDtoTests
               "id": "HumanName",
               "url": "http://hl7.org/fhir/StructureDefinition/HumanName",
               "version": "5.0.0",
+              "fhirVersion": "5.0.0",
               "name": "HumanName",
               "type": "HumanName",
               "kind": "complex-type",
@@ -35,6 +36,11 @@ public sealed class StructureDefinitionDtoTests
                     "path": "HumanName.family",
                     "min": 0,
                     "max": "1",
+                    "base": {
+                      "path": "HumanName.family",
+                      "min": 0,
+                      "max": "1"
+                    },
                     "type": [
                       {
                         "code": "string",
@@ -49,7 +55,27 @@ public sealed class StructureDefinitionDtoTests
                     "short": "Family name",
                     "definition": "The family name.",
                     "contentReference": "#HumanName.family",
-                    "sliceName": "official"
+                    "sliceName": "official",
+                    "constraint": [
+                      {
+                        "key": "hn-1",
+                        "severity": "error",
+                        "human": "Family is valid.",
+                        "expression": "family.exists()",
+                        "source": "http://example.org/HumanName"
+                      }
+                    ],
+                    "binding": {
+                      "strength": "preferred",
+                      "description": "Example binding.",
+                      "valueSet": "http://example.org/ValueSet/name"
+                    },
+                    "mustSupport": true,
+                    "isModifier": false,
+                    "isSummary": true,
+                    "condition": ["hn-1"],
+                    "fixedString": "Smith",
+                    "patternString": "S"
                   }
                 ]
               },
@@ -75,6 +101,7 @@ public sealed class StructureDefinitionDtoTests
         Assert.Equal("HumanName", definition.Id);
         Assert.Equal("http://hl7.org/fhir/StructureDefinition/HumanName", definition.Url);
         Assert.Equal("5.0.0", definition.Version);
+        Assert.Equal("5.0.0", definition.FhirVersion);
         Assert.Equal("HumanName", definition.Name);
         Assert.Equal("HumanName", definition.Type);
         Assert.Equal("complex-type", definition.Kind);
@@ -96,6 +123,29 @@ public sealed class StructureDefinitionDtoTests
         Assert.Equal("#HumanName.family", family.ContentReference);
         Assert.Equal("Family name", family.Short);
         Assert.Equal("The family name.", family.Definition);
+        Assert.Equal("HumanName.family", family.Base?.Path);
+        Assert.Equal(0, family.Base?.Min);
+        Assert.Equal("1", family.Base?.Max);
+        var constraint = Assert.Single(
+            Assert.IsType<List<ElementConstraintDto>>(family.Constraints));
+        Assert.Equal("hn-1", constraint.Key);
+        Assert.Equal("error", constraint.Severity);
+        Assert.Equal("Family is valid.", constraint.Human);
+        Assert.Equal("family.exists()", constraint.Expression);
+        Assert.Equal("http://example.org/HumanName", constraint.Source);
+        Assert.Equal("preferred", family.Binding?.Strength);
+        Assert.Equal("Example binding.", family.Binding?.Description);
+        Assert.Equal("http://example.org/ValueSet/name", family.Binding?.ValueSet);
+        Assert.True(family.MustSupport);
+        Assert.False(family.IsModifier);
+        Assert.True(family.IsSummary);
+        Assert.Equal(["hn-1"], family.Conditions);
+        Assert.Equal(
+            "Smith",
+            family.AdditionalProperties?["fixedString"].GetString());
+        Assert.Equal(
+            "S",
+            family.AdditionalProperties?["patternString"].GetString());
 
         var familyType = Assert.Single(Assert.IsType<List<ElementTypeDto>>(family.Types));
         Assert.Equal("string", familyType.Code);
@@ -148,6 +198,9 @@ public sealed class StructureDefinitionDtoTests
         Assert.Equal(
             JsonValueKind.Object,
             element.Slicing?.ValueKind);
+        Assert.Equal(
+            42,
+            element.AdditionalProperties?["unknownElement"].GetInt32());
         var elementType = Assert.Single(
             Assert.IsType<List<ElementTypeDto>>(element.Types));
         Assert.Equal("dateTime", elementType.Code);
