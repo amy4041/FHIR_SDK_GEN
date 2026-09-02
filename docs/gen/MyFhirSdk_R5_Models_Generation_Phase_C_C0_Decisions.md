@@ -1,6 +1,6 @@
 # MyFhirSdk R5 Models Generation Phase C0 Baseline 與決策
 
-Version 0.5
+Version 0.6
 
 - 文件狀態：In Progress
 - 適用範圍：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、MyFhirSdk、.NET 9
@@ -20,7 +20,7 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 |---|---|---|
 | Phase B primitive regeneration | Passed | `Generated/R5/Primitives` regeneration 無 git diff |
 | Official R5 package identity | Passed | C0-001 lock 與離線 identity tests |
-| Release solution tests | Passed | 516 passed、0 failed、1 skipped |
+| Release solution tests | Passed | 522 passed、0 failed、1 skipped |
 | R5 model public API snapshot | Passed | 獨立 approved snapshot、完整範圍與 determinism tests |
 | Deterministic inventory reconnaissance | Passed | Approved JSON snapshot、reordered-input 與 two-run tests |
 
@@ -32,7 +32,7 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 | C0-002 | R5 model public API baseline 與 disposition | Accepted |
 | C0-003 | Assembly、base 與 bootstrap ownership | Accepted |
 | C0-004 | Namespace、filename 與 collision naming | Accepted |
-| C0-005 | Backbone naming 與 public placement | Pending |
+| C0-005 | Backbone naming 與 public placement | Accepted |
 | C0-006 | Choice/open type public representation | Pending |
 | C0-007 | Validation capability matrix | Pending |
 
@@ -327,7 +327,7 @@ Policy tests 必須證明：
 | Resource specialization，排除 external nodes | `MyFhirSdk.Resources` | `Generated/R5/Resources` |
 | Generated R5 model metadata | `MyFhirSdk.ModelMetadata.R5` | `Generated/R5/ModelMetadata` |
 | C0-003 external definitions | 由 ownership policy 指定 | 不輸出 declaration |
-| Resource-owned Backbone | C0-005 決定 | C0-005 決定 |
+| Resource-owned Backbone | `MyFhirSdk.Resources` | `Generated/R5/Resources` |
 
 Phase C 不為 datatype 或 Resource 建立每型別子 namespace，也不依 package entry path、base
 type 或 reference target 改變 namespace。Constraint Profiles 與 logical models 不在 Phase C
@@ -394,10 +394,10 @@ name 為 `resourceType`。若官方或 generated member 與 `ResourceType` 相�
 只有 policy 中列出的 explicit rename 可以解決已知 collision。其他 collision 必須產生依
 element identity ordinal 排序的 diagnostic，並在 render/write 前失敗。
 
-### 8.5 延後但不可自行推導的項目
+### 8.5 後續但不可自行推導的項目
 
-- Resource-owned Backbone 的 namespace、public identity、filename 與 placement 由 C0-005
-  決定。
+- Resource-owned Backbone 的 namespace、public identity、filename 與 placement 已由
+  C0-005 決定。
 - Choice member 與 open type 的 property naming/representation 由 C0-006 決定。
 - `Extension.value[x]` 維持 C0-003 bootstrap declaration；其 open-type representation
   仍屬 C0-006，不由本 naming policy 改變。
@@ -410,8 +410,102 @@ C0-004 全 package naming reconnaissance 發現 official
 錯誤規劃為 `MyFhirSdk.Types.PrimitiveType.g.cs`。Ownership tests 會直接對 official
 package 驗證此 identity、kind、abstract 與 base canonical。
 
-## 9. 待決事項
+## 9. C0-005：Backbone naming 與 public placement
 
-C0-005 至 C0-007 必須根據 model API snapshot、official package reconnaissance 與 Runtime
-capability evidence 逐項核准。未核准前，C1-C7 不得自行推導 Backbone placement、
-choice/open type 或 validation disposition。
+- 狀態：Accepted
+- Decision source：`CodeGen/Policy/r5-backbone-policy.json`
+- Tests：`Tests/CodeGen/Policy/R5BackbonePolicyTests.cs`
+
+### 9.1 Official R5 Backbone inventory
+
+C0-001 固定的 official package 在 Phase C specialization scope 中包含：
+
+| Shape | 數量 |
+|---|---:|
+| Resource-owned `BackboneElement` nodes | 613 |
+| 含 Backbone nodes 的 Resource owners | 141 |
+| Inline `BackboneType` nodes | 0 |
+| 深度 1 | 384 |
+| 深度 2 | 170 |
+| 深度 3 | 47 |
+| 深度 4 | 12 |
+
+Backbone node identity 取自完整、唯一的 snapshot element id。Constraint Profiles 與 logical
+models 不在 Phase C model declaration scope，不能將其中的 inline shape 混入上述 inventory。
+目前 package 若在核准 scope 出現 `BackboneType` inline node，須視為 inventory/policy
+mismatch 失敗，不能自行套用 `BackboneElement` placement。
+
+### 9.2 Public placement 與 class shape
+
+每個核准的 Resource-owned Backbone：
+
+- 生成為 public top-level sealed class；
+- namespace 為 `MyFhirSdk.Resources`；
+- 直接繼承 `MyFhirSdk.Core.BackboneElement`；
+- 輸出至 `Generated/R5/Resources/{CSharpTypeName}.g.cs`；
+- 每個檔案只含一個 public top-level model declaration。
+
+巢狀 Backbone 是 containment/ownership 關係，不是 CLR inheritance。例：
+`Claim.item.detail.subDetail` 的 class 仍直接繼承 `BackboneElement`，不繼承表示
+`Claim.item.detail` 的 class。
+
+選擇 public top-level placement 是為了維持 C0-002 現有 API、避免 deeply nested CLR type
+identity，並讓 Parser、Serializer、Validator metadata 使用穩定的完整型別名稱。
+
+### 9.3 一般命名規則
+
+一般 CLR name 由完整 element id 的所有 segments 依序經
+`CSharpNameConverter.ConvertTypeName` 後串接：
+
+| Element id | 一般 CLR name |
+|---|---|
+| `Patient.contact` | `PatientContact` |
+| `Bundle.entry.request` | `BundleEntryRequest` |
+| `Coverage.costToBeneficiary.exception` | `CoverageCostToBeneficiaryException` |
+| `ValueSet.expansion.contains.property.subProperty` | `ValueSetExpansionContainsPropertySubProperty` |
+
+完整 owner/path 必須保留；不得只使用 leaf name、不得依 traversal order 縮短，也不得自動
+加入數字 suffix。
+
+### 9.4 C0-002 compatibility overrides
+
+目前 32 個公開手寫 Backbone classes 中有 29 個直接符合完整 path 規則。下列三個名稱以
+explicit policy override 保留：
+
+| Element id | 一般名稱 | 核准 CLR name |
+|---|---|---|
+| `Claim.item.bodySite` | `ClaimItemBodySite` | `ClaimBodySite` |
+| `Claim.item.detail` | `ClaimItemDetail` | `ClaimDetail` |
+| `Claim.item.detail.subDetail` | `ClaimItemDetailSubDetail` | `ClaimSubDetail` |
+
+Override 只適用於完整 element id，不建立模糊的 prefix/leaf 規則。若未來發現新 collision，
+必須更新 policy、測試與 C0 decision，不能仿照 Claim 名稱自行縮短。
+
+### 9.5 Reference、collision 與 determinism
+
+1. `contentReference` 必須解析至既有 element identity，不得因此建立第二個 Backbone
+   declaration。
+2. 613 個 Backbone names 必須彼此唯一，並與 160 個 top-level Resource names 在
+   `MyFhirSdk.Resources` 中共同檢查。
+3. CLR identity 使用 ordinal comparison；output path 使用 ordinal-ignore-case comparison。
+4. 套用三筆 overrides 後，目前不存在 CLR identity 或 portable output path collision。
+5. Unapproved collision 必須在 render/write 前失敗，diagnostics 依 element id ordinal
+   排序。
+6. 反轉 Backbone inventory 輸入順序後，element-to-CLR identity snapshot 必須相同。
+
+### 9.6 對後續階段的約束
+
+- C1 inventory 必須保存 snapshot element id 與 element type code。
+- C2 graph 必須建立 owner、nested Backbone 與 `contentReference` edges。
+- C3 IR 必須保存 owner canonical、完整 path、核准 CLR identity 與 provenance。
+- C5 renderer 不得重新從 leaf name 推導 class identity。
+- C7 manifest 必須把 Backbone artifact 與 owner/element identity 對應納入 deterministic
+  inventory。
+- C8 原子切換時，32 個現有 public Backbone API 必須由同名 generated declaration 接手，
+  不得先移除手寫 class。
+
+## 10. 待決事項
+
+C0-006 至 C0-007 必須根據 model API snapshot、official package reconnaissance 與 Runtime
+capability evidence 逐項核准。未核准前，C1-C7 不得自行推導 choice/open type 或
+validation disposition。

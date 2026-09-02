@@ -44,10 +44,10 @@
     },
     {
       "category": "backbone",
-      "scope": "deferred-to-c0-005",
-      "namespace": null,
-      "outputDirectory": null,
-      "typeNameSource": "deferred-to-c0-005"
+      "scope": "resource-owned-backbone-from-r5-backbone-policy",
+      "namespace": "MyFhirSdk.Resources",
+      "outputDirectory": "Generated/R5/Resources",
+      "typeNameSource": "r5-backbone-policy"
     }
   ],
   "fileNaming": {
@@ -101,7 +101,6 @@
     }
   ],
   "deferredDecisions": {
-    "backboneNamingAndPlacement": "C0-005",
     "choiceMemberNamingAndRepresentation": "C0-006",
     "openTypeNamingAndRepresentation": "C0-006"
   }

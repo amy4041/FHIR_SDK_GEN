@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "fhirVersion": "5.0.0",
+  "scope": {
+    "definitionDerivation": "specialization",
+    "definitionKind": "resource",
+    "elementTypeCode": "BackboneElement",
+    "externalDefinitionsSource": "r5-model-ownership-policy.json"
+  },
+  "publicShape": {
+    "placement": "public-top-level",
+    "namespace": "MyFhirSdk.Resources",
+    "outputDirectory": "Generated/R5/Resources",
+    "classModifier": "sealed",
+    "baseClrType": "MyFhirSdk.Core.BackboneElement",
+    "onePublicTopLevelTypePerFile": true,
+    "fileNamePattern": "{CSharpTypeName}.g.cs"
+  },
+  "naming": {
+    "identitySource": "complete-element-id",
+    "segmentConverter": "CSharpNameConverter.ConvertTypeName",
+    "segmentComposition": "owner-and-all-path-segments-concatenated",
+    "symbolIdentityComparer": "ordinal",
+    "outputPathComparer": "ordinal-ignore-case",
+    "automaticNumericSuffixesAllowed": false
+  },
+  "explicitTypeRenames": [
+    {
+      "elementId": "Claim.item.bodySite",
+      "clrName": "ClaimBodySite",
+      "reason": "preserve-c0-002-public-api"
+    },
+    {
+      "elementId": "Claim.item.detail",
+      "clrName": "ClaimDetail",
+      "reason": "preserve-c0-002-public-api"
+    },
+    {
+      "elementId": "Claim.item.detail.subDetail",
+      "clrName": "ClaimSubDetail",
+      "reason": "preserve-c0-002-public-api"
+    }
+  ],
+  "referenceRules": {
+    "contentReferenceCreatesDeclaration": false,
+    "contentReferenceResolvesExistingElementIdentity": true,
+    "nestedBackboneInheritsContainingBackbone": false
+  },
+  "collisionRules": {
+    "checkTopLevelResourceTypes": true,
+    "checkAllBackboneTypes": true,
+    "checkOutputPaths": true,
+    "unapprovedCollisionDisposition": "fail-before-render",
+    "diagnosticOrdering": "ordinal-element-identity"
+  },
+  "unsupportedShapeRules": {
+    "unexpectedBackboneTypeNodeDisposition": "fail-in-inventory",
+    "constraintProfileBackboneDisposition": "excluded-from-phase-c-model-declarations",
+    "logicalModelBackboneDisposition": "excluded-from-phase-c-model-declarations"
+  }
+}

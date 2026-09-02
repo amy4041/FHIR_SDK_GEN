@@ -56,12 +56,13 @@ public sealed class R5ModelNamingPolicyTests
             rules["model-metadata"],
             "MyFhirSdk.ModelMetadata.R5",
             "Generated/R5/ModelMetadata");
+        AssertNamespaceRule(
+            rules["backbone"],
+            "MyFhirSdk.Resources",
+            "Generated/R5/Resources");
         Assert.Equal(
             "from-r5-model-ownership-policy",
             rules["external-definition"].GetProperty("namespace").GetString());
-        Assert.Equal(
-            JsonValueKind.Null,
-            rules["backbone"].GetProperty("namespace").ValueKind);
 
         var fileNaming = root.GetProperty("fileNaming");
         Assert.Equal(
@@ -254,9 +255,6 @@ public sealed class R5ModelNamingPolicyTests
         Assert.Equal(
             "fail-before-render",
             collisions.GetProperty("unapprovedCollisionDisposition").GetString());
-        Assert.Equal(
-            "C0-005",
-            deferred.GetProperty("backboneNamingAndPlacement").GetString());
         Assert.Equal(
             "C0-006",
             deferred.GetProperty("choiceMemberNamingAndRepresentation").GetString());
