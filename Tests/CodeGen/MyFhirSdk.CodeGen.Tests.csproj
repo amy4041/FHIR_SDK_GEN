@@ -54,6 +54,10 @@
       <Link>Policy\r5-choice-open-type-policy.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\CodeGen\Policy\r5-validation-capability-policy.json">
+      <Link>Policy\r5-validation-capability-policy.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="GoldenFiles\**\*.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

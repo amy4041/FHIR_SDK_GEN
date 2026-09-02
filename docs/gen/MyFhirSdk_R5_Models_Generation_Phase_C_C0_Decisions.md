@@ -1,8 +1,8 @@
 # MyFhirSdk R5 Models Generation Phase C0 Baseline 與決策
 
-Version 0.7
+Version 0.8
 
-- 文件狀態：In Progress
+- 文件狀態：Complete
 - 適用範圍：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、MyFhirSdk、.NET 9
 - 工作分支：`feat/phase-c0-model-generation-baseline`
 - 起始 commit：`d0cbf44425b5a8a5dc4180258aee6bf1613e2554`
@@ -20,7 +20,7 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 |---|---|---|
 | Phase B primitive regeneration | Passed | `Generated/R5/Primitives` regeneration 無 git diff |
 | Official R5 package identity | Passed | C0-001 lock 與離線 identity tests |
-| Release solution tests | Passed | 528 passed、0 failed、1 skipped |
+| Release solution tests | Passed | 533 passed、0 failed、1 skipped |
 | R5 model public API snapshot | Passed | 獨立 approved snapshot、完整範圍與 determinism tests |
 | Deterministic inventory reconnaissance | Passed | Approved JSON snapshot、reordered-input 與 two-run tests |
 
@@ -34,7 +34,7 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 | C0-004 | Namespace、filename 與 collision naming | Accepted |
 | C0-005 | Backbone naming 與 public placement | Accepted |
 | C0-006 | Choice/open type public representation | Accepted |
-| C0-007 | Validation capability matrix | Pending |
+| C0-007 | Validation capability matrix | Accepted |
 
 ## 4. C0-001：Official R5 package input
 
@@ -620,8 +620,105 @@ Runtime CLR/codec/validator contract 及 Phase B policy update。
 5. C8 API migration 必須維持現有 `Patient`、`Practitioner`、`Claim` choice properties 與
    `Extension.Value` identity。
 
-## 11. 待決事項
+## 11. C0-007：Validation capability matrix
 
-C0-007 必須根據 model API snapshot、official package reconnaissance 與 Runtime capability
-evidence 核准 validation disposition。未核准前，C1-C7 不得自行推導尚未核准的 validation
-metadata scope。
+- 狀態：Accepted
+- Decision source：`CodeGen/Policy/r5-validation-capability-policy.json`
+- Tests：`Tests/CodeGen/Policy/R5ValidationCapabilityPolicyTests.cs`
+
+### 11.1 Validation inventory scope
+
+Matrix 以 209 個 `complex-type`/`resource` specialization definitions 為 model validation
+scope。其中 199 個由 Phase C 生成 declaration，10 個是 C0-003 的
+`external-handwritten` specialization nodes；缺少 `derivation` 的 external root `Base` 另外保留
+為 graph/runtime node。Primitive validation 繼續由 Phase B policy 與 Runtime registry 負責，
+constraint Profiles 與 IG-specific profiles 不納入 Phase C core model validation generation。
+
+使用 snapshot `element.base.path` 判斷 direct declaration owner 後，generated scope 如下：
+
+| Shape | 數量 |
+|---|---:|
+| Direct elements | 5960 |
+| Effective elements，不含 definition roots | 9221 |
+| `min=0` / `min=1` | 5054 / 906 |
+| `max=1` / `max=*` | 4026 / 1934 |
+| 有限 collection upper bound | 0 |
+| Required scalar，包含 required choice | 847 |
+| Required non-choice scalar / required collection | 786 / 59 |
+| Direct choice | 259 |
+| Direct constraints | 6144，分布於 5956 個 elements |
+| Direct bindings | 1475 |
+| Direct fixed / pattern / slicing | 0 / 0 / 0 |
+
+1475 個 bindings 依 strength 分為 `example=733`、`extensible=214`、`preferred=97`、
+`required=431`。10 個 external specialization nodes 另有 22 個 direct elements、3 個 required
+scalars、1 個 open choice、25 筆 constraints、4 筆 bindings 與 3 個 slicing declarations；C6
+可替 external declarations 生成 metadata，但不得重新生成 class。
+
+### 11.2 C6 核准的 executable baseline
+
+| Capability | Runtime evidence | C6 disposition |
+|---|---|---|
+| Primitive format | `PrimitiveFormatRule`、Phase B `PrimitiveRegistry` | graph-wide reuse，不產生 per-property rule |
+| Collection integrity | `FhirObjectGraphWalker`、`CardinalityRule` | graph-wide檢查 null list 與 null item |
+| Maximum cardinality | single property 或 `IList<T>` public shape | 保存 cardinality；本 baseline 不需額外 upper-bound rule |
+| Required scalar | `RequiredFieldRule.For` | 生成 direct required non-choice entries |
+| Required collection | `RequiredFieldRule.ForList` | 生成 direct `1..*` entries |
+| Ordinary choice | `ChoiceElementRule.AtMostOne/ExactlyOne` | 依 C0-006 生成 choice entries |
+| Open-type presence | polymorphic property、`RequiredFieldRule.For` | 僅在 `min=1` 時生成 required entry |
+
+Generated scope 的 ordinary choice 共 250 個，其中 61 個產生 exactly-one、189 個產生
+at-most-one。9 個 generated open types 全為 optional，因此不產生 choice group rule；
+`Extension.value[x]` 也是 optional single property。Required rules 與 choice rules 必須分開，
+不得對 required choice 的每個 nullable alternative 各自生成 required rule。
+
+現有 `ResourceRuleRegistry` 以 concrete type 取得 rules；C6 必須為每個 concrete runtime type
+組成 deterministic effective rule set，使 base/Backbone rules 不會因 CLR inheritance 遺失。
+Rule algorithm 屬於 model-agnostic Runtime，R5 type/element entries 屬於 generated metadata；
+generated classes 不加入 validation methods，Runtime 也不加入 concrete R5 type branches。
+
+### 11.3 Preserve-only capabilities
+
+下列 official metadata 必須由 C1 DTO 與 C3 IR 保存，但目前不能宣稱已由 Validator 執行：
+
+| Capability | 缺少的 Runtime seam | Phase C disposition |
+|---|---|---|
+| FHIRPath invariants | FHIRPath evaluator contract | 保存 key、severity、expression、source；C6 不生成 executable rule |
+| Terminology bindings | terminology validation provider | 保存 strength 與 ValueSet identity；C6 不生成 executable rule |
+| Reference target/profile | reference resolver/profile conformance contract | 保存 dependency/profile metadata；不解析或驗證遠端 target |
+| Slicing | slice matching contract | core declaration只保存 provenance；profile validation 不在本階段展開 |
+
+啟用上述能力前，必須先核准 model-agnostic Runtime contract 與 policy update。不得把演算法放進
+generated model、不得丟棄 official metadata，也不得把目前 baseline 描述為完整 R5
+conformance validation。
+
+### 11.4 Zero-occurrence 與 profile boundary
+
+R5 specialization snapshot 中 `fixed[x]` 與 `pattern[x]` occurrence 都是 0；完整 package 中的
+87 個 fixed 與 33 個 pattern 全在目前排除的非-specialization scope。C6 不需為 baseline
+實作 generic fixed/pattern comparison；若未來核准的 specialization scope 出現任何 occurrence，
+必須在 render 前診斷並更新 capability policy，不能略過。
+
+現有 `ProfileValidator` framework 仍可執行明確註冊的 IG package rules，但這不等同自動翻譯
+StructureDefinition constraint Profile、FHIRPath、binding 或 slicing。Phase C 不生成
+constraint Profile/IG-specific rules。
+
+### 11.5 對後續階段的約束
+
+1. C1 必須載入 cardinality、constraint、binding、fixed、pattern、slicing 與 target profile
+   metadata，即使 capability 是 preserve-only。
+2. C3 IR 必須區分 executable、preserve-only 與 unsupported/unapproved validation metadata，
+   並保存 rule provenance。
+3. C6 只生成 matrix 核准的 executable entries；缺少 Runtime seam 的 metadata 不得偷偷轉成
+   no-op success。
+4. Metadata composition 必須 immutable、duplicate/conflict fail-fast，並依 type、element、rule
+   identity ordinal 排序。
+5. C7 manifest 必須揭露 executable capability set 與 preserve-only metadata，不得宣稱 full
+   R5 validation。
+
+## 12. C0 退出狀態
+
+C0-001 至 C0-007 全部 Accepted。Official package identity、public API、ownership、naming、
+Backbone、choice/open type 與 validation disposition 都有 machine-readable policy 或 approved
+snapshot、離線測試及 decision record。Phase C 可進入 C1；後續階段不得自行擴張或重新推導
+上述決策。
