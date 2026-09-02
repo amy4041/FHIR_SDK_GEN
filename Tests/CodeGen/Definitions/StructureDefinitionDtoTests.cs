@@ -56,6 +56,13 @@ public sealed class StructureDefinitionDtoTests
                     "definition": "The family name.",
                     "contentReference": "#HumanName.family",
                     "sliceName": "official",
+                    "label": "Family label",
+                    "alias": ["surname"],
+                    "representation": ["xmlAttr"],
+                    "comment": "Family comment.",
+                    "requirements": "Required for matching.",
+                    "meaningWhenMissing": "No family is known.",
+                    "orderMeaning": "Preferred display order.",
                     "constraint": [
                       {
                         "key": "hn-1",
@@ -118,11 +125,18 @@ public sealed class StructureDefinitionDtoTests
         Assert.Equal("HumanName.family", family.Id);
         Assert.Equal("HumanName.family", family.Path);
         Assert.Equal("official", family.SliceName);
+        Assert.Equal("Family label", family.Label);
+        Assert.Equal(["surname"], family.Aliases);
+        Assert.Equal(["xmlAttr"], family.Representations);
         Assert.Equal(0, family.Min);
         Assert.Equal("1", family.Max);
         Assert.Equal("#HumanName.family", family.ContentReference);
         Assert.Equal("Family name", family.Short);
         Assert.Equal("The family name.", family.Definition);
+        Assert.Equal("Family comment.", family.Comment);
+        Assert.Equal("Required for matching.", family.Requirements);
+        Assert.Equal("No family is known.", family.MeaningWhenMissing);
+        Assert.Equal("Preferred display order.", family.OrderMeaning);
         Assert.Equal("HumanName.family", family.Base?.Path);
         Assert.Equal(0, family.Base?.Min);
         Assert.Equal("1", family.Base?.Max);
