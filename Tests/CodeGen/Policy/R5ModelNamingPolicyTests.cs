@@ -249,13 +249,13 @@ public sealed class R5ModelNamingPolicyTests
     }
 
     [Fact]
-    public void CollisionHandlingIsFailFastAndDeferredScopesStayDeferred()
+    public void CollisionHandlingIsFailFastAndChoiceScopesReferenceAcceptedPolicy()
     {
         using var policy = ReadNamingPolicy();
         var root = policy.RootElement;
         var identifiers = root.GetProperty("identifierRules");
         var collisions = root.GetProperty("collisionRules");
-        var deferred = root.GetProperty("deferredDecisions");
+        var resolved = root.GetProperty("resolvedDecisions");
 
         Assert.False(
             identifiers.GetProperty("automaticNumericSuffixesAllowed").GetBoolean());
@@ -268,11 +268,11 @@ public sealed class R5ModelNamingPolicyTests
             "fail-before-render",
             collisions.GetProperty("unapprovedCollisionDisposition").GetString());
         Assert.Equal(
-            "C0-006",
-            deferred.GetProperty("choiceMemberNamingAndRepresentation").GetString());
+            "r5-choice-open-type-policy.json",
+            resolved.GetProperty("choiceMemberNamingAndRepresentation").GetString());
         Assert.Equal(
-            "C0-006",
-            deferred.GetProperty("openTypeNamingAndRepresentation").GetString());
+            "r5-choice-open-type-policy.json",
+            resolved.GetProperty("openTypeNamingAndRepresentation").GetString());
     }
 
     private static void AssertNamespaceRule(

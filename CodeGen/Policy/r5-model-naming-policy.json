@@ -103,8 +103,8 @@
       "collisionDisposition": "fail-before-render"
     }
   ],
-  "deferredDecisions": {
-    "choiceMemberNamingAndRepresentation": "C0-006",
-    "openTypeNamingAndRepresentation": "C0-006"
+  "resolvedDecisions": {
+    "choiceMemberNamingAndRepresentation": "r5-choice-open-type-policy.json",
+    "openTypeNamingAndRepresentation": "r5-choice-open-type-policy.json"
   }
 }

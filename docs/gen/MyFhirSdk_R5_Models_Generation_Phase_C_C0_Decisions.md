@@ -1,6 +1,6 @@
 # MyFhirSdk R5 Models Generation Phase C0 Baseline 與決策
 
-Version 0.6
+Version 0.7
 
 - 文件狀態：In Progress
 - 適用範圍：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、MyFhirSdk、.NET 9
@@ -20,7 +20,7 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 |---|---|---|
 | Phase B primitive regeneration | Passed | `Generated/R5/Primitives` regeneration 無 git diff |
 | Official R5 package identity | Passed | C0-001 lock 與離線 identity tests |
-| Release solution tests | Passed | 522 passed、0 failed、1 skipped |
+| Release solution tests | Passed | 528 passed、0 failed、1 skipped |
 | R5 model public API snapshot | Passed | 獨立 approved snapshot、完整範圍與 determinism tests |
 | Deterministic inventory reconnaissance | Passed | Approved JSON snapshot、reordered-input 與 two-run tests |
 
@@ -33,7 +33,7 @@ production behavior；後續 C1-C9 必須以本文件中 Accepted 的決策為�
 | C0-003 | Assembly、base 與 bootstrap ownership | Accepted |
 | C0-004 | Namespace、filename 與 collision naming | Accepted |
 | C0-005 | Backbone naming 與 public placement | Accepted |
-| C0-006 | Choice/open type public representation | Pending |
+| C0-006 | Choice/open type public representation | Accepted |
 | C0-007 | Validation capability matrix | Pending |
 
 ## 4. C0-001：Official R5 package input
@@ -531,8 +531,97 @@ Override 只適用於完整 element id，不建立模糊的 prefix/leaf 規則�
 - C8 原子切換時，32 個現有 public Backbone API 必須由同名 generated declaration 接手，
   不得先移除手寫 class。
 
-## 10. 待決事項
+## 10. C0-006：Choice/open type public representation
 
-C0-006 至 C0-007 必須根據 model API snapshot、official package reconnaissance 與 Runtime
-capability evidence 逐項核准。未核准前，C1-C7 不得自行推導 choice/open type 或
-validation disposition。
+- 狀態：Accepted
+- Decision source：`CodeGen/Policy/r5-choice-open-type-policy.json`
+- Tests：`Tests/CodeGen/Policy/R5ChoiceOpenTypePolicyTests.cs`
+
+### 10.1 Official R5 direct choice inventory
+
+以 C0-003 generation scope 的 specialization definitions 為範圍，並使用 snapshot
+`element.base.path` 判斷 declaration owner、排除 derived definition 的 inherited member 後，結果如下：
+
+| Shape | 數量 |
+|---|---:|
+| Direct `[x]` elements | 259 |
+| Type alternatives | 1303 |
+| Ordinary closed choices | 250 elements / 817 alternatives |
+| Generated open-type choices | 9 elements / 486 alternatives |
+| External bootstrap open type | `Extension.value[x]` 1 element |
+| Optional / required choices | 198 / 61 |
+
+259 個 choice 的 `max` 全部是 `1`，每個 choice 都有至少兩個 alternatives。R5 package 的
+complete datatype set 由 `Extension.value[x]` snapshot 的 54 個 alternatives 固定；generation
+scope 中有 9 個 choice 使用完全相同的 set：`ElementDefinition` 的 `defaultValue[x]`、
+`example.value[x]`、`fixed[x]`、`pattern[x]`，以及 `Parameters.parameter.value[x]`、
+`Task.input.value[x]`、`Task.output.value[x]`、`Transport.input.value[x]`、
+`Transport.output.value[x]`。這 9 個 element 核准為 open-type choice，其他 250 個為
+ordinary closed choice。若未來 package 出現新的完整-set match，必須先更新 policy，不能
+自動改變 public API shape。
+
+### 10.2 Ordinary closed choice public shape
+
+一般 choice 生成「每個 alternative 一個 nullable public property」，不另外生成 aggregate
+property。例如：
+
+| Element | Public properties | JSON names |
+|---|---|---|
+| `Patient.deceased[x]` | `DeceasedBoolean`、`DeceasedDateTime` | `deceasedBoolean`、`deceasedDateTime` |
+| `Claim.item.location[x]` | `LocationCodeableConcept`、`LocationAddress`、`LocationReference` | `locationCodeableConcept`、`locationAddress`、`locationReference` |
+
+Choice stem 移除 `[x]` 後使用 `CSharpNameConverter.ConvertPropertyName`；alternative suffix 從
+exact FHIR type code 使用 `CSharpNameConverter.ConvertTypeName`，因此 `dateTime` 的 suffix 是
+`DateTime`，不是 CLR wrapper name `FhirDateTime`。CLR property type 仍由 validated type mapper
+決定；primitive mapping 不得複製到 choice policy。
+
+每個 property 的 JSON name 是 exact FHIR stem 加 FHIR type suffix；primitive metadata partner
+使用相同名稱加 `_` prefix。所有 alternatives 即使 choice `min=1` 仍保持 nullable：`min=0`
+由 validation metadata 執行 at-most-one，`min=1` 執行 exactly-one。Setter 不得暗中清除其他
+alternatives，避免 assignment order 隱藏無效輸入。驗證路徑保留原始 `name[x]` identity。
+
+### 10.3 Open-type public shape
+
+Open type 不展開成 54 個 public properties，而是生成單一 nullable polymorphic property：
+
+- 一般 generated open type 使用 `MyFhirSdk.Core.DataType?`；
+- C0-003 external bootstrap `Extension.value[x]` 維持 C0-002 API：
+  `MyFhirSdk.Core.IFhirExtensionValue? Value`；
+- property name 使用移除 `[x]` 後的 choice stem；
+- JSON name 不能從 CLR type name 猜測，必須由 declaring type、element id 與 concrete FHIR
+  type 的 generated metadata 解析成 `{stem}{FHIR type suffix}`；
+- official 54 個 alternatives 必須全部保留在 IR。
+
+目前 Runtime 已證明 `Extension.Value` 可將 `FhirString`、`HumanName` 與 `SimpleQuantity`
+分派為 `valueString`、`valueHumanName` 與 `valueQuantity`。其中 `SimpleQuantity` 的 wire type
+是 `Quantity`，也證明不能依 CLR class name heuristic 產生 JSON name。C6 必須把這個 dispatch
+擴充為 model-agnostic generated metadata，而不是在 Serializer/Parser 增加 concrete type
+branch。
+
+### 10.4 Unsupported primitive 與 fail-fast disposition
+
+259 個 direct choices 中，Phase B unsupported primitive alternatives 的 occurrence 為：
+`oid=9`、`time=20`、`uuid=9`、`xhtml=0`。C0-006 不替這些 primitive 新增 mapping，也不允許
+改成 `string`/`object`、從 IR 移除或略過 public alternative。C3 必須保存 official
+alternative；type resolution 無法由 `primitive-generation-policy.json` 解決時，必須在 render
+前回報 deterministic diagnostic。要讓這些 alternatives 可生成與 round-trip，仍需獨立核准
+Runtime CLR/codec/validator contract 及 Phase B policy update。
+
+### 10.5 Collision、determinism 與後續約束
+
+1. Choice members 必須與同 declaring type 的 direct、inherited、synthetic members 一起做
+   ordinal collision check，JSON names 也必須唯一。
+2. 不允許 numeric suffix；未核准 collision 在 render/write 前失敗，diagnostics 依 element
+   identity、FHIR type code ordinal 排序。
+3. C1 必須保存 snapshot element id、`base.path`、min/max 與 alternatives；C3 必須明確建立
+   `ChoiceGroupModel`，renderer 不得重新分類 open type。
+4. C5 依 IR 產生 ordinary split properties 或 open polymorphic property；C6 產生 choice
+   validation 與 concrete-type JSON dispatch metadata。
+5. C8 API migration 必須維持現有 `Patient`、`Practitioner`、`Claim` choice properties 與
+   `Extension.Value` identity。
+
+## 11. 待決事項
+
+C0-007 必須根據 model API snapshot、official package reconnaissance 與 Runtime capability
+evidence 核准 validation disposition。未核准前，C1-C7 不得自行推導尚未核准的 validation
+metadata scope。
