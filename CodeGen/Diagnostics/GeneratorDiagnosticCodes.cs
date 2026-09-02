@@ -38,4 +38,8 @@ public static class GeneratorDiagnosticCodes
     public const string InheritanceCycle = "FSG0034";
     public const string UnsupportedPrimitiveReference = "FSG0035";
     public const string InvalidGenerationScope = "FSG0036";
+    public const string ModelIrPolicyReadFailure = "FSG0037";
+    public const string InvalidModelIr = "FSG0038";
+    public const string UnsupportedModelShape = "FSG0039";
+    public const string ModelIrCollision = "FSG0040";
 }

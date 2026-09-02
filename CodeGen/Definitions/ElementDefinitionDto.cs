@@ -15,6 +15,15 @@ public sealed class ElementDefinitionDto
     [JsonPropertyName("sliceName")]
     public string? SliceName { get; init; }
 
+    [JsonPropertyName("label")]
+    public string? Label { get; init; }
+
+    [JsonPropertyName("alias")]
+    public List<string>? Aliases { get; init; }
+
+    [JsonPropertyName("representation")]
+    public List<string>? Representations { get; init; }
+
     [JsonPropertyName("slicing")]
     public JsonElement? Slicing { get; init; }
 
@@ -38,6 +47,18 @@ public sealed class ElementDefinitionDto
 
     [JsonPropertyName("definition")]
     public string? Definition { get; init; }
+
+    [JsonPropertyName("comment")]
+    public string? Comment { get; init; }
+
+    [JsonPropertyName("requirements")]
+    public string? Requirements { get; init; }
+
+    [JsonPropertyName("meaningWhenMissing")]
+    public string? MeaningWhenMissing { get; init; }
+
+    [JsonPropertyName("orderMeaning")]
+    public string? OrderMeaning { get; init; }
 
     [JsonPropertyName("constraint")]
     public List<ElementConstraintDto>? Constraints { get; init; }
