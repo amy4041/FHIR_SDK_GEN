@@ -324,10 +324,10 @@ Policy tests 必須證明：
 |---|---|---|
 | Phase B supported primitive wrappers | `MyFhirSdk.Primitives` | `Generated/R5/Primitives` |
 | Complex datatype specialization，排除 external nodes | `MyFhirSdk.Types` | `Generated/R5/Types` |
-| Resource specialization，排除 external nodes | `MyFhirSdk.Resources` | `Generated/R5/Resources` |
+| Resource specialization，排除 external nodes | `MyFhirSdk.Resources` | `Generated/R5/Resources/{ResourceOwner}` |
 | Generated R5 model metadata | `MyFhirSdk.ModelMetadata.R5` | `Generated/R5/ModelMetadata` |
 | C0-003 external definitions | 由 ownership policy 指定 | 不輸出 declaration |
-| Resource-owned Backbone | `MyFhirSdk.Resources` | `Generated/R5/Resources` |
+| Resource-owned Backbone | `MyFhirSdk.Resources` | `Generated/R5/Resources/{ResourceOwner}` |
 
 Phase C 不為 datatype 或 Resource 建立每型別子 namespace，也不依 package entry path、base
 type 或 reference target 改變 namespace。Constraint Profiles 與 logical models 不在 Phase C
@@ -340,11 +340,14 @@ model declaration scope，因此不取得 fallback namespace。
 2. Primitive wrapper name 只由 Phase B primitive generation policy 決定，不重新推導。
 3. 每個 top-level model file 只含一個 public top-level model declaration，檔名固定為
    `{CSharpTypeName}.g.cs`。
-4. Model metadata 檔名採 `{ArtifactIdentity}.g.cs`；manifest 固定為
+4. Resource 及其所有 Backbone artifacts 依 owner 放在
+   `Generated/R5/Resources/{ResourceOwner}/`；top-level Resource 的 owner 是自己。
+   `ResourceOwner` 使用核准的 C# Resource type name。
+5. Model metadata 檔名採 `{ArtifactIdentity}.g.cs`；manifest 固定為
    `model-generation-manifest.json`。
-5. Artifact path 使用 repository-relative `/` 語意，必須同時符合 Windows/Linux portable
+6. Artifact path 使用 repository-relative `/` 語意，必須同時符合 Windows/Linux portable
    filename 規則；禁止 rooted path、`..`、Windows device name 與其他 unsafe segment。
-6. Symbol identity 使用 ordinal comparison；output path uniqueness 使用
+7. Symbol identity 使用 ordinal comparison；output path uniqueness 使用
    ordinal-ignore-case comparison；輸出與 diagnostics 使用 ordinal ordering。
 
 Official package reconnaissance 在排除 C0-003 的 11 個 external definitions 後得到：
@@ -442,8 +445,29 @@ mismatch 失敗，不能自行套用 `BackboneElement` placement。
 - 生成為 public top-level sealed class；
 - namespace 為 `MyFhirSdk.Resources`；
 - 直接繼承 `MyFhirSdk.Core.BackboneElement`；
-- 輸出至 `Generated/R5/Resources/{CSharpTypeName}.g.cs`；
+- 輸出至
+  `Generated/R5/Resources/{ResourceOwner}/{CSharpTypeName}.g.cs`；
 - 每個檔案只含一個 public top-level model declaration。
+
+Top-level Resource 與其全部 descendant Backbones 共用 owner folder，例如：
+
+```text
+Generated/R5/Resources/Patient/
+├─ Patient.g.cs
+└─ PatientContact.g.cs
+
+Generated/R5/Resources/Claim/
+├─ Claim.g.cs
+├─ ClaimItem.g.cs
+├─ ClaimBodySite.g.cs
+├─ ClaimDetail.g.cs
+└─ ClaimSubDetail.g.cs
+```
+
+Owner folder 只屬於 repository artifact placement，不建立子 namespace。上述型別的 public
+CLR identity 仍是 `MyFhirSdk.Resources.PatientContact`、
+`MyFhirSdk.Resources.ClaimDetail`，不是
+`MyFhirSdk.Resources.Patient.PatientContact`。
 
 巢狀 Backbone 是 containment/ownership 關係，不是 CLR inheritance。例：
 `Claim.item.detail.subDetail` 的 class 仍直接繼承 `BackboneElement`，不繼承表示
@@ -487,18 +511,21 @@ Override 只適用於完整 element id，不建立模糊的 prefix/leaf 規則�
    declaration。
 2. 613 個 Backbone names 必須彼此唯一，並與 160 個 top-level Resource names 在
    `MyFhirSdk.Resources` 中共同檢查。
-3. CLR identity 使用 ordinal comparison；output path 使用 ordinal-ignore-case comparison。
-4. 套用三筆 overrides 後，目前不存在 CLR identity 或 portable output path collision。
-5. Unapproved collision 必須在 render/write 前失敗，diagnostics 依 element id ordinal
+3. Resource 與 Backbone output path 都必須包含相同的 canonical Resource owner folder。
+4. CLR identity 使用 ordinal comparison；output path 使用 ordinal-ignore-case comparison。
+5. 套用三筆 overrides 與 owner folders 後，目前不存在 CLR identity 或 portable output
+   path collision。
+6. Unapproved collision 必須在 render/write 前失敗，diagnostics 依 element id ordinal
    排序。
-6. 反轉 Backbone inventory 輸入順序後，element-to-CLR identity snapshot 必須相同。
+7. 反轉 Backbone inventory 輸入順序後，element-to-CLR identity snapshot 必須相同。
 
 ### 9.6 對後續階段的約束
 
 - C1 inventory 必須保存 snapshot element id 與 element type code。
 - C2 graph 必須建立 owner、nested Backbone 與 `contentReference` edges。
 - C3 IR 必須保存 owner canonical、完整 path、核准 CLR identity 與 provenance。
-- C5 renderer 不得重新從 leaf name 推導 class identity。
+- C5 renderer 不得重新從 leaf name 推導 class identity，且必須用 IR 中的 canonical owner
+  決定 Resource family directory。
 - C7 manifest 必須把 Backbone artifact 與 owner/element identity 對應納入 deterministic
   inventory。
 - C8 原子切換時，32 個現有 public Backbone API 必須由同名 generated declaration 接手，

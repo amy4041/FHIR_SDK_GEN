@@ -52,6 +52,9 @@
   ],
   "fileNaming": {
     "modelFilePattern": "{CSharpTypeName}.g.cs",
+    "resourceOwnerSource": "csharp-resource-type-name",
+    "resourceOwnerDirectoryPattern": "{ResourceOwner}",
+    "resourceModelPathPattern": "Generated/R5/Resources/{ResourceOwner}/{CSharpTypeName}.g.cs",
     "metadataFilePattern": "{ArtifactIdentity}.g.cs",
     "onePublicTopLevelTypePerModelFile": true,
     "manifestFileName": "model-generation-manifest.json",

@@ -14,7 +14,10 @@
     "classModifier": "sealed",
     "baseClrType": "MyFhirSdk.Core.BackboneElement",
     "onePublicTopLevelTypePerFile": true,
-    "fileNamePattern": "{CSharpTypeName}.g.cs"
+    "fileNamePattern": "{CSharpTypeName}.g.cs",
+    "resourceOwnerSource": "owner-fhir-type-via-csharp-name-converter",
+    "resourceOwnerDirectoryPattern": "{ResourceOwner}",
+    "artifactPathPattern": "Generated/R5/Resources/{ResourceOwner}/{CSharpTypeName}.g.cs"
   },
   "naming": {
     "identitySource": "complete-element-id",

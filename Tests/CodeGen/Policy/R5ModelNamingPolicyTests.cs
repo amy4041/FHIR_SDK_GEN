@@ -68,6 +68,15 @@ public sealed class R5ModelNamingPolicyTests
         Assert.Equal(
             "{CSharpTypeName}.g.cs",
             fileNaming.GetProperty("modelFilePattern").GetString());
+        Assert.Equal(
+            "csharp-resource-type-name",
+            fileNaming.GetProperty("resourceOwnerSource").GetString());
+        Assert.Equal(
+            "{ResourceOwner}",
+            fileNaming.GetProperty("resourceOwnerDirectoryPattern").GetString());
+        Assert.Equal(
+            "Generated/R5/Resources/{ResourceOwner}/{CSharpTypeName}.g.cs",
+            fileNaming.GetProperty("resourceModelPathPattern").GetString());
         Assert.True(
             fileNaming
                 .GetProperty("onePublicTopLevelTypePerModelFile")
@@ -123,7 +132,10 @@ public sealed class R5ModelNamingPolicyTests
             var cSharpName = conversion.Name!;
 
             identities.Add($"{rule.Namespace}.{cSharpName}");
-            paths.Add($"{rule.OutputDirectory}/{cSharpName}.g.cs");
+            paths.Add(
+                category == "resource"
+                    ? $"{rule.OutputDirectory}/{cSharpName}/{cSharpName}.g.cs"
+                    : $"{rule.OutputDirectory}/{cSharpName}.g.cs");
         }
 
         Assert.Equal(

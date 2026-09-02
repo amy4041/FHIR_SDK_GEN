@@ -39,6 +39,15 @@ public sealed class R5BackbonePolicyTests
         Assert.Equal(
             "{CSharpTypeName}.g.cs",
             shape.GetProperty("fileNamePattern").GetString());
+        Assert.Equal(
+            "owner-fhir-type-via-csharp-name-converter",
+            shape.GetProperty("resourceOwnerSource").GetString());
+        Assert.Equal(
+            "{ResourceOwner}",
+            shape.GetProperty("resourceOwnerDirectoryPattern").GetString());
+        Assert.Equal(
+            "Generated/R5/Resources/{ResourceOwner}/{CSharpTypeName}.g.cs",
+            shape.GetProperty("artifactPathPattern").GetString());
         Assert.Equal("complete-element-id", naming.GetProperty("identitySource").GetString());
         Assert.Equal(
             "owner-and-all-path-segments-concatenated",
@@ -76,19 +85,27 @@ public sealed class R5BackbonePolicyTests
     {
         using var policy = ReadPolicy("r5-backbone-policy.json");
         var renames = GetExplicitRenames(policy);
-        var backboneNames = GetBackboneNodes()
-            .Select(node => GetBackboneName(node.ElementId, renames))
+        var backboneArtifacts = GetBackboneNodes()
+            .Select(node => new
+            {
+                node.Owner,
+                ClrName = GetBackboneName(node.ElementId, renames)
+            })
             .ToArray();
         var resourceNames = GetSelectedDefinitions()
             .Where(definition => definition.Kind == "resource")
             .Select(definition => _converter.ConvertTypeName(definition.FhirType).Name!)
             .ToArray();
-        var allNames = resourceNames.Concat(backboneNames).ToArray();
+        var allNames = resourceNames
+            .Concat(backboneArtifacts.Select(artifact => artifact.ClrName))
+            .ToArray();
         var allClrIdentities = allNames
             .Select(name => $"MyFhirSdk.Resources.{name}")
             .ToArray();
-        var allOutputPaths = allNames
-            .Select(name => $"Generated/R5/Resources/{name}.g.cs")
+        var allOutputPaths = resourceNames
+            .Select(name => $"Generated/R5/Resources/{name}/{name}.g.cs")
+            .Concat(backboneArtifacts.Select(artifact =>
+                $"Generated/R5/Resources/{artifact.Owner}/{artifact.ClrName}.g.cs"))
             .ToArray();
 
         Assert.Equal(
@@ -98,8 +115,20 @@ public sealed class R5BackbonePolicyTests
             allOutputPaths.Length,
             allOutputPaths.Distinct(StringComparer.OrdinalIgnoreCase).Count());
         Assert.Equal(
-            backboneNames.Length,
-            backboneNames.Distinct(StringComparer.Ordinal).Count());
+            backboneArtifacts.Length,
+            backboneArtifacts
+                .Select(artifact => artifact.ClrName)
+                .Distinct(StringComparer.Ordinal)
+                .Count());
+        Assert.Contains(
+            "Generated/R5/Resources/Patient/Patient.g.cs",
+            allOutputPaths);
+        Assert.Contains(
+            "Generated/R5/Resources/Patient/PatientContact.g.cs",
+            allOutputPaths);
+        Assert.Contains(
+            "Generated/R5/Resources/Claim/ClaimSubDetail.g.cs",
+            allOutputPaths);
     }
 
     [Fact]
