@@ -1,0 +1,18 @@
+{
+  "resourceType": "Patient",
+  "id": "patient-new-primitives",
+  "extension": [
+    {
+      "url": "http://example.org/fhir/StructureDefinition/oid",
+      "valueOid": "urn:oid:1.2.840.10008"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/time",
+      "valueTime": "23:59:60.123456789"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/uuid",
+      "valueUuid": "urn:uuid:123e4567-e89b-12d3-a456-426614174000"
+    }
+  ]
+}

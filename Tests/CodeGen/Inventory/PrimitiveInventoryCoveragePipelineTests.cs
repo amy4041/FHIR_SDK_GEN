@@ -25,10 +25,10 @@ public sealed class PrimitiveInventoryCoveragePipelineTests
         var coverage = Assert.IsType<PrimitiveInventoryPolicyCoverage>(result.Value);
         Assert.Equal(21, coverage.Matches.Count);
         Assert.Equal(
-            17,
+            20,
             coverage.Matches.Count(match => match.Policy.IsSupported));
         Assert.Equal(
-            4,
+            1,
             coverage.Matches.Count(match => !match.Policy.IsSupported));
         Assert.Equal(
             Path.GetFullPath(GetPolicyPath()),

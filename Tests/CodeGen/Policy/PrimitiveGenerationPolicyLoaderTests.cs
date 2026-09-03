@@ -27,9 +27,9 @@ public sealed class PrimitiveGenerationPolicyLoaderTests : IDisposable
         Assert.Empty(result.Diagnostics);
         var policy = Assert.IsType<PrimitiveGenerationPolicyDocument>(result.Value);
         Assert.Equal(1, policy.SchemaVersion);
-        Assert.Equal("1.0.0", policy.PolicyVersion);
+        Assert.Equal("1.1.0", policy.PolicyVersion);
         Assert.Equal("5.0.0", policy.FhirVersion);
-        Assert.Equal("phase-a-v1", policy.RuntimeContractVersion);
+        Assert.Equal("phase-a-v1+c4-primitives-v1", policy.RuntimeContractVersion);
         Assert.Equal("MyFhirSdk.Primitives", policy.PrimitiveNamespace);
         Assert.Equal(21, policy.Primitives?.Count);
     }

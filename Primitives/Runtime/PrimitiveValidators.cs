@@ -44,11 +44,17 @@ internal static partial class PrimitiveValidators
     internal static IPrimitiveValidator Markdown { get; } =
         ForValue(ValidateStringLike);
 
+    internal static IPrimitiveValidator Oid { get; } =
+        ForValue(ValidateOid);
+
     internal static IPrimitiveValidator PositiveInt { get; } =
         ForValue(static value => value is null || value is int and > 0);
 
     internal static IPrimitiveValidator String { get; } =
         ForValue(ValidateStringLike);
+
+    internal static IPrimitiveValidator Time { get; } =
+        ForValue(ValidateTime);
 
     internal static IPrimitiveValidator UnsignedInt { get; } =
         ForValue(static value => value is null || value is int and >= 0);
@@ -58,6 +64,9 @@ internal static partial class PrimitiveValidators
 
     internal static IPrimitiveValidator Url { get; } =
         ForValue(ValidateUrl);
+
+    internal static IPrimitiveValidator Uuid { get; } =
+        ForValue(ValidateUuid);
 
     private static IPrimitiveValidator ForValue(Func<object?, bool> validate)
     {
@@ -204,6 +213,12 @@ internal static partial class PrimitiveValidators
                 out _);
     }
 
+    private static bool ValidateOid(object? value)
+    {
+        return value is null ||
+            value is string text && OidRegex().IsMatch(text);
+    }
+
     private static bool ValidateStringLike(object? value)
     {
         if (value is null)
@@ -227,6 +242,12 @@ internal static partial class PrimitiveValidators
         }
 
         return true;
+    }
+
+    private static bool ValidateTime(object? value)
+    {
+        return value is null ||
+            value is string text && TimeRegex().IsMatch(text);
     }
 
     private static bool ValidateUri(object? value)
@@ -253,6 +274,12 @@ internal static partial class PrimitiveValidators
             NoWhitespaceRegex().IsMatch(text) &&
             (text.Length == 0 ||
                 System.Uri.TryCreate(text, UriKind.Absolute, out _));
+    }
+
+    private static bool ValidateUuid(object? value)
+    {
+        return value is null ||
+            value is string text && UuidRegex().IsMatch(text);
     }
 
     private static bool ValidatePartialDate(string value)
@@ -330,8 +357,17 @@ internal static partial class PrimitiveValidators
     [GeneratedRegex(@"^[0]|[-+]?[1-9][0-9]*$")]
     private static partial Regex Integer64Regex();
 
+    [GeneratedRegex(@"^urn:oid:[0-2](\.(0|[1-9][0-9]*))+$")]
+    private static partial Regex OidRegex();
+
+    [GeneratedRegex(@"^([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]{1,9})?$")]
+    private static partial Regex TimeRegex();
+
     [GeneratedRegex(@"^\S*$")]
     private static partial Regex NoWhitespaceRegex();
+
+    [GeneratedRegex(@"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")]
+    private static partial Regex UuidRegex();
 }
 
 internal sealed class PrimitiveValidator : IPrimitiveValidator

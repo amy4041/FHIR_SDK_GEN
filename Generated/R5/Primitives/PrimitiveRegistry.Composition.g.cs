@@ -83,6 +83,12 @@ internal sealed partial class PrimitiveRegistry
                 PrimitiveValidators.Markdown));
 
         definitions.Add(
+            Define<FhirOid, string>(
+                "oid",
+                PrimitiveCodecs.String,
+                PrimitiveValidators.Oid));
+
+        definitions.Add(
             Define<FhirPositiveInt, int?>(
                 "positiveInt",
                 PrimitiveCodecs.Integer,
@@ -93,6 +99,12 @@ internal sealed partial class PrimitiveRegistry
                 "string",
                 PrimitiveCodecs.String,
                 PrimitiveValidators.String));
+
+        definitions.Add(
+            Define<FhirTime, string>(
+                "time",
+                PrimitiveCodecs.String,
+                PrimitiveValidators.Time));
 
         definitions.Add(
             Define<FhirUnsignedInt, int?>(
@@ -111,5 +123,11 @@ internal sealed partial class PrimitiveRegistry
                 "url",
                 PrimitiveCodecs.String,
                 PrimitiveValidators.Url));
+
+        definitions.Add(
+            Define<FhirUuid, string>(
+                "uuid",
+                PrimitiveCodecs.String,
+                PrimitiveValidators.Uuid));
     }
 }

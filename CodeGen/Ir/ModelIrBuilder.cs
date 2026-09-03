@@ -55,7 +55,9 @@ public sealed class ModelIrBuilder
             definitionMappings,
             diagnostics);
         var backboneTargets = drafts
-            .Where(draft => draft.Category == ModelIrCategory.Backbone)
+            .Where(draft => draft.Category is
+                ModelIrCategory.Backbone or
+                ModelIrCategory.ComplexDatatypeComponent)
             .ToDictionary(
                 draft => (draft.Source.DefinitionCanonical, draft.BackboneElementId!),
                 draft => draft,
@@ -135,7 +137,10 @@ public sealed class ModelIrBuilder
                 targetNamespace,
                 artifactPath,
                 node.InventoryItem.IsAbstract,
-                isSealed: false,
+                isSealed: !node.InventoryItem.IsAbstract &&
+                    !graph.Edges.Any(edge =>
+                        edge.Kind == DefinitionDependencyEdgeKind.Inheritance &&
+                        string.Equals(edge.TargetCanonical, node.Canonical, StringComparison.Ordinal)),
                 baseType,
                 resourceOwnerCanonical: category == ModelIrCategory.Resource
                     ? node.Canonical
@@ -143,7 +148,9 @@ public sealed class ModelIrBuilder
                 backboneElementId: null));
 
             foreach (var edge in graph.GetOutgoingEdges(node.Canonical)
-                .Where(edge => edge.Kind == DefinitionDependencyEdgeKind.BackboneOwner)
+                .Where(edge => edge.Kind is
+                    DefinitionDependencyEdgeKind.BackboneOwner or
+                    DefinitionDependencyEdgeKind.InlineComponentOwner)
                 .OrderBy(edge => edge.SourceElementId, StringComparer.Ordinal))
             {
                 var elementId = edge.SourceElementId!;
@@ -153,6 +160,40 @@ public sealed class ModelIrBuilder
                     continue;
                 }
 
+                var isResourceBackbone = category == ModelIrCategory.Resource;
+                DefinitionTypeMapping? elementBaseMapping = null;
+                if (!isResourceBackbone &&
+                    !definitionMappings.TryGet("Element", out elementBaseMapping))
+                {
+                    diagnostics.Add(CreateDiagnostic(
+                        GeneratorDiagnosticCodes.MissingDependency,
+                        node,
+                        "Complex datatype component base 'Element' cannot be resolved."));
+                    continue;
+                }
+
+                var componentCategory = isResourceBackbone
+                    ? ModelIrCategory.Backbone
+                    : ModelIrCategory.ComplexDatatypeComponent;
+                var componentNamespace = isResourceBackbone
+                    ? policy.BackboneNamespace
+                    : policy.DatatypeNamespace;
+                var componentArtifactPath = isResourceBackbone
+                    ? $"Generated/R5/Resources/{name.Name}/{backboneName}.g.cs"
+                    : $"Generated/R5/Types/{name.Name}/{backboneName}.g.cs";
+                var componentBase = isResourceBackbone
+                    ? CreateSyntheticTypeReference(
+                        "BackboneElement",
+                        "http://hl7.org/fhir/StructureDefinition/BackboneElement",
+                        policy.BackboneBaseClrType,
+                        isAbstract: true,
+                        isExternal: true)
+                    : CreateSyntheticTypeReference(
+                        "Element",
+                        "http://hl7.org/fhir/StructureDefinition/Element",
+                        $"{elementBaseMapping!.Namespace}.{elementBaseMapping.TypeName}",
+                        isAbstract: true,
+                        isExternal: true);
                 drafts.Add(new DeclarationDraft(
                     new ModelIrSource(
                         node.InventoryItem.SourceIdentity,
@@ -160,20 +201,15 @@ public sealed class ModelIrBuilder
                         node.InventoryItem.DefinitionVersion,
                         elementId,
                         FindElement(node, elementId)?.Path),
-                    ModelIrCategory.Backbone,
+                    componentCategory,
                     elementId,
                     backboneName,
-                    policy.BackboneNamespace,
-                    $"Generated/R5/Resources/{name.Name}/{backboneName}.g.cs",
+                    componentNamespace,
+                    componentArtifactPath,
                     isAbstract: false,
                     isSealed: true,
-                    CreateSyntheticTypeReference(
-                        "BackboneElement",
-                        "http://hl7.org/fhir/StructureDefinition/BackboneElement",
-                        policy.BackboneBaseClrType,
-                        isAbstract: true,
-                        isExternal: true),
-                    node.Canonical,
+                    componentBase,
+                    isResourceBackbone ? node.Canonical : null,
                     elementId));
             }
         }
@@ -193,7 +229,7 @@ public sealed class ModelIrBuilder
     {
         var main = drafts.SingleOrDefault(draft =>
             draft.Source.DefinitionCanonical == node.Canonical &&
-            draft.Category != ModelIrCategory.Backbone);
+            draft.Category is ModelIrCategory.Resource or ModelIrCategory.ComplexDatatype);
         if (main is null)
         {
             return;
@@ -201,8 +237,10 @@ public sealed class ModelIrBuilder
 
         var backbones = drafts
             .Where(draft =>
-                draft.ResourceOwnerCanonical == node.Canonical &&
-                draft.Category == ModelIrCategory.Backbone)
+                draft.Source.DefinitionCanonical == node.Canonical &&
+                draft.Category is
+                    ModelIrCategory.Backbone or
+                    ModelIrCategory.ComplexDatatypeComponent)
             .OrderByDescending(draft => draft.BackboneElementId!.Length)
             .ToArray();
         var elements = node.InventoryItem.Definition.Snapshot?.Elements ?? [];
@@ -567,8 +605,7 @@ public sealed class ModelIrBuilder
             explicitRename?.JsonName ?? sourceName,
             explicitRename?.ClrName ?? nameResult.Name!,
             propertyType,
-            IsNullable: !cardinality.IsRequired || representation is
-                ModelMemberRepresentation.OrdinaryChoice or ModelMemberRepresentation.OpenType,
+            IsNullable: !cardinality.IsCollection,
             cardinality.IsCollection,
             representation == ModelMemberRepresentation.OpenType
                 ? null
@@ -779,7 +816,9 @@ public sealed class ModelIrBuilder
             diagnostics);
 
         var byCanonical = drafts
-            .Where(draft => draft.Category != ModelIrCategory.Backbone)
+            .Where(draft => draft.Category is
+                ModelIrCategory.Resource or
+                ModelIrCategory.ComplexDatatype)
             .ToDictionary(draft => draft.Source.DefinitionCanonical, StringComparer.Ordinal);
         foreach (var draft in drafts)
         {

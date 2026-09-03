@@ -70,11 +70,14 @@ public sealed class PrimitiveRuntimeSymbolResolver
             PrimitiveValidatorKey.Integer => "PrimitiveValidators.Integer",
             PrimitiveValidatorKey.Integer64 => "PrimitiveValidators.Integer64",
             PrimitiveValidatorKey.Markdown => "PrimitiveValidators.Markdown",
+            PrimitiveValidatorKey.Oid => "PrimitiveValidators.Oid",
             PrimitiveValidatorKey.PositiveInt => "PrimitiveValidators.PositiveInt",
             PrimitiveValidatorKey.String => "PrimitiveValidators.String",
+            PrimitiveValidatorKey.Time => "PrimitiveValidators.Time",
             PrimitiveValidatorKey.UnsignedInt => "PrimitiveValidators.UnsignedInt",
             PrimitiveValidatorKey.Uri => "PrimitiveValidators.Uri",
             PrimitiveValidatorKey.Url => "PrimitiveValidators.Url",
+            PrimitiveValidatorKey.Uuid => "PrimitiveValidators.Uuid",
             _ => null
         };
     }

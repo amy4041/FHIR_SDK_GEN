@@ -18,8 +18,8 @@ public sealed class R5DefinitionDependencyGraphTests
         Assert.Equal(307, graph.Nodes.Count);
         AssertDispositionCount(graph, DefinitionDependencyNodeDisposition.GeneratedModel, 199);
         AssertDispositionCount(graph, DefinitionDependencyNodeDisposition.ExternalHandwritten, 11);
-        AssertDispositionCount(graph, DefinitionDependencyNodeDisposition.SupportedPrimitive, 17);
-        AssertDispositionCount(graph, DefinitionDependencyNodeDisposition.UnsupportedPrimitive, 4);
+        AssertDispositionCount(graph, DefinitionDependencyNodeDisposition.SupportedPrimitive, 20);
+        AssertDispositionCount(graph, DefinitionDependencyNodeDisposition.UnsupportedPrimitive, 1);
         AssertDispositionCount(graph, DefinitionDependencyNodeDisposition.ConstraintProfile, 66);
         AssertDispositionCount(graph, DefinitionDependencyNodeDisposition.LogicalModel, 10);
         Assert.All(graph.Edges, edge => Assert.True(graph.TryGetNode(edge.TargetCanonical, out _)));
@@ -29,12 +29,15 @@ public sealed class R5DefinitionDependencyGraphTests
         Assert.Contains(graph.Edges, edge => edge.Kind == DefinitionDependencyEdgeKind.TargetProfile);
         Assert.Contains(graph.Edges, edge => edge.Kind == DefinitionDependencyEdgeKind.ContentReference);
         Assert.Contains(graph.Edges, edge => edge.Kind == DefinitionDependencyEdgeKind.BackboneOwner);
+        Assert.Contains(graph.Edges, edge =>
+            edge.Kind == DefinitionDependencyEdgeKind.InlineComponentOwner);
         AssertEdgeCount(graph, DefinitionDependencyEdgeKind.Inheritance, 209);
         AssertEdgeCount(graph, DefinitionDependencyEdgeKind.ElementType, 6926);
         AssertEdgeCount(graph, DefinitionDependencyEdgeKind.Profile, 63);
         AssertEdgeCount(graph, DefinitionDependencyEdgeKind.TargetProfile, 2410);
         AssertEdgeCount(graph, DefinitionDependencyEdgeKind.ContentReference, 78);
         AssertEdgeCount(graph, DefinitionDependencyEdgeKind.BackboneOwner, 613);
+        AssertEdgeCount(graph, DefinitionDependencyEdgeKind.InlineComponentOwner, 17);
         Assert.Equal(Snapshot(graph.Edges), Snapshot(graph.Edges.OrderBy(
             edge => edge.SourceCanonical,
             StringComparer.Ordinal)
@@ -71,27 +74,14 @@ public sealed class R5DefinitionDependencyGraphTests
     }
 
     [Fact]
-    public async Task SelectAll_WhenUnsupportedPrimitivesAreReachable_ReportsDirectDiagnostics()
+    public async Task SelectAll_WhenAllReachablePrimitivesAreSupported_Succeeds()
     {
         var graph = await BuildOfficialGraph();
         var result = new GenerationScopeSelector().SelectAll(graph);
 
-        Assert.False(result.IsSuccess);
-        Assert.Null(result.Value);
-        Assert.Contains(
-            result.Diagnostics,
-            diagnostic => diagnostic.Code == GeneratorDiagnosticCodes.UnsupportedPrimitiveReference);
-        Assert.Equal(41, result.Diagnostics.Count);
-        Assert.Equal(
-            new[] { "oid", "time", "uuid" },
-            result.Diagnostics
-                .Select(diagnostic => diagnostic.Message.Split('\'')[3])
-                .Distinct(StringComparer.Ordinal)
-                .Order(StringComparer.Ordinal));
-        Assert.All(
-            result.Diagnostics.Where(diagnostic =>
-                diagnostic.Code == GeneratorDiagnosticCodes.UnsupportedPrimitiveReference),
-            diagnostic => Assert.NotNull(diagnostic.ElementId));
+        Assert.True(result.IsSuccess, Describe(result.Diagnostics));
+        Assert.Empty(result.Diagnostics);
+        Assert.NotNull(result.Value);
     }
 
     private static async Task<DefinitionDependencyGraph> BuildOfficialGraph()

@@ -20,7 +20,7 @@ public sealed class PrimitiveWrapperRendererTests
     private readonly PrimitiveWrapperRenderer _renderer = new();
 
     [Fact]
-    public async Task RenderAll_MatchesSeventeenGoldenHashes()
+    public async Task RenderAll_MatchesTwentyGoldenHashes()
     {
         var models = await LoadModelsAsync();
         var expected = File.ReadAllLines(GetGoldenHashPath())
@@ -29,7 +29,7 @@ public sealed class PrimitiveWrapperRendererTests
 
         var sources = _renderer.RenderAll(models);
 
-        Assert.Equal(17, sources.Count);
+        Assert.Equal(20, sources.Count);
         Assert.Equal(expected.Keys.Order(StringComparer.Ordinal), sources.Select(
             source => source.FileName));
         Assert.All(

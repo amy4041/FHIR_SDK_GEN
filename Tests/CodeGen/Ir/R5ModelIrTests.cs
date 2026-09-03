@@ -33,7 +33,7 @@ public sealed class R5ModelIrTests
         Assert.Equal("MyFhirSdk.Types.Period", period.FullyQualifiedName);
         Assert.Equal("Generated/R5/Types/Period.g.cs", period.ArtifactPath);
         Assert.False(period.IsAbstract);
-        Assert.False(period.IsSealed);
+        Assert.True(period.IsSealed);
         Assert.Equal("MyFhirSdk.Core.DataType", period.BaseType.ClrType);
         Assert.True(period.BaseType.IsAbstractTarget);
         Assert.True(period.BaseType.IsExternal);

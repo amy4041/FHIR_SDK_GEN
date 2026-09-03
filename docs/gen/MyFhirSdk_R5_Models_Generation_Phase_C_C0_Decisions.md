@@ -531,6 +531,22 @@ Override 只適用於完整 element id，不建立模糊的 prefix/leaf 規則�
 - C8 原子切換時，32 個現有 public Backbone API 必須由同名 generated declaration 接手，
   不得先移除手寫 class。
 
+### 9.7 C4 complex datatype inline component 補充決策
+
+C4 full-batch 驗證確認部分 complex datatypes 使用 `Element` 表達 definition-owned inline
+component；它們不是 Resource-owned `BackboneElement`，因此不改變9.1的613個Backbone盤點。
+官方R5共有17個這類component，採下列配置：
+
+- 建立獨立的 `InlineComponentOwner` dependency edge；
+- IR category為`ComplexDatatypeComponent`；
+- 生成為`public sealed` top-level class並直接繼承`MyFhirSdk.Core.Element`；
+- CLR namespace維持`MyFhirSdk.Types`；
+- 名稱取完整element id的segments，例如`DataRequirement.dateFilter`成為
+  `DataRequirementDateFilter`；
+- artifact依datatype owner配置於
+  `Generated/R5/Types/{DatatypeOwner}/{CSharpTypeName}.g.cs`；owner folder不建立子namespace；
+- 與complex datatype主declaration一起進入C4 deterministic batch及collision檢查。
+
 ## 10. C0-006：Choice/open type public representation
 
 - 狀態：Accepted
@@ -606,6 +622,21 @@ branch。
 alternative；type resolution 無法由 `primitive-generation-policy.json` 解決時，必須在 render
 前回報 deterministic diagnostic。要讓這些 alternatives 可生成與 round-trip，仍需獨立核准
 Runtime CLR/codec/validator contract 及 Phase B policy update。
+
+#### C4 primitive contract amendment（2026-09-03）
+
+上述解阻條件已完成並核准為primitive policy `1.1.0`：
+
+| FHIR type | CLR wrapper | CLR value | JSON codec | Validator |
+|---|---|---|---|---|
+| `oid` | `FhirOid` | `string` | string token | official R5 OID regex |
+| `time` | `FhirTime` | `string` | string token | official R5 time regex |
+| `uuid` | `FhirUuid` | `string` | string token | official R5 UUID regex |
+
+三者保留FHIR lexical representation，不轉成`System.Guid`、`TimeOnly`或一般URI物件。
+`xhtml`仍是唯一unsupported primitive，繼續由external handwritten `Narrative`處理。Choice
+alternatives現在可由同一份validated primitive policy解析，原先的fail-fast規則仍適用於任何
+未核准primitive。
 
 ### 10.5 Collision、determinism 與後續約束
 

@@ -239,6 +239,13 @@ Phase A 已讓 Parser、Serializer、Validator 透過 internal `PrimitiveRegistr
 - 未公開 internal codec/validator/registry，未新增 primitive `IsValid()`。
 - 文件記錄 FHIR、policy、CodeGen 與 Runtime contract versions。
 
+### 8.1 C4 contract amendment（2026-09-03）
+
+Phase B完成時的17-wrapper baseline已由C4解阻工作擴充。Primitive policy `1.1.0`正式核准
+`FhirOid`、`FhirTime`與`FhirUuid`，三者使用`PrimitiveType<string>`、FHIR JSON string codec及
+各自的official R5 lexical validator。目前Runtime與generated registry共有20個supported
+wrappers；`xhtml`是唯一保留的unsupported primitive。
+
 ## 9. Phase A cleanup disposition
 
 | Item | A6 disposition | Reason / next owner |

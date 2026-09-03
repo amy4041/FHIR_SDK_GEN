@@ -4,9 +4,9 @@
   "fhirPackageId": "hl7.fhir.r5.core",
   "fhirPackageVersion": "5.0.0",
   "fhirVersion": "5.0.0",
-  "policyVersion": "1.0.0",
+  "policyVersion": "1.1.0",
   "codeGenVersion": "1.0.0",
-  "runtimeContractVersion": "phase-a-v1",
+  "runtimeContractVersion": "phase-a-v1\u002Bc4-primitives-v1",
   "primitiveNamespace": "MyFhirSdk.Primitives",
   "primitives": [
     {
@@ -109,9 +109,9 @@
       "fhirTypeName": "oid",
       "canonical": "http://hl7.org/fhir/StructureDefinition/oid",
       "fhirVersion": "5.0.0",
-      "supportStatus": "unsupported",
-      "unsupportedReason": "Phase A Runtime has no approved CLR, codec, or validator contract for oid.",
-      "wrapperName": null
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirOid"
     },
     {
       "fhirTypeName": "positiveInt",
@@ -133,9 +133,9 @@
       "fhirTypeName": "time",
       "canonical": "http://hl7.org/fhir/StructureDefinition/time",
       "fhirVersion": "5.0.0",
-      "supportStatus": "unsupported",
-      "unsupportedReason": "Phase A Runtime has no approved CLR, codec, or validator contract for time.",
-      "wrapperName": null
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirTime"
     },
     {
       "fhirTypeName": "unsignedInt",
@@ -165,9 +165,9 @@
       "fhirTypeName": "uuid",
       "canonical": "http://hl7.org/fhir/StructureDefinition/uuid",
       "fhirVersion": "5.0.0",
-      "supportStatus": "unsupported",
-      "unsupportedReason": "Phase A Runtime has no approved CLR, codec, or validator contract for uuid.",
-      "wrapperName": null
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirUuid"
     },
     {
       "fhirTypeName": "xhtml",
@@ -228,12 +228,20 @@
       "sha256": "a7e3554930c3131a92d4bdd6ec1a8837baee3e873270b195ae1c7ff39e672b2a"
     },
     {
+      "fileName": "FhirOid.g.cs",
+      "sha256": "c314ead68e12cc301d8676e9ed43d0fdb468b430f1bc3be0edb33ef2bbac1fd0"
+    },
+    {
       "fileName": "FhirPositiveInt.g.cs",
       "sha256": "6b48bc14fb3f808437dfa67e326b06cadb535f1aa27f2bce9d6b554552a53a19"
     },
     {
       "fileName": "FhirString.g.cs",
       "sha256": "c8ea43ae96bf9f08bef58bbd04f6052a5837c5e5c0e40d437e4f429950c15629"
+    },
+    {
+      "fileName": "FhirTime.g.cs",
+      "sha256": "16b0937efbd606f1d9d21ac658825701c611afef23288d2b5fc0bfe6ed5ccb2f"
     },
     {
       "fileName": "FhirUnsignedInt.g.cs",
@@ -248,8 +256,12 @@
       "sha256": "9ab06927f0fa127b1f297b74daff790b349a47b875b52a003d3ae43002faf1db"
     },
     {
+      "fileName": "FhirUuid.g.cs",
+      "sha256": "d79094610f6d46b14ab9c39fa720dc93767990a97631f5b234db109c33a47fcc"
+    },
+    {
       "fileName": "PrimitiveRegistry.Composition.g.cs",
-      "sha256": "ea676718f415b0d3c3bdc820150c33c70bb298d8d3af3e1a007a8b65850c68aa"
+      "sha256": "3feb7e10e36014a15843a4889714d135bff587be089d888783ae3953cc125611"
     }
   ]
 }

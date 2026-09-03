@@ -220,7 +220,7 @@ public sealed class ProgramTests
 
         Assert.Equal(0, exitCode);
         Assert.Empty(error.ToString());
-        Assert.Equal(19, Directory.EnumerateFiles(outputRoot).Count());
+        Assert.Equal(22, Directory.EnumerateFiles(outputRoot).Count());
         Assert.Contains(
             "primitive-generation-manifest.json",
             output.ToString(),

@@ -26,6 +26,9 @@ public sealed class CSharpTypeMapperTests
     [InlineData("unsignedInt", "FhirUnsignedInt")]
     [InlineData("base64Binary", "FhirBase64Binary")]
     [InlineData("markdown", "FhirMarkdown")]
+    [InlineData("oid", "FhirOid")]
+    [InlineData("time", "FhirTime")]
+    [InlineData("uuid", "FhirUuid")]
     public void TryMap_WithPrimitive_ReturnsPrimitiveWrapper(
         string fhirTypeCode,
         string expectedTypeName)
@@ -65,7 +68,7 @@ public sealed class CSharpTypeMapperTests
     {
         var mappings = PrimitivePolicyTestContext.GetMappingView().Mappings;
 
-        Assert.Equal(17, mappings.Count);
+        Assert.Equal(20, mappings.Count);
         Assert.Equal(
             mappings.OrderBy(mapping => mapping.FhirTypeName, StringComparer.Ordinal),
             mappings);
@@ -79,7 +82,7 @@ public sealed class CSharpTypeMapperTests
             });
         Assert.DoesNotContain(
             mappings,
-            mapping => mapping.FhirTypeName is "oid" or "time" or "uuid" or "xhtml");
+            mapping => mapping.FhirTypeName == "xhtml");
     }
 
     [Fact]
@@ -138,9 +141,6 @@ public sealed class CSharpTypeMapperTests
     [InlineData("")]
     [InlineData("unknownType")]
     [InlineData("String")]
-    [InlineData("oid")]
-    [InlineData("time")]
-    [InlineData("uuid")]
     [InlineData("xhtml")]
     public void TryMap_WithUnknownType_ReturnsFalse(string? fhirTypeCode)
     {

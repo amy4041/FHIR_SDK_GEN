@@ -11,7 +11,7 @@ public sealed class PrimitiveWrapperModelBuilderTests
     private readonly PrimitiveWrapperModelBuilder _builder = new();
 
     [Fact]
-    public async Task Build_WithOfficialCoverage_ProducesSeventeenOrderedModels()
+    public async Task Build_WithOfficialCoverage_ProducesTwentyOrderedModels()
     {
         var coverage = await LoadCoverageAsync();
 
@@ -33,16 +33,19 @@ public sealed class PrimitiveWrapperModelBuilderTests
                 "integer",
                 "integer64",
                 "markdown",
+                "oid",
                 "positiveInt",
                 "string",
+                "time",
                 "unsignedInt",
                 "uri",
-                "url"
+                "url",
+                "uuid"
             ],
             result.Value.Select(model => model.FhirTypeName));
         Assert.DoesNotContain(
             result.Value,
-            model => model.FhirTypeName is "oid" or "time" or "uuid" or "xhtml");
+            model => model.FhirTypeName == "xhtml");
         Assert.All(
             result.Value,
             model =>

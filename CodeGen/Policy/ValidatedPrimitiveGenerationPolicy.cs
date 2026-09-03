@@ -149,11 +149,14 @@ public enum PrimitiveValidatorKey
     Integer,
     Integer64,
     Markdown,
+    Oid,
     PositiveInt,
     String,
+    Time,
     UnsignedInt,
     Uri,
-    Url
+    Url,
+    Uuid
 }
 
 public enum PrimitiveToStringBehavior
