@@ -12,6 +12,7 @@ public sealed class ModelIrGenerationPolicy
         string backboneBaseClrType,
         string openTypeClrType,
         IEnumerable<ModelIrMemberRename> memberRenames,
+        IEnumerable<ModelIrProfileTypeOverride> profileTypeOverrides,
         IEnumerable<ModelIrBackboneRename> backboneRenames,
         IEnumerable<string> openTypeElementIds,
         IEnumerable<string> syntheticResourceMemberNames)
@@ -24,6 +25,8 @@ public sealed class ModelIrGenerationPolicy
         OpenTypeClrType = openTypeClrType;
         MemberRenames = new ReadOnlyDictionary<string, ModelIrMemberRename>(
             memberRenames.ToDictionary(rename => rename.ElementId, StringComparer.Ordinal));
+        ProfileTypeOverrides = new ReadOnlyDictionary<string, ModelIrProfileTypeOverride>(
+            profileTypeOverrides.ToDictionary(item => item.ProfileCanonical, StringComparer.Ordinal));
         BackboneRenames = new ReadOnlyDictionary<string, ModelIrBackboneRename>(
             backboneRenames.ToDictionary(rename => rename.ElementId, StringComparer.Ordinal));
         OpenTypeElementIds = new HashSet<string>(openTypeElementIds, StringComparer.Ordinal);
@@ -46,6 +49,8 @@ public sealed class ModelIrGenerationPolicy
 
     public IReadOnlyDictionary<string, ModelIrMemberRename> MemberRenames { get; }
 
+    public IReadOnlyDictionary<string, ModelIrProfileTypeOverride> ProfileTypeOverrides { get; }
+
     public IReadOnlyDictionary<string, ModelIrBackboneRename> BackboneRenames { get; }
 
     public IReadOnlySet<string> OpenTypeElementIds { get; }
@@ -57,6 +62,10 @@ public sealed record ModelIrMemberRename(
     string ElementId,
     string ClrName,
     string JsonName);
+
+public sealed record ModelIrProfileTypeOverride(
+    string ProfileCanonical,
+    string ClrType);
 
 public sealed record ModelIrBackboneRename(
     string ElementId,

@@ -46,6 +46,12 @@ public sealed class ModelIrGenerationPolicyLoader
                     RequireString(item, "clrName"),
                     RequireString(item, "jsonName")))
                 .ToArray();
+            var profileTypeOverrides = namingRoot.GetProperty("profileTypeOverrides")
+                .EnumerateArray()
+                .Select(item => new ModelIrProfileTypeOverride(
+                    RequireString(item, "profileCanonical"),
+                    RequireString(item, "clrType")))
+                .ToArray();
             var backboneRenames = backboneRoot.GetProperty("explicitTypeRenames")
                 .EnumerateArray()
                 .Select(item => new ModelIrBackboneRename(
@@ -76,6 +82,7 @@ public sealed class ModelIrGenerationPolicyLoader
                 RequireString(backboneRoot.GetProperty("publicShape"), "baseClrType"),
                 RequireString(choiceRoot.GetProperty("openTypeRepresentation"), "generatedClrType"),
                 memberRenames,
+                profileTypeOverrides,
                 backboneRenames,
                 openTypeIds,
                 syntheticMembers);
