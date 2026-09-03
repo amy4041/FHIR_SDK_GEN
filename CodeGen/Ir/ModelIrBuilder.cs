@@ -135,7 +135,10 @@ public sealed class ModelIrBuilder
                 targetNamespace,
                 artifactPath,
                 node.InventoryItem.IsAbstract,
-                isSealed: false,
+                isSealed: !node.InventoryItem.IsAbstract &&
+                    !graph.Edges.Any(edge =>
+                        edge.Kind == DefinitionDependencyEdgeKind.Inheritance &&
+                        string.Equals(edge.TargetCanonical, node.Canonical, StringComparison.Ordinal)),
                 baseType,
                 resourceOwnerCanonical: category == ModelIrCategory.Resource
                     ? node.Canonical
@@ -567,8 +570,7 @@ public sealed class ModelIrBuilder
             explicitRename?.JsonName ?? sourceName,
             explicitRename?.ClrName ?? nameResult.Name!,
             propertyType,
-            IsNullable: !cardinality.IsRequired || representation is
-                ModelMemberRepresentation.OrdinaryChoice or ModelMemberRepresentation.OpenType,
+            IsNullable: !cardinality.IsCollection,
             cardinality.IsCollection,
             representation == ModelMemberRepresentation.OpenType
                 ? null

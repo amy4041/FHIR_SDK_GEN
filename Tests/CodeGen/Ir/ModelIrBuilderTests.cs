@@ -13,6 +13,69 @@ public sealed class ModelIrBuilderTests
 {
     private const string RootCanonical = "http://example.test/StructureDefinition/Base";
 
+    internal static async Task<ModelIrBatch> BuildChoiceDatatypeIrAsync()
+    {
+        var definitions = FoundationDefinitions()
+            .Append(Primitive("string"))
+            .Append(Primitive("boolean"))
+            .Append(Definition(
+                "ChoicePayload",
+                RootCanonical,
+                elements:
+                [
+                    Element(
+                        "ChoicePayload.value[x]",
+                        "string",
+                        "boolean",
+                        min: 1,
+                        max: "1")
+                ]))
+            .ToArray();
+        var (graph, scope) = BuildGraphAndScope(definitions, Canonical("ChoicePayload"));
+        var policy = Assert.IsType<ModelIrGenerationPolicy>((await R5ModelIrTests.LoadPolicy()).Value);
+        var result = new ModelIrBuilder().Build(
+            graph,
+            scope,
+            PrimitivePolicyTestContext.GetMappingView(),
+            policy);
+        Assert.True(result.IsSuccess, R5ModelIrTests.Describe(result.Diagnostics));
+        return Assert.IsType<ModelIrBatch>(result.Value);
+    }
+
+    internal static async Task<ModelIrBatch> BuildRecursiveDatatypeIrAsync()
+    {
+        var alias = new ElementDefinitionDto
+        {
+            Id = "Recursive.alias",
+            Path = "Recursive.alias",
+            Base = Base("Recursive.alias", 0, "1"),
+            Min = 0,
+            Max = "1",
+            ContentReference = "#Recursive.value"
+        };
+        var definitions = FoundationDefinitions()
+            .Append(Primitive("string"))
+            .Append(Definition(
+                "Recursive",
+                RootCanonical,
+                elements:
+                [
+                    Element("Recursive.value", "string"),
+                    Element("Recursive.child", "Recursive"),
+                    alias
+                ]))
+            .ToArray();
+        var (graph, scope) = BuildGraphAndScope(definitions, Canonical("Recursive"));
+        var policy = Assert.IsType<ModelIrGenerationPolicy>((await R5ModelIrTests.LoadPolicy()).Value);
+        var result = new ModelIrBuilder().Build(
+            graph,
+            scope,
+            PrimitivePolicyTestContext.GetMappingView(),
+            policy);
+        Assert.True(result.IsSuccess, R5ModelIrTests.Describe(result.Diagnostics));
+        return Assert.IsType<ModelIrBatch>(result.Value);
+    }
+
     [Fact]
     public async Task Build_WithChoiceOpenTypeBackboneAndContentReference_PreservesCompleteShape()
     {
@@ -295,9 +358,9 @@ public sealed class ModelIrBuilderTests
             FhirVersion = "5.0.0",
             ExternalDefinitionNodes =
             [
-                External("Base", RootCanonical, "complex-type", null, "Example.Core.Base"),
-                External("BackboneElement", Canonical("BackboneElement"), "complex-type", RootCanonical, "Example.Core.BackboneElement"),
-                External("Resource", Canonical("Resource"), "resource", RootCanonical, "Example.Core.Resource")
+                External("Base", RootCanonical, "complex-type", null, "MyFhirSdk.Core.Base"),
+                External("BackboneElement", Canonical("BackboneElement"), "complex-type", RootCanonical, "MyFhirSdk.Core.BackboneElement"),
+                External("Resource", Canonical("Resource"), "resource", RootCanonical, "MyFhirSdk.Core.Resource")
             ]
         };
 
