@@ -7,5 +7,6 @@ public enum DefinitionDependencyEdgeKind
     Profile,
     TargetProfile,
     ContentReference,
-    BackboneOwner
+    BackboneOwner,
+    InlineComponentOwner
 }

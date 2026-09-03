@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "policyVersion": "1.0.0",
+  "policyVersion": "1.1.0",
   "fhirVersion": "5.0.0",
-  "runtimeContractVersion": "phase-a-v1",
+  "runtimeContractVersion": "phase-a-v1+c4-primitives-v1",
   "primitiveNamespace": "MyFhirSdk.Primitives",
   "primitives": [
     {
@@ -235,8 +235,18 @@
       "fhirTypeName": "oid",
       "canonical": "http://hl7.org/fhir/StructureDefinition/oid",
       "fhirVersion": "5.0.0",
-      "supportStatus": "unsupported",
-      "unsupportedReason": "Phase A Runtime has no approved CLR, codec, or validator contract for oid."
+      "wrapperName": "FhirOid",
+      "clrValueType": "string",
+      "jsonToken": "string",
+      "codecKey": "string",
+      "validatorKey": "oid",
+      "preserveLiteral": false,
+      "literalConstructor": false,
+      "literalPropertyName": null,
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "toStringBehavior": "inherited",
+      "publicConstants": []
     },
     {
       "fhirTypeName": "positiveInt",
@@ -282,8 +292,18 @@
       "fhirTypeName": "time",
       "canonical": "http://hl7.org/fhir/StructureDefinition/time",
       "fhirVersion": "5.0.0",
-      "supportStatus": "unsupported",
-      "unsupportedReason": "Phase A Runtime has no approved CLR, codec, or validator contract for time."
+      "wrapperName": "FhirTime",
+      "clrValueType": "string",
+      "jsonToken": "string",
+      "codecKey": "string",
+      "validatorKey": "time",
+      "preserveLiteral": false,
+      "literalConstructor": false,
+      "literalPropertyName": null,
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "toStringBehavior": "inherited",
+      "publicConstants": []
     },
     {
       "fhirTypeName": "unsignedInt",
@@ -340,8 +360,18 @@
       "fhirTypeName": "uuid",
       "canonical": "http://hl7.org/fhir/StructureDefinition/uuid",
       "fhirVersion": "5.0.0",
-      "supportStatus": "unsupported",
-      "unsupportedReason": "Phase A Runtime has no approved CLR, codec, or validator contract for uuid."
+      "wrapperName": "FhirUuid",
+      "clrValueType": "string",
+      "jsonToken": "string",
+      "codecKey": "string",
+      "validatorKey": "uuid",
+      "preserveLiteral": false,
+      "literalConstructor": false,
+      "literalPropertyName": null,
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "toStringBehavior": "inherited",
+      "publicConstants": []
     },
     {
       "fhirTypeName": "xhtml",

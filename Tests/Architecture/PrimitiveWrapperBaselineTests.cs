@@ -22,11 +22,14 @@ public sealed class PrimitiveWrapperBaselineTests
             [typeof(FhirInteger)] = typeof(int?),
             [typeof(FhirInteger64)] = typeof(long?),
             [typeof(FhirMarkdown)] = typeof(string),
+            [typeof(FhirOid)] = typeof(string),
             [typeof(FhirPositiveInt)] = typeof(int?),
             [typeof(FhirString)] = typeof(string),
+            [typeof(FhirTime)] = typeof(string),
             [typeof(FhirUnsignedInt)] = typeof(int?),
             [typeof(FhirUri)] = typeof(string),
-            [typeof(FhirUrl)] = typeof(string)
+            [typeof(FhirUrl)] = typeof(string),
+            [typeof(FhirUuid)] = typeof(string)
         };
 
     private static readonly IReadOnlyDictionary<Type, string[]> ExpectedDeclaredMethods =
@@ -41,7 +44,7 @@ public sealed class PrimitiveWrapperBaselineTests
         };
 
     [Fact]
-    public void RuntimeContainsExactlyTheSeventeenApprovedPrimitiveWrappers()
+    public void RuntimeContainsExactlyTheTwentyApprovedPrimitiveWrappers()
     {
         var actualWrappers = typeof(FhirString).Assembly
             .GetExportedTypes()

@@ -20,7 +20,7 @@ public sealed class PrimitiveRegistryModelBuilderTests
         var model = Assert.IsType<PrimitiveRegistryCompositionModel>(result.Value);
         Assert.Equal("MyFhirSdk.Primitives", model.Namespace);
         Assert.Equal("PrimitiveRegistry.Composition.g.cs", model.FileName);
-        Assert.Equal(17, model.Entries.Count);
+        Assert.Equal(20, model.Entries.Count);
         Assert.Equal(
             model.Entries
                 .Select(entry => entry.FhirTypeName)
@@ -28,7 +28,7 @@ public sealed class PrimitiveRegistryModelBuilderTests
             model.Entries.Select(entry => entry.FhirTypeName));
         Assert.DoesNotContain(
             model.Entries,
-            entry => entry.FhirTypeName is "oid" or "time" or "uuid" or "xhtml");
+            entry => entry.FhirTypeName == "xhtml");
 
         var decimalEntry = Assert.Single(
             model.Entries,
@@ -78,7 +78,7 @@ public sealed class PrimitiveRegistryModelBuilderTests
             "policy.json",
             key.ToString())).ToArray();
 
-        Assert.Equal(17, keys.Length);
+        Assert.Equal(20, keys.Length);
         Assert.All(results, result => Assert.True(result.IsSuccess));
         Assert.Equal(
             keys.Select(key => $"PrimitiveValidators.{key}"),

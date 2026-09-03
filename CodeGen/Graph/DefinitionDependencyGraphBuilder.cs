@@ -317,6 +317,17 @@ public sealed class DefinitionDependencyGraphBuilder
                 element.Id,
                 source.Canonical));
         }
+        else if (string.Equals(source.Kind, "complex-type", StringComparison.Ordinal) &&
+                 string.Equals(type.Code, "Element", StringComparison.Ordinal))
+        {
+            edges.Add(new DefinitionDependencyEdge(
+                source.Canonical,
+                element.Id,
+                DefinitionDependencyEdgeKind.InlineComponentOwner,
+                source.Canonical,
+                element.Id,
+                source.Canonical));
+        }
     }
 
     private static void AddCanonicalEdges(

@@ -11,7 +11,9 @@ public sealed class ComplexDatatypeRenderer
     public string Render(ModelDeclarationIr declaration)
     {
         ArgumentNullException.ThrowIfNull(declaration);
-        if (declaration.Category != ModelIrCategory.ComplexDatatype)
+        if (declaration.Category is not (
+            ModelIrCategory.ComplexDatatype or
+            ModelIrCategory.ComplexDatatypeComponent))
         {
             throw new ArgumentException(
                 $"Complex datatype renderer cannot render category '{declaration.Category}'.",

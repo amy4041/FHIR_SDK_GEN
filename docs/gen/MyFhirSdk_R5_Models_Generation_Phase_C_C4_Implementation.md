@@ -1,9 +1,9 @@
 # MyFhirSdk R5 Models Generation Phase C4 Complex Datatypes
 
-Version 1.0
+Version 1.1
 
-- 實作狀態：Renderer、batch pipeline與supported official batch完成
-- Full official acceptance：Blocked by approved Phase B unsupported primitives
+- 實作狀態：Renderer、batch pipeline與full official batch完成
+- Full official acceptance：Passed（39 datatypes及17 inline components）
 - FHIR baseline：R5 `5.0.0`
 - Input：C3 `ModelIrBatch`
 - Output：deterministic complex datatype source artifacts
@@ -113,41 +113,27 @@ Tests涵蓋：
 
 ## 7. Official batch result
 
-Official graph有39個non-external complex datatype declarations。目前28個datatype seeds的完整
-closure不會觸及unsupported primitive，28個source可在單一batch中render並通過Roslyn：
+Official graph的39個non-external complex datatype declarations現在全部可進入同一個generation
+scope。Primitive policy `1.1.0`新增`FhirOid`、`FhirTime`及`FhirUuid`的string CLR contract、JSON
+codec與official R5 format validators，因此原先受阻的11個datatype也可完整解析。
+
+完整scope另包含17個datatype-owned inline components。官方definitions以`Element`而不是
+`BackboneElement`描述這些component；C4將它們建立為`ComplexDatatypeComponent` IR、生成為
+`MyFhirSdk.Types` public top-level sealed classes並直接繼承`Element`。實體檔案依owner分組，例如：
 
 ```text
-Address, Age, Attachment, CodeableConcept, CodeableReference, Coding,
-ContactDetail, ContactPoint, Contributor, Count, Distance, Duration,
-Expression, ExtendedContactDetail, HumanName, Identifier, MarketingStatus,
-MonetaryComponent, Money, Period, ProductShelfLife, Quantity, Range, Ratio,
-RatioRange, Reference, RelatedArtifact, VirtualServiceDetail
+Generated/R5/Types/DataRequirement/DataRequirementDateFilter.g.cs
+Generated/R5/Types/ElementDefinition/ElementDefinitionBase.g.cs
 ```
 
-其餘11個datatype的selected closure會觸及C0/Phase B明確標記unsupported的`oid`、`time`或
-`uuid`：
-
-```text
-Annotation, Availability, DataRequirement, Dosage, ElementDefinition,
-ParameterDefinition, SampledData, Signature, Timing, TriggerDefinition,
-UsageContext
-```
-
-Full 39-type scope因此在C2/C3 render-before gate失敗。依C0-006，C4不得：
-
-- 將它們映射成`string`或`object`
-- 略過choice alternative或property
-- 建立未核准的fallback wrapper
-- 依賴手寫同名type掩蓋missing mapping
-
-解除blocker需要獨立核准`oid`、`time`、`uuid`的Runtime CLR/codec/validator contracts，更新Phase B
-primitive policy與generated primitive baseline，再重跑C2-C4 formal batch。`xhtml`目前只在external
-handwritten `Narrative`，不屬C4 generated datatype declaration blocker。
+因此full batch共有56個sources：39個datatype declarations及17個inline component declarations。
+整批一次通過Roslyn，且連續兩次render的artifact集合byte-identical。`xhtml`仍由external
+handwritten `Narrative`承接，不是C4 generated datatype依賴。
 
 ## 8. Verification
 
-- CodeGen：325 passed、0 failed
-- Solution：581 passed、0 failed、1 skipped
+- CodeGen：324 passed、0 failed
+- Solution：596 passed、0 failed、1 skipped
 - `dotnet format --verify-no-changes`：passed
 - `git diff --check`：passed
 
@@ -155,4 +141,4 @@ handwritten `Narrative`，不屬C4 generated datatype declaration blocker。
 
 C5可重用C4的source conventions與batch dependency validation方式，但必須建立獨立Resource/
 Backbone renderer，處理`ResourceType`、owner folder、nested Backbone及Resource-specific closure。
-C5不得為了繞過C4 primitive blocker改變C0 choice或primitive disposition。
+C5不得改變C4已核准的choice或primitive disposition。

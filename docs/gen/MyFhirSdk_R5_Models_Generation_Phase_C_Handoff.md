@@ -22,8 +22,8 @@ Phase B provides:
 
 - a complete official inventory of 21 R5 primitive StructureDefinitions;
 - one validated policy decision for every official primitive;
-- 17 supported generated wrappers and registry entries;
-- four explicit unsupported decisions for `oid`, `time`, `uuid`, and `xhtml`;
+- 20 supported generated wrappers and registry entries;
+- one explicit unsupported decision for `xhtml`;
 - a deterministic manifest and committed generated output;
 - `PrimitiveTypeMappingView`, derived only from
   `ValidatedPrimitiveGenerationPolicy`;
@@ -33,6 +33,10 @@ Phase B provides:
 The policy is the authority for wrapper name, namespace, CLR value type, JSON
 token, codec key, validator key, literal shape, support status, compatibility
 members, and unsupported reason.
+
+The C4 amendment in primitive policy `1.1.0` added approved string CLR/JSON and
+format-validator contracts for `oid`, `time`, and `uuid`. `xhtml` remains an
+external handwritten `Narrative` concern.
 
 ## 3. Phase C consumer flow
 

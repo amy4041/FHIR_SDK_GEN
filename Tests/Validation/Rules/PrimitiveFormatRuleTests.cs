@@ -290,6 +290,61 @@ public sealed class PrimitiveFormatRuleTests
     }
 
     [Fact]
+    public void ValidateReportsInvalidOidTimeAndUuidFormats()
+    {
+        var patient = new Patient
+        {
+            Extension =
+            {
+                new Extension { Url = "urn:test:oid", Value = new FhirOid("urn:oid:1.02.3") },
+                new Extension { Url = "urn:test:time", Value = new FhirTime("24:00:00") },
+                new Extension
+                {
+                    Url = "urn:test:uuid",
+                    Value = new FhirUuid("123e4567-e89b-12d3-a456-426614174000")
+                }
+            }
+        };
+
+        var result = new FhirValidator().Validate(patient);
+
+        ValidationAssert.HasIssue(
+            result,
+            "Patient.extension[0].value",
+            ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(
+            result,
+            "Patient.extension[1].value",
+            ValidationIssueCode.PrimitiveFormat);
+        ValidationAssert.HasIssue(
+            result,
+            "Patient.extension[2].value",
+            ValidationIssueCode.PrimitiveFormat);
+    }
+
+    [Fact]
+    public void ValidateAcceptsValidOidTimeAndUuidFormats()
+    {
+        var patient = new Patient
+        {
+            Extension =
+            {
+                new Extension { Url = "urn:test:oid", Value = new FhirOid("urn:oid:1.2.840.10008") },
+                new Extension { Url = "urn:test:time", Value = new FhirTime("23:59:60.123456789") },
+                new Extension
+                {
+                    Url = "urn:test:uuid",
+                    Value = new FhirUuid("urn:uuid:123e4567-e89b-12d3-a456-426614174000")
+                }
+            }
+        };
+
+        var result = new FhirValidator().Validate(patient);
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
     public void ValidateDoesNotReportIssueForValidBooleanAndInteger()
     {
         var patient = new Patient

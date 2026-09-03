@@ -23,8 +23,8 @@ public sealed class PrimitiveGenerationPipelineTests : IDisposable
         var result = await CreatePipeline().GenerateAsync(CreateOptions(output));
 
         Assert.True(result.IsSuccess, FormatDiagnostics(result.Diagnostics));
-        Assert.Equal(19, result.Value.Count);
-        Assert.Equal(19, Directory.EnumerateFiles(output).Count());
+        Assert.Equal(22, result.Value.Count);
+        Assert.Equal(22, Directory.EnumerateFiles(output).Count());
         Assert.Contains(
             Path.Combine(output, "PrimitiveRegistry.Composition.g.cs"),
             result.Value);
@@ -37,11 +37,11 @@ public sealed class PrimitiveGenerationPipelineTests : IDisposable
         Assert.Equal(1, root.GetProperty("schemaVersion").GetInt32());
         Assert.Equal("hl7.fhir.r5.core", root.GetProperty("fhirPackageId").GetString());
         Assert.Equal("5.0.0", root.GetProperty("fhirPackageVersion").GetString());
-        Assert.Equal("1.0.0", root.GetProperty("policyVersion").GetString());
-        Assert.Equal("phase-a-v1", root.GetProperty("runtimeContractVersion").GetString());
+        Assert.Equal("1.1.0", root.GetProperty("policyVersion").GetString());
+        Assert.Equal("phase-a-v1+c4-primitives-v1", root.GetProperty("runtimeContractVersion").GetString());
         Assert.Equal("MyFhirSdk.Primitives", root.GetProperty("primitiveNamespace").GetString());
         Assert.Equal(21, root.GetProperty("primitives").GetArrayLength());
-        Assert.Equal(18, root.GetProperty("artifacts").GetArrayLength());
+        Assert.Equal(21, root.GetProperty("artifacts").GetArrayLength());
         Assert.DoesNotContain(
             root.GetProperty("artifacts").EnumerateArray(),
             item => item.GetProperty("fileName").GetString() ==
@@ -65,7 +65,8 @@ public sealed class PrimitiveGenerationPipelineTests : IDisposable
         var unsupported = root.GetProperty("primitives").EnumerateArray()
             .Where(item => item.GetProperty("supportStatus").GetString() == "unsupported")
             .ToArray();
-        Assert.Equal(4, unsupported.Length);
+        Assert.Single(unsupported);
+        Assert.Equal("xhtml", unsupported[0].GetProperty("fhirTypeName").GetString());
         Assert.All(unsupported, item => Assert.False(string.IsNullOrWhiteSpace(
             item.GetProperty("unsupportedReason").GetString())));
     }

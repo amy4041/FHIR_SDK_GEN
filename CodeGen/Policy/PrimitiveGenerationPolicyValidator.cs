@@ -48,11 +48,14 @@ public sealed class PrimitiveGenerationPolicyValidator
             ["integer"] = PrimitiveValidatorKey.Integer,
             ["integer64"] = PrimitiveValidatorKey.Integer64,
             ["markdown"] = PrimitiveValidatorKey.Markdown,
+            ["oid"] = PrimitiveValidatorKey.Oid,
             ["positiveInt"] = PrimitiveValidatorKey.PositiveInt,
             ["string"] = PrimitiveValidatorKey.String,
+            ["time"] = PrimitiveValidatorKey.Time,
             ["unsignedInt"] = PrimitiveValidatorKey.UnsignedInt,
             ["uri"] = PrimitiveValidatorKey.Uri,
-            ["url"] = PrimitiveValidatorKey.Url
+            ["url"] = PrimitiveValidatorKey.Url,
+            ["uuid"] = PrimitiveValidatorKey.Uuid
         };
 
     private static readonly IReadOnlyDictionary<string, PrimitiveToStringBehavior>
@@ -92,11 +95,14 @@ public sealed class PrimitiveGenerationPolicyValidator
                 [PrimitiveValidatorKey.Integer] = "int?",
                 [PrimitiveValidatorKey.Integer64] = "long?",
                 [PrimitiveValidatorKey.Markdown] = "string",
+                [PrimitiveValidatorKey.Oid] = "string",
                 [PrimitiveValidatorKey.PositiveInt] = "int?",
                 [PrimitiveValidatorKey.String] = "string",
+                [PrimitiveValidatorKey.Time] = "string",
                 [PrimitiveValidatorKey.UnsignedInt] = "int?",
                 [PrimitiveValidatorKey.Uri] = "string",
-                [PrimitiveValidatorKey.Url] = "string"
+                [PrimitiveValidatorKey.Url] = "string",
+                [PrimitiveValidatorKey.Uuid] = "string"
             };
 
     public GenerationResult<ValidatedPrimitiveGenerationPolicy?> Validate(

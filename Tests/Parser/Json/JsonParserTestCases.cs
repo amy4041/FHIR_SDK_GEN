@@ -5,6 +5,7 @@ internal static class JsonParserTestCases
         ..BasicRulesJsonParserTestCases.All,
         ..ElementJsonParserTestCases.All,
         ..PrimitiveArrayAlignmentJsonParserTestCases.All,
+        ..ExtensionValueNewPrimitiveJsonParserTestCases.All,
         ..ExtensionValueQuantityJsonParserTestCases.All,
         ..PrimitiveJsonParserTestCases.All,
         ..PractitionerPrimitiveJsonParserTestCases.All,

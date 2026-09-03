@@ -25,11 +25,14 @@ public sealed class PrimitiveRuntimeContractTests
                 [typeof(FhirInteger)] = ("integer", typeof(int?)),
                 [typeof(FhirInteger64)] = ("integer64", typeof(long?)),
                 [typeof(FhirMarkdown)] = ("markdown", typeof(string)),
+                [typeof(FhirOid)] = ("oid", typeof(string)),
                 [typeof(FhirPositiveInt)] = ("positiveInt", typeof(int?)),
                 [typeof(FhirString)] = ("string", typeof(string)),
+                [typeof(FhirTime)] = ("time", typeof(string)),
                 [typeof(FhirUnsignedInt)] = ("unsignedInt", typeof(int?)),
                 [typeof(FhirUri)] = ("uri", typeof(string)),
-                [typeof(FhirUrl)] = ("url", typeof(string))
+                [typeof(FhirUrl)] = ("url", typeof(string)),
+                [typeof(FhirUuid)] = ("uuid", typeof(string))
             };
 
     public static TheoryData<Type, string> CodecCases => new()
@@ -46,11 +49,14 @@ public sealed class PrimitiveRuntimeContractTests
         { typeof(FhirInteger), "-1" },
         { typeof(FhirInteger64), "\"1048576\"" },
         { typeof(FhirMarkdown), "\"hello\"" },
+        { typeof(FhirOid), "\"urn:oid:1.2.840.10008\"" },
         { typeof(FhirPositiveInt), "1" },
         { typeof(FhirString), "\"hello\"" },
+        { typeof(FhirTime), "\"23:59:60.123456789\"" },
         { typeof(FhirUnsignedInt), "0" },
         { typeof(FhirUri), "\"Patient/1\"" },
-        { typeof(FhirUrl), "\"https://example.test/patient/1\"" }
+        { typeof(FhirUrl), "\"https://example.test/patient/1\"" },
+        { typeof(FhirUuid), "\"urn:uuid:123e4567-e89b-12d3-a456-426614174000\"" }
     };
 
     public static TheoryData<object, bool> ValidatorCases => new()
@@ -77,16 +83,25 @@ public sealed class PrimitiveRuntimeContractTests
         { new FhirInteger64("9223372036854775808"), false },
         { new FhirMarkdown("hello"), true },
         { new FhirMarkdown(string.Empty), false },
+        { new FhirOid("urn:oid:1.2.840.10008"), true },
+        { new FhirOid("urn:oid:1.02.3"), false },
+        { new FhirOid("1.2.840.10008"), false },
         { new FhirPositiveInt(1), true },
         { new FhirPositiveInt(0), false },
         { new FhirString("hello"), true },
         { new FhirString(string.Empty), false },
+        { new FhirTime("23:59:60.123456789"), true },
+        { new FhirTime("24:00:00"), false },
+        { new FhirTime("12:00"), false },
         { new FhirUnsignedInt(0), true },
         { new FhirUnsignedInt(-1), false },
         { new FhirUri("Patient/1"), true },
         { new FhirUri("bad uri"), false },
         { new FhirUrl("https://example.test/patient/1"), true },
-        { new FhirUrl("Patient/1"), false }
+        { new FhirUrl("Patient/1"), false },
+        { new FhirUuid("urn:uuid:123e4567-e89b-12d3-a456-426614174000"), true },
+        { new FhirUuid("urn:uuid:123E4567-E89B-12D3-A456-426614174000"), false },
+        { new FhirUuid("123e4567-e89b-12d3-a456-426614174000"), false }
     };
 
     public static TheoryData<Type, string, string> RejectedCodecTokenCases => new()

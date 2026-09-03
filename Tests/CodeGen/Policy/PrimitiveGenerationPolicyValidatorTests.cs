@@ -21,9 +21,9 @@ public sealed class PrimitiveGenerationPolicyValidatorTests
         Assert.Empty(result.Diagnostics);
         var policy = Assert.IsType<ValidatedPrimitiveGenerationPolicy>(result.Value);
         Assert.Equal(1, policy.SchemaVersion);
-        Assert.Equal("1.0.0", policy.PolicyVersion);
+        Assert.Equal("1.1.0", policy.PolicyVersion);
         Assert.Equal("5.0.0", policy.FhirVersion);
-        Assert.Equal("phase-a-v1", policy.RuntimeContractVersion);
+        Assert.Equal("phase-a-v1+c4-primitives-v1", policy.RuntimeContractVersion);
         Assert.Equal("MyFhirSdk.Primitives", policy.PrimitiveNamespace);
         Assert.Equal(21, policy.Primitives.Count);
         Assert.Equal(
@@ -31,9 +31,9 @@ public sealed class PrimitiveGenerationPolicyValidatorTests
                 .Select(entry => entry.FhirTypeName)
                 .Order(StringComparer.Ordinal),
             policy.Primitives.Select(entry => entry.FhirTypeName));
-        Assert.Equal(17, policy.Primitives.Count(entry => entry.IsSupported));
+        Assert.Equal(20, policy.Primitives.Count(entry => entry.IsSupported));
         Assert.Equal(
-            ["oid", "time", "uuid", "xhtml"],
+            ["xhtml"],
             policy.Primitives
                 .Where(entry => !entry.IsSupported)
                 .Select(entry => entry.FhirTypeName));
@@ -826,11 +826,14 @@ public sealed class PrimitiveGenerationPolicyValidatorTests
             ["integer"] = new("FhirInteger", "int?", PrimitiveJsonToken.Number, PrimitiveCodecKey.Integer, PrimitiveValidatorKey.Integer, false, PrimitiveToStringBehavior.InvariantValue),
             ["integer64"] = new("FhirInteger64", "long?", PrimitiveJsonToken.String, PrimitiveCodecKey.Integer64Literal, PrimitiveValidatorKey.Integer64, true, PrimitiveToStringBehavior.LiteralOrInvariantValue),
             ["markdown"] = new("FhirMarkdown", "string", PrimitiveJsonToken.String, PrimitiveCodecKey.String, PrimitiveValidatorKey.Markdown, false, PrimitiveToStringBehavior.Inherited),
+            ["oid"] = new("FhirOid", "string", PrimitiveJsonToken.String, PrimitiveCodecKey.String, PrimitiveValidatorKey.Oid, false, PrimitiveToStringBehavior.Inherited),
             ["positiveInt"] = new("FhirPositiveInt", "int?", PrimitiveJsonToken.Number, PrimitiveCodecKey.Integer, PrimitiveValidatorKey.PositiveInt, false, PrimitiveToStringBehavior.InvariantValue),
             ["string"] = new("FhirString", "string", PrimitiveJsonToken.String, PrimitiveCodecKey.String, PrimitiveValidatorKey.String, false, PrimitiveToStringBehavior.Inherited),
+            ["time"] = new("FhirTime", "string", PrimitiveJsonToken.String, PrimitiveCodecKey.String, PrimitiveValidatorKey.Time, false, PrimitiveToStringBehavior.Inherited),
             ["unsignedInt"] = new("FhirUnsignedInt", "int?", PrimitiveJsonToken.Number, PrimitiveCodecKey.Integer, PrimitiveValidatorKey.UnsignedInt, false, PrimitiveToStringBehavior.InvariantValue),
             ["uri"] = new("FhirUri", "string", PrimitiveJsonToken.String, PrimitiveCodecKey.String, PrimitiveValidatorKey.Uri, false, PrimitiveToStringBehavior.Inherited),
-            ["url"] = new("FhirUrl", "string", PrimitiveJsonToken.String, PrimitiveCodecKey.String, PrimitiveValidatorKey.Url, false, PrimitiveToStringBehavior.Inherited)
+            ["url"] = new("FhirUrl", "string", PrimitiveJsonToken.String, PrimitiveCodecKey.String, PrimitiveValidatorKey.Url, false, PrimitiveToStringBehavior.Inherited),
+            ["uuid"] = new("FhirUuid", "string", PrimitiveJsonToken.String, PrimitiveCodecKey.String, PrimitiveValidatorKey.Uuid, false, PrimitiveToStringBehavior.Inherited)
         };
     }
 

@@ -86,7 +86,7 @@ public sealed class ComplexDatatypeGenerationPipelineTests
     }
 
     [Fact]
-    public async Task OfficialFullDatatypeScope_IsBlockedByApprovedUnsupportedPrimitives()
+    public async Task Generate_OfficialFullDatatypeScope_CompilesAllThirtyNineTogether()
     {
         var graph = await ComplexDatatypeTestContext.BuildOfficialGraphAsync();
         var datatypeCanonicals = graph.Nodes
@@ -96,64 +96,43 @@ public sealed class ComplexDatatypeGenerationPipelineTests
             .Select(node => node.Canonical)
             .ToArray();
 
-        var result = new GenerationScopeSelector().Select(graph, datatypeCanonicals);
-
         Assert.Equal(39, datatypeCanonicals.Length);
-        var blockedNames = graph.Nodes
+        var typeNames = graph.Nodes
             .Where(node => datatypeCanonicals.Contains(node.Canonical, StringComparer.Ordinal))
-            .Where(node => !new GenerationScopeSelector().Select(graph, [node.Canonical]).IsSuccess)
             .Select(node => node.FhirTypeName)
             .Order(StringComparer.Ordinal)
             .ToArray();
-        Assert.Equal(
-            new[]
-            {
-                "Annotation",
-                "Availability",
-                "DataRequirement",
-                "Dosage",
-                "ElementDefinition",
-                "ParameterDefinition",
-                "SampledData",
-                "Signature",
-                "Timing",
-                "TriggerDefinition",
-                "UsageContext"
-            },
-            blockedNames);
-        Assert.False(result.IsSuccess);
-        Assert.Null(result.Value);
-        Assert.Contains(result.Diagnostics, diagnostic =>
-            diagnostic.Code == GeneratorDiagnosticCodes.UnsupportedPrimitiveReference);
-        Assert.Equal(
-            new[] { "oid", "time", "uuid" },
-            result.Diagnostics
-                .Where(diagnostic => diagnostic.Code == GeneratorDiagnosticCodes.UnsupportedPrimitiveReference)
-                .Select(diagnostic => diagnostic.Message.Split('\'')[3])
-                .Distinct(StringComparer.Ordinal)
-                .Order(StringComparer.Ordinal));
-    }
-
-    [Fact]
-    public async Task Generate_MaximalCurrentlySupportedOfficialDatatypeSet_CompilesTogether()
-    {
-        var graph = await ComplexDatatypeTestContext.BuildOfficialGraphAsync();
-        var supportedTypeNames = graph.Nodes
-            .Where(node =>
-                node.Disposition == DefinitionDependencyNodeDisposition.GeneratedModel &&
-                string.Equals(node.Kind, "complex-type", StringComparison.Ordinal))
-            .Where(node => new GenerationScopeSelector().Select(graph, [node.Canonical]).IsSuccess)
-            .Select(node => node.FhirTypeName)
-            .Order(StringComparer.Ordinal)
-            .ToArray();
-        Assert.Equal(28, supportedTypeNames.Length);
-
-        var (_, ir) = await ComplexDatatypeTestContext.BuildOfficialIrAsync(supportedTypeNames);
-        var result = new ComplexDatatypeGenerationPipeline().Generate(ir);
+        var (_, ir) = await ComplexDatatypeTestContext.BuildOfficialIrAsync(typeNames);
+        var pipeline = new ComplexDatatypeGenerationPipeline();
+        var result = pipeline.Generate(ir);
+        var repeated = pipeline.Generate(ir);
 
         Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));
+        Assert.True(repeated.IsSuccess, ComplexDatatypeTestContext.Describe(repeated.Diagnostics));
+        var batch = Assert.IsType<ComplexDatatypeGenerationBatch>(result.Value);
         Assert.Equal(
-            28,
-            Assert.IsType<ComplexDatatypeGenerationBatch>(result.Value).Sources.Count);
+            batch.Artifacts,
+            Assert.IsType<ComplexDatatypeGenerationBatch>(repeated.Value).Artifacts);
+        Assert.Equal(
+            39,
+            ir.Declarations.Count(declaration =>
+                declaration.Category == ModelIrCategory.ComplexDatatype));
+        Assert.Equal(
+            17,
+            ir.Declarations.Count(declaration =>
+                declaration.Category == ModelIrCategory.ComplexDatatypeComponent));
+        Assert.Equal(56, batch.Sources.Count);
+        Assert.Contains(batch.Sources, source =>
+            source.FileName ==
+                "Generated/R5/Types/DataRequirement/DataRequirementDateFilter.g.cs");
+        Assert.Contains(batch.Sources, source =>
+            source.FileName ==
+                "Generated/R5/Types/ElementDefinition/ElementDefinitionBase.g.cs");
+        Assert.Contains(
+            "public sealed class DataRequirementDateFilter : Element",
+            Assert.Single(batch.Sources, source =>
+                source.FileName.EndsWith(
+                    "DataRequirementDateFilter.g.cs",
+                    StringComparison.Ordinal)).Source);
     }
 }

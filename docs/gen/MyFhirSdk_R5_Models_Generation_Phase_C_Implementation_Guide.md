@@ -54,7 +54,7 @@ Phase C 不包含：
 
 ### 4.1 可重用能力
 
-- Phase B 的 official primitive coverage、17 個 generated wrappers、registry、manifest 與
+- Phase B pipeline的official primitive coverage、目前20個generated wrappers、registry、manifest與
   deterministic pipeline。
 - `PrimitiveTypeMappingView` 與必要注入該 view 的 `CSharpTypeMapper`。
 - datatype MVP 的 DTO、loader、selector、parser、IR、mapper、renderer、Roslyn validator、

@@ -18,7 +18,7 @@ public sealed class GeneratedPrimitiveIntegrationTests
         Assert.Null(registryType.GetMethod(
             "AddHandwrittenDefinitions",
             privateStatic));
-        Assert.Equal(17, PrimitiveRegistry.Default.Definitions.Count);
+        Assert.Equal(20, PrimitiveRegistry.Default.Definitions.Count);
         Assert.Equal(
             PrimitiveRegistry.Default.Definitions.Count,
             PrimitiveRegistry.Default.Definitions

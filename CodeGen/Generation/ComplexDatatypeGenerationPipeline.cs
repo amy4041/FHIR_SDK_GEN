@@ -31,7 +31,9 @@ public sealed class ComplexDatatypeGenerationPipeline
     {
         ArgumentNullException.ThrowIfNull(irBatch);
         var declarations = irBatch.Declarations
-            .Where(declaration => declaration.Category == ModelIrCategory.ComplexDatatype)
+            .Where(declaration => declaration.Category is
+                ModelIrCategory.ComplexDatatype or
+                ModelIrCategory.ComplexDatatypeComponent)
             .OrderBy(declaration => declaration.ArtifactPath, StringComparer.Ordinal)
             .ToArray();
         if (declarations.Length == 0)
@@ -78,8 +80,8 @@ public sealed class ComplexDatatypeGenerationPipeline
     private static IReadOnlyList<GeneratorDiagnostic> ValidateBatchDependencies(
         IReadOnlyList<ModelDeclarationIr> declarations)
     {
-        var declarationCanonicals = declarations
-            .Select(declaration => declaration.Source.DefinitionCanonical)
+        var declarationTypes = declarations
+            .Select(declaration => declaration.FullyQualifiedName)
             .ToHashSet(StringComparer.Ordinal);
         var diagnostics = new List<GeneratorDiagnostic>();
         foreach (var declaration in declarations)
@@ -108,7 +110,7 @@ public sealed class ComplexDatatypeGenerationPipeline
             ModelTypeReferenceIr reference)
         {
             if (reference.IsExternal || reference.IsPrimitive ||
-                declarationCanonicals.Contains(reference.TargetCanonical))
+                declarationTypes.Contains(reference.ClrType!))
             {
                 return;
             }
