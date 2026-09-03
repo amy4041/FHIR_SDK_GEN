@@ -94,6 +94,14 @@
       "reason": "member-name-matches-declaring-type"
     }
   ],
+  "profileTypeOverrides": [
+    {
+      "profileCanonical": "http://hl7.org/fhir/StructureDefinition/SimpleQuantity",
+      "clrType": "MyFhirSdk.Types.SimpleQuantity",
+      "declarationOwner": "retained-handwritten-constraint-profile",
+      "reason": "preserve-c0-002-public-api-for-profile-narrowed-quantity-elements"
+    }
+  ],
   "syntheticMembers": [
     {
       "category": "concrete-resource",

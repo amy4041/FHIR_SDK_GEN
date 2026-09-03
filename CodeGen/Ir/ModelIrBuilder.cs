@@ -333,6 +333,7 @@ public sealed class ModelIrBuilder
                 backboneTargets,
                 primitiveMappings,
                 definitionMappings,
+                policy,
                 diagnostics)
             : ResolveContentReference(
                 node,
@@ -342,6 +343,7 @@ public sealed class ModelIrBuilder
                 backboneTargets,
                 primitiveMappings,
                 definitionMappings,
+                policy,
                 diagnostics);
         if ((representation == ModelMemberRepresentation.Standard && alternatives.Count != 1) ||
             (representation == ModelMemberRepresentation.Backbone && alternatives.Count != 1) ||
@@ -400,6 +402,7 @@ public sealed class ModelIrBuilder
         IReadOnlyDictionary<(string Canonical, string ElementId), DeclarationDraft> backboneTargets,
         PrimitiveTypeMappingView primitiveMappings,
         DefinitionTypeMappingView definitionMappings,
+        ModelIrGenerationPolicy policy,
         ICollection<GeneratorDiagnostic> diagnostics)
     {
         if (backboneTargets.TryGetValue((node.Canonical, element.Id!), out var backbone))
@@ -475,13 +478,53 @@ public sealed class ModelIrBuilder
                     $"Type alternative '{type.Code}' has no CLR mapping."));
             }
 
+            var resolvedTarget = target;
+            var isExternal = target.Disposition == DefinitionDependencyNodeDisposition.ExternalHandwritten;
+            if (supported && type.Profiles is { Count: 1 } &&
+                policy.ProfileTypeOverrides.TryGetValue(type.Profiles[0], out var profileOverride))
+            {
+                var profileCanonical = type.Profiles[0];
+                var profileEdge = graph.GetOutgoingEdges(node.Canonical).FirstOrDefault(candidate =>
+                    candidate.Kind == DefinitionDependencyEdgeKind.Profile &&
+                    string.Equals(candidate.SourceElementId, element.Id, StringComparison.Ordinal) &&
+                    string.Equals(candidate.ReferenceIdentity, profileCanonical, StringComparison.Ordinal));
+                if (profileEdge is not null &&
+                    graph.TryGetNode(profileEdge.TargetCanonical, out var profileTarget) &&
+                    profileTarget is not null)
+                {
+                    resolvedTarget = profileTarget;
+                    clrType = profileOverride.ClrType;
+                    isExternal = true;
+                }
+            }
+            else if (supported && !target.InventoryItem.IsAbstract && type.Profiles is { Count: 1 })
+            {
+                var profileCanonical = type.Profiles[0];
+                var profileEdge = graph.GetOutgoingEdges(node.Canonical).FirstOrDefault(candidate =>
+                    candidate.Kind == DefinitionDependencyEdgeKind.Profile &&
+                    string.Equals(candidate.SourceElementId, element.Id, StringComparison.Ordinal) &&
+                    string.Equals(candidate.ReferenceIdentity, profileCanonical, StringComparison.Ordinal));
+                if (profileEdge is not null &&
+                    graph.TryGetNode(profileEdge.TargetCanonical, out var profileTarget) &&
+                    profileTarget is not null &&
+                    profileTarget.Disposition is
+                        DefinitionDependencyNodeDisposition.GeneratedModel or
+                        DefinitionDependencyNodeDisposition.ExternalHandwritten &&
+                    definitionMappings.TryGet(profileTarget.FhirTypeName, out var profileMapping))
+                {
+                    resolvedTarget = profileTarget;
+                    clrType = $"{profileMapping.Namespace}.{profileMapping.TypeName}";
+                    isExternal = profileTarget.Disposition == DefinitionDependencyNodeDisposition.ExternalHandwritten;
+                }
+            }
+
             result.Add(new ModelTypeReferenceIr(
                 type.Code,
-                target.Canonical,
+                resolvedTarget.Canonical,
                 null,
                 clrType,
-                target.InventoryItem.IsAbstract,
-                target.Disposition == DefinitionDependencyNodeDisposition.ExternalHandwritten,
+                resolvedTarget.InventoryItem.IsAbstract,
+                isExternal,
                 isPrimitive,
                 supported,
                 (type.Profiles ?? []).Order(StringComparer.Ordinal),
@@ -499,6 +542,7 @@ public sealed class ModelIrBuilder
         IReadOnlyDictionary<(string Canonical, string ElementId), DeclarationDraft> backboneTargets,
         PrimitiveTypeMappingView primitiveMappings,
         DefinitionTypeMappingView definitionMappings,
+        ModelIrGenerationPolicy policy,
         ICollection<GeneratorDiagnostic> diagnostics)
     {
         if (backboneTargets.TryGetValue(
@@ -532,6 +576,7 @@ public sealed class ModelIrBuilder
             backboneTargets,
             primitiveMappings,
             definitionMappings,
+            policy,
             diagnostics);
     }
 

@@ -202,6 +202,25 @@ public sealed class R5ModelNamingPolicyTests
     }
 
     [Fact]
+    public void ProfileTypeOverride_PreservesSimpleQuantityPublicContract()
+    {
+        using var namingPolicy = ReadNamingPolicy();
+        var item = Assert.Single(namingPolicy.RootElement
+            .GetProperty("profileTypeOverrides")
+            .EnumerateArray());
+
+        Assert.Equal(
+            "http://hl7.org/fhir/StructureDefinition/SimpleQuantity",
+            item.GetProperty("profileCanonical").GetString());
+        Assert.Equal(
+            "MyFhirSdk.Types.SimpleQuantity",
+            item.GetProperty("clrType").GetString());
+        Assert.Equal(
+            "retained-handwritten-constraint-profile",
+            item.GetProperty("declarationOwner").GetString());
+    }
+
+    [Fact]
     public void ApprovedRenamesLeaveNoDirectMemberOrReservedNameCollisions()
     {
         using var namingPolicy = ReadNamingPolicy();

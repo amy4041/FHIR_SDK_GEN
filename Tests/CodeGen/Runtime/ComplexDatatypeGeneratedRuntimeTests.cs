@@ -1,9 +1,6 @@
 using System.Reflection;
-using System.Runtime.Loader;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using MyFhirSdk.CodeGen.Compilation;
 using MyFhirSdk.CodeGen.Generation;
 using MyFhirSdk.CodeGen.Models;
@@ -31,7 +28,7 @@ public sealed class ComplexDatatypeGeneratedRuntimeTests
         Assert.True(
             generationResult.IsSuccess,
             ComplexDatatypeTestContext.Describe(generationResult.Diagnostics));
-        var assembly = CompileGeneratedAssembly(
+        var assembly = GeneratedModelTestCompiler.Compile(
             Assert.IsType<ComplexDatatypeGenerationBatch>(generationResult.Value).Sources);
         var runtimeTypes = new[]
         {
@@ -61,7 +58,7 @@ public sealed class ComplexDatatypeGeneratedRuntimeTests
             generationResult.IsSuccess,
             ComplexDatatypeTestContext.Describe(generationResult.Diagnostics));
         var batch = Assert.IsType<ComplexDatatypeGenerationBatch>(generationResult.Value);
-        var assembly = CompileGeneratedAssembly(batch.Sources.Append(new GeneratedSource(
+        var assembly = GeneratedModelTestCompiler.Compile(batch.Sources.Append(new GeneratedSource(
             "GeneratedDatatypeContainer.cs",
             """
             using MyFhirSdk.Core;
@@ -137,34 +134,4 @@ public sealed class ComplexDatatypeGeneratedRuntimeTests
         return $"{genericName[..genericName.IndexOf('`')]}<{string.Join(",", type.GetGenericArguments().Select(FormatType))}>";
     }
 
-    private static Assembly CompileGeneratedAssembly(IReadOnlyList<GeneratedSource> sources)
-    {
-        var syntaxTrees = sources.Select(source => CSharpSyntaxTree.ParseText(
-            source.Source,
-            CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp13),
-            source.FileName));
-        var trustedPlatformAssemblies =
-            (string?)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") ??
-            throw new InvalidOperationException("Trusted platform assemblies are unavailable.");
-        var references = trustedPlatformAssemblies
-            .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries)
-            .Append(typeof(DataType).Assembly.Location)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Select(path => MetadataReference.CreateFromFile(path));
-        var compilation = CSharpCompilation.Create(
-            $"MyFhirSdk.Generated.ComplexDatatypes.Tests.{Guid.NewGuid():N}",
-            syntaxTrees,
-            references,
-            new CSharpCompilationOptions(
-                OutputKind.DynamicallyLinkedLibrary,
-                nullableContextOptions: NullableContextOptions.Enable,
-                deterministic: true));
-        using var stream = new MemoryStream();
-        var emitResult = compilation.Emit(stream);
-        Assert.True(
-            emitResult.Success,
-            string.Join(Environment.NewLine, emitResult.Diagnostics));
-        stream.Position = 0;
-        return AssemblyLoadContext.Default.LoadFromStream(stream);
-    }
 }
