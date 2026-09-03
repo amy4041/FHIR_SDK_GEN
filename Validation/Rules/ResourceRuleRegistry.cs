@@ -38,8 +38,19 @@ internal sealed class ResourceRuleRegistry : IValidationRuleProvider
     {
         ArgumentNullException.ThrowIfNull(type);
 
-        return _rules.TryGetValue(type, out var rules)
-            ? rules
-            : Array.Empty<IFhirValidationRule>();
+        var hierarchy = new Stack<Type>();
+        for (var current = type; current is not null; current = current.BaseType)
+        {
+            hierarchy.Push(current);
+        }
+        var result = new List<IFhirValidationRule>();
+        while (hierarchy.Count > 0)
+        {
+            if (_rules.TryGetValue(hierarchy.Pop(), out var rules))
+            {
+                result.AddRange(rules);
+            }
+        }
+        return result;
     }
 }

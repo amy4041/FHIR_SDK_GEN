@@ -1,7 +1,4 @@
 using MyFhirSdk.Core;
-using MyFhirSdk.Primitives;
-using MyFhirSdk.Resources;
-using MyFhirSdk.Types;
 using MyFhirSdk.Validation.Rules;
 
 namespace MyFhirSdk.ModelMetadata.R5;
@@ -64,56 +61,35 @@ internal sealed class R5ModelMetadataProvider :
     public bool TryGetExtensionValueType(string propertyName, out Type valueType) =>
         _models.TryGetExtensionValueType(propertyName, out valueType);
 
+    public bool TryGetOpenTypeJsonPropertyName(
+        Type declaringType,
+        string propertyName,
+        Type valueType,
+        out string jsonPropertyName) =>
+        _models.TryGetOpenTypeJsonPropertyName(
+            declaringType,
+            propertyName,
+            valueType,
+            out jsonPropertyName);
+
+    public bool TryGetOpenTypeValueType(
+        Type declaringType,
+        string propertyName,
+        string jsonPropertyName,
+        out Type valueType) =>
+        _models.TryGetOpenTypeValueType(
+            declaringType,
+            propertyName,
+            jsonPropertyName,
+            out valueType);
+
     public IReadOnlyList<IFhirValidationRule> GetRules(Type type) =>
         _validationRules.GetRules(type);
 
     private static R5ModelMetadataProvider CreateDefault()
     {
-        var modelAssembly = typeof(Patient).Assembly;
-        var modelTypes = modelAssembly
-            .GetTypes()
-            .OrderBy(type => type.FullName, StringComparer.Ordinal)
-            .ToArray();
-
-        var resources = modelTypes
-            .Where(type =>
-                typeof(Resource).IsAssignableFrom(type) &&
-                !type.IsAbstract &&
-                !type.IsInterface)
-            .Select(CreateResourceMetadata)
-            .ToArray();
-
-        var concreteDataTypes = modelTypes
-            .Where(type =>
-                typeof(DataType).IsAssignableFrom(type) &&
-                !type.IsAbstract &&
-                !type.IsInterface &&
-                !PrimitiveValueAccess.IsPrimitiveType(type))
-            .ToArray();
-
-        var declaredDataTypes = new[]
-        {
-            new DeclaredDataTypeMetadata(typeof(Meta), "security", typeof(Coding)),
-            new DeclaredDataTypeMetadata(typeof(Meta), "tag", typeof(Coding))
-        };
-
-        var extensionValues = modelTypes
-            .Where(type =>
-                typeof(IFhirExtensionValue).IsAssignableFrom(type) &&
-                !type.IsAbstract &&
-                !type.IsInterface)
-            .Select(type => new ExtensionValueMetadata(
-                type,
-                GetExtensionValuePropertyName(type),
-                type != typeof(SimpleQuantity)))
-            .ToArray();
-
         return new R5ModelMetadataProvider(
-            new ImmutableModelMetadataProvider(
-                resources,
-                concreteDataTypes,
-                declaredDataTypes,
-                extensionValues),
+            R5HandwrittenModelMetadataEntries.Create(),
             ResourceRuleRegistry.Create(R5ValidationRuleEntries.Create()));
     }
 
@@ -131,17 +107,4 @@ internal sealed class R5ModelMetadataProvider :
                     $"Could not create R5 Resource '{type.FullName}'.")));
     }
 
-    private static string GetExtensionValuePropertyName(Type type)
-    {
-        if (type == typeof(SimpleQuantity))
-        {
-            return "valueQuantity";
-        }
-
-        var name = type.Name.StartsWith("Fhir", StringComparison.Ordinal)
-            ? type.Name["Fhir".Length..]
-            : type.Name;
-
-        return $"value{name}";
-    }
 }

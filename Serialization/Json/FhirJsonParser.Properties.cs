@@ -14,6 +14,11 @@ public sealed partial class FhirJsonParser
 
         foreach (var property in FhirJsonConventions.GetSerializableProperties(target.GetType()))
         {
+            if (TryReadOpenTypeValueProperty(objectElement, target, property))
+            {
+                continue;
+            }
+
             if (property.DeclaringType == typeof(Extension) &&
                 property.Name == nameof(Extension.Value))
             {
@@ -43,6 +48,57 @@ public sealed partial class FhirJsonParser
                 SetPropertyValue(target, property, propertyValue);
             }
         }
+    }
+
+    private bool TryReadOpenTypeValueProperty(
+        JsonElement objectElement,
+        object target,
+        PropertyInfo property)
+    {
+        Type? resolvedType = null;
+        string? resolvedJsonName = null;
+        foreach (var jsonProperty in objectElement.EnumerateObject())
+        {
+            var candidateName = jsonProperty.Name.StartsWith("_", StringComparison.Ordinal)
+                ? jsonProperty.Name[1..]
+                : jsonProperty.Name;
+            if (!_metadataProvider.TryGetOpenTypeValueType(
+                    property.DeclaringType ?? target.GetType(),
+                    property.Name,
+                    candidateName,
+                    out var valueType))
+            {
+                continue;
+            }
+            if (resolvedType is not null &&
+                !string.Equals(resolvedJsonName, candidateName, StringComparison.Ordinal))
+            {
+                throw new FhirSdkException(
+                    $"FHIR open-type property '{property.Name}' contains more than one value.");
+            }
+            resolvedType = valueType;
+            resolvedJsonName = candidateName;
+        }
+
+        if (resolvedType is null || resolvedJsonName is null)
+        {
+            return false;
+        }
+
+        var hasRawValue = objectElement.TryGetProperty(resolvedJsonName, out var rawElement);
+        var metadataName = FhirJsonConventions.GetPrimitiveMetadataPropertyName(resolvedJsonName);
+        var hasMetadata = objectElement.TryGetProperty(metadataName, out var metadataElement);
+        var value = ReadPropertyValue(
+            resolvedType,
+            property.DeclaringType ?? target.GetType(),
+            resolvedJsonName,
+            hasRawValue ? rawElement : null,
+            hasMetadata ? metadataElement : null);
+        if (value is not null)
+        {
+            SetPropertyValue(target, property, value);
+        }
+        return true;
     }
 
     private object? ReadPropertyValue(

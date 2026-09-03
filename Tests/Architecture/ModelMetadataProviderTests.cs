@@ -66,6 +66,63 @@ public sealed class ModelMetadataProviderTests
     }
 
     [Fact]
+    public void ParserAndSerializer_UseInjectedGeneralOpenTypeMetadata()
+    {
+        var provider = CreateProvider(
+            openTypes:
+            [
+                new OpenTypeValueMetadata(
+                    typeof(FakeResource),
+                    nameof(FakeResource.Payload),
+                    typeof(FakeDataType),
+                    "payloadFakeDataType")
+            ]);
+        var serializer = new FhirJsonSerializer(provider);
+        var first = new FakeResource
+        {
+            Payload = new FakeDataType { Code = "open-type" }
+        };
+
+        var json = serializer.Serialize(first);
+        var parsed = new FhirJsonParser(provider).Parse<FakeResource>(json);
+
+        Assert.Contains("\"payloadFakeDataType\"", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"payload\"", json, StringComparison.Ordinal);
+        Assert.Equal("open-type", Assert.IsType<FakeDataType>(parsed.Payload).Code);
+    }
+
+    [Fact]
+    public void Parser_RejectsMultipleValuesForOneOpenTypeProperty()
+    {
+        var provider = CreateProvider(
+            openTypes:
+            [
+                new OpenTypeValueMetadata(
+                    typeof(FakeResource),
+                    nameof(FakeResource.Payload),
+                    typeof(FakeDataType),
+                    "payloadFake"),
+                new OpenTypeValueMetadata(
+                    typeof(FakeResource),
+                    nameof(FakeResource.Payload),
+                    typeof(OtherFakeDataType),
+                    "payloadOther")
+            ]);
+
+        var exception = Assert.Throws<FhirSdkException>(() =>
+            new FhirJsonParser(provider).Parse<FakeResource>(
+                """
+                {
+                  "resourceType": "FakeResource",
+                  "payloadFake": { "code": "one" },
+                  "payloadOther": {}
+                }
+                """));
+
+        Assert.Contains("more than one value", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Validator_UsesInjectedRuleProvider()
     {
         var ruleProvider = new FakeValidationRuleProvider();
@@ -78,6 +135,24 @@ public sealed class ModelMetadataProviderTests
         var issue = Assert.Single(result.Issues);
         Assert.Equal("FakeResource", issue.Path);
         Assert.Equal("fake-provider-rule", issue.RuleId);
+    }
+
+    [Fact]
+    public void RuleRegistry_ComposesBaseRulesForDerivedModelTypes()
+    {
+        var baseRule = new FakeValidationRule();
+        var derivedRule = new OtherFakeValidationRule();
+        var registry = ResourceRuleRegistry.Create(
+        [
+            new KeyValuePair<Type, IReadOnlyList<IFhirValidationRule>>(
+                typeof(FakeResource),
+                [baseRule]),
+            new KeyValuePair<Type, IReadOnlyList<IFhirValidationRule>>(
+                typeof(DerivedFakeResource),
+                [derivedRule])
+        ]);
+
+        Assert.Equal([baseRule, derivedRule], registry.GetRules(typeof(DerivedFakeResource)));
     }
 
     [Fact]
@@ -183,7 +258,8 @@ public sealed class ModelMetadataProviderTests
 
     private static ImmutableModelMetadataProvider CreateProvider(
         IReadOnlyList<DeclaredDataTypeMetadata>? declaredDataTypes = null,
-        IReadOnlyList<ExtensionValueMetadata>? extensionValues = null)
+        IReadOnlyList<ExtensionValueMetadata>? extensionValues = null,
+        IReadOnlyList<OpenTypeValueMetadata>? openTypes = null)
     {
         return new ImmutableModelMetadataProvider(
             [
@@ -194,16 +270,21 @@ public sealed class ModelMetadataProviderTests
             ],
             [typeof(FakeDataType)],
             declaredDataTypes ?? [],
-            extensionValues ?? []);
+            extensionValues ?? [],
+            openTypes ?? []);
     }
 
-    private sealed class FakeResource : Resource
+    private class FakeResource : Resource
     {
         public override string ResourceType => "FakeResource";
 
         public IList<Extension> Extension { get; set; } = [];
 
         public DataType? Payload { get; set; }
+    }
+
+    private sealed class DerivedFakeResource : FakeResource
+    {
     }
 
     private sealed class OtherFakeResource : Resource
@@ -244,6 +325,16 @@ public sealed class ModelMetadataProviderTests
                 Code = ValidationIssueCode.Profile,
                 RuleId = "fake-provider-rule"
             });
+        }
+    }
+
+
+    private sealed class OtherFakeValidationRule : IFhirValidationRule
+    {
+        public void Validate(
+            FhirObjectGraphNode node,
+            ICollection<ValidationIssue> issues)
+        {
         }
     }
 }

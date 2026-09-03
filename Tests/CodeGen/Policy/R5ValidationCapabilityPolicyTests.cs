@@ -13,6 +13,8 @@ namespace MyFhirSdk.CodeGen.Tests.Policy;
 
 public sealed class R5ValidationCapabilityPolicyTests
 {
+    private static readonly Lazy<IReadOnlySet<string>> OpenTypeElementIds =
+        new(ReadOpenTypeElementIds);
     private static readonly Lazy<IReadOnlyList<OfficialDefinition>> Definitions =
         new(ReadOfficialDefinitions);
 
@@ -267,7 +269,6 @@ public sealed class R5ValidationCapabilityPolicyTests
         ValidationMetrics metrics)
     {
         var direct = metrics.DirectElements;
-        var requiredChoices = direct.Count(element => IsChoice(element) && element.Min == 1);
         var strengths = direct
             .Where(element => element.BindingStrength is not null)
             .GroupBy(element => element.BindingStrength!, StringComparer.Ordinal)
@@ -303,7 +304,22 @@ public sealed class R5ValidationCapabilityPolicyTests
             direct.Count(element => element.Min == 1 && element.Max == "*"));
         Assert.Equal(
             approved.GetProperty(prefix + "RequiredOrdinaryChoiceCount").GetInt32(),
-            requiredChoices);
+            direct.Count(element =>
+                IsChoice(element) &&
+                element.Min == 1 &&
+                !IsOpenType(element.Id)));
+        Assert.Equal(
+            approved.GetProperty(prefix + "OptionalOrdinaryChoiceCount").GetInt32(),
+            direct.Count(element =>
+                IsChoice(element) &&
+                element.Min == 0 &&
+                !IsOpenType(element.Id)));
+        Assert.Equal(
+            approved.GetProperty(prefix + "RequiredOpenTypeCount").GetInt32(),
+            direct.Count(element => element.Min == 1 && IsOpenType(element.Id)));
+        Assert.Equal(
+            approved.GetProperty(prefix + "OptionalOpenTypeCount").GetInt32(),
+            direct.Count(element => element.Min == 0 && IsOpenType(element.Id)));
         Assert.Equal(
             approved.GetProperty(prefix + "DirectConstraintCount").GetInt32(),
             direct.Sum(element => element.ConstraintCount));
@@ -326,6 +342,20 @@ public sealed class R5ValidationCapabilityPolicyTests
         Assert.Equal(
             approved.GetProperty(prefix + "DirectSlicingCount").GetInt32(),
             direct.Count(element => element.HasSlicing));
+    }
+
+    private static bool IsOpenType(string elementId) =>
+        OpenTypeElementIds.Value.Contains(elementId);
+
+    private static IReadOnlySet<string> ReadOpenTypeElementIds()
+    {
+        using var policy = ReadPolicy("r5-choice-open-type-policy.json");
+        return policy.RootElement
+            .GetProperty("classification")
+            .GetProperty("openTypeElementIds")
+            .EnumerateArray()
+            .Select(item => item.GetString()!)
+            .ToHashSet(StringComparer.Ordinal);
     }
 
     private static ValidationMetrics CreateMetrics(

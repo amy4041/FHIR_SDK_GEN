@@ -10,7 +10,9 @@ namespace MyFhirSdk.CodeGen.Tests.Runtime;
 
 internal static class GeneratedModelTestCompiler
 {
-    internal static Assembly Compile(IReadOnlyList<GeneratedSource> sources)
+    internal static Assembly Compile(
+        IReadOnlyList<GeneratedSource> sources,
+        string? assemblyName = null)
     {
         var syntaxTrees = sources.Select(source => CSharpSyntaxTree.ParseText(
             source.Source,
@@ -25,7 +27,7 @@ internal static class GeneratedModelTestCompiler
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create(
-            $"MyFhirSdk.Generated.Models.Tests.{Guid.NewGuid():N}",
+            assemblyName ?? $"MyFhirSdk.Generated.Models.Tests.{Guid.NewGuid():N}",
             syntaxTrees,
             references,
             new CSharpCompilationOptions(
@@ -36,7 +38,10 @@ internal static class GeneratedModelTestCompiler
         var emitResult = compilation.Emit(stream);
         Assert.True(
             emitResult.Success,
-            string.Join(Environment.NewLine, emitResult.Diagnostics));
+            string.Join(
+                Environment.NewLine,
+                emitResult.Diagnostics.Where(diagnostic =>
+                    diagnostic.Severity == DiagnosticSeverity.Error)));
         stream.Position = 0;
         return AssemblyLoadContext.Default.LoadFromStream(stream);
     }

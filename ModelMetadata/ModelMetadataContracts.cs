@@ -20,6 +20,18 @@ internal interface IModelMetadataProvider
     bool TryGetExtensionValueType(
         string propertyName,
         out Type valueType);
+
+    bool TryGetOpenTypeJsonPropertyName(
+        Type declaringType,
+        string propertyName,
+        Type valueType,
+        out string jsonPropertyName);
+
+    bool TryGetOpenTypeValueType(
+        Type declaringType,
+        string propertyName,
+        string jsonPropertyName,
+        out Type valueType);
 }
 
 internal sealed class ResourceTypeMetadata
@@ -94,3 +106,9 @@ internal readonly record struct ExtensionValueMetadata(
     Type ValueType,
     string PropertyName,
     bool IsParserTarget = true);
+
+internal readonly record struct OpenTypeValueMetadata(
+    Type DeclaringType,
+    string PropertyName,
+    Type ValueType,
+    string JsonPropertyName);
