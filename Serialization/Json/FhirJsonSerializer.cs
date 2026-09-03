@@ -82,6 +82,17 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
         {
             var propertyValue = property.GetValue(value);
 
+            if (propertyValue is not null &&
+                _metadataProvider.TryGetOpenTypeJsonPropertyName(
+                    property.DeclaringType ?? value.GetType(),
+                    property.Name,
+                    propertyValue.GetType(),
+                    out var openTypeJsonName))
+            {
+                TryWriteProperty(writer, openTypeJsonName, propertyValue);
+                continue;
+            }
+
             if (property.DeclaringType == typeof(Extension) &&
                 property.Name == nameof(Extension.Value))
             {

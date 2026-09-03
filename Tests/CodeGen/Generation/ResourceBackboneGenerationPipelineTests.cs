@@ -37,7 +37,10 @@ public sealed class ResourceBackboneGenerationPipelineTests
         var constructor = Assert.Single(typeof(ModelIrBatch).GetConstructors(
             BindingFlags.Instance | BindingFlags.NonPublic));
         var withoutPatient = Assert.IsType<ModelIrBatch>(constructor.Invoke(
-            [ir.Declarations.Where(declaration => declaration.FhirName != "Patient")]));
+            [
+                ir.Declarations.Where(declaration => declaration.FhirName != "Patient"),
+                ir.ExternalMetadata
+            ]));
 
         var result = new ResourceBackboneGenerationPipeline().Generate(withoutPatient);
 
@@ -63,7 +66,7 @@ public sealed class ResourceBackboneGenerationPipelineTests
         var constructor = Assert.Single(typeof(ModelIrBatch).GetConstructors(
             BindingFlags.Instance | BindingFlags.NonPublic));
         var reversedIr = Assert.IsType<ModelIrBatch>(constructor.Invoke(
-            [ir.Declarations.Reverse()]));
+            [ir.Declarations.Reverse(), ir.ExternalMetadata.Reverse()]));
         var repeated = pipeline.Generate(reversedIr);
 
         Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));

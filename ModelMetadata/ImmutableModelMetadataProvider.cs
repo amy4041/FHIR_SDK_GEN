@@ -10,12 +10,15 @@ internal sealed class ImmutableModelMetadataProvider : IModelMetadataProvider
     private readonly IReadOnlyDictionary<DeclaredPropertyKey, Type> _declaredDataTypes;
     private readonly IReadOnlyDictionary<Type, string> _extensionPropertiesByType;
     private readonly IReadOnlyDictionary<string, Type> _extensionTypesByProperty;
+    private readonly IReadOnlyDictionary<OpenTypeByValueKey, string> _openTypePropertiesByValue;
+    private readonly IReadOnlyDictionary<OpenTypeByJsonKey, Type> _openTypeValuesByProperty;
 
     internal ImmutableModelMetadataProvider(
         IEnumerable<ResourceTypeMetadata> resources,
         IEnumerable<Type> concreteDataTypes,
         IEnumerable<DeclaredDataTypeMetadata> declaredDataTypes,
-        IEnumerable<ExtensionValueMetadata> extensionValues)
+        IEnumerable<ExtensionValueMetadata> extensionValues,
+        IEnumerable<OpenTypeValueMetadata>? openTypes = null)
     {
         ArgumentNullException.ThrowIfNull(resources);
         ArgumentNullException.ThrowIfNull(concreteDataTypes);
@@ -82,6 +85,23 @@ internal sealed class ImmutableModelMetadataProvider : IModelMetadataProvider
                     entry => entry.PropertyName,
                     entry => entry.ValueType,
                     StringComparer.Ordinal));
+
+        var openTypeEntries = (openTypes ?? []).ToArray();
+        ValidateOpenTypeEntries(openTypeEntries);
+        _openTypePropertiesByValue = new ReadOnlyDictionary<OpenTypeByValueKey, string>(
+            openTypeEntries.ToDictionary(
+                entry => new OpenTypeByValueKey(
+                    entry.DeclaringType,
+                    entry.PropertyName,
+                    entry.ValueType),
+                entry => entry.JsonPropertyName));
+        _openTypeValuesByProperty = new ReadOnlyDictionary<OpenTypeByJsonKey, Type>(
+            openTypeEntries.ToDictionary(
+                entry => new OpenTypeByJsonKey(
+                    entry.DeclaringType,
+                    entry.PropertyName,
+                    entry.JsonPropertyName),
+                entry => entry.ValueType));
     }
 
     public IReadOnlyList<Type> ConcreteDataTypes { get; }
@@ -141,6 +161,43 @@ internal sealed class ImmutableModelMetadataProvider : IModelMetadataProvider
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
         return _extensionTypesByProperty.TryGetValue(propertyName, out valueType!);
+    }
+
+    public bool TryGetOpenTypeJsonPropertyName(
+        Type declaringType,
+        string propertyName,
+        Type valueType,
+        out string jsonPropertyName)
+    {
+        ArgumentNullException.ThrowIfNull(declaringType);
+        ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
+        ArgumentNullException.ThrowIfNull(valueType);
+
+        for (var current = valueType; current is not null; current = current.BaseType)
+        {
+            if (_openTypePropertiesByValue.TryGetValue(
+                    new OpenTypeByValueKey(declaringType, propertyName, current),
+                    out jsonPropertyName!))
+            {
+                return true;
+            }
+        }
+        jsonPropertyName = null!;
+        return false;
+    }
+
+    public bool TryGetOpenTypeValueType(
+        Type declaringType,
+        string propertyName,
+        string jsonPropertyName,
+        out Type valueType)
+    {
+        ArgumentNullException.ThrowIfNull(declaringType);
+        ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(jsonPropertyName);
+        return _openTypeValuesByProperty.TryGetValue(
+            new OpenTypeByJsonKey(declaringType, propertyName, jsonPropertyName),
+            out valueType!);
     }
 
     private static void ValidateConcreteDataTypes(IEnumerable<Type> types)
@@ -213,6 +270,42 @@ internal sealed class ImmutableModelMetadataProvider : IModelMetadataProvider
         }
     }
 
+    private static void ValidateOpenTypeEntries(IReadOnlyList<OpenTypeValueMetadata> entries)
+    {
+        EnsureUnique(
+            entries,
+            entry => new OpenTypeByValueKey(
+                entry.DeclaringType,
+                entry.PropertyName,
+                entry.ValueType),
+            EqualityComparer<OpenTypeByValueKey>.Default,
+            key => $"Duplicate open-type value metadata for '{key.DeclaringType.FullName}.{key.PropertyName}'.");
+        EnsureUnique(
+            entries,
+            entry => new OpenTypeByJsonKey(
+                entry.DeclaringType,
+                entry.PropertyName,
+                entry.JsonPropertyName),
+            EqualityComparer<OpenTypeByJsonKey>.Default,
+            key => $"Duplicate open-type JSON metadata for '{key.DeclaringType.FullName}.{key.JsonPropertyName}'.");
+
+        foreach (var entry in entries)
+        {
+            ArgumentNullException.ThrowIfNull(entry.DeclaringType);
+            ArgumentException.ThrowIfNullOrWhiteSpace(entry.PropertyName);
+            ArgumentNullException.ThrowIfNull(entry.ValueType);
+            ArgumentException.ThrowIfNullOrWhiteSpace(entry.JsonPropertyName);
+            var property = entry.DeclaringType.GetProperty(entry.PropertyName);
+            if (property is null || !property.PropertyType.IsAssignableFrom(entry.ValueType))
+            {
+                throw new ArgumentException(
+                    $"Open-type metadata target '{entry.DeclaringType.FullName}.{entry.PropertyName}' " +
+                    $"cannot accept '{entry.ValueType.FullName}'.",
+                    nameof(entries));
+            }
+        }
+    }
+
     private static void EnsureUnique<TEntry, TKey>(
         IEnumerable<TEntry> entries,
         Func<TEntry, TKey> getKey,
@@ -233,4 +326,14 @@ internal sealed class ImmutableModelMetadataProvider : IModelMetadataProvider
     private readonly record struct DeclaredPropertyKey(
         Type DeclaringType,
         string PropertyName);
+
+    private readonly record struct OpenTypeByValueKey(
+        Type DeclaringType,
+        string PropertyName,
+        Type ValueType);
+
+    private readonly record struct OpenTypeByJsonKey(
+        Type DeclaringType,
+        string PropertyName,
+        string JsonPropertyName);
 }

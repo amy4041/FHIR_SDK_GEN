@@ -74,7 +74,10 @@ public sealed class ComplexDatatypeGenerationPipelineTests
         var constructor = Assert.Single(typeof(ModelIrBatch).GetConstructors(
             BindingFlags.Instance | BindingFlags.NonPublic));
         var durationOnly = Assert.IsType<ModelIrBatch>(constructor.Invoke(
-            [ir.Declarations.Where(declaration => declaration.FhirName == "Duration")]));
+            [
+                ir.Declarations.Where(declaration => declaration.FhirName == "Duration"),
+                ir.ExternalMetadata
+            ]));
 
         var result = new ComplexDatatypeGenerationPipeline().Generate(durationOnly);
 

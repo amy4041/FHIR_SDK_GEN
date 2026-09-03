@@ -46,6 +46,13 @@ public sealed class R5ModelIrTests
             Assert.NotNull(member.Source.ElementId);
             Assert.NotNull(member.Source.ElementPath);
         });
+        Assert.Equal(11, batch.ExternalMetadata.Count);
+        var extension = Assert.Single(batch.ExternalMetadata, item => item.FhirName == "Extension");
+        Assert.Equal("MyFhirSdk.Core.Extension", extension.ClrType);
+        Assert.Equal(
+            54,
+            Assert.Single(extension.Members, member =>
+                member.Source.ElementId == "Extension.value[x]").TypeAlternatives.Count);
     }
 
     [Fact]

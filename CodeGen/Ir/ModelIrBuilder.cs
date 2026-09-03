@@ -78,6 +78,13 @@ public sealed class ModelIrBuilder
                 diagnostics);
         }
 
+        var externalMetadata = BuildExternalMetadata(
+            graph,
+            primitiveMappings,
+            definitionMappings,
+            policy,
+            diagnostics);
+
         ValidateCollisions(drafts, graph, policy, diagnostics);
         if (diagnostics.Count > 0)
         {
@@ -90,8 +97,178 @@ public sealed class ModelIrBuilder
             .Select(draft => draft.ToIr())
             .ToArray();
         return new GenerationResult<ModelIrBatch?>(
-            new ModelIrBatch(declarations),
+            new ModelIrBatch(declarations, externalMetadata),
             Array.Empty<GeneratorDiagnostic>());
+    }
+
+    private IReadOnlyList<ExternalModelMetadataIr> BuildExternalMetadata(
+        DefinitionDependencyGraph graph,
+        PrimitiveTypeMappingView primitiveMappings,
+        DefinitionTypeMappingView definitionMappings,
+        ModelIrGenerationPolicy policy,
+        ICollection<GeneratorDiagnostic> diagnostics)
+    {
+        var result = new List<ExternalModelMetadataIr>();
+        foreach (var node in graph.Nodes
+                     .Where(node => node.Disposition == DefinitionDependencyNodeDisposition.ExternalHandwritten)
+                     .OrderBy(node => node.Canonical, StringComparer.Ordinal))
+        {
+            var members = new List<ExternalModelMemberMetadataIr>();
+            foreach (var element in (node.InventoryItem.Definition.Snapshot?.Elements ?? [])
+                         .Where(element => IsDirectElement(node, element)))
+            {
+                if (!_cardinalityMapper.TryMap(element.Min, element.Max, out var cardinality))
+                {
+                    diagnostics.Add(CreateElementDiagnostic(
+                        GeneratorDiagnosticCodes.UnsupportedModelShape,
+                        node,
+                        element,
+                        $"Element cardinality '{element.Min?.ToString() ?? "<missing>"}..{element.Max ?? "<missing>"}' is unsupported."));
+                    continue;
+                }
+
+                var fhirName = LastSegment(element.Path!);
+                var isChoice = fhirName.EndsWith("[x]", StringComparison.Ordinal);
+                var choiceStem = isChoice ? fhirName[..^3] : null;
+                var representation = isChoice && policy.OpenTypeElementIds.Contains(element.Id!)
+                    ? ModelMemberRepresentation.OpenType
+                    : isChoice
+                        ? ModelMemberRepresentation.OrdinaryChoice
+                        : ModelMemberRepresentation.Standard;
+                var sourceName = representation == ModelMemberRepresentation.OpenType
+                    ? choiceStem!
+                    : fhirName;
+                var explicitRename = policy.MemberRenames.GetValueOrDefault(element.Id!);
+                var convertedName = _nameConverter.ConvertPropertyName(sourceName);
+                if (explicitRename is null && !convertedName.IsSuccess)
+                {
+                    diagnostics.Add(CreateElementDiagnostic(
+                        GeneratorDiagnosticCodes.InvalidModelIr,
+                        node,
+                        element,
+                        $"FHIR member '{sourceName}' cannot be converted to a C# property name."));
+                    continue;
+                }
+
+                var alternatives = ResolveExternalAlternatives(
+                    node,
+                    element,
+                    graph,
+                    primitiveMappings,
+                    definitionMappings,
+                    diagnostics);
+
+                members.Add(new ExternalModelMemberMetadataIr(
+                    new ModelIrSource(
+                        node.InventoryItem.SourceIdentity,
+                        node.Canonical,
+                        node.InventoryItem.DefinitionVersion,
+                        element.Id,
+                        element.Path),
+                    fhirName,
+                    explicitRename?.JsonName ?? sourceName,
+                    explicitRename?.ClrName ?? convertedName.Name!,
+                    representation,
+                    cardinality,
+                    alternatives));
+            }
+
+            result.Add(new ExternalModelMetadataIr(
+                CreateSource(node),
+                node.FhirTypeName,
+                node.ExternalClrType!,
+                node.Kind,
+                node.InventoryItem.IsAbstract,
+                members));
+        }
+        return result;
+    }
+
+    private static IReadOnlyList<ModelTypeReferenceIr> ResolveExternalAlternatives(
+        DefinitionDependencyNode source,
+        ElementDefinitionDto element,
+        DefinitionDependencyGraph graph,
+        PrimitiveTypeMappingView primitiveMappings,
+        DefinitionTypeMappingView definitionMappings,
+        ICollection<GeneratorDiagnostic> diagnostics)
+    {
+        var result = new List<ModelTypeReferenceIr>();
+        foreach (var type in element.Types ?? [])
+        {
+            if (string.IsNullOrWhiteSpace(type.Code))
+            {
+                diagnostics.Add(CreateElementDiagnostic(
+                    GeneratorDiagnosticCodes.InvalidModelIr,
+                    source,
+                    element,
+                    "A type alternative requires type.code."));
+                continue;
+            }
+            if (type.Code.StartsWith("http://hl7.org/fhirpath/", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var target = graph.Nodes.FirstOrDefault(node =>
+                (node.Disposition is
+                    DefinitionDependencyNodeDisposition.GeneratedModel or
+                    DefinitionDependencyNodeDisposition.ExternalHandwritten or
+                    DefinitionDependencyNodeDisposition.SupportedPrimitive or
+                    DefinitionDependencyNodeDisposition.UnsupportedPrimitive) &&
+                string.Equals(node.FhirTypeName, type.Code, StringComparison.Ordinal));
+            if (target is null)
+            {
+                diagnostics.Add(CreateElementDiagnostic(
+                    GeneratorDiagnosticCodes.MissingDependency,
+                    source,
+                    element,
+                    $"External metadata type alternative '{type.Code}' is unavailable."));
+                continue;
+            }
+
+            var isPrimitive = target.Disposition is
+                DefinitionDependencyNodeDisposition.SupportedPrimitive or
+                DefinitionDependencyNodeDisposition.UnsupportedPrimitive;
+            string? clrType = null;
+            var isSupported = true;
+            if (isPrimitive)
+            {
+                if (primitiveMappings.TryGet(type.Code, out var primitive))
+                {
+                    clrType = $"{primitive.Namespace}.{primitive.WrapperName}";
+                }
+                else
+                {
+                    isSupported = false;
+                }
+            }
+            else if (definitionMappings.TryGet(type.Code, out var mapping))
+            {
+                clrType = $"{mapping.Namespace}.{mapping.TypeName}";
+            }
+            else
+            {
+                diagnostics.Add(CreateElementDiagnostic(
+                    GeneratorDiagnosticCodes.MissingTypeMapping,
+                    source,
+                    element,
+                    $"External metadata type alternative '{type.Code}' has no CLR mapping."));
+                isSupported = false;
+            }
+
+            result.Add(new ModelTypeReferenceIr(
+                type.Code,
+                target.Canonical,
+                null,
+                clrType,
+                target.InventoryItem.IsAbstract,
+                target.Disposition == DefinitionDependencyNodeDisposition.ExternalHandwritten,
+                isPrimitive,
+                isSupported,
+                (type.Profiles ?? []).Order(StringComparer.Ordinal),
+                (type.TargetProfiles ?? []).Order(StringComparer.Ordinal)));
+        }
+        return result;
     }
 
     private List<DeclarationDraft> CreateDeclarationDrafts(

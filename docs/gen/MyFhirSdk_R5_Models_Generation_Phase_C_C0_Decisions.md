@@ -698,10 +698,13 @@ scalars、1 個 open choice、25 筆 constraints、4 筆 bindings 與 3 個 slic
 | Ordinary choice | `ChoiceElementRule.AtMostOne/ExactlyOne` | 依 C0-006 生成 choice entries |
 | Open-type presence | polymorphic property、`RequiredFieldRule.For` | 僅在 `min=1` 時生成 required entry |
 
-Generated scope 的 ordinary choice 共 250 個，其中 61 個產生 exactly-one、189 個產生
-at-most-one。9 個 generated open types 全為 optional，因此不產生 choice group rule；
-`Extension.value[x]` 也是 optional single property。Required rules 與 choice rules 必須分開，
-不得對 required choice 的每個 nullable alternative 各自生成 required rule。
+Generated scope 的 ordinary choice 共 250 個，其中 56 個產生 exactly-one、194 個產生
+at-most-one。9 個 generated open types 分為 5 個 required 與 4 個 optional；required open type
+以單一 polymorphic property 的 required rule 表示，不產生 choice group rule。
+`Extension.value[x]` 是 optional single property。Required rules 與 choice rules 必須分開，
+不得對 required choice 的每個 nullable alternative 各自生成 required rule。此分類由 C6
+reconnaissance 修正；原本的 61 required／198 optional choice 總數不變，但必須區分 ordinary
+choice 與 open type public representation。
 
 現有 `ResourceRuleRegistry` 以 concrete type 取得 rules；C6 必須為每個 concrete runtime type
 組成 deterministic effective rule set，使 base/Backbone rules 不會因 CLR inheritance 遺失。
