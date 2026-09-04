@@ -2,7 +2,8 @@
 
 Version 0.1
 
-- 文件狀態：Proposed；待 D0 baseline 與 dependency/package 決策閘門核准
+- 文件狀態：Accepted for implementation；D0 baseline 與 dependency/package 決策已於
+  `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_D0_Decisions.md` 固定
 - 適用範圍：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、MyFhirSdk、.NET 9
 - Phase C 基準：Completed
 - 上位架構文件：`docs/gen/MyFhirSdk_Runtime_R5_Models_CodeGen_Boundaries.md`

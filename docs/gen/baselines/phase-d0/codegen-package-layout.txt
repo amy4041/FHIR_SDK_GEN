@@ -1,0 +1,26 @@
+Captured: 2026-09-04
+Project: CodeGen/MyFhirSdk.CodeGen.csproj
+
+Current build/package-relevant project state
+--------------------------------------------
+TargetFramework: net9.0
+OutputType: Exe
+PackAsTool: absent
+PackageId: absent
+ToolCommandName: absent
+PackageVersion: absent
+ProjectReference: ../MyFhirSdk.csproj
+PackageReference: Microsoft.CodeAnalysis.CSharp/5.0.0
+
+Current copied executable assets
+--------------------------------
+Policy/primitive-generation-policy.json
+Policy/r5-model-ownership-policy.json
+Policy/r5-model-naming-policy.json
+Policy/r5-backbone-policy.json
+Policy/r5-choice-open-type-policy.json
+Policy/r5-validation-capability-policy.json
+
+There is no .NET tool package layout at the D0 entry baseline. The accepted target
+layout is specified by MyFhirSdk_R5_Models_Generation_Phase_D_D0_Decisions.md and
+is implemented in D1-D6 rather than by D0.
