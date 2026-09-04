@@ -15,6 +15,7 @@ Version 1.3
   - `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Handoff.md`
   - `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Implementation_Guide.md`
   - `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_Handoff.md`
+  - `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_Implementation_Guide.md`
 
 ## 1. 文件目的
 
