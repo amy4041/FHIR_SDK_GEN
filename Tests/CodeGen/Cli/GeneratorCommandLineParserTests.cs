@@ -108,6 +108,24 @@ public sealed class GeneratorCommandLineParserTests
     }
 
     [Fact]
+    public void Parse_ModelMode_ReturnsSortedSelectedScopeOptions()
+    {
+        var result = _parser.Parse([
+            "--mode", "model", "--input", "r5.tgz", "--output", "generated",
+            "--fhir-version", "5.0.0", "--package-id", "hl7.fhir.r5.core",
+            "--package-version", "5.0.0",
+            "--canonical", "http://hl7.org/fhir/StructureDefinition/Patient",
+            "--canonical", "http://hl7.org/fhir/StructureDefinition/Address"]);
+
+        Assert.True(result.IsSuccess, result.Error);
+        var options = Assert.IsType<ModelGenerationOptions>(result.ModelOptions);
+        Assert.Equal("r5.tgz", options.PackagePath);
+        Assert.Equal([
+            "http://hl7.org/fhir/StructureDefinition/Address",
+            "http://hl7.org/fhir/StructureDefinition/Patient"], options.SelectedCanonicals);
+    }
+
+    [Fact]
     public void Parse_UnknownMode_ReturnsStableError()
     {
         var result = _parser.Parse(["--mode", "automatic"]);

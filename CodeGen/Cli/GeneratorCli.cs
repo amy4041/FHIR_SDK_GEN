@@ -7,6 +7,7 @@ public sealed class GeneratorCli
 {
     private readonly FhirSdkGenerator _generator;
     private readonly PrimitiveGenerationPipeline? _primitivePipeline;
+    private readonly ModelGenerationPipeline? _modelPipeline;
     private readonly TextWriter _output;
     private readonly TextWriter _error;
     private readonly GeneratorCommandLineParser _commandLineParser;
@@ -16,7 +17,8 @@ public sealed class GeneratorCli
         TextWriter output,
         TextWriter error,
         GeneratorCommandLineParser? commandLineParser = null,
-        PrimitiveGenerationPipeline? primitivePipeline = null)
+        PrimitiveGenerationPipeline? primitivePipeline = null,
+        ModelGenerationPipeline? modelPipeline = null)
     {
         ArgumentNullException.ThrowIfNull(generator);
         ArgumentNullException.ThrowIfNull(output);
@@ -24,6 +26,7 @@ public sealed class GeneratorCli
 
         _generator = generator;
         _primitivePipeline = primitivePipeline;
+        _modelPipeline = modelPipeline;
         _output = output;
         _error = error;
         _commandLineParser = commandLineParser ?? new GeneratorCommandLineParser();
@@ -51,7 +54,16 @@ public sealed class GeneratorCli
         }
 
         GenerationResult<IReadOnlyList<string>> generationResult;
-        if (parseResult.PrimitiveOptions is not null)
+        if (parseResult.ModelOptions is not null)
+        {
+            if (_modelPipeline is null)
+            {
+                await _error.WriteLineAsync("Model generation mode is not configured.");
+                return 1;
+            }
+            generationResult = await _modelPipeline.GenerateAsync(parseResult.ModelOptions, cancellationToken);
+        }
+        else if (parseResult.PrimitiveOptions is not null)
         {
             if (_primitivePipeline is null)
             {

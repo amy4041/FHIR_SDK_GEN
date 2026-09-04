@@ -8,6 +8,26 @@ namespace MyFhirSdk.CodeGen.Tests;
 public sealed class ProgramTests
 {
     [Fact]
+    public async Task RunAsync_ModelModeInvalidPackage_PrintsDiagnosticAndReturnsInputExitCode()
+    {
+        using var directory = new TestDirectory();
+        using var output = new StringWriter();
+        using var error = new StringWriter();
+        var cli = new GeneratorCli(
+            new FhirSdkGenerator(directory.RepositoryRoot), output, error,
+            modelPipeline: new ModelGenerationPipeline(directory.RepositoryRoot));
+
+        var exitCode = await cli.RunAsync([
+            "--mode", "model", "--input", Path.Combine(directory.Path, "missing.tgz"),
+            "--output", Path.Combine(directory.Path, "output"), "--fhir-version", "5.0.0",
+            "--package-id", "hl7.fhir.r5.core", "--package-version", "5.0.0"]);
+
+        Assert.Equal(2, exitCode);
+        Assert.Contains("[FSG0026]", error.ToString(), StringComparison.Ordinal);
+        Assert.Empty(output.ToString());
+    }
+
+    [Fact]
     public void Main_WithNoArguments_PrintsUsageAndReturnsNonZero()
     {
         var originalError = Console.Error;
