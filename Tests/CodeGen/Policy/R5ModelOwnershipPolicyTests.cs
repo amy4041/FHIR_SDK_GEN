@@ -62,8 +62,8 @@ public sealed class R5ModelOwnershipPolicyTests
         Assert.Equal("MyFhirSdk", sdkAssembly.GetName().Name);
         Assert.Equal(
             "MyFhirSdk.CodeGen",
-            typeof(FhirSdkGenerator).Assembly.GetName().Name);
-        Assert.NotSame(sdkAssembly, typeof(FhirSdkGenerator).Assembly);
+            typeof(ModelGenerationPipeline).Assembly.GetName().Name);
+        Assert.NotSame(sdkAssembly, typeof(ModelGenerationPipeline).Assembly);
         Assert.Same(sdkAssembly, typeof(FhirString).Assembly);
         Assert.Same(sdkAssembly, typeof(HumanName).Assembly);
         Assert.Same(sdkAssembly, typeof(Patient).Assembly);

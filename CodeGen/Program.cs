@@ -9,11 +9,9 @@ public static class Program
     {
         var repositoryRoot = RepositoryRootLocator.Find(
             Directory.GetCurrentDirectory());
-        var generator = new FhirSdkGenerator(repositoryRoot);
         var primitivePipeline = new PrimitiveGenerationPipeline(repositoryRoot);
         var modelPipeline = new ModelGenerationPipeline(repositoryRoot);
         var cli = new GeneratorCli(
-            generator,
             Console.Out,
             Console.Error,
             primitivePipeline: primitivePipeline,

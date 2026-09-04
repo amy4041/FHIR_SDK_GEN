@@ -5,8 +5,7 @@ public sealed record CSharpTypeMapping(
     string TypeName,
     string CSharpTypeName,
     CSharpTypeCategory Category,
-    string? RequiredUsing,
-    bool IsPreviewType)
+    string? RequiredUsing)
 {
     public bool RequiresUsing => RequiredUsing is not null;
 }

@@ -9,7 +9,7 @@ public sealed class GeneratorCommandLineParserTests
     private readonly GeneratorCommandLineParser _parser = new();
 
     [Fact]
-    public void Parse_ValidArguments_ReturnsSortedOptions()
+    public void Parse_WithoutMode_ReturnsStableError()
     {
         var result = _parser.Parse(
         [
@@ -22,16 +22,8 @@ public sealed class GeneratorCommandLineParserTests
             "--type", "Address"
         ]);
 
-        Assert.True(result.IsSuccess);
-        Assert.False(result.ShowHelp);
-        Assert.Null(result.Error);
-        var options = Assert.IsType<GeneratorOptions>(result.Options);
-        Assert.Equal("definitions", options.InputPath);
-        Assert.Equal("generated", options.OutputPath);
-        Assert.Equal("MyFhirSdk.Generated.Types", options.TargetNamespace);
-        Assert.Equal("5.0.0", options.FhirVersion);
-        Assert.Equal("primitive-policy.json", options.PrimitivePolicyPath);
-        Assert.Equal(["Address", "Period"], options.TypeNames);
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Required option '--mode' was not provided.", result.Error);
     }
 
     [Theory]
@@ -47,21 +39,16 @@ public sealed class GeneratorCommandLineParserTests
     }
 
     [Fact]
-    public void Parse_DuplicateType_ReturnsStableError()
+    public void Parse_RemovedDatatypePreviewMode_ReturnsStableError()
     {
         var result = _parser.Parse(
         [
-            "--input", "definitions",
-            "--output", "generated",
-            "--namespace", "MyFhirSdk.Generated.Types",
-            "--fhir-version", "5.0.0",
-            "--type", "Address",
-            "--type", "Address"
+            "--mode", "datatype-preview"
         ]);
 
         Assert.False(result.IsSuccess);
         Assert.Equal(
-            "FHIR type 'Address' may only be specified once.",
+            "Unknown generator mode 'datatype-preview'. Expected 'primitive' or 'model'.",
             result.Error);
     }
 
@@ -80,7 +67,6 @@ public sealed class GeneratorCommandLineParserTests
         ]);
 
         Assert.True(result.IsSuccess);
-        Assert.Null(result.Options);
         var options = Assert.IsType<PrimitiveGenerationOptions>(
             result.PrimitiveOptions);
         Assert.Equal("definitions", options.DefinitionsPath);

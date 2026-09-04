@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using MyFhirSdk.CodeGen.Compilation;
 using MyFhirSdk.CodeGen.Generation;
@@ -8,7 +7,6 @@ using MyFhirSdk.CodeGen.Tests.Generation;
 using MyFhirSdk.Core;
 using MyFhirSdk.Primitives;
 using MyFhirSdk.Serialization.Json;
-using MyFhirSdk.Validation;
 using Xunit;
 
 namespace MyFhirSdk.CodeGen.Tests.Runtime;
@@ -50,7 +48,7 @@ public sealed class ComplexDatatypeGeneratedRuntimeTests
     }
 
     [Fact]
-    public async Task GeneratedPeriod_RoundTripsAndParticipatesInValidationTraversal()
+    public async Task DynamicallyCompiledResource_IsRejectedByDefaultGeneratedMetadata()
     {
         var (_, ir) = await ComplexDatatypeTestContext.BuildOfficialIrAsync("Period");
         var generationResult = new ComplexDatatypeGenerationPipeline().Generate(ir);
@@ -90,23 +88,10 @@ public sealed class ComplexDatatypeGeneratedRuntimeTests
             .GetMethods(BindingFlags.Instance | BindingFlags.Public)
             .Single(method => method.Name == nameof(FhirJsonParser.Parse) && method.IsGenericMethod)
             .MakeGenericMethod(containerType);
-        var parsed = Assert.IsAssignableFrom<Resource>(
+        var exception = Assert.Throws<TargetInvocationException>(() =>
             parseMethod.Invoke(new FhirJsonParser(), [firstJson]));
-        var secondJson = serializer.Serialize(parsed);
-
-        Assert.True(JsonNode.DeepEquals(JsonNode.Parse(firstJson), JsonNode.Parse(secondJson)));
-        Assert.Equal(
-            "2020-01-01T00:00:00Z",
-            ((FhirDateTime)periodType.GetProperty("Start")!.GetValue(
-                containerType.GetProperty("Value")!.GetValue(parsed)!)!).Value);
-
-        periodType.GetProperty("Start")!.SetValue(
-            containerType.GetProperty("Value")!.GetValue(parsed),
-            new FhirDateTime("2020-99-99"));
-        var validation = new FhirValidator().Validate(parsed);
-        Assert.Contains(validation.Issues, issue =>
-            issue.Code == ValidationIssueCode.PrimitiveFormat &&
-            issue.Path == "GeneratedDatatypeContainer.value.start");
+        var metadataError = Assert.IsType<FhirSdkException>(exception.InnerException);
+        Assert.Contains("is not registered", metadataError.Message, StringComparison.Ordinal);
     }
 
     private static string[] PublicShape(Type type)

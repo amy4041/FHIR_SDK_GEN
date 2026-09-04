@@ -1,13 +1,15 @@
 # MyFhirSdk R5 Models Generation Phase C Handoff
 
-Version 1.0
+Version 1.1
 
-- Status: ready after Primitive Generation Phase B
+- Status: consumed by completed Phase C; superseded for next-phase work by the Phase D handoff
 - FHIR baseline: R5 `5.0.0`, package `hl7.fhir.r5.core#5.0.0`
 - Primitive policy: `CodeGen/Policy/primitive-generation-policy.json`
 - Formal primitive output: `Generated/R5/Primitives/`
 - Implementation guide:
   `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Implementation_Guide.md`
+- Next handoff:
+  `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_Handoff.md`
 
 ## 1. Purpose
 

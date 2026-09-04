@@ -21,10 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="GoldenFiles\R5\Types\*.golden.cs.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Fixtures\**\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

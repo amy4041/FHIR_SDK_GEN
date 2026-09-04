@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Reflection;
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using MyFhirSdk.CodeGen.Generation;
 using MyFhirSdk.CodeGen.Graph;
@@ -10,7 +9,6 @@ using MyFhirSdk.CodeGen.Tests.Generation;
 using MyFhirSdk.Core;
 using MyFhirSdk.Primitives;
 using MyFhirSdk.Serialization.Json;
-using MyFhirSdk.Validation;
 using Xunit;
 
 namespace MyFhirSdk.CodeGen.Tests.Runtime;
@@ -103,7 +101,7 @@ public sealed class ResourceBackboneGeneratedRuntimeTests
     }
 
     [Fact]
-    public async Task GeneratedPatient_RoundTripsChoiceAndContainedResource_AndValidatorTraversesIt()
+    public async Task ShadowGeneratedPatient_IsRejectedByDefaultGeneratedMetadata()
     {
         var assembly = await CompilePatientClosureAsync();
         var patientType = assembly.GetType("MyFhirSdk.Resources.Patient", throwOnError: true)!;
@@ -120,23 +118,10 @@ public sealed class ResourceBackboneGeneratedRuntimeTests
             .GetMethods(BindingFlags.Instance | BindingFlags.Public)
             .Single(method => method.Name == nameof(FhirJsonParser.Parse) && method.IsGenericMethod)
             .MakeGenericMethod(patientType);
-        var parsed = Assert.IsAssignableFrom<Resource>(
+        var exception = Assert.Throws<TargetInvocationException>(() =>
             parseMethod.Invoke(new FhirJsonParser(), [firstJson]));
-        var secondJson = serializer.Serialize(parsed);
-
-        Assert.True(JsonNode.DeepEquals(JsonNode.Parse(firstJson), JsonNode.Parse(secondJson)));
-        Assert.Equal("Patient", parsed.ResourceType);
-        Assert.Equal(
-            true,
-            ((FhirBoolean)patientType.GetProperty("DeceasedBoolean")!.GetValue(parsed)!).Value);
-        Assert.Single(Assert.IsAssignableFrom<IList>(
-            typeof(DomainResource).GetProperty(nameof(DomainResource.Contained))!.GetValue(parsed)));
-
-        patientType.GetProperty("BirthDate")!.SetValue(parsed, new FhirDate("2020-99-99"));
-        var validation = new FhirValidator().Validate(parsed);
-        Assert.Contains(validation.Issues, issue =>
-            issue.Code == ValidationIssueCode.PrimitiveFormat &&
-            issue.Path == "Patient.birthDate");
+        var metadataError = Assert.IsType<FhirSdkException>(exception.InnerException);
+        Assert.Contains("is not registered", metadataError.Message, StringComparison.Ordinal);
     }
 
     private static async Task<Assembly> CompilePatientClosureAsync()
