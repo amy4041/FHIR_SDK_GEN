@@ -1,8 +1,8 @@
 # MyFhirSdk R5 Models Generation Phase C 實作指引
 
-Version 0.1
+Version 1.0
 
-- 文件狀態：Proposed，待 C0 baseline 與決策閘門核准
+- 文件狀態：Completed；C0-C9 已完成，Phase D handoff ready
 - 適用範圍：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、MyFhirSdk、.NET 9
 - Phase B 基準：Completed
 - 上位架構文件：`docs/gen/MyFhirSdk_Runtime_R5_Models_CodeGen_Boundaries.md`

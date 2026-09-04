@@ -1,37 +1,11 @@
 using MyFhirSdk.CodeGen.Compilation;
 using MyFhirSdk.CodeGen.Diagnostics;
-using MyFhirSdk.CodeGen.Loading;
-using MyFhirSdk.CodeGen.Models;
-using MyFhirSdk.CodeGen.Parsing;
-using MyFhirSdk.CodeGen.Rendering;
 using Xunit;
 
 namespace MyFhirSdk.CodeGen.Tests.Compilation;
 
 public sealed class RoslynCompilationValidatorTests
 {
-    private const string FhirVersion = "5.0.0";
-    private const string TargetNamespace =
-        "MyFhirSdk.GeneratorFixtures.Types";
-
-    private static readonly string[] MvpTypeNames =
-        ["Period", "Coding", "HumanName", "Address", "Identifier"];
-
-    private static readonly IReadOnlySet<string> MvpPreviewTypes =
-        new HashSet<string>(MvpTypeNames, StringComparer.Ordinal);
-
-    [Fact]
-    public async Task Validate_AllMvpGeneratedSources_CompilesTogether()
-    {
-        var generatedSources = await GenerateMvpSourcesAsync();
-
-        var result = new RoslynCompilationValidator().Validate(generatedSources);
-
-        Assert.True(result.IsSuccess, FormatDiagnostics(result.Diagnostics));
-        Assert.Empty(result.Diagnostics);
-        Assert.Equal(generatedSources, result.Value);
-    }
-
     [Fact]
     public void Validate_UnresolvableType_ReturnsFsg0012WithRoslynDetails()
     {
@@ -90,52 +64,4 @@ public sealed class RoslynCompilationValidatorTests
         Assert.Contains("CS0102", diagnostic.Message, StringComparison.Ordinal);
     }
 
-    private static async Task<IReadOnlyList<GeneratedSource>>
-        GenerateMvpSourcesAsync()
-    {
-        var renderer = new CSharpClassRenderer();
-        var generatedSources = new List<GeneratedSource>();
-
-        foreach (var typeName in MvpTypeNames)
-        {
-            var fixturePath = Path.Combine(
-                AppContext.BaseDirectory,
-                "Fixtures",
-                "StructureDefinitions",
-                "Valid",
-                $"StructureDefinition-{typeName}.json");
-            var loadResult = await new StructureDefinitionLoader().LoadAsync(
-                fixturePath,
-                FhirVersion);
-            Assert.True(
-                loadResult.IsSuccess,
-                FormatDiagnostics(loadResult.Diagnostics));
-
-            var loadedDefinition = Assert.Single(loadResult.Value);
-            var parseResult = PrimitivePolicyTestContext.CreateParser().Parse(
-                loadedDefinition,
-                TargetNamespace,
-                MvpPreviewTypes);
-            Assert.True(
-                parseResult.IsSuccess,
-                FormatDiagnostics(parseResult.Diagnostics));
-
-            var model = Assert.IsType<FhirTypeModel>(parseResult.Value);
-            generatedSources.Add(new GeneratedSource(
-                $"{typeName}.g.cs",
-                renderer.Render(model)));
-        }
-
-        return generatedSources;
-    }
-
-    private static string FormatDiagnostics(
-        IEnumerable<GeneratorDiagnostic> diagnostics)
-    {
-        return string.Join(
-            Environment.NewLine,
-            diagnostics.Select(diagnostic =>
-                $"[{diagnostic.Code}] {diagnostic.SourceFile}: " +
-                diagnostic.Message));
-    }
 }

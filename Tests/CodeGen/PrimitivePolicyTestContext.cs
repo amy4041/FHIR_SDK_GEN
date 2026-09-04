@@ -1,5 +1,4 @@
 using MyFhirSdk.CodeGen.Mapping;
-using MyFhirSdk.CodeGen.Parsing;
 using MyFhirSdk.CodeGen.Policy;
 using Xunit;
 
@@ -18,9 +17,6 @@ internal static class PrimitivePolicyTestContext
 
     internal static PrimitiveTypeMappingView GetMappingView() =>
         MappingView.Value;
-
-    internal static StructureDefinitionParser CreateParser() =>
-        new(CreateTypeMapper());
 
     private static readonly string[] KnownComplexTypeNames =
     [

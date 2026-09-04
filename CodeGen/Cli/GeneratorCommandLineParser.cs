@@ -1,4 +1,3 @@
-using Microsoft.CodeAnalysis.CSharp;
 using MyFhirSdk.CodeGen.Generation;
 using MyFhirSdk.CodeGen.Policy;
 
@@ -9,16 +8,6 @@ public sealed class GeneratorCommandLineParser
     public const string Usage =
         """
         Usage:
-          # Existing datatype preview mode (default when --mode is omitted)
-          dotnet run --project CodeGen/MyFhirSdk.CodeGen.csproj -- \
-            --mode datatype-preview \
-            --input <path> \
-            --output <path> \
-            --namespace <namespace> \
-            --fhir-version <version> \
-            [--policy <primitive-policy-path>] \
-            --type <fhir-type> [--type <fhir-type> ...]
-
           # Phase B primitive batch mode
           dotnet run --project CodeGen/MyFhirSdk.CodeGen.csproj -- \
             --mode primitive \
@@ -48,7 +37,7 @@ public sealed class GeneratorCommandLineParser
             (string.Equals(args[0], "--help", StringComparison.OrdinalIgnoreCase) ||
              string.Equals(args[0], "-h", StringComparison.OrdinalIgnoreCase)))
         {
-            return new CommandLineParseResult(null, null, ShowHelp: true);
+            return new CommandLineParseResult(null, ShowHelp: true);
         }
 
         var modeIndexes = Enumerable.Range(0, args.Count)
@@ -77,126 +66,15 @@ public sealed class GeneratorCommandLineParser
                 .ToArray();
             return mode switch
             {
-                "datatype-preview" => ParseDatatypePreview(remaining),
                 "primitive" => ParsePrimitive(remaining),
                 "model" => ParseModel(remaining),
                 _ => Invalid(
                     $"Unknown generator mode '{mode}'. Expected " +
-                    "'datatype-preview', 'primitive', or 'model'.")
+                    "'primitive' or 'model'.")
             };
         }
 
-        return ParseDatatypePreview(args);
-    }
-
-    private static CommandLineParseResult ParseDatatypePreview(
-        IReadOnlyList<string> args)
-    {
-        string? inputPath = null;
-        string? outputPath = null;
-        string? targetNamespace = null;
-        string? fhirVersion = null;
-        string? policyPath = null;
-        var typeNames = new HashSet<string>(StringComparer.Ordinal);
-
-        for (var index = 0; index < args.Count; index += 2)
-        {
-            var option = args[index];
-            if (index + 1 >= args.Count ||
-                args[index + 1].StartsWith("--", StringComparison.Ordinal))
-            {
-                return Invalid($"Option '{option}' requires a value.");
-            }
-
-            var value = args[index + 1];
-            var duplicateOption = option switch
-            {
-                "--input" when inputPath is not null => option,
-                "--output" when outputPath is not null => option,
-                "--namespace" when targetNamespace is not null => option,
-                "--fhir-version" when fhirVersion is not null => option,
-                "--policy" when policyPath is not null => option,
-                _ => null
-            };
-            if (duplicateOption is not null)
-            {
-                return Invalid(
-                    $"Option '{duplicateOption}' may only be specified once.");
-            }
-
-            switch (option)
-            {
-                case "--input":
-                    inputPath = value;
-                    break;
-                case "--output":
-                    outputPath = value;
-                    break;
-                case "--namespace":
-                    targetNamespace = value;
-                    break;
-                case "--fhir-version":
-                    fhirVersion = value;
-                    break;
-                case "--policy":
-                    policyPath = value;
-                    break;
-                case "--type":
-                    if (!typeNames.Add(value))
-                    {
-                        return Invalid(
-                            $"FHIR type '{value}' may only be specified once.");
-                    }
-
-                    break;
-                default:
-                    return Invalid($"Unknown option '{option}'.");
-            }
-        }
-
-        if (string.IsNullOrWhiteSpace(inputPath))
-        {
-            return Invalid("Required option '--input' was not provided.");
-        }
-
-        if (string.IsNullOrWhiteSpace(outputPath))
-        {
-            return Invalid("Required option '--output' was not provided.");
-        }
-
-        if (string.IsNullOrWhiteSpace(targetNamespace))
-        {
-            return Invalid("Required option '--namespace' was not provided.");
-        }
-
-        if (!IsValidNamespace(targetNamespace))
-        {
-            return Invalid(
-                $"Namespace '{targetNamespace}' is not a valid C# namespace.");
-        }
-
-        if (string.IsNullOrWhiteSpace(fhirVersion))
-        {
-            return Invalid("Required option '--fhir-version' was not provided.");
-        }
-
-        if (typeNames.Count == 0)
-        {
-            return Invalid("At least one '--type' option must be provided.");
-        }
-
-        return new CommandLineParseResult(
-            new GeneratorOptions(
-                inputPath,
-                outputPath,
-                targetNamespace,
-                fhirVersion,
-                typeNames.OrderBy(
-                    typeName => typeName,
-                    StringComparer.Ordinal).ToArray(),
-                policyPath ?? PrimitiveGenerationPolicyDefaults.GetPath()),
-            null,
-            ShowHelp: false);
+        return Invalid("Required option '--mode' was not provided.");
     }
 
     private static CommandLineParseResult ParsePrimitive(
@@ -263,7 +141,6 @@ public sealed class GeneratorCommandLineParser
 
         return new CommandLineParseResult(
             null,
-            null,
             ShowHelp: false,
             new PrimitiveGenerationOptions(
                 inputPath!,
@@ -307,7 +184,7 @@ public sealed class GeneratorCommandLineParser
         if (missing != default) return Invalid($"Required option '{missing.Item1}' was not provided.");
 
         string Policy(string name) => Path.Combine(AppContext.BaseDirectory, "Policy", name);
-        return new CommandLineParseResult(null, null, false, null,
+        return new CommandLineParseResult(null, false, null,
             new ModelGenerationOptions(
                 input!, output!, packageId!, packageVersion!, fhirVersion!,
                 primitivePolicy ?? PrimitiveGenerationPolicyDefaults.GetPath(),
@@ -321,12 +198,6 @@ public sealed class GeneratorCommandLineParser
                 ModelGenerationPipeline.DefaultCodeGenVersion));
     }
 
-    private static bool IsValidNamespace(string value)
-    {
-        return value.Split('.').All(segment =>
-            segment.Length > 0 && SyntaxFacts.IsValidIdentifier(segment));
-    }
-
     private static CommandLineParseResult Invalid(string message) =>
-        new(null, message, ShowHelp: false);
+        new(message, ShowHelp: false);
 }

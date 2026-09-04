@@ -1,6 +1,6 @@
 # MyFhirSdk
 
-MyFhirSdk is a .NET SDK for working with a focused FHIR R5 resource set. It currently provides typed resource models, FHIR JSON serialization and parsing, a small REST client, base validation, and an optional implementation-guide validation path.
+MyFhirSdk is a .NET SDK with generated FHIR R5 specialization datatypes and Resources. It provides typed resource models, FHIR JSON serialization and parsing, a small REST client, base validation, and an optional implementation-guide validation path.
 
 The SDK is still in pre-release shape. It is useful for MVP flows and SDK development, but it is not a complete FHIR R5 implementation yet.
 
@@ -8,8 +8,8 @@ The SDK is still in pre-release shape. It is useful for MVP flows and SDK develo
 
 - Target framework: `net9.0`
 - FHIR version target: R5
-- Resource models: `Patient`, `Bundle`, `Claim`, `Coverage`, `Encounter`, `Organization`, and `Practitioner`
-- Common datatypes and primitives used by the supported resources
+- Generated FHIR R5 specialization datatypes, Resources, and Resource-owned Backbones
+- Generated model factories, JSON metadata, and supported validation composition
 - FHIR JSON serializer and parser
 - REST client operations: read, create, update, and search
 - Base FHIR validation rules for the supported model surface
@@ -22,10 +22,11 @@ The SDK is still in pre-release shape. It is useful for MVP flows and SDK develo
 | --- | --- |
 | `MyFhirSdk.csproj` | SDK project |
 | `MyFhirSdk.sln` | Solution containing the SDK and test projects |
-| `Resources/` | Typed FHIR resource models |
-| `Types/` | FHIR complex datatypes |
+| `Generated/R5/Resources/` | Generated FHIR Resource and Resource-owned Backbone declarations |
+| `Generated/R5/Types/` | Generated FHIR complex datatype declarations |
+| `Types/SimpleQuantity.cs` | Retained handwritten constraint-profile declaration |
 | `Primitives/` | FHIR primitive wrappers |
-| `ModelMetadata/` | Internal model metadata contracts and transitional R5 provider composition |
+| `ModelMetadata/` | Internal model metadata contracts and generated R5 provider composition |
 | `Serialization/Json/` | FHIR JSON parser and serializer |
 | `Client/` | REST client, search, authentication, request, and response handling |
 | `Validation/` | Base validation and profile validation framework |
@@ -127,8 +128,8 @@ The Runtime contract keeps model execution separate from model declarations:
 - JSON parsing, serialization, validation traversal, primitive codecs, validators, registries,
   and model metadata lookup remain Runtime implementation details;
 - primitive wrappers are thin type declarations and must not contain validation algorithms;
-- model-specific R5 metadata is currently concentrated under `ModelMetadata/R5` and is intended
-  to be replaced by generated entries in a later phase.
+- model-specific R5 factories, datatype/open-type metadata, and supported validation rules are
+  generated under `Generated/R5/ModelMetadata`.
 
 See `docs/gen/MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md` for the fixed primitive matrix,
 generation policy, literal-preservation rules, bootstrap debt, and Phase B acceptance criteria.
@@ -136,8 +137,10 @@ Phase B generated primitive wrappers are committed under `Generated/R5/Primitive
 mapping derives from the validated versioned policy rather than a static primitive dictionary.
 See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Handoff.md` for the Phase C consumer contract,
 remaining complex-model ownership, and entry gates.
-See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Implementation_Guide.md` for the proposed
+See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Implementation_Guide.md` for the completed
 C0-C9 implementation order, gates, artifact layout, testing, and rollback strategy.
+See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_Handoff.md` for the remaining local-tool
+packaging and dependency-seam work.
 
 ## TW Core Profile Validation
 

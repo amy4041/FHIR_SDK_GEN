@@ -5,7 +5,6 @@ namespace MyFhirSdk.CodeGen.Cli;
 
 public sealed class GeneratorCli
 {
-    private readonly FhirSdkGenerator _generator;
     private readonly PrimitiveGenerationPipeline? _primitivePipeline;
     private readonly ModelGenerationPipeline? _modelPipeline;
     private readonly TextWriter _output;
@@ -13,18 +12,15 @@ public sealed class GeneratorCli
     private readonly GeneratorCommandLineParser _commandLineParser;
 
     public GeneratorCli(
-        FhirSdkGenerator generator,
         TextWriter output,
         TextWriter error,
         GeneratorCommandLineParser? commandLineParser = null,
         PrimitiveGenerationPipeline? primitivePipeline = null,
         ModelGenerationPipeline? modelPipeline = null)
     {
-        ArgumentNullException.ThrowIfNull(generator);
         ArgumentNullException.ThrowIfNull(output);
         ArgumentNullException.ThrowIfNull(error);
 
-        _generator = generator;
         _primitivePipeline = primitivePipeline;
         _modelPipeline = modelPipeline;
         _output = output;
@@ -78,9 +74,8 @@ public sealed class GeneratorCli
         }
         else
         {
-            generationResult = await _generator.GenerateAsync(
-                parseResult.Options!,
-                cancellationToken);
+            throw new InvalidOperationException(
+                "A successful command-line parse must select a generation mode.");
         }
         if (!generationResult.IsSuccess)
         {

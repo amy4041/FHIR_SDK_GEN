@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime、R5 Models 與 CodeGen 責任邊界
 
-Version 1.2
+Version 1.3
 
-- 文件狀態：Runtime Phase A Completed；Phase B handoff ready
+- 文件狀態：Runtime Phase A、Primitive Phase B、Models Phase C Completed；Phase D handoff ready
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
 - 目標交付形式：`MyFhirSdk.CodeGen` 作為 .NET local tool
 - 相關文件：
@@ -14,6 +14,7 @@ Version 1.2
   - `docs/gen/MyFhirSdk_Primitive_Generation_Phase_B_Implementation_Guide.md`
   - `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Handoff.md`
   - `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Implementation_Guide.md`
+  - `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_Handoff.md`
 
 ## 1. 文件目的
 
@@ -339,23 +340,19 @@ contract。Local tool 的發布不以完成此拆分為必要條件。
 
 ## 8. 目前實作與目標架構的差距
 
-Phase A 已移除 Parser/Serializer primitive 類別名稱分支，並把 Parser、Serializer、
-Validator 與 concrete R5 metadata 分離。目前仍有以下已指派 owner 的後續工作：
+Phase C 已完成完整 R5 specialization model、Resource、Backbone、factory、metadata 與
+validation composition 的生成及主 SDK 原子切換。目前剩餘差距均已交接 Phase D：
 
 - `MyFhirSdk.CodeGen` 以 `ProjectReference` 依賴整個 `MyFhirSdk.csproj`。
 - Roslyn validator 直接使用 `DataType` 所在的現有 SDK assembly。
-- `CSharpTypeMapper` 的 primitive mapping 已由 Phase B versioned generation policy 衍生的
-  `PrimitiveTypeMappingView` 取代；手寫 complex type whitelist 仍由 Phase C definition
-  inventory/dependency graph 取代。
-- generated datatype 依賴目前手寫的 `Core`、`Primitives` 與部分 `Types`。
-- 17 個 primitive wrapper declarations 與 default registry composition 已由 Phase B 生成並
-  編譯於主 SDK；正式 artifacts 位於 `Generated/R5/Primitives/`。
-- R5 resource、datatype、extension 與 validation entries 已集中於 `ModelMetadata/R5`，但
-  仍是手寫/assembly scan，交由 Phase C generated provider 取代。
+- metadata IR 只為 C0 核准的 external bootstrap nodes，以 CLR identity 從目前 SDK assembly
+  解析既有 declaration；不以 reflection 建立 concrete R5 inventory。
+- CLI 的 policy default 與啟動流程仍依賴 executable 位置及 repository-root locator。
+- CodeGen 尚未設定 `PackAsTool`、tool command/package metadata 與 local-tool manifest smoke tests。
 - Runtime、R5 Models 目前仍編譯於單一 SDK assembly；bootstrap debt 與未來 assembly seam
-  已在 Phase B handoff 登錄，不在 Phase A 強制拆分。
+  保留到 Phase D 重新評估。
 
-上述項目不影響已完成的五種 datatype MVP，但必須在完整 SDK generation 前逐步移除。
+詳細 owner、理由、退出條件與版本基準見 Phase D handoff。
 
 ## 9. 建議遷移順序
 
@@ -394,6 +391,9 @@ source；Phase C 必須依
 3. 生成所有 complex datatypes、base model shape 與 registries。
 4. 生成 Resources、Backbone structures、choice 與 validation metadata。
 5. 使用完整 R5 batch 進行 deterministic、Roslyn 與 runtime contract tests。
+
+Phase C 已完成。正式輸出位於 `Generated/R5`，共 831 個 model artifacts；舊 MVP preview
+pipeline、mapping fallback、手寫 concrete model 與手寫 R5 metadata entry list 均已移除。
 
 ### Phase D：local tool 發布
 

@@ -1,4 +1,3 @@
-using MyFhirSdk.Core;
 using MyFhirSdk.Validation.Rules;
 
 namespace MyFhirSdk.ModelMetadata.R5;
@@ -30,24 +29,8 @@ internal sealed class R5ModelMetadataProvider :
     public ResourceTypeMetadata GetRequiredResource(string fhirTypeName) =>
         _models.GetRequiredResource(fhirTypeName);
 
-    public ResourceTypeMetadata GetRequiredResource(Type resourceType)
-    {
-        ArgumentNullException.ThrowIfNull(resourceType);
-
-        try
-        {
-            return _models.GetRequiredResource(resourceType);
-        }
-        catch (FhirSdkException) when (
-            typeof(Resource).IsAssignableFrom(resourceType) &&
-            !resourceType.IsAbstract &&
-            !resourceType.IsInterface)
-        {
-            // Generated model assemblies can pass a known concrete TResource
-            // without becoming part of the handwritten R5 provider inventory.
-            return CreateResourceMetadata(resourceType);
-        }
-    }
+    public ResourceTypeMetadata GetRequiredResource(Type resourceType) =>
+        _models.GetRequiredResource(resourceType);
 
     public bool TryGetDeclaredDataType(
         Type declaringType,
@@ -91,20 +74,6 @@ internal sealed class R5ModelMetadataProvider :
         return new R5ModelMetadataProvider(
             GeneratedR5ModelMetadata.Create(),
             GeneratedR5ValidationRules.Create());
-    }
-
-    private static ResourceTypeMetadata CreateResourceMetadata(Type type)
-    {
-        var resource = (Resource?)Activator.CreateInstance(type)
-            ?? throw new InvalidOperationException(
-                $"Could not create R5 Resource metadata for '{type.FullName}'.");
-
-        return new ResourceTypeMetadata(
-            resource.ResourceType,
-            type,
-            () => (Resource)(Activator.CreateInstance(type)
-                ?? throw new InvalidOperationException(
-                    $"Could not create R5 Resource '{type.FullName}'.")));
     }
 
 }
