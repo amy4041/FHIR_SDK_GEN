@@ -2,7 +2,7 @@
 
 Version 1.0
 
-- Status: Phase C completed; Phase D D0 baseline accepted; D1 ready to start
+- Status: Phase C completed; Phase D D0-D1 completed; D2 ready to start
 - Baseline: FHIR R5 `5.0.0`, `hl7.fhir.r5.core#5.0.0`, .NET 9
 - CodeGen contract version: `1.0.0`
 - Runtime contract: `phase-a-v1+c4-primitives-v1`
@@ -10,6 +10,8 @@ Version 1.0
   `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_Implementation_Guide.md`
 - D0 decisions:
   `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_D0_Decisions.md`
+- D1 implementation:
+  `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_D1_Implementation.md`
 
 ## Phase C delivered state
 

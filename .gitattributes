@@ -9,3 +9,4 @@ CodeGen/Policy/r5-model-naming-policy.json text eol=lf
 CodeGen/Policy/r5-backbone-policy.json text eol=lf
 CodeGen/Policy/r5-choice-open-type-policy.json text eol=lf
 CodeGen/Policy/r5-validation-capability-policy.json text eol=lf
+CodeGen/Policy/runtime-contract.json text eol=lf
