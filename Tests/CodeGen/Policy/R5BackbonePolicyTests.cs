@@ -168,7 +168,7 @@ public sealed class R5BackbonePolicyTests
             .OrderBy(type => type.Name, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(32, currentBackbones.Length);
+        Assert.Equal(approvedNames.Count, currentBackbones.Length);
         Assert.All(currentBackbones, type => Assert.Contains(type.Name, approvedNames));
         Assert.All(currentBackbones, type => Assert.True(type.IsSealed));
     }

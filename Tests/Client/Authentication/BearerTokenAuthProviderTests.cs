@@ -3,7 +3,7 @@ namespace MyFhirSdk.Tests.Client.Authentication;
 public sealed class BearerTokenAuthProviderTests
 {
     [Fact]
-    public async Task ApplyAsyncAddsAuthorizationHeader()
+    public async global::System.Threading.Tasks.Task ApplyAsyncAddsAuthorizationHeader()
     {
         var provider = new BearerTokenAuthProvider("secret-token");
         using var request = new HttpRequestMessage(HttpMethod.Get, "https://example.org/fhir/Patient/123");

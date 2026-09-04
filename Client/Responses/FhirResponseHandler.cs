@@ -85,7 +85,7 @@ public sealed class FhirResponseHandler : IFhirResponseHandler
         CancellationToken cancellationToken)
     {
         return response.Content is null
-            ? Task.FromResult(string.Empty)
+            ? System.Threading.Tasks.Task.FromResult(string.Empty)
             : response.Content.ReadAsStringAsync(cancellationToken);
     }
 }

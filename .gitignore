@@ -165,6 +165,13 @@ Generated/*
 Generated/R5/*
 !Generated/R5/Primitives/
 !Generated/R5/Primitives/**
+!Generated/R5/Types/
+!Generated/R5/Types/**
+!Generated/R5/Resources/
+!Generated/R5/Resources/**
+!Generated/R5/ModelMetadata/
+!Generated/R5/ModelMetadata/**
+!Generated/R5/model-generation-manifest.json
 wwwroot/dist/
 wwwroot/lib/
 

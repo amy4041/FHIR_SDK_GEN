@@ -15,7 +15,7 @@ public sealed class FhirRequestBuilderTests
     }
 
     [Fact]
-    public async Task BuildCreateRequestCreatesPostResourceTypeRequest()
+    public async global::System.Threading.Tasks.Task BuildCreateRequestCreatesPostResourceTypeRequest()
     {
         var builder = CreateBuilder();
         var patient = new Patient();
@@ -31,7 +31,7 @@ public sealed class FhirRequestBuilderTests
     }
 
     [Fact]
-    public async Task BuildUpdateRequestCreatesPutResourceInstanceRequest()
+    public async global::System.Threading.Tasks.Task BuildUpdateRequestCreatesPutResourceInstanceRequest()
     {
         var builder = CreateBuilder();
         var patient = new Patient { Id = "abc" };

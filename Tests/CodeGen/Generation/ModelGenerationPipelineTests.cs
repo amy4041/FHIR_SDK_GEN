@@ -60,7 +60,9 @@ public sealed class ModelGenerationPipelineTests : IDisposable
         var result = await new ModelGenerationPipeline(_root).GenerateAsync(options);
 
         Assert.True(result.IsSuccess, Describe(result.Diagnostics));
-        var manifestPath = Path.Combine(output, ModelGenerationManifestModel.FileName);
+        var manifestPath = Path.Combine(
+            output,
+            ModelGenerationManifestModel.FileName.Replace('/', Path.DirectorySeparatorChar));
         Assert.True(File.Exists(manifestPath));
         using var manifest = JsonDocument.Parse(await File.ReadAllTextAsync(manifestPath));
         Assert.Equal("selected", manifest.RootElement.GetProperty("generationScope").GetProperty("mode").GetString());

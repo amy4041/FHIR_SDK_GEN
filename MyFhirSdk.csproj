@@ -8,6 +8,14 @@
     <Compile Remove="CodeGen\**\*.cs" />
     <Compile Remove="core\bin\**\*.cs" />
     <Compile Remove="core\obj\**\*.cs" />
+    <Compile Remove="Resources\**\*.cs" />
     <Compile Remove="Tests\**\*.cs" />
+    <Compile Remove="Types\**\*.cs" />
+    <Compile Remove="ModelMetadata\R5\R5HandwrittenModelMetadataEntries.cs" />
+    <Compile Remove="ModelMetadata\R5\R5ValidationRuleEntries.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- SimpleQuantity is an excluded constraint profile, not a generated specialization. -->
+    <Compile Include="Types\SimpleQuantity.cs" />
   </ItemGroup>
 </Project>
