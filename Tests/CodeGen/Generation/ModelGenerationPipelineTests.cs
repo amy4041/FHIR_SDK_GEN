@@ -51,6 +51,27 @@ public sealed class ModelGenerationPipelineTests : IDisposable
     }
 
     [Fact]
+    public async Task BuildAsync_PolicyCheckoutNewlines_ProducesIdenticalManifest()
+    {
+        Directory.CreateDirectory(_root);
+        var lfRoot = Path.Combine(_root, "policies-lf");
+        var crlfRoot = Path.Combine(_root, "policies-crlf");
+        await CopyPoliciesAsync(lfRoot, "\n");
+        await CopyPoliciesAsync(crlfRoot, "\r\n");
+        var selected = new[] { "http://hl7.org/fhir/StructureDefinition/Patient" };
+        var pipeline = new ModelGenerationPipeline(_root);
+
+        var lf = await pipeline.BuildAsync(WithPolicyRoot(Options(selected), lfRoot));
+        var crlf = await pipeline.BuildAsync(WithPolicyRoot(Options(selected), crlfRoot));
+
+        Assert.True(lf.IsSuccess, Describe(lf.Diagnostics));
+        Assert.True(crlf.IsSuccess, Describe(crlf.Diagnostics));
+        Assert.Equal(
+            lf.Value!.Artifacts.Select(artifact => (artifact.FileName, artifact.Content)),
+            crlf.Value!.Artifacts.Select(artifact => (artifact.FileName, artifact.Content)));
+    }
+
+    [Fact]
     public async Task GenerateAsync_SelectedScope_CommitsNestedBatchAndManifest()
     {
         Directory.CreateDirectory(_root);
@@ -112,6 +133,42 @@ public sealed class ModelGenerationPipelineTests : IDisposable
             Policy("primitive-generation-policy.json"), Policy("r5-model-ownership-policy.json"),
             new ModelIrPolicyPaths(Policy("r5-model-naming-policy.json"), Policy("r5-backbone-policy.json"), Policy("r5-choice-open-type-policy.json")),
             Policy("r5-validation-capability-policy.json"), selected, ModelGenerationPipeline.DefaultCodeGenVersion);
+    }
+
+    private static ModelGenerationOptions WithPolicyRoot(
+        ModelGenerationOptions options,
+        string policyRoot) =>
+        options with
+        {
+            PrimitivePolicyPath = Path.Combine(policyRoot, "primitive-generation-policy.json"),
+            OwnershipPolicyPath = Path.Combine(policyRoot, "r5-model-ownership-policy.json"),
+            ModelIrPolicyPaths = new ModelIrPolicyPaths(
+                Path.Combine(policyRoot, "r5-model-naming-policy.json"),
+                Path.Combine(policyRoot, "r5-backbone-policy.json"),
+                Path.Combine(policyRoot, "r5-choice-open-type-policy.json")),
+            ValidationPolicyPath = Path.Combine(policyRoot, "r5-validation-capability-policy.json")
+        };
+
+    private static async Task CopyPoliciesAsync(string destination, string newline)
+    {
+        Directory.CreateDirectory(destination);
+        foreach (var name in new[]
+        {
+            "primitive-generation-policy.json",
+            "r5-model-ownership-policy.json",
+            "r5-model-naming-policy.json",
+            "r5-backbone-policy.json",
+            "r5-choice-open-type-policy.json",
+            "r5-validation-capability-policy.json"
+        })
+        {
+            var content = await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Policy", name));
+            var normalized = content
+                .Replace("\r\n", "\n", StringComparison.Ordinal)
+                .Replace('\r', '\n')
+                .Replace("\n", newline, StringComparison.Ordinal);
+            await File.WriteAllTextAsync(Path.Combine(destination, name), normalized);
+        }
     }
 
     private static string Describe(IEnumerable<MyFhirSdk.CodeGen.Diagnostics.GeneratorDiagnostic> diagnostics) =>
