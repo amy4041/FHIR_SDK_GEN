@@ -35,7 +35,10 @@ public sealed class ResourceBackboneGeneratedRuntimeTests
             .OrderBy(type => type.FullName, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(39, existingTypes.Length);
+        Assert.Equal(
+            declarations.Values.Count(declaration =>
+                declaration.Namespace == "MyFhirSdk.Resources"),
+            existingTypes.Length);
         foreach (var existingType in existingTypes)
         {
             var declaration = declarations[existingType.FullName!];
@@ -49,7 +52,8 @@ public sealed class ResourceBackboneGeneratedRuntimeTests
             foreach (var existingProperty in existingType.GetProperties(
                          BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
             {
-                if (existingProperty.Name == nameof(Resource.ResourceType))
+                if (existingProperty.Name == nameof(Resource.ResourceType) &&
+                    typeof(Resource).IsAssignableFrom(existingType))
                 {
                     Assert.Equal(existingType.Name, declaration.FhirName);
                     continue;

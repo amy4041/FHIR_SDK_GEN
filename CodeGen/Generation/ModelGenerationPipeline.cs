@@ -98,7 +98,7 @@ public sealed class ModelGenerationPipeline
             };
             var policyModels = new List<ModelManifestPolicyModel>();
             foreach (var (name, path) in policies.OrderBy(x => x.Item1, StringComparer.Ordinal))
-                policyModels.Add(new(name, await HashFileAsync(path, cancellationToken)));
+                policyModels.Add(new(name, await HashTextFileAsync(path, cancellationToken)));
 
             var artifactModels = sources.Select(source => new ModelManifestArtifactModel(
                 source.FileName.Replace('\\', '/'), HashText(source.Source))).ToArray();
@@ -106,9 +106,9 @@ public sealed class ModelGenerationPipeline
                 options.ValidationPolicyPath, options.FhirVersion, cancellationToken);
             var manifest = new ModelGenerationManifestModel(
                 options.PackageId, options.PackageVersion, options.FhirVersion,
-                await HashFileAsync(options.PackagePath, cancellationToken),
+                await HashBinaryFileAsync(options.PackagePath, cancellationToken),
                 primitivePolicy.Value.PolicyVersion,
-                await HashFileAsync(options.PrimitivePolicyPath, cancellationToken),
+                await HashTextFileAsync(options.PrimitivePolicyPath, cancellationToken),
                 options.CodeGenVersion, primitivePolicy.Value.RuntimeContractVersion,
                 options.SelectedCanonicals.Count == 0 ? "full" : "selected",
                 options.SelectedCanonicals, policyModels, artifactModels, deferred);
@@ -133,11 +133,18 @@ public sealed class ModelGenerationPipeline
         return await _writer.WriteArtifactsAsync(options.OutputPath, result.Value.Artifacts, cancellationToken);
     }
 
-    private static async Task<string> HashFileAsync(string path, CancellationToken cancellationToken)
+    private static async Task<string> HashBinaryFileAsync(
+        string path,
+        CancellationToken cancellationToken)
     {
         await using var stream = File.OpenRead(Path.GetFullPath(path));
         return Convert.ToHexString(await SHA256.HashDataAsync(stream, cancellationToken)).ToLowerInvariant();
     }
+
+    private static async Task<string> HashTextFileAsync(
+        string path,
+        CancellationToken cancellationToken) =>
+        HashText(await File.ReadAllTextAsync(Path.GetFullPath(path), cancellationToken));
 
     private static string HashText(string value)
     {

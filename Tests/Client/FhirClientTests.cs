@@ -3,7 +3,7 @@ namespace MyFhirSdk.Tests.Client;
 public sealed class FhirClientTests
 {
     [Fact]
-    public async Task ReadAsyncSendsRequestAndParsesResponse()
+    public async global::System.Threading.Tasks.Task ReadAsyncSendsRequestAndParsesResponse()
     {
         var patient = new Patient { Id = "123" };
         var parser = new FakeFhirParser();
@@ -24,7 +24,7 @@ public sealed class FhirClientTests
     }
 
     [Fact]
-    public async Task ReadAsyncReturnsNullForNotFound()
+    public async global::System.Threading.Tasks.Task ReadAsyncReturnsNullForNotFound()
     {
         var sender = new FakeFhirHttpSender();
         sender.EnqueueResponse(CreateResponse(HttpStatusCode.NotFound, "{\"resourceType\":\"OperationOutcome\"}"));
@@ -38,7 +38,7 @@ public sealed class FhirClientTests
     }
 
     [Fact]
-    public async Task CreateAsyncSerializesAndSendsResource()
+    public async global::System.Threading.Tasks.Task CreateAsyncSerializesAndSendsResource()
     {
         var resource = new Patient();
         var created = new Patient { Id = "created" };
@@ -67,7 +67,7 @@ public sealed class FhirClientTests
     }
 
     [Fact]
-    public async Task CreateAsyncDoesNotValidateWhenValidationDisabled()
+    public async global::System.Threading.Tasks.Task CreateAsyncDoesNotValidateWhenValidationDisabled()
     {
         var resource = new Patient { Id = "bad/id" };
         var created = new Patient { Id = "created" };
@@ -94,7 +94,7 @@ public sealed class FhirClientTests
     }
 
     [Fact]
-    public async Task CreateAsyncValidatesBeforeSendingWhenEnabled()
+    public async global::System.Threading.Tasks.Task CreateAsyncValidatesBeforeSendingWhenEnabled()
     {
         var resource = new Patient();
         var serializer = new FakeFhirSerializer();
@@ -117,7 +117,7 @@ public sealed class FhirClientTests
     }
 
     [Fact]
-    public async Task UpdateAsyncSerializesAndSendsResource()
+    public async global::System.Threading.Tasks.Task UpdateAsyncSerializesAndSendsResource()
     {
         var resource = new Patient { Id = "updated" };
         var updated = new Patient { Id = "updated" };
@@ -152,7 +152,7 @@ public sealed class FhirClientTests
     }
 
     [Fact]
-    public async Task UpdateAsyncValidatesBeforeSendingWhenEnabled()
+    public async global::System.Threading.Tasks.Task UpdateAsyncValidatesBeforeSendingWhenEnabled()
     {
         var resource = new Patient { Id = "updated" };
         var serializer = new FakeFhirSerializer();
@@ -175,7 +175,7 @@ public sealed class FhirClientTests
     }
 
     [Fact]
-    public async Task UpdateAsyncRequiresResourceId()
+    public async global::System.Threading.Tasks.Task UpdateAsyncRequiresResourceId()
     {
         var resource = new Patient();
         var parser = new FakeFhirParser();
@@ -188,7 +188,7 @@ public sealed class FhirClientTests
     }
 
     [Fact]
-    public async Task ReadAsyncDoesNotValidateWhenValidationEnabled()
+    public async global::System.Threading.Tasks.Task ReadAsyncDoesNotValidateWhenValidationEnabled()
     {
         var patient = new Patient { Id = "123" };
         var parser = new FakeFhirParser();
@@ -209,7 +209,7 @@ public sealed class FhirClientTests
     }
 
     [Fact]
-    public async Task SearchAsyncSendsStructuredSearchQuery()
+    public async global::System.Threading.Tasks.Task SearchAsyncSendsStructuredSearchQuery()
     {
         var bundle = new Bundle();
         var parser = new FakeFhirParser();
@@ -229,7 +229,7 @@ public sealed class FhirClientTests
     }
 
     [Fact]
-    public async Task SearchAsyncSendsRawSearchQuery()
+    public async global::System.Threading.Tasks.Task SearchAsyncSendsRawSearchQuery()
     {
         var bundle = new Bundle();
         var parser = new FakeFhirParser();
@@ -249,7 +249,7 @@ public sealed class FhirClientTests
     }
 
     [Fact]
-    public async Task SearchAsyncDoesNotValidateWhenValidationEnabled()
+    public async global::System.Threading.Tasks.Task SearchAsyncDoesNotValidateWhenValidationEnabled()
     {
         var bundle = new Bundle();
         var parser = new FakeFhirParser();
@@ -270,7 +270,7 @@ public sealed class FhirClientTests
     }
 
     [Fact]
-    public async Task ConstructorUsesNoAuthProviderWhenAuthProviderIsNull()
+    public async global::System.Threading.Tasks.Task ConstructorUsesNoAuthProviderWhenAuthProviderIsNull()
     {
         var patient = new Patient { Id = "123" };
         var parser = new FakeFhirParser();

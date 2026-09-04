@@ -22,10 +22,10 @@ public sealed class FakeFhirHttpSender : IFhirHttpSender
             var response = _responses.Dequeue();
             response.RequestMessage ??= request;
 
-            return Task.FromResult(response);
+            return System.Threading.Tasks.Task.FromResult(response);
         }
 
-        return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+        return System.Threading.Tasks.Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent("{}"),
             RequestMessage = request

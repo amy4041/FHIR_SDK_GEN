@@ -3,7 +3,7 @@ namespace MyFhirSdk.Tests.Client.Authentication;
 public sealed class NoAuthProviderTests
 {
     [Fact]
-    public async Task ApplyAsyncDoesNotMutateAuthorizationHeader()
+    public async global::System.Threading.Tasks.Task ApplyAsyncDoesNotMutateAuthorizationHeader()
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, "https://example.org/fhir/Patient/123");
 

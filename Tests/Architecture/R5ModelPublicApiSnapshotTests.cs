@@ -14,6 +14,15 @@ public sealed class R5ModelPublicApiSnapshotTests
         var actual = R5ModelPublicApiSnapshot.Create(
             R5ModelPublicApiSnapshot.GetSurfaceTypes(typeof(FhirObject).Assembly));
 
+        if (string.Equals(
+                Environment.GetEnvironmentVariable("UPDATE_APPROVED_R5_MODEL_API"),
+                "1",
+                StringComparison.Ordinal))
+        {
+            File.WriteAllText(approvedPath, actual + "\n");
+            approved = actual;
+        }
+
         if (string.Equals(approved, "PENDING", StringComparison.Ordinal))
         {
             Assert.Fail(
@@ -29,12 +38,12 @@ public sealed class R5ModelPublicApiSnapshotTests
         var types = R5ModelPublicApiSnapshot.GetSurfaceTypes(
             typeof(FhirObject).Assembly);
 
-        Assert.Equal(68, types.Count);
+        Assert.Equal(842, types.Count);
         Assert.Equal(
-            17,
+            57,
             types.Count(type => type.Namespace == "MyFhirSdk.Types"));
         Assert.Equal(
-            39,
+            773,
             types.Count(type => type.Namespace == "MyFhirSdk.Resources"));
         Assert.Equal(
             12,

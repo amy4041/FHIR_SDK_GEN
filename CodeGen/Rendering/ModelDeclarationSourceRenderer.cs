@@ -172,6 +172,14 @@ internal sealed class ModelDeclarationSourceRenderer
 
     private static string Unqualified(string cSharpType)
     {
+        // System.Range is supplied by SDK implicit global usings. Keep the FHIR
+        // datatype identity explicit so generated sources compile both in the
+        // isolated Roslyn batch and in the SDK project.
+        if (string.Equals(cSharpType, "MyFhirSdk.Types.Range", StringComparison.Ordinal))
+        {
+            return "global::MyFhirSdk.Types.Range";
+        }
+
         var separator = cSharpType.LastIndexOf('.');
         return separator < 0 ? cSharpType : cSharpType[(separator + 1)..];
     }

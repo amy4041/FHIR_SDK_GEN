@@ -3,7 +3,7 @@ namespace MyFhirSdk.Tests.Client.Responses;
 public sealed class FhirResponseHandlerTests
 {
     [Fact]
-    public async Task HandleRequiredResourceAsyncParsesSuccessfulBody()
+    public async global::System.Threading.Tasks.Task HandleRequiredResourceAsyncParsesSuccessfulBody()
     {
         var parser = new FakeFhirParser();
         var expected = new Patient { Id = "123" };
@@ -20,7 +20,7 @@ public sealed class FhirResponseHandlerTests
     }
 
     [Fact]
-    public async Task HandleOptionalResourceAsyncReturnsNullForNotFound()
+    public async global::System.Threading.Tasks.Task HandleOptionalResourceAsyncReturnsNullForNotFound()
     {
         var parser = new FakeFhirParser();
         var handler = new FhirResponseHandler(parser);
@@ -33,7 +33,7 @@ public sealed class FhirResponseHandlerTests
     }
 
     [Fact]
-    public async Task HandleRequiredResourceAsyncRejectsEmptyBody()
+    public async global::System.Threading.Tasks.Task HandleRequiredResourceAsyncRejectsEmptyBody()
     {
         var handler = new FhirResponseHandler(new FakeFhirParser());
         using var response = CreateResponse(HttpStatusCode.OK, "");
@@ -43,7 +43,7 @@ public sealed class FhirResponseHandlerTests
     }
 
     [Fact]
-    public async Task HandleRequiredResourceAsyncThrowsHttpExceptionForNonSuccess()
+    public async global::System.Threading.Tasks.Task HandleRequiredResourceAsyncThrowsHttpExceptionForNonSuccess()
     {
         var handler = new FhirResponseHandler(new FakeFhirParser());
         using var response = CreateResponse(
@@ -61,7 +61,7 @@ public sealed class FhirResponseHandlerTests
     }
 
     [Fact]
-    public async Task HandleRequiredResourceAsyncWrapsParserFailure()
+    public async global::System.Threading.Tasks.Task HandleRequiredResourceAsyncWrapsParserFailure()
     {
         var parser = new FakeFhirParser
         {
@@ -78,7 +78,7 @@ public sealed class FhirResponseHandlerTests
     }
 
     [Fact]
-    public async Task HandleBundleAsyncParsesSuccessfulBundle()
+    public async global::System.Threading.Tasks.Task HandleBundleAsyncParsesSuccessfulBundle()
     {
         var parser = new FakeFhirParser();
         var expected = new Bundle();

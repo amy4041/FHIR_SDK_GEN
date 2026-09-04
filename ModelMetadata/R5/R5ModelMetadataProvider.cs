@@ -4,9 +4,9 @@ using MyFhirSdk.Validation.Rules;
 namespace MyFhirSdk.ModelMetadata.R5;
 
 /// <summary>
-/// Owns the handwritten R5 model-to-Runtime metadata boundary.
-/// Runtime engines consume only the provider contracts; R5-specific reflection
-/// and concrete model references are concentrated here.
+/// Owns the generated R5 model-to-Runtime metadata boundary.
+/// Runtime engines consume only provider contracts; generated R5 identities
+/// and validation entries are composed here.
 /// </summary>
 internal sealed class R5ModelMetadataProvider :
     IModelMetadataProvider,
@@ -89,8 +89,8 @@ internal sealed class R5ModelMetadataProvider :
     private static R5ModelMetadataProvider CreateDefault()
     {
         return new R5ModelMetadataProvider(
-            R5HandwrittenModelMetadataEntries.Create(),
-            ResourceRuleRegistry.Create(R5ValidationRuleEntries.Create()));
+            GeneratedR5ModelMetadata.Create(),
+            GeneratedR5ValidationRules.Create());
     }
 
     private static ResourceTypeMetadata CreateResourceMetadata(Type type)

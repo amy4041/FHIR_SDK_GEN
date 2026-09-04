@@ -5,7 +5,7 @@ namespace MyFhirSdk.CodeGen.Models;
 public sealed class ModelGenerationManifestModel
 {
     public const int CurrentSchemaVersion = 1;
-    public const string FileName = "model-generation-manifest.json";
+    public const string FileName = "Generated/R5/model-generation-manifest.json";
 
     public ModelGenerationManifestModel(
         string packageId,
@@ -56,4 +56,3 @@ public sealed class ModelGenerationManifestModel
 public sealed record ModelManifestPolicyModel(string Name, string Sha256);
 public sealed record ModelManifestArtifactModel(string Path, string Sha256);
 public sealed record ModelManifestCapabilityModel(string Id, string Status);
-

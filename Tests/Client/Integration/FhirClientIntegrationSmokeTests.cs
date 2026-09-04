@@ -11,7 +11,7 @@ public sealed class FhirClientIntegrationSmokeTests
 
     [IntegrationFact]
     [Trait("Category", "Integration")]
-    public async Task PatientCrudSearchSmokeFlow()
+    public async global::System.Threading.Tasks.Task PatientCrudSearchSmokeFlow()
     {
         using var httpClient = new HttpClient();
         var client = CreateClient(httpClient);
@@ -97,7 +97,7 @@ public sealed class FhirClientIntegrationSmokeTests
         return patient;
     }
 
-    private static async Task<Patient?> WaitForPatientSearchResultAsync(
+    private static async global::System.Threading.Tasks.Task<Patient?> WaitForPatientSearchResultAsync(
         FhirClient client,
         string marker,
         string expectedId)
@@ -120,7 +120,7 @@ public sealed class FhirClientIntegrationSmokeTests
 
             if (attempt < 5)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                await System.Threading.Tasks.Task.Delay(TimeSpan.FromSeconds(1));
             }
         }
 
