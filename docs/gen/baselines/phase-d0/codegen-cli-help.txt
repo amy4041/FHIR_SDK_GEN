@@ -1,0 +1,20 @@
+Usage:
+  # Phase B primitive batch mode
+  dotnet run --project CodeGen/MyFhirSdk.CodeGen.csproj -- \
+    --mode primitive \
+    --input <definitions-path> \
+    --policy <policy-path> \
+    --output <path> \
+    --fhir-version <version> \
+    --package-id <package-id> \
+    --package-version <package-version>
+
+  # Phase C R5 model batch mode (omit --canonical for full scope)
+  dotnet run --project CodeGen/MyFhirSdk.CodeGen.csproj -- \
+    --mode model \
+    --input <package.tgz> \
+    --output <path> \
+    --fhir-version <version> \
+    --package-id <package-id> \
+    --package-version <package-version> \
+    [--canonical <structure-definition-canonical> ...]

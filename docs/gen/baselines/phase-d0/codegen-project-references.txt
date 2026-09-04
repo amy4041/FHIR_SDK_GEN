@@ -1,0 +1,6 @@
+Command: dotnet list CodeGen/MyFhirSdk.CodeGen.csproj reference
+Captured: 2026-09-04
+
+Project reference(s)
+--------------------
+..\MyFhirSdk.csproj
