@@ -57,6 +57,31 @@ public static class GeneratorExitCodeMapper
             return 2;
         }
 
+        if (codes.Any(code => code is
+                GeneratorDiagnosticCodes.DefinitionPackageReadFailure or
+                GeneratorDiagnosticCodes.DefinitionPackageIdentityMismatch or
+                GeneratorDiagnosticCodes.InvalidDefinitionInventory or
+                GeneratorDiagnosticCodes.DuplicateDefinitionInventoryEntry or
+                GeneratorDiagnosticCodes.ModelOwnershipPolicyReadFailure or
+                GeneratorDiagnosticCodes.ModelIrPolicyReadFailure))
+        {
+            return 2;
+        }
+
+        if (codes.Any(code => code is
+                GeneratorDiagnosticCodes.InvalidDependencyGraph or
+                GeneratorDiagnosticCodes.MissingDependency or
+                GeneratorDiagnosticCodes.IncompatibleInheritance or
+                GeneratorDiagnosticCodes.InheritanceCycle or
+                GeneratorDiagnosticCodes.UnsupportedPrimitiveReference or
+                GeneratorDiagnosticCodes.InvalidGenerationScope or
+                GeneratorDiagnosticCodes.InvalidModelIr or
+                GeneratorDiagnosticCodes.UnsupportedModelShape or
+                GeneratorDiagnosticCodes.ModelIrCollision))
+        {
+            return 3;
+        }
+
         return fallback;
     }
 }

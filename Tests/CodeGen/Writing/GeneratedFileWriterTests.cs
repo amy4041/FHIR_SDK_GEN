@@ -82,6 +82,22 @@ public sealed class GeneratedFileWriterTests : IDisposable
     }
 
     [Fact]
+    public async Task WriteArtifactsAsync_NestedPaths_AreCommittedDeterministically()
+    {
+        var outputRoot = Path.Combine(_testRoot, "model-output");
+        var result = await CreateWriter().WriteArtifactsAsync(outputRoot,
+        [
+            new GeneratedArtifact("Generated/R5/Resources/Patient/Patient.g.cs", "a\r\n"),
+            new GeneratedArtifact("model-generation-manifest.json", "{}\r\n")
+        ]);
+
+        Assert.True(result.IsSuccess, FormatDiagnostics(result.Diagnostics));
+        Assert.Equal("a\n", await File.ReadAllTextAsync(Path.Combine(
+            outputRoot, "Generated", "R5", "Resources", "Patient", "Patient.g.cs")));
+        Assert.Empty(FindTransactionDirectories(outputRoot));
+    }
+
+    [Fact]
     public async Task WriteAsync_RepositoryRoot_ReturnsFsg0011WithoutModification()
     {
         var markerPath = Path.Combine(_repositoryRoot, "marker.txt");

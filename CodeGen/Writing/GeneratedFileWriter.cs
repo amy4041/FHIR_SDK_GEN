@@ -146,6 +146,7 @@ public sealed class GeneratedFileWriter
             foreach (var source in sources)
             {
                 var stagingFile = Path.Combine(stagingPath, source.FileName);
+                Directory.CreateDirectory(Path.GetDirectoryName(stagingFile)!);
                 await File.WriteAllBytesAsync(
                     stagingFile,
                     source.Bytes,
@@ -284,19 +285,19 @@ public sealed class GeneratedFileWriter
                     "The generated artifact batch contains a null item."));
             }
 
-            if (!IsSafeFileName(source.FileName))
+            if (!TryNormalizeRelativePath(source.FileName, out var relativePath))
             {
                 return SourcePreparation.Failure(CreateDiagnostic(
                     source.FileName ?? outputPath,
-                    "Generated artifact file names must be plain file names " +
+                    "Generated artifact paths must be safe relative paths " +
                     "without rooted paths or directory traversal."));
             }
 
-            if (!fileNames.Add(source.FileName))
+            if (!fileNames.Add(relativePath))
             {
                 return SourcePreparation.Failure(CreateDiagnostic(
                     source.FileName,
-                    $"Generated artifact file name '{source.FileName}' is " +
+                    $"Generated artifact path '{source.FileName}' is " +
                     "duplicated."));
             }
 
@@ -311,7 +312,7 @@ public sealed class GeneratedFileWriter
             try
             {
                 preparedSources.Add(new PreparedSource(
-                    source.FileName,
+                    relativePath,
                     Utf8WithoutBom.GetBytes(content)));
             }
             catch (EncoderFallbackException exception)
@@ -332,15 +333,19 @@ public sealed class GeneratedFileWriter
         string outputPath,
         IReadOnlyList<PreparedSource> sources)
     {
-        if (!Directory.Exists(outputPath) ||
-            Directory.EnumerateDirectories(outputPath).Any())
+        if (!Directory.Exists(outputPath))
         {
             return false;
         }
 
         var existingFiles = Directory
-            .EnumerateFiles(outputPath)
-            .OrderBy(path => Path.GetFileName(path), StringComparer.Ordinal)
+            .EnumerateFiles(outputPath, "*", SearchOption.AllDirectories)
+            .Select(path => new
+            {
+                FullPath = path,
+                RelativePath = Path.GetRelativePath(outputPath, path)
+            })
+            .OrderBy(item => item.RelativePath, StringComparer.Ordinal)
             .ToArray();
         if (existingFiles.Length != sources.Count)
         {
@@ -352,10 +357,10 @@ public sealed class GeneratedFileWriter
             var source = sources[index];
             var existingFile = existingFiles[index];
             if (!string.Equals(
-                    Path.GetFileName(existingFile),
+                    existingFile.RelativePath,
                     source.FileName,
                     StringComparison.Ordinal) ||
-                !File.ReadAllBytes(existingFile).AsSpan().SequenceEqual(source.Bytes))
+                !File.ReadAllBytes(existingFile.FullPath).AsSpan().SequenceEqual(source.Bytes))
             {
                 return false;
             }
@@ -411,16 +416,29 @@ public sealed class GeneratedFileWriter
             SecurityException or NotSupportedException;
     }
 
-    private static bool IsSafeFileName(string? fileName)
+    private static bool TryNormalizeRelativePath(
+        string? artifactPath,
+        out string relativePath)
     {
-        return !string.IsNullOrWhiteSpace(fileName) &&
-            fileName is not "." and not ".." &&
-            !Path.IsPathRooted(fileName) &&
-            fileName.IndexOfAny(['/', '\\']) < 0 &&
-            fileName.IndexOfAny(Path.GetInvalidFileNameChars()) < 0 &&
-            fileName.IndexOfAny(['<', '>', ':', '"', '|', '?', '*']) < 0 &&
-            !fileName.EndsWith(' ') &&
-            !fileName.EndsWith('.');
+        relativePath = string.Empty;
+        if (string.IsNullOrWhiteSpace(artifactPath) || Path.IsPathRooted(artifactPath))
+        {
+            return false;
+        }
+
+        var segments = artifactPath.Split(['/', '\\'], StringSplitOptions.None);
+        if (segments.Any(segment =>
+                string.IsNullOrWhiteSpace(segment) ||
+                segment is "." or ".." ||
+                segment.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 ||
+                segment.IndexOfAny(['<', '>', ':', '"', '|', '?', '*']) >= 0 ||
+                segment.EndsWith(' ') || segment.EndsWith('.')))
+        {
+            return false;
+        }
+
+        relativePath = Path.Combine(segments);
+        return true;
     }
 
     private static bool ContainsParentTraversal(string path)
