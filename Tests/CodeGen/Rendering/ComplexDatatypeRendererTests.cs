@@ -82,7 +82,7 @@ public sealed class ComplexDatatypeRendererTests
         Assert.Contains("public Recursive? Child { get; set; }", source, StringComparison.Ordinal);
         Assert.Contains("public FhirString? Alias { get; set; }", source, StringComparison.Ordinal);
         Assert.DoesNotContain("#Recursive.value", source, StringComparison.Ordinal);
-        var result = new ComplexDatatypeGenerationPipeline().Generate(ir);
+        var result = CodeGenTestRuntime.CreateComplexDatatypePipeline().Generate(ir);
         Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));
     }
 

@@ -1,9 +1,8 @@
 using System.Globalization;
-using System.Runtime.Versioning;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using MyFhirSdk.CodeGen.Assets;
 using MyFhirSdk.CodeGen.Diagnostics;
-using MyFhirSdk.Core;
 
 namespace MyFhirSdk.CodeGen.Compilation;
 
@@ -12,18 +11,12 @@ public sealed class RoslynCompilationValidator
     private const string ValidationAssemblyName =
         "MyFhirSdk.Generated.CompilationValidation";
 
-    private readonly IReadOnlyList<MetadataReference> _references;
+    private readonly RuntimeReferenceSet _referenceSet;
 
-    public RoslynCompilationValidator()
-        : this(CreateDefaultReferences())
+    public RoslynCompilationValidator(RuntimeReferenceSet referenceSet)
     {
-    }
-
-    internal RoslynCompilationValidator(
-        IReadOnlyList<MetadataReference> references)
-    {
-        ArgumentNullException.ThrowIfNull(references);
-        _references = references;
+        ArgumentNullException.ThrowIfNull(referenceSet);
+        _referenceSet = referenceSet;
     }
 
     public GenerationResult<IReadOnlyList<GeneratedSource>> Validate(
@@ -45,7 +38,7 @@ public sealed class RoslynCompilationValidator
         var compilation = CSharpCompilation.Create(
             ValidationAssemblyName,
             syntaxTrees,
-            _references,
+            _referenceSet.ReferencePaths.Select(path => MetadataReference.CreateFromFile(path)),
             new CSharpCompilationOptions(
                 OutputKind.DynamicallyLinkedLibrary,
                 nullableContextOptions: NullableContextOptions.Enable,
@@ -119,92 +112,4 @@ public sealed class RoslynCompilationValidator
             sourceFile);
     }
 
-    private static IReadOnlyList<MetadataReference> CreateDefaultReferences()
-    {
-        var referenceAssemblyDirectory = FindNet9ReferenceAssemblyDirectory();
-        var referencePaths = Directory
-            .EnumerateFiles(referenceAssemblyDirectory, "*.dll")
-            .Append(typeof(DataType).Assembly.Location)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase);
-
-        return referencePaths
-            .Select(path => MetadataReference.CreateFromFile(path))
-            .ToArray();
-    }
-
-    private static string FindNet9ReferenceAssemblyDirectory()
-    {
-        var runtimeDirectory = Path.GetDirectoryName(typeof(object).Assembly.Location)
-            ?? throw new InvalidOperationException(
-                "Could not determine the .NET runtime directory.");
-        var dotnetRoot = Directory.GetParent(runtimeDirectory)?
-            .Parent?
-            .Parent?
-            .FullName;
-        if (string.IsNullOrWhiteSpace(dotnetRoot))
-        {
-            throw new InvalidOperationException(
-                "Could not determine the .NET installation directory.");
-        }
-
-        var packRoot = Path.Combine(
-            dotnetRoot,
-            "packs",
-            "Microsoft.NETCore.App.Ref");
-        if (!Directory.Exists(packRoot))
-        {
-            throw new InvalidOperationException(
-                $".NET reference assembly pack was not found at '{packRoot}'.");
-        }
-
-        var targetFramework = typeof(RoslynCompilationValidator).Assembly
-            .GetCustomAttributes(typeof(TargetFrameworkAttribute), inherit: false)
-            .OfType<TargetFrameworkAttribute>()
-            .SingleOrDefault()?.FrameworkName;
-        if (!string.Equals(
-                targetFramework,
-                ".NETCoreApp,Version=v9.0",
-                StringComparison.Ordinal))
-        {
-            throw new InvalidOperationException(
-                $"Compilation validation requires .NET 9, but the generator " +
-                $"targets '{targetFramework ?? "<unknown>"}'.");
-        }
-
-        var packVersionDirectory = Directory
-            .EnumerateDirectories(packRoot, "9.0.*")
-            .Select(path => new
-            {
-                Path = path,
-                Version = ParseVersion(Path.GetFileName(path))
-            })
-            .Where(candidate => candidate.Version is not null)
-            .OrderByDescending(candidate => candidate.Version)
-            .Select(candidate => candidate.Path)
-            .FirstOrDefault();
-        if (packVersionDirectory is null)
-        {
-            throw new InvalidOperationException(
-                $"A .NET 9 reference assembly pack was not found at '{packRoot}'.");
-        }
-
-        var referenceAssemblyDirectory = Path.Combine(
-            packVersionDirectory,
-            "ref",
-            "net9.0");
-        if (!Directory.Exists(referenceAssemblyDirectory))
-        {
-            throw new InvalidOperationException(
-                $".NET 9 reference assemblies were not found at " +
-                $"'{referenceAssemblyDirectory}'.");
-        }
-
-        return referenceAssemblyDirectory;
-    }
-
-    private static Version? ParseVersion(string value)
-    {
-        return Version.TryParse(value, out var version) ? version : null;
-    }
 }

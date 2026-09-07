@@ -2,7 +2,7 @@
 
 Version 1.0
 
-- Status: Phase C completed; Phase D D0-D1 completed; D2 ready to start
+- Status: Phase C completed; Phase D D0-D2 completed; D3 ready to start
 - Baseline: FHIR R5 `5.0.0`, `hl7.fhir.r5.core#5.0.0`, .NET 9
 - CodeGen contract version: `1.0.0`
 - Runtime contract: `phase-a-v1+c4-primitives-v1`
@@ -12,6 +12,8 @@ Version 1.0
   `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_D0_Decisions.md`
 - D1 implementation:
   `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_D1_Implementation.md`
+- D2 implementation:
+  `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_D2_Implementation.md`
 
 ## Phase C delivered state
 
@@ -69,9 +71,7 @@ git diff --check
 
 | Item | Owner | Current reason | Exit criterion |
 | --- | --- | --- | --- |
-| CodeGen references `MyFhirSdk.csproj` | Phase D dependency seam | CodeGen needs Runtime contracts while Runtime and generated Models share one assembly | CodeGen references a minimal versioned Runtime contract/package and has no dependency on generated concrete Types or Resources |
-| Roslyn uses `typeof(DataType).Assembly.Location` | Phase D compilation service | Full-batch compilation validates against the current Runtime-compatible SDK assembly | Runtime reference is supplied explicitly and works from an installed tool without repository build output |
-| External bootstrap CLR lookup | Phase D dependency seam | Metadata IR verifies only policy-approved external bootstrap identities against the current SDK assembly | Lookup consumes the explicit Runtime reference/contract; it must never scan an assembly for concrete model inventory |
+| Runtime compiler asset identity/hash delivery | Phase D compilation service | D2 supplies an explicit `RuntimeReferenceSet`; production expects the Runtime asset beside the tool, while tests inject the SDK reference explicitly | D3 resolves a package-owned asset, verifies identity/hash, and emits deterministic diagnostics without repository build-output fallback |
 | Repository-root locator and protected output assumptions | Phase D CLI host | Current defaults resolve policies and safety boundaries from repository/executable layout | Installed tool accepts explicit/package-owned inputs and safely generates outside a cloned repository |
 | Tool packaging | Phase D packaging | CodeGen is currently an executable project, not a .NET tool package | `PackAsTool`, command/package/version metadata, local manifest install/restore/update, and clean-machine smoke tests pass |
 | Version compatibility | Phase D release policy | Current baseline is CodeGen `1.0.0`, package/FHIR `5.0.0`, primitive policy `1.1.0`, Runtime `phase-a-v1+c4-primitives-v1`, .NET 9 | Compatibility checks reject unsupported combinations with deterministic diagnostics and the supported matrix is documented |

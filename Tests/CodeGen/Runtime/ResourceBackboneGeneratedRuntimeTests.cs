@@ -127,7 +127,7 @@ public sealed class ResourceBackboneGeneratedRuntimeTests
     private static async Task<Assembly> CompilePatientClosureAsync()
     {
         var (_, ir) = await ComplexDatatypeTestContext.BuildOfficialIrAsync("Patient");
-        var result = new ResourceBackboneGenerationPipeline().Generate(ir);
+        var result = CodeGenTestRuntime.CreateResourceBackbonePipeline().Generate(ir);
         Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));
         return GeneratedModelTestCompiler.Compile(
             Assert.IsType<ResourceBackboneGenerationBatch>(result.Value).Sources);

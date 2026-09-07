@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using MyFhirSdk.CodeGen.Compilation;
+using MyFhirSdk.CodeGen.Contracts;
 using MyFhirSdk.CodeGen.Diagnostics;
 using MyFhirSdk.CodeGen.Graph;
 using MyFhirSdk.CodeGen.Inventory;
@@ -27,12 +28,22 @@ public sealed class ModelGenerationPipeline
     private readonly GenerationScopeSelector _scopeSelector = new();
     private readonly ModelIrGenerationPolicyLoader _modelPolicyLoader = new();
     private readonly ModelIrBuilder _irBuilder = new();
-    private readonly ModelMetadataGenerationPipeline _renderPipeline = new();
+    private readonly ModelMetadataGenerationPipeline _renderPipeline;
     private readonly ModelGenerationManifestRenderer _manifestRenderer = new();
     private readonly GeneratedFileWriter _writer;
 
-    public ModelGenerationPipeline(string repositoryRoot) =>
+    public ModelGenerationPipeline(
+        string repositoryRoot,
+        RuntimeContractView runtimeContract,
+        RoslynCompilationValidator compilationValidator)
+    {
+        ArgumentNullException.ThrowIfNull(runtimeContract);
+        ArgumentNullException.ThrowIfNull(compilationValidator);
         _writer = new GeneratedFileWriter(repositoryRoot);
+        _renderPipeline = new ModelMetadataGenerationPipeline(
+            runtimeContract,
+            compilationValidator);
+    }
 
     public async Task<GenerationResult<ModelGenerationBatch?>> BuildAsync(
         ModelGenerationOptions options,

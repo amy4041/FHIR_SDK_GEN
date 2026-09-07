@@ -38,6 +38,17 @@ public sealed class RuntimeContractLoaderTests : IDisposable
         Assert.Equal(
             Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(path))).ToLowerInvariant(),
             view.DescriptorSha256);
+        Assert.Equal(
+            "MyFhirSdk.Core.DataType",
+            view.GetRequiredRole(RuntimeContractRoles.DatatypeFoundation).ClrType);
+        Assert.True(view.TryGetSymbol("MyFhirSdk.Core.Meta", out var meta));
+        Assert.Equal("meta-bootstrap", meta!.Role);
+        Assert.True(view.IsAssignableTo(
+            "MyFhirSdk.Core.Meta",
+            "MyFhirSdk.Core.DataType"));
+        Assert.False(view.IsAssignableTo(
+            "MyFhirSdk.Core.Extension",
+            "MyFhirSdk.Core.DataType"));
         Assert.Equal(Snapshot(view), Snapshot(secondView));
         Assert.Throws<NotSupportedException>(() =>
             ((IList<RuntimeSymbol>)view.Symbols).Add(view.Symbols[0]));

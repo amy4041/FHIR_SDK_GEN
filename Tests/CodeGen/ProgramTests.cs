@@ -16,7 +16,7 @@ public sealed class ProgramTests
         var cli = new GeneratorCli(
             output,
             error,
-            modelPipeline: new ModelGenerationPipeline(directory.RepositoryRoot));
+            modelPipeline: CodeGenTestRuntime.CreateModelPipeline(directory.RepositoryRoot));
 
         var exitCode = await cli.RunAsync([
             "--mode", "model", "--input", Path.Combine(directory.Path, "missing.tgz"),
@@ -72,7 +72,7 @@ public sealed class ProgramTests
         var cli = new GeneratorCli(
             output,
             error,
-            primitivePipeline: new PrimitiveGenerationPipeline(directory.RepositoryRoot));
+            primitivePipeline: CodeGenTestRuntime.CreatePrimitivePipeline(directory.RepositoryRoot));
 
         var exitCode = await cli.RunAsync([
             "--mode", "primitive",

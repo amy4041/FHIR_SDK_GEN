@@ -14,7 +14,7 @@ public sealed class ModelGenerationPipelineTests : IDisposable
     public async Task BuildAsync_OfficialFullScope_IsDeterministicAndComplete()
     {
         Directory.CreateDirectory(_root);
-        var pipeline = new ModelGenerationPipeline(_root);
+        var pipeline = CodeGenTestRuntime.CreateModelPipeline(_root);
         var options = Options([]);
 
         var first = await pipeline.BuildAsync(options);
@@ -36,7 +36,7 @@ public sealed class ModelGenerationPipelineTests : IDisposable
     public async Task BuildAsync_ReorderedSelectedCanonicals_ProducesIdenticalBatch()
     {
         Directory.CreateDirectory(_root);
-        var pipeline = new ModelGenerationPipeline(_root);
+        var pipeline = CodeGenTestRuntime.CreateModelPipeline(_root);
         var patient = "http://hl7.org/fhir/StructureDefinition/Patient";
         var observation = "http://hl7.org/fhir/StructureDefinition/Observation";
 
@@ -59,7 +59,7 @@ public sealed class ModelGenerationPipelineTests : IDisposable
         await CopyPoliciesAsync(lfRoot, "\n");
         await CopyPoliciesAsync(crlfRoot, "\r\n");
         var selected = new[] { "http://hl7.org/fhir/StructureDefinition/Patient" };
-        var pipeline = new ModelGenerationPipeline(_root);
+        var pipeline = CodeGenTestRuntime.CreateModelPipeline(_root);
 
         var lf = await pipeline.BuildAsync(WithPolicyRoot(Options(selected), lfRoot));
         var crlf = await pipeline.BuildAsync(WithPolicyRoot(Options(selected), crlfRoot));
@@ -78,7 +78,7 @@ public sealed class ModelGenerationPipelineTests : IDisposable
         var output = Path.Combine(_root, "output");
         var options = Options(["http://hl7.org/fhir/StructureDefinition/Patient"]) with { OutputPath = output };
 
-        var result = await new ModelGenerationPipeline(_root).GenerateAsync(options);
+        var result = await CodeGenTestRuntime.CreateModelPipeline(_root).GenerateAsync(options);
 
         Assert.True(result.IsSuccess, Describe(result.Diagnostics));
         var manifestPath = Path.Combine(
@@ -100,7 +100,7 @@ public sealed class ModelGenerationPipelineTests : IDisposable
         await File.WriteAllTextAsync(marker, "keep");
         var options = Options(["http://hl7.org/fhir/StructureDefinition/NotAType"]) with { OutputPath = output };
 
-        var result = await new ModelGenerationPipeline(_root).GenerateAsync(options);
+        var result = await CodeGenTestRuntime.CreateModelPipeline(_root).GenerateAsync(options);
 
         Assert.False(result.IsSuccess);
         Assert.Equal("keep", await File.ReadAllTextAsync(marker));
@@ -118,7 +118,7 @@ public sealed class ModelGenerationPipelineTests : IDisposable
         cancellation.Cancel();
 
         await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            new ModelGenerationPipeline(_root).GenerateAsync(
+            CodeGenTestRuntime.CreateModelPipeline(_root).GenerateAsync(
                 Options([]) with { OutputPath = output }, cancellation.Token));
 
         Assert.Equal("keep", await File.ReadAllTextAsync(marker));

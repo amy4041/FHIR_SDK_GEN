@@ -47,7 +47,7 @@ public sealed class PrimitiveWrapperRendererTests
 
         var original = _renderer.RenderAll(models);
         var reversed = _renderer.RenderAll(models.Reverse());
-        var compilationResult = new RoslynCompilationValidator().Validate(original);
+        var compilationResult = CodeGenTestRuntime.CreateCompilationValidator().Validate(original);
 
         Assert.Equal(original, reversed);
         Assert.True(
