@@ -42,4 +42,10 @@ public static class GeneratorDiagnosticCodes
     public const string InvalidModelIr = "FSG0038";
     public const string UnsupportedModelShape = "FSG0039";
     public const string ModelIrCollision = "FSG0040";
+    public const string RuntimeContractReadFailure = "FSG0100";
+    public const string InvalidRuntimeContractJson = "FSG0101";
+    public const string UnsupportedRuntimeContractSchema = "FSG0102";
+    public const string InvalidRuntimeContract = "FSG0103";
+    public const string DuplicateRuntimeContractEntry = "FSG0104";
+    public const string UnknownRuntimeContractRole = "FSG0105";
 }
