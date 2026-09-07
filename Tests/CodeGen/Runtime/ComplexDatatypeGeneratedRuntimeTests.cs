@@ -22,7 +22,7 @@ public sealed class ComplexDatatypeGeneratedRuntimeTests
             "HumanName",
             "Identifier",
             "Period");
-        var generationResult = new ComplexDatatypeGenerationPipeline().Generate(ir);
+        var generationResult = CodeGenTestRuntime.CreateComplexDatatypePipeline().Generate(ir);
         Assert.True(
             generationResult.IsSuccess,
             ComplexDatatypeTestContext.Describe(generationResult.Diagnostics));
@@ -51,7 +51,7 @@ public sealed class ComplexDatatypeGeneratedRuntimeTests
     public async Task DynamicallyCompiledResource_IsRejectedByDefaultGeneratedMetadata()
     {
         var (_, ir) = await ComplexDatatypeTestContext.BuildOfficialIrAsync("Period");
-        var generationResult = new ComplexDatatypeGenerationPipeline().Generate(ir);
+        var generationResult = CodeGenTestRuntime.CreateComplexDatatypePipeline().Generate(ir);
         Assert.True(
             generationResult.IsSuccess,
             ComplexDatatypeTestContext.Describe(generationResult.Diagnostics));

@@ -13,7 +13,7 @@ public sealed class ModelMetadataIrBuilderTests
     {
         var (_, modelIr) = await ComplexDatatypeTestContext.BuildOfficialIrAsync("Period");
 
-        var result = new ModelMetadataIrBuilder().Build(modelIr);
+        var result = CodeGenTestRuntime.CreateMetadataBuilder().Build(modelIr);
 
         Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));
         var metadata = Assert.IsType<ModelMetadataIrBatch>(result.Value);
@@ -33,7 +33,7 @@ public sealed class ModelMetadataIrBuilderTests
     public async Task Build_OfficialFullScope_CreatesCompleteDeterministicMetadataInventory()
     {
         var modelIr = await ModelMetadataTestContext.BuildFullModelIrAsync();
-        var builder = new ModelMetadataIrBuilder();
+        var builder = CodeGenTestRuntime.CreateMetadataBuilder();
 
         var first = builder.Build(modelIr);
         var second = builder.Build(modelIr);
@@ -58,7 +58,7 @@ public sealed class ModelMetadataIrBuilderTests
     [Fact]
     public async Task Build_OfficialFullScope_ContainsFactoryOpenTypeAndValidationExamples()
     {
-        var result = new ModelMetadataIrBuilder().Build(
+        var result = CodeGenTestRuntime.CreateMetadataBuilder().Build(
             await ModelMetadataTestContext.BuildFullModelIrAsync());
 
         Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));
@@ -146,7 +146,7 @@ public sealed class ModelMetadataIrBuilderTests
             modelIr.Declarations.Select(item => item == declaration ? conflictingDeclaration : item),
             modelIr.ExternalMetadata);
 
-        var result = new ModelMetadataIrBuilder().Build(conflictingBatch);
+        var result = CodeGenTestRuntime.CreateMetadataBuilder().Build(conflictingBatch);
 
         Assert.False(result.IsSuccess);
         Assert.Contains(result.Diagnostics, diagnostic =>
@@ -186,7 +186,7 @@ public sealed class ModelMetadataIrBuilderTests
             modelIr.Declarations,
             modelIr.ExternalMetadata.Select(item => item == extension ? conflictingExtension : item));
 
-        var result = new ModelMetadataIrBuilder().Build(conflictingBatch);
+        var result = CodeGenTestRuntime.CreateMetadataBuilder().Build(conflictingBatch);
 
         Assert.False(result.IsSuccess);
         Assert.Contains(result.Diagnostics, diagnostic =>

@@ -29,7 +29,7 @@ public sealed class CommittedModelGenerationTests
             [],
             ModelGenerationPipeline.DefaultCodeGenVersion);
 
-        var result = await new ModelGenerationPipeline(repositoryRoot).BuildAsync(options);
+        var result = await CodeGenTestRuntime.CreateModelPipeline(repositoryRoot).BuildAsync(options);
 
         Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));
         Assert.Equal(831, result.Value!.Manifest.Artifacts.Count);

@@ -16,7 +16,7 @@ public sealed class ModelMetadataGenerationPipelineTests
         var (_, modelIr) = await ComplexDatatypeTestContext.BuildOfficialIrAsync("Patient");
         Assert.DoesNotContain(modelIr.Declarations, declaration => declaration.FhirName == "Age");
 
-        var result = new ModelMetadataGenerationPipeline().Generate(modelIr);
+        var result = CodeGenTestRuntime.CreateModelMetadataPipeline().Generate(modelIr);
 
         Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));
         var batch = Assert.IsType<ModelMetadataGenerationBatch>(result.Value);
@@ -39,7 +39,7 @@ public sealed class ModelMetadataGenerationPipelineTests
     {
         var modelIr = await ModelMetadataTestContext.BuildFullModelIrAsync();
 
-        var result = new ModelMetadataGenerationPipeline().Generate(modelIr);
+        var result = CodeGenTestRuntime.CreateModelMetadataPipeline().Generate(modelIr);
 
         Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));
         var batch = Assert.IsType<ModelMetadataGenerationBatch>(result.Value);
@@ -72,7 +72,7 @@ public sealed class ModelMetadataGenerationPipelineTests
             BindingFlags.Instance | BindingFlags.NonPublic));
         var reversed = Assert.IsType<ModelIrBatch>(constructor.Invoke(
             [modelIr.Declarations.Reverse(), modelIr.ExternalMetadata.Reverse()]));
-        var pipeline = new ModelMetadataGenerationPipeline();
+        var pipeline = CodeGenTestRuntime.CreateModelMetadataPipeline();
 
         var first = pipeline.Generate(modelIr);
         var second = pipeline.Generate(reversed);

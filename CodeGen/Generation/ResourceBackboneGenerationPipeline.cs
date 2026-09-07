@@ -12,14 +12,6 @@ public sealed class ResourceBackboneGenerationPipeline
     private readonly ResourceBackboneRenderer _resourceRenderer;
     private readonly RoslynCompilationValidator _compilationValidator;
 
-    public ResourceBackboneGenerationPipeline()
-        : this(
-            new ComplexDatatypeRenderer(),
-            new ResourceBackboneRenderer(),
-            new RoslynCompilationValidator())
-    {
-    }
-
     public ResourceBackboneGenerationPipeline(
         ComplexDatatypeRenderer datatypeRenderer,
         ResourceBackboneRenderer resourceRenderer,

@@ -23,7 +23,9 @@ public sealed class PrimitiveGenerationPipeline
         _registryCompilationValidator;
     private readonly GeneratedFileWriter _writer;
 
-    public PrimitiveGenerationPipeline(string repositoryRoot)
+    public PrimitiveGenerationPipeline(
+        string repositoryRoot,
+        RoslynCompilationValidator compilationValidator)
         : this(
             new PrimitiveInventoryCoveragePipeline(),
             new PrimitiveWrapperModelBuilder(),
@@ -32,7 +34,7 @@ public sealed class PrimitiveGenerationPipeline
             new PrimitiveRegistryCompositionRenderer(),
             new PrimitiveGenerationManifestModelBuilder(),
             new PrimitiveGenerationManifestRenderer(),
-            new RoslynCompilationValidator(),
+            compilationValidator,
             new PrimitiveRegistryCompositionCompilationValidator(),
             new GeneratedFileWriter(repositoryRoot))
     {

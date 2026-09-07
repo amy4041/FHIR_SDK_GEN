@@ -1,4 +1,5 @@
 using MyFhirSdk.CodeGen.Compilation;
+using MyFhirSdk.CodeGen.Contracts;
 using MyFhirSdk.CodeGen.Diagnostics;
 using MyFhirSdk.CodeGen.Ir;
 using MyFhirSdk.CodeGen.Metadata;
@@ -15,13 +16,18 @@ public sealed class ModelMetadataGenerationPipeline
     private readonly ValidationCompositionRenderer _validationRenderer;
     private readonly RoslynCompilationValidator _compilationValidator;
 
-    public ModelMetadataGenerationPipeline()
+    public ModelMetadataGenerationPipeline(
+        RuntimeContractView runtimeContract,
+        RoslynCompilationValidator compilationValidator)
         : this(
-            new ResourceBackboneGenerationPipeline(),
-            new ModelMetadataIrBuilder(),
+            new ResourceBackboneGenerationPipeline(
+                new ComplexDatatypeRenderer(),
+                new ResourceBackboneRenderer(),
+                compilationValidator),
+            new ModelMetadataIrBuilder(runtimeContract),
             new ModelMetadataRenderer(),
             new ValidationCompositionRenderer(),
-            new RoslynCompilationValidator())
+            compilationValidator)
     {
     }
 

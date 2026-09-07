@@ -15,7 +15,7 @@ public sealed class ModelMetadataGeneratedRuntimeTests
     public async Task GeneratedComposition_DrivesFactoryOpenTypeRoundTripAndValidation()
     {
         var modelIr = await ModelMetadataTestContext.BuildFullModelIrAsync();
-        var result = new ModelMetadataGenerationPipeline().Generate(modelIr);
+        var result = CodeGenTestRuntime.CreateModelMetadataPipeline().Generate(modelIr);
         Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));
         var batch = Assert.IsType<ModelMetadataGenerationBatch>(result.Value);
         var assembly = GeneratedModelTestCompiler.Compile(

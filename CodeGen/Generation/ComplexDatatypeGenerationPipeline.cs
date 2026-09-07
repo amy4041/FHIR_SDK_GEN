@@ -12,11 +12,6 @@ public sealed class ComplexDatatypeGenerationPipeline
     private readonly ComplexDatatypeRenderer _renderer;
     private readonly RoslynCompilationValidator _compilationValidator;
 
-    public ComplexDatatypeGenerationPipeline()
-        : this(new ComplexDatatypeRenderer(), new RoslynCompilationValidator())
-    {
-    }
-
     public ComplexDatatypeGenerationPipeline(
         ComplexDatatypeRenderer renderer,
         RoslynCompilationValidator compilationValidator)

@@ -1,5 +1,4 @@
-using System.Collections;
-using MyFhirSdk.Core;
+using MyFhirSdk.CodeGen.Contracts;
 using MyFhirSdk.CodeGen.Diagnostics;
 using MyFhirSdk.CodeGen.Ir;
 using MyFhirSdk.CodeGen.Mapping;
@@ -9,6 +8,13 @@ namespace MyFhirSdk.CodeGen.Metadata;
 public sealed class ModelMetadataIrBuilder
 {
     private readonly CSharpNameConverter _nameConverter = new();
+    private readonly RuntimeContractView _runtimeContract;
+
+    public ModelMetadataIrBuilder(RuntimeContractView runtimeContract)
+    {
+        ArgumentNullException.ThrowIfNull(runtimeContract);
+        _runtimeContract = runtimeContract;
+    }
 
     public GenerationResult<ModelMetadataIrBatch?> Build(ModelIrBatch modelIr)
     {
@@ -43,14 +49,20 @@ public sealed class ModelMetadataIrBuilder
                 !declaration.IsAbstract)
             .Select(declaration => new ConcreteDatatypeMetadataIr(declaration.FullyQualifiedName))
             .ToArray();
-        var externalRuntimeTypes = ResolveExternalRuntimeTypes(modelIr.ExternalMetadata, diagnostics);
+        var externalRuntimeTypes = ResolveExternalRuntimeTypes(
+            modelIr.ExternalMetadata,
+            _runtimeContract,
+            diagnostics);
+        var datatypeClrType = _runtimeContract
+            .GetRequiredRole(RuntimeContractRoles.DatatypeFoundation)
+            .ClrType;
         var concreteDatatypes = generatedDatatypes
             .Concat(externalRuntimeTypes
                 .Where(item =>
                     !item.Metadata.IsAbstract &&
-                    typeof(DataType).IsAssignableFrom(item.RuntimeType) &&
-                    !item.RuntimeType.IsAbstract &&
-                    !item.RuntimeType.IsInterface)
+                    !item.Symbol.IsAbstract &&
+                    item.Symbol.Kind == "class" &&
+                    _runtimeContract.IsAssignableTo(item.Symbol.ClrType, datatypeClrType))
                 .Select(item => new ConcreteDatatypeMetadataIr(item.Metadata.ClrType)))
             .OrderBy(item => item.ClrType, StringComparer.Ordinal)
             .ToArray();
@@ -60,7 +72,10 @@ public sealed class ModelMetadataIrBuilder
             "concrete datatype CLR type",
             diagnostics);
 
-        var declaredDatatypes = CreateDeclaredDatatypes(externalRuntimeTypes, diagnostics);
+        var declaredDatatypes = CreateDeclaredDatatypes(
+            externalRuntimeTypes,
+            _runtimeContract.DeclaredSlots,
+            diagnostics);
 
         var openMembers = declarations
             .SelectMany(declaration => declaration.Members
@@ -217,17 +232,16 @@ public sealed class ModelMetadataIrBuilder
         return rules;
     }
 
-    private static IReadOnlyList<(ExternalModelMetadataIr Metadata, Type RuntimeType)>
+    private static IReadOnlyList<(ExternalModelMetadataIr Metadata, RuntimeSymbol Symbol)>
         ResolveExternalRuntimeTypes(
             IEnumerable<ExternalModelMetadataIr> metadata,
+            RuntimeContractView runtimeContract,
             ICollection<GeneratorDiagnostic> diagnostics)
     {
-        var result = new List<(ExternalModelMetadataIr, Type)>();
-        var runtimeAssembly = typeof(FhirObject).Assembly;
+        var result = new List<(ExternalModelMetadataIr, RuntimeSymbol)>();
         foreach (var item in metadata.OrderBy(item => item.ClrType, StringComparer.Ordinal))
         {
-            var runtimeType = runtimeAssembly.GetType(item.ClrType, throwOnError: false);
-            if (runtimeType is null)
+            if (!runtimeContract.TryGetSymbol(item.ClrType, out var symbol))
             {
                 diagnostics.Add(new GeneratorDiagnostic(
                     GeneratorDiagnosticCodes.InvalidModelIr,
@@ -238,30 +252,30 @@ public sealed class ModelMetadataIrBuilder
                     item.Source.DefinitionVersion));
                 continue;
             }
-            result.Add((item, runtimeType));
+            result.Add((item, symbol!));
         }
         return result;
     }
 
     private static IReadOnlyList<DeclaredDatatypeMetadataIr> CreateDeclaredDatatypes(
-        IEnumerable<(ExternalModelMetadataIr Metadata, Type RuntimeType)> externalTypes,
+        IEnumerable<(ExternalModelMetadataIr Metadata, RuntimeSymbol Symbol)> externalTypes,
+        IEnumerable<RuntimeDeclaredSlot> declaredSlots,
         ICollection<GeneratorDiagnostic> diagnostics)
     {
         var result = new List<DeclaredDatatypeMetadataIr>();
-        foreach (var (metadata, runtimeType) in externalTypes)
+        var declaredDatatypeSlots = declaredSlots
+            .Where(slot => slot.Role == RuntimeContractRoles.DeclaredDatatypeSlot)
+            .Select(slot => $"{slot.DeclaringClrType}|{slot.ClrPropertyName}")
+            .ToHashSet(StringComparer.Ordinal);
+        foreach (var (metadata, _) in externalTypes)
         {
             foreach (var member in metadata.Members.Where(member =>
                          member.Representation == ModelMemberRepresentation.Standard &&
                          member.TypeAlternatives.Count == 1 &&
                          !string.IsNullOrWhiteSpace(member.TypeAlternatives[0].ClrType)))
             {
-                var property = runtimeType.GetProperty(member.ClrPropertyName);
-                if (property is null)
-                {
-                    continue;
-                }
-                var declaredType = GetPropertyElementType(property.PropertyType);
-                if (declaredType != typeof(DataType))
+                var identity = $"{metadata.ClrType}|{member.ClrPropertyName}";
+                if (!declaredDatatypeSlots.Contains(identity))
                 {
                     continue;
                 }
@@ -280,21 +294,6 @@ public sealed class ModelMetadataIrBuilder
             .OrderBy(item => item.DeclaringClrType, StringComparer.Ordinal)
             .ThenBy(item => item.PropertyName, StringComparer.Ordinal)
             .ToArray();
-    }
-
-    private static Type GetPropertyElementType(Type propertyType)
-    {
-        if (propertyType == typeof(string) || !typeof(IEnumerable).IsAssignableFrom(propertyType))
-        {
-            return propertyType;
-        }
-        return propertyType
-            .GetInterfaces()
-            .Append(propertyType)
-            .Where(type => type.IsGenericType)
-            .Where(type => type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-            .Select(type => type.GetGenericArguments()[0])
-            .FirstOrDefault() ?? propertyType;
     }
 
     private static void AddConflictingExtensionDiagnostics(

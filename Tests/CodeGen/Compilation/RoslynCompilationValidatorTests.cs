@@ -22,7 +22,7 @@ public sealed class RoslynCompilationValidatorTests
                 """)
         };
 
-        var result = new RoslynCompilationValidator().Validate(generatedSources);
+        var result = CodeGenTestRuntime.CreateCompilationValidator().Validate(generatedSources);
 
         Assert.False(result.IsSuccess);
         var diagnostic = Assert.Single(result.Diagnostics);
@@ -55,7 +55,7 @@ public sealed class RoslynCompilationValidatorTests
                 """)
         };
 
-        var result = new RoslynCompilationValidator().Validate(generatedSources);
+        var result = CodeGenTestRuntime.CreateCompilationValidator().Validate(generatedSources);
 
         Assert.False(result.IsSuccess);
         var diagnostic = Assert.Single(result.Diagnostics);
