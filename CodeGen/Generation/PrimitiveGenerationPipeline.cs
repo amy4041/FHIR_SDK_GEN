@@ -24,7 +24,7 @@ public sealed class PrimitiveGenerationPipeline
     private readonly GeneratedFileWriter _writer;
 
     public PrimitiveGenerationPipeline(
-        string repositoryRoot,
+        OutputSafetyContext outputSafetyContext,
         RoslynCompilationValidator compilationValidator)
         : this(
             new PrimitiveInventoryCoveragePipeline(),
@@ -37,7 +37,7 @@ public sealed class PrimitiveGenerationPipeline
             compilationValidator,
             new PrimitiveRegistryCompositionCompilationValidator(
                 compilationValidator.ReferenceSet),
-            new GeneratedFileWriter(repositoryRoot))
+            new GeneratedFileWriter(outputSafetyContext))
     {
     }
 

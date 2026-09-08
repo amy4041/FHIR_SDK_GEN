@@ -10,7 +10,8 @@ public static class Program
 {
     public static int Main(string[] args)
     {
-        var commandLineParser = new GeneratorCommandLineParser();
+        var assetResolver = new ToolAssetResolver(AppContext.BaseDirectory);
+        var commandLineParser = new GeneratorCommandLineParser(assetResolver);
         var parseResult = commandLineParser.Parse(args);
         if (parseResult.ShowHelp || !parseResult.IsSuccess)
         {
@@ -23,10 +24,10 @@ public static class Program
                 .GetResult();
         }
 
-        var contractResult = new RuntimeContractLoader().LoadAsync(Path.Combine(
-                AppContext.BaseDirectory,
-                "Policy",
-                "runtime-contract.json"))
+        var assetOverrides = parseResult.AssetOverrides ?? new ToolAssetOverrides();
+        var runtimeContractPath = assetResolver.ResolveRuntimeContractPath(
+            assetOverrides);
+        var contractResult = new RuntimeContractLoader().LoadAsync(runtimeContractPath)
             .GetAwaiter()
             .GetResult();
         if (!contractResult.IsSuccess || contractResult.Value is null)
@@ -42,11 +43,13 @@ public static class Program
                 fallback: 2);
         }
 
-        var repositoryRoot = RepositoryRootLocator.Find(
-            Directory.GetCurrentDirectory());
-        var referenceResult = new RuntimeReferenceService().ResolvePackageOwned(
+        var runtimeReferencePaths = assetResolver.ResolveRuntimeReferencePaths(
             contractResult.Value,
-            AppContext.BaseDirectory);
+            assetOverrides);
+        var referenceResult = new RuntimeReferenceService().Resolve(
+            contractResult.Value,
+            runtimeReferencePaths,
+            RuntimeReferenceService.GetTrustedPlatformAssemblyPaths());
         if (!referenceResult.IsSuccess || referenceResult.Value is null)
         {
             foreach (var diagnostic in referenceResult.Diagnostics)
@@ -60,12 +63,30 @@ public static class Program
                 fallback: 2);
         }
 
+        var inputPath = parseResult.ModelOptions?.PackagePath ??
+            parseResult.PrimitiveOptions!.DefinitionsPath;
+        var policyPaths = parseResult.ModelOptions is { } modelOptions
+            ? new[]
+            {
+                modelOptions.PrimitivePolicyPath,
+                modelOptions.OwnershipPolicyPath,
+                modelOptions.ModelIrPolicyPaths.NamingPolicyPath,
+                modelOptions.ModelIrPolicyPaths.BackbonePolicyPath,
+                modelOptions.ModelIrPolicyPaths.ChoicePolicyPath,
+                modelOptions.ValidationPolicyPath
+            }
+            : [parseResult.PrimitiveOptions!.PolicyPath];
+        var outputSafetyContext = assetResolver.CreateOutputSafetyContext(
+            inputPath,
+            runtimeContractPath,
+            runtimeReferencePaths,
+            policyPaths);
         var compilationValidator = new RoslynCompilationValidator(referenceResult.Value);
         var primitivePipeline = new PrimitiveGenerationPipeline(
-            repositoryRoot,
+            outputSafetyContext,
             compilationValidator);
         var modelPipeline = new ModelGenerationPipeline(
-            repositoryRoot,
+            outputSafetyContext,
             contractResult.Value,
             compilationValidator);
         var cli = new GeneratorCli(

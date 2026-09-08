@@ -1,4 +1,3 @@
-using MyFhirSdk.CodeGen.Cli;
 using MyFhirSdk.CodeGen.Generation;
 using MyFhirSdk.CodeGen.Policy;
 using System.Security.Cryptography;
@@ -12,7 +11,7 @@ public sealed class CommittedModelGenerationTests
     [Fact]
     public async Task OfficialFullBatch_MatchesCommittedGeneratedModelOutput()
     {
-        var repositoryRoot = RepositoryRootLocator.Find(AppContext.BaseDirectory);
+        var repositoryRoot = FindRepositoryRoot(AppContext.BaseDirectory);
         string Policy(string name) => Path.Combine(repositoryRoot, "CodeGen", "Policy", name);
         var options = new ModelGenerationOptions(
             Path.Combine(repositoryRoot, "Tests", "CodeGen", "Fixtures", "FhirPackages", "R5",
@@ -53,6 +52,22 @@ public sealed class CommittedModelGenerationTests
             Convert.ToHexString(SHA256.HashData(
                 Encoding.UTF8.GetBytes(Normalize(manifest.Content))))
                 .ToLowerInvariant());
+    }
+
+    private static string FindRepositoryRoot(string startPath)
+    {
+        var directory = new DirectoryInfo(Path.GetFullPath(startPath));
+        while (directory is not null)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "MyFhirSdk.sln")))
+            {
+                return directory.FullName;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException("Could not locate the test repository root.");
     }
 
     private static string Normalize(string value) =>

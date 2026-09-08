@@ -4,6 +4,7 @@ using MyFhirSdk.CodeGen.Contracts;
 using MyFhirSdk.CodeGen.Generation;
 using MyFhirSdk.CodeGen.Metadata;
 using MyFhirSdk.CodeGen.Rendering;
+using MyFhirSdk.CodeGen.Writing;
 
 namespace MyFhirSdk.CodeGen.Tests;
 
@@ -35,16 +36,26 @@ internal static class CodeGenTestRuntime
         new(RuntimeContract, CreateCompilationValidator());
 
     internal static ModelGenerationPipeline CreateModelPipeline(string repositoryRoot) =>
-        new(repositoryRoot, RuntimeContract, CreateCompilationValidator());
+        new(CreateDevelopmentSafetyContext(repositoryRoot), RuntimeContract, CreateCompilationValidator());
 
     internal static PrimitiveGenerationPipeline CreatePrimitivePipeline(string repositoryRoot) =>
-        new(repositoryRoot, CreateCompilationValidator());
+        new(CreateDevelopmentSafetyContext(repositoryRoot), CreateCompilationValidator());
+
+    private static OutputSafetyContext CreateDevelopmentSafetyContext(
+        string repositoryRoot) =>
+        new OutputSafetyContext(AppContext.BaseDirectory)
+            .WithDevelopmentRepository(repositoryRoot);
 
     private static RuntimeReferenceSet LoadReferences()
     {
-        var result = new RuntimeReferenceService().ResolvePackageOwned(
+        var paths = new ToolAssetResolver(AppContext.BaseDirectory)
+            .ResolveRuntimeReferencePaths(
+                RuntimeContract,
+                new ToolAssetOverrides());
+        var result = new RuntimeReferenceService().Resolve(
             RuntimeContract,
-            AppContext.BaseDirectory);
+            paths,
+            RuntimeReferenceService.GetTrustedPlatformAssemblyPaths());
         if (!result.IsSuccess || result.Value is null)
         {
             throw new InvalidOperationException(string.Join(

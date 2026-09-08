@@ -11,26 +11,15 @@ public sealed class GeneratedFileWriter
         encoderShouldEmitUTF8Identifier: false,
         throwOnInvalidBytes: true);
 
-    private static readonly string[] ProtectedSourceDirectories =
-    [
-        "core",
-        "Types",
-        "Resources",
-        "Serialization",
-        "Validation",
-        "CodeGen",
-        Path.Combine("Primitives", "Runtime")
-    ];
-
-    private readonly string _repositoryRoot;
+    private readonly OutputSafetyContext _safetyContext;
     private readonly StringComparison _pathComparison;
     private readonly StringComparer _fileNameComparer;
 
-    public GeneratedFileWriter(string repositoryRoot)
+    public GeneratedFileWriter(OutputSafetyContext safetyContext)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(repositoryRoot);
+        ArgumentNullException.ThrowIfNull(safetyContext);
 
-        _repositoryRoot = NormalizeDirectoryPath(repositoryRoot);
+        _safetyContext = safetyContext;
         _pathComparison = OperatingSystem.IsWindows()
             ? StringComparison.OrdinalIgnoreCase
             : StringComparison.Ordinal;
@@ -232,23 +221,52 @@ public sealed class GeneratedFileWriter
                 $"The output root is invalid: {exception.Message}"));
         }
 
-        if (PathsEqual(outputPath, _repositoryRoot))
+        var fileSystemRoot = Path.GetPathRoot(outputPath);
+        if (!string.IsNullOrWhiteSpace(fileSystemRoot) &&
+            PathsEqual(outputPath, NormalizeDirectoryPath(fileSystemRoot)))
         {
             return OutputPathValidation.Failure(CreateDiagnostic(
                 outputPath,
-                "The repository root cannot be used as the output root."));
+                "A file-system root cannot be used as the output root."));
         }
 
-        foreach (var directoryName in ProtectedSourceDirectories)
+        var universallyProtectedPaths = new[]
         {
-            var protectedPath = NormalizeDirectoryPath(
-                Path.Combine(_repositoryRoot, directoryName));
-            if (IsSameOrChildPath(outputPath, protectedPath))
+            _safetyContext.ToolInstallationDirectory
+        }.Concat(_safetyContext.ProtectedAssetPaths);
+        foreach (var protectedPathValue in universallyProtectedPaths)
+        {
+            var protectedPath = NormalizeDirectoryPath(protectedPathValue);
+            if (PathsOverlap(outputPath, protectedPath))
             {
                 return OutputPathValidation.Failure(CreateDiagnostic(
                     outputPath,
-                    $"SDK source directory '{directoryName}' cannot be used " +
-                    "as the output root."));
+                    $"Protected tool or input asset '{protectedPath}' overlaps " +
+                    "the output root."));
+            }
+        }
+
+        if (_safetyContext.DevelopmentRepositoryRoot is { } repositoryRoot)
+        {
+            var normalizedRepositoryRoot = NormalizeDirectoryPath(repositoryRoot);
+            if (PathsEqual(outputPath, normalizedRepositoryRoot))
+            {
+                return OutputPathValidation.Failure(CreateDiagnostic(
+                    outputPath,
+                    "The repository root cannot be used as the output root."));
+            }
+
+            foreach (var protectedPathValue in
+                     _safetyContext.DevelopmentProtectedPaths)
+            {
+                var protectedPath = NormalizeDirectoryPath(protectedPathValue);
+                if (IsSameOrChildPath(outputPath, protectedPath))
+                {
+                    return OutputPathValidation.Failure(CreateDiagnostic(
+                        outputPath,
+                        $"Development protected path '{protectedPath}' cannot be used " +
+                        "as the output root."));
+                }
             }
         }
 
@@ -461,6 +479,9 @@ public sealed class GeneratedFileWriter
             parent + Path.DirectorySeparatorChar,
             _pathComparison);
     }
+
+    private bool PathsOverlap(string left, string right) =>
+        IsSameOrChildPath(left, right) || IsSameOrChildPath(right, left);
 
     private static string NormalizeDirectoryPath(string path)
     {

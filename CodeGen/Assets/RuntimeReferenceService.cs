@@ -6,23 +6,6 @@ namespace MyFhirSdk.CodeGen.Assets;
 
 public sealed class RuntimeReferenceService
 {
-    public GenerationResult<RuntimeReferenceSet?> ResolvePackageOwned(
-        RuntimeContractView contract,
-        string toolRoot)
-    {
-        ArgumentNullException.ThrowIfNull(contract);
-        ArgumentException.ThrowIfNullOrWhiteSpace(toolRoot);
-
-        var reference = contract.CompilerReference;
-        var path = Path.Combine(
-            toolRoot,
-            "Assets",
-            "RuntimeReferences",
-            reference.TargetFramework,
-            reference.Assembly.Name + ".dll");
-        return Resolve(contract, [path], GetTrustedPlatformAssemblyPaths());
-    }
-
     public GenerationResult<RuntimeReferenceSet?> Resolve(
         RuntimeContractView contract,
         IEnumerable<string> runtimeReferencePaths,

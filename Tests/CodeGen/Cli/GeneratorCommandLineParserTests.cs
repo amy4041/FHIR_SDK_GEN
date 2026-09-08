@@ -1,3 +1,4 @@
+using MyFhirSdk.CodeGen.Assets;
 using MyFhirSdk.CodeGen.Cli;
 using MyFhirSdk.CodeGen.Generation;
 using Xunit;
@@ -6,7 +7,8 @@ namespace MyFhirSdk.CodeGen.Tests.Cli;
 
 public sealed class GeneratorCommandLineParserTests
 {
-    private readonly GeneratorCommandLineParser _parser = new();
+    private readonly GeneratorCommandLineParser _parser = new(
+        new ToolAssetResolver(AppContext.BaseDirectory));
 
     [Fact]
     public void Parse_WithoutMode_ReturnsStableError()
@@ -109,6 +111,43 @@ public sealed class GeneratorCommandLineParserTests
         Assert.Equal([
             "http://hl7.org/fhir/StructureDefinition/Address",
             "http://hl7.org/fhir/StructureDefinition/Patient"], options.SelectedCanonicals);
+    }
+
+    [Fact]
+    public void Parse_ModelAssetOverrides_AreExplicitAndPolicyRootIsNotMixed()
+    {
+        var result = _parser.Parse([
+            "--mode", "model", "--input", "r5.tgz", "--output", "generated",
+            "--fhir-version", "5.0.0", "--package-id", "hl7.fhir.r5.core",
+            "--package-version", "5.0.0", "--policy-root", "custom-policy",
+            "--runtime-contract", "contract.json",
+            "--runtime-reference", "z.dll", "--runtime-reference", "a.dll"]);
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.Equal("custom-policy", result.AssetOverrides!.PolicyRoot);
+        Assert.Equal("contract.json", result.AssetOverrides.RuntimeContractPath);
+        Assert.Equal(["z.dll", "a.dll"], result.AssetOverrides.RuntimeReferences);
+        Assert.All(
+            new[]
+            {
+                result.ModelOptions!.PrimitivePolicyPath,
+                result.ModelOptions.OwnershipPolicyPath,
+                result.ModelOptions.ValidationPolicyPath
+            },
+            path => Assert.Contains("custom-policy", path, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Parse_PrimitivePolicyRoot_ReturnsStableError()
+    {
+        var result = _parser.Parse([
+            "--mode", "primitive", "--input", "definitions", "--policy", "policy.json",
+            "--output", "generated", "--fhir-version", "5.0.0",
+            "--package-id", "hl7.fhir.r5.core", "--package-version", "5.0.0",
+            "--policy-root", "custom-policy"]);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Option '--policy-root' is only valid in model mode.", result.Error);
     }
 
     [Fact]

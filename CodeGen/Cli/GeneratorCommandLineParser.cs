@@ -1,10 +1,18 @@
+using MyFhirSdk.CodeGen.Assets;
 using MyFhirSdk.CodeGen.Generation;
-using MyFhirSdk.CodeGen.Policy;
 
 namespace MyFhirSdk.CodeGen.Cli;
 
 public sealed class GeneratorCommandLineParser
 {
+    private readonly ToolAssetResolver _assetResolver;
+
+    public GeneratorCommandLineParser(ToolAssetResolver assetResolver)
+    {
+        ArgumentNullException.ThrowIfNull(assetResolver);
+        _assetResolver = assetResolver;
+    }
+
     public const string Usage =
         """
         Usage:
@@ -16,7 +24,9 @@ public sealed class GeneratorCommandLineParser
             --output <path> \
             --fhir-version <version> \
             --package-id <package-id> \
-            --package-version <package-version>
+            --package-version <package-version> \
+            [--runtime-contract <file>] \
+            [--runtime-reference <file> ...]
 
           # Phase C R5 model batch mode (omit --canonical for full scope)
           dotnet run --project CodeGen/MyFhirSdk.CodeGen.csproj -- \
@@ -26,6 +36,10 @@ public sealed class GeneratorCommandLineParser
             --fhir-version <version> \
             --package-id <package-id> \
             --package-version <package-version> \
+            [--policy <primitive-policy-file>] \
+            [--policy-root <directory>] \
+            [--runtime-contract <file>] \
+            [--runtime-reference <file> ...] \
             [--canonical <structure-definition-canonical> ...]
         """;
 
@@ -64,10 +78,18 @@ public sealed class GeneratorCommandLineParser
             var remaining = args
                 .Where((_, index) => index != modeIndex && index != modeIndex + 1)
                 .ToArray();
+            var assets = ExtractAssetOverrides(remaining);
+            if (assets.Error is not null)
+            {
+                return Invalid(assets.Error);
+            }
+
             return mode switch
             {
-                "primitive" => ParsePrimitive(remaining),
-                "model" => ParseModel(remaining),
+                "primitive" when assets.Overrides!.PolicyRoot is not null =>
+                    Invalid("Option '--policy-root' is only valid in model mode."),
+                "primitive" => ParsePrimitive(assets.Remaining!, assets.Overrides!),
+                "model" => ParseModel(assets.Remaining!, assets.Overrides!),
                 _ => Invalid(
                     $"Unknown generator mode '{mode}'. Expected " +
                     "'primitive' or 'model'.")
@@ -78,7 +100,8 @@ public sealed class GeneratorCommandLineParser
     }
 
     private static CommandLineParseResult ParsePrimitive(
-        IReadOnlyList<string> args)
+        IReadOnlyList<string> args,
+        ToolAssetOverrides assetOverrides)
     {
         string? inputPath = null;
         string? policyPath = null;
@@ -149,10 +172,13 @@ public sealed class GeneratorCommandLineParser
                 fhirVersion!,
                 packageId!,
                 packageVersion!,
-                PrimitiveGenerationPipeline.DefaultCodeGenVersion));
+                PrimitiveGenerationPipeline.DefaultCodeGenVersion),
+            AssetOverrides: assetOverrides);
     }
 
-    private static CommandLineParseResult ParseModel(IReadOnlyList<string> args)
+    private CommandLineParseResult ParseModel(
+        IReadOnlyList<string> args,
+        ToolAssetOverrides assetOverrides)
     {
         string? input = null; string? output = null; string? fhirVersion = null;
         string? packageId = null; string? packageVersion = null; string? primitivePolicy = null;
@@ -183,20 +209,70 @@ public sealed class GeneratorCommandLineParser
         var missing = required.FirstOrDefault(x => string.IsNullOrWhiteSpace(x.Item2));
         if (missing != default) return Invalid($"Required option '{missing.Item1}' was not provided.");
 
-        string Policy(string name) => Path.Combine(AppContext.BaseDirectory, "Policy", name);
+        var policies = _assetResolver.ResolveModelPolicies(
+            assetOverrides,
+            primitivePolicy);
         return new CommandLineParseResult(null, false, null,
             new ModelGenerationOptions(
                 input!, output!, packageId!, packageVersion!, fhirVersion!,
-                primitivePolicy ?? PrimitiveGenerationPolicyDefaults.GetPath(),
-                Policy("r5-model-ownership-policy.json"),
-                new ModelIrPolicyPaths(
-                    Policy("r5-model-naming-policy.json"),
-                    Policy("r5-backbone-policy.json"),
-                    Policy("r5-choice-open-type-policy.json")),
-                Policy("r5-validation-capability-policy.json"),
+                policies.PrimitivePolicyPath,
+                policies.OwnershipPolicyPath,
+                policies.ModelIrPolicyPaths,
+                policies.ValidationPolicyPath,
                 canonicals.OrderBy(x => x, StringComparer.Ordinal).ToArray(),
-                ModelGenerationPipeline.DefaultCodeGenVersion));
+                ModelGenerationPipeline.DefaultCodeGenVersion),
+            assetOverrides);
     }
+
+    private static AssetExtraction ExtractAssetOverrides(IReadOnlyList<string> args)
+    {
+        string? policyRoot = null;
+        string? runtimeContract = null;
+        var runtimeReferences = new List<string>();
+        var remaining = new List<string>();
+
+        for (var index = 0; index < args.Count; index += 2)
+        {
+            var option = args[index];
+            if (index + 1 >= args.Count ||
+                args[index + 1].StartsWith("--", StringComparison.Ordinal))
+            {
+                return new AssetExtraction(
+                    $"Option '{option}' requires a value.", null, null);
+            }
+
+            var value = args[index + 1];
+            switch (option)
+            {
+                case "--policy-root" when policyRoot is null:
+                    policyRoot = value;
+                    break;
+                case "--runtime-contract" when runtimeContract is null:
+                    runtimeContract = value;
+                    break;
+                case "--runtime-reference":
+                    runtimeReferences.Add(value);
+                    break;
+                case "--policy-root" or "--runtime-contract":
+                    return new AssetExtraction(
+                        $"Option '{option}' may only be specified once.", null, null);
+                default:
+                    remaining.Add(option);
+                    remaining.Add(value);
+                    break;
+            }
+        }
+
+        return new AssetExtraction(
+            null,
+            remaining,
+            new ToolAssetOverrides(policyRoot, runtimeContract, runtimeReferences));
+    }
+
+    private sealed record AssetExtraction(
+        string? Error,
+        IReadOnlyList<string>? Remaining,
+        ToolAssetOverrides? Overrides);
 
     private static CommandLineParseResult Invalid(string message) =>
         new(message, ShowHelp: false);

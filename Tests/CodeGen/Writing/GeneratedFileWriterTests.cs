@@ -168,6 +168,60 @@ public sealed class GeneratedFileWriterTests : IDisposable
     }
 
     [Fact]
+    public async Task WriteAsync_WithoutRepositoryContext_WritesAtomically()
+    {
+        var outputRoot = Path.Combine(_testRoot, "repo-free-output");
+        var writer = new GeneratedFileWriter(new OutputSafetyContext(
+            Path.Combine(_testRoot, "installed-tool")));
+
+        var result = await writer.WriteAsync(
+            outputRoot,
+            [Source("HumanName.g.cs", "class HumanName { }")]);
+
+        Assert.True(result.IsSuccess, FormatDiagnostics(result.Diagnostics));
+        Assert.True(File.Exists(Path.Combine(outputRoot, "HumanName.g.cs")));
+        Assert.Empty(FindTransactionDirectories(outputRoot));
+    }
+
+    [Fact]
+    public async Task WriteAsync_ToolDirectoryOrInputAssetOverlap_ReturnsFsg0011()
+    {
+        var toolRoot = Path.Combine(_testRoot, "installed-tool");
+        var inputPath = Path.Combine(_testRoot, "inputs", "r5.tgz");
+        Directory.CreateDirectory(Path.GetDirectoryName(inputPath)!);
+        await File.WriteAllTextAsync(inputPath, "fixture");
+        var writer = new GeneratedFileWriter(new OutputSafetyContext(
+            toolRoot,
+            [inputPath]));
+
+        var toolResult = await writer.WriteAsync(
+            Path.Combine(toolRoot, "generated"),
+            [Source("A.g.cs", "class A { }")]);
+        var inputParentResult = await writer.WriteAsync(
+            Path.GetDirectoryName(inputPath)!,
+            [Source("B.g.cs", "class B { }")]);
+
+        AssertUnsafeOutput(toolResult, Path.Combine(toolRoot, "generated"));
+        AssertUnsafeOutput(inputParentResult, Path.GetDirectoryName(inputPath)!);
+        Assert.True(File.Exists(inputPath));
+    }
+
+    [Fact]
+    public async Task WriteAsync_FileSystemRoot_ReturnsFsg0011()
+    {
+        var root = Path.GetPathRoot(_testRoot)!;
+        var writer = new GeneratedFileWriter(new OutputSafetyContext(
+            Path.Combine(_testRoot, "installed-tool")));
+
+        var result = await writer.WriteAsync(
+            root,
+            [Source("A.g.cs", "class A { }")]);
+
+        var diagnostic = AssertUnsafeOutput(result, root);
+        Assert.Contains("file-system root", diagnostic.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task WriteAsync_ParentTraversal_ReturnsFsg0011()
     {
         var outputRoot = Path.Combine(
@@ -273,7 +327,9 @@ public sealed class GeneratedFileWriterTests : IDisposable
 
     private GeneratedFileWriter CreateWriter()
     {
-        return new GeneratedFileWriter(_repositoryRoot);
+        return new GeneratedFileWriter(new OutputSafetyContext(
+                Path.Combine(_testRoot, "tool"))
+            .WithDevelopmentRepository(_repositoryRoot));
     }
 
     private static GeneratedSource Source(string fileName, string content)
