@@ -33,7 +33,7 @@ public sealed class RuntimeContractLoaderTests : IDisposable
         Assert.Equal(13, view.Symbols.Count);
         Assert.Equal(3, view.DeclaredSlots.Count);
         Assert.Equal(
-            "4923075ae0eb4ac88fefe6292b68a893b2e55d25e79c1746dfffa0bc266ce210",
+            "b8362333a3a26514eead62b2ca5e2abd130bc37b36c8290748f01497593aa333",
             view.DescriptorSha256);
         Assert.Equal(
             Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(path))).ToLowerInvariant(),

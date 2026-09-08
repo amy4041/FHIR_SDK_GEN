@@ -4,18 +4,20 @@ using MyFhirSdk.CodeGen.Contracts;
 using MyFhirSdk.CodeGen.Generation;
 using MyFhirSdk.CodeGen.Metadata;
 using MyFhirSdk.CodeGen.Rendering;
-using MyFhirSdk.Core;
 
 namespace MyFhirSdk.CodeGen.Tests;
 
 internal static class CodeGenTestRuntime
 {
     private static readonly Lazy<RuntimeContractView> Contract = new(LoadContract);
+    private static readonly Lazy<RuntimeReferenceSet> References = new(LoadReferences);
 
     internal static RuntimeContractView RuntimeContract => Contract.Value;
 
+    internal static RuntimeReferenceSet RuntimeReferences => References.Value;
+
     internal static RoslynCompilationValidator CreateCompilationValidator() =>
-        new(Net9RuntimeReferenceSetFactory.Create(typeof(FhirObject).Assembly.Location));
+        new(RuntimeReferences);
 
     internal static ModelMetadataIrBuilder CreateMetadataBuilder() =>
         new(RuntimeContract);
@@ -38,12 +40,24 @@ internal static class CodeGenTestRuntime
     internal static PrimitiveGenerationPipeline CreatePrimitivePipeline(string repositoryRoot) =>
         new(repositoryRoot, CreateCompilationValidator());
 
+    private static RuntimeReferenceSet LoadReferences()
+    {
+        var result = new RuntimeReferenceService().ResolvePackageOwned(
+            RuntimeContract,
+            AppContext.BaseDirectory);
+        if (!result.IsSuccess || result.Value is null)
+        {
+            throw new InvalidOperationException(string.Join(
+                Environment.NewLine,
+                result.Diagnostics.Select(diagnostic =>
+                    $"[{diagnostic.Code}] {diagnostic.Message}")));
+        }
+        return result.Value;
+    }
+
     private static RuntimeContractView LoadContract()
     {
-        var result = new RuntimeContractLoader().LoadAsync(Path.Combine(
-                AppContext.BaseDirectory,
-                "Policy",
-                "runtime-contract.json"))
+        var result = new RuntimeContractLoader().LoadAsync(GetContractPath())
             .GetAwaiter()
             .GetResult();
         if (!result.IsSuccess || result.Value is null)
@@ -55,4 +69,9 @@ internal static class CodeGenTestRuntime
         }
         return result.Value;
     }
+
+    private static string GetContractPath() => Path.Combine(
+        AppContext.BaseDirectory,
+        "Policy",
+        "runtime-contract.json");
 }

@@ -2,7 +2,7 @@
 
 Version 1.0
 
-- Status: Phase C completed; Phase D D0-D2 completed; D3 ready to start
+- Status: Phase C completed; Phase D D0-D3 completed; D4 ready to start
 - Baseline: FHIR R5 `5.0.0`, `hl7.fhir.r5.core#5.0.0`, .NET 9
 - CodeGen contract version: `1.0.0`
 - Runtime contract: `phase-a-v1+c4-primitives-v1`
@@ -14,6 +14,8 @@ Version 1.0
   `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_D1_Implementation.md`
 - D2 implementation:
   `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_D2_Implementation.md`
+- D3 implementation:
+  `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_D3_Implementation.md`
 
 ## Phase C delivered state
 
@@ -37,7 +39,8 @@ because it is an excluded constraint Profile, not an R5 specialization generated
 Run model generation into a staging directory:
 
 ```powershell
-dotnet run --project CodeGen/MyFhirSdk.CodeGen.csproj -- `
+dotnet build eng/MyFhirSdk.CodeGen.Build.proj -c Release --no-restore
+& CodeGen/bin/Release/net9.0/MyFhirSdk.CodeGen.exe `
   --mode model `
   --input Tests/CodeGen/Fixtures/FhirPackages/R5/hl7.fhir.r5.core-5.0.0.tgz `
   --output <staging-root> `
@@ -71,7 +74,6 @@ git diff --check
 
 | Item | Owner | Current reason | Exit criterion |
 | --- | --- | --- | --- |
-| Runtime compiler asset identity/hash delivery | Phase D compilation service | D2 supplies an explicit `RuntimeReferenceSet`; production expects the Runtime asset beside the tool, while tests inject the SDK reference explicitly | D3 resolves a package-owned asset, verifies identity/hash, and emits deterministic diagnostics without repository build-output fallback |
 | Repository-root locator and protected output assumptions | Phase D CLI host | Current defaults resolve policies and safety boundaries from repository/executable layout | Installed tool accepts explicit/package-owned inputs and safely generates outside a cloned repository |
 | Tool packaging | Phase D packaging | CodeGen is currently an executable project, not a .NET tool package | `PackAsTool`, command/package/version metadata, local manifest install/restore/update, and clean-machine smoke tests pass |
 | Version compatibility | Phase D release policy | Current baseline is CodeGen `1.0.0`, package/FHIR `5.0.0`, primitive policy `1.1.0`, Runtime `phase-a-v1+c4-primitives-v1`, .NET 9 | Compatibility checks reject unsupported combinations with deterministic diagnostics and the supported matrix is documented |

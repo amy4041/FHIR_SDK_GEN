@@ -4,11 +4,21 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MyFhirSdk.CodeGen.Diagnostics;
 using MyFhirSdk.CodeGen.Models;
+using MyFhirSdk.CodeGen.Assets;
 
 namespace MyFhirSdk.CodeGen.Compilation;
 
 public sealed class PrimitiveRegistryCompositionCompilationValidator
 {
+    private readonly RuntimeReferenceSet _referenceSet;
+
+    public PrimitiveRegistryCompositionCompilationValidator(
+        RuntimeReferenceSet referenceSet)
+    {
+        ArgumentNullException.ThrowIfNull(referenceSet);
+        _referenceSet = referenceSet;
+    }
+
     public GenerationResult<GeneratedSource?> Validate(
         GeneratedSource composition,
         PrimitiveRegistryCompositionModel model)
@@ -28,11 +38,8 @@ public sealed class PrimitiveRegistryCompositionCompilationValidator
                 parseOptions,
                 "PrimitiveRegistry.ValidationContract.cs")
         };
-        var references = ((string?)AppContext.GetData(
-                "TRUSTED_PLATFORM_ASSEMBLIES") ?? "")
-            .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries)
-            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
-            .Select(path => MetadataReference.CreateFromFile(path));
+        var references = _referenceSet.TrustedPlatformReferences
+            .Select(reference => MetadataReference.CreateFromFile(reference.Path));
         var compilation = CSharpCompilation.Create(
             "MyFhirSdk.Generated.PrimitiveRegistry.Validation",
             syntaxTrees,

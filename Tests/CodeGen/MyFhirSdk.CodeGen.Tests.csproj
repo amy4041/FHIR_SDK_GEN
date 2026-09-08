@@ -62,4 +62,26 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Target Name="StageTestRuntimeReference" AfterTargets="Build">
+    <PropertyGroup>
+      <TestRuntimeReferenceDirectory>$(TargetDir)Assets\RuntimeReferences\$(TargetFramework)</TestRuntimeReferenceDirectory>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(RuntimeReferenceAssetPath)' != ''">
+      <TestRuntimeReferenceAsset Include="$(RuntimeReferenceAssetPath)" />
+    </ItemGroup>
+    <MSBuild Projects="..\..\MyFhirSdk.csproj"
+             Targets="GetCompilerReferenceAsset"
+             Properties="Configuration=Release"
+             Condition="'$(RuntimeReferenceAssetPath)' == ''">
+      <Output TaskParameter="TargetOutputs" ItemName="TestRuntimeReferenceAsset" />
+    </MSBuild>
+    <Error Condition="'@(TestRuntimeReferenceAsset)' == ''"
+           Text="A Runtime compiler reference asset is required for CodeGen tests." />
+    <Error Condition="!Exists('%(TestRuntimeReferenceAsset.FullPath)')"
+           Text="The Runtime compiler reference asset for CodeGen tests does not exist." />
+    <MakeDir Directories="$(TestRuntimeReferenceDirectory)" />
+    <Copy SourceFiles="@(TestRuntimeReferenceAsset)"
+          DestinationFiles="$(TestRuntimeReferenceDirectory)\MyFhirSdk.dll" />
+  </Target>
 </Project>

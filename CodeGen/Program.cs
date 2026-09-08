@@ -10,6 +10,19 @@ public static class Program
 {
     public static int Main(string[] args)
     {
+        var commandLineParser = new GeneratorCommandLineParser();
+        var parseResult = commandLineParser.Parse(args);
+        if (parseResult.ShowHelp || !parseResult.IsSuccess)
+        {
+            return new GeneratorCli(
+                    Console.Out,
+                    Console.Error,
+                    commandLineParser)
+                .RunAsync(args)
+                .GetAwaiter()
+                .GetResult();
+        }
+
         var contractResult = new RuntimeContractLoader().LoadAsync(Path.Combine(
                 AppContext.BaseDirectory,
                 "Policy",
@@ -31,11 +44,23 @@ public static class Program
 
         var repositoryRoot = RepositoryRootLocator.Find(
             Directory.GetCurrentDirectory());
-        var runtimeAssemblyPath = Path.Combine(
-            AppContext.BaseDirectory,
-            contractResult.Value.CompilerReference.Assembly.Name + ".dll");
-        var compilationValidator = new RoslynCompilationValidator(
-            Net9RuntimeReferenceSetFactory.Create(runtimeAssemblyPath));
+        var referenceResult = new RuntimeReferenceService().ResolvePackageOwned(
+            contractResult.Value,
+            AppContext.BaseDirectory);
+        if (!referenceResult.IsSuccess || referenceResult.Value is null)
+        {
+            foreach (var diagnostic in referenceResult.Diagnostics)
+            {
+                Console.Error.WriteLine(
+                    $"[{diagnostic.Code}] {diagnostic.Severity}: " +
+                    $"{diagnostic.SourceFile}: {diagnostic.Message}");
+            }
+            return GeneratorExitCodeMapper.GetExitCode(
+                referenceResult.Diagnostics,
+                fallback: 2);
+        }
+
+        var compilationValidator = new RoslynCompilationValidator(referenceResult.Value);
         var primitivePipeline = new PrimitiveGenerationPipeline(
             repositoryRoot,
             compilationValidator);
@@ -46,6 +71,7 @@ public static class Program
         var cli = new GeneratorCli(
             Console.Out,
             Console.Error,
+            commandLineParser,
             primitivePipeline: primitivePipeline,
             modelPipeline: modelPipeline);
 

@@ -1,0 +1,31 @@
+<Project DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <RepositoryRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</RepositoryRoot>
+  </PropertyGroup>
+
+  <Target Name="Restore">
+    <MSBuild Projects="$(RepositoryRoot)MyFhirSdk.csproj"
+             Targets="Restore" />
+    <MSBuild Projects="$(RepositoryRoot)CodeGen\MyFhirSdk.CodeGen.csproj"
+             Targets="Restore" />
+  </Target>
+
+  <Target Name="Build">
+    <Error Condition="'$(Configuration)' != 'Release'"
+           Text="The CodeGen Runtime reference pipeline requires Configuration=Release." />
+    <MSBuild Projects="$(RepositoryRoot)MyFhirSdk.csproj"
+             Targets="GetCompilerReferenceAsset"
+             Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="RuntimeReferenceAsset" />
+    </MSBuild>
+    <Error Condition="'@(RuntimeReferenceAsset)' == ''"
+           Text="The SDK build did not produce a Runtime reference asset." />
+    <PropertyGroup>
+      <RuntimeReferenceAssetPath>@(RuntimeReferenceAsset->'%(FullPath)')</RuntimeReferenceAssetPath>
+    </PropertyGroup>
+    <MSBuild Projects="$(RepositoryRoot)CodeGen\MyFhirSdk.CodeGen.csproj"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);RuntimeReferenceAssetPath=$(RuntimeReferenceAssetPath)" />
+  </Target>
+</Project>

@@ -16,6 +16,7 @@
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+CodeGen/Assets/RuntimeReferences/**/*.dll
 
 # Publish Output
 publish/

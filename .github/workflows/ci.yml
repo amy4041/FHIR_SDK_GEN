@@ -15,8 +15,35 @@ env:
   PROJECT_PATH: MyFhirSdk.csproj
 
 jobs:
+  compiler-reference-asset:
+    name: Build canonical compiler reference asset
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore "${{ env.SOLUTION_PATH }}"
+
+      - name: Build compiler reference asset
+        run: dotnet build eng/MyFhirSdk.CodeGen.Build.proj --configuration Release --no-restore
+
+      - name: Upload compiler reference asset
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiler-reference-asset
+          path: CodeGen/bin/Release/*/Assets/RuntimeReferences/*/MyFhirSdk.dll
+          if-no-files-found: error
+
   build-test-pack:
     name: Build and test (${{ matrix.os }})
+    needs: compiler-reference-asset
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -32,13 +59,29 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.x
+          global-json-file: global.json
+
+      - name: Download compiler reference asset
+        uses: actions/download-artifact@v4
+        with:
+          name: compiler-reference-asset
+          path: artifacts/compiler-reference
+
+      - name: Resolve compiler reference asset
+        id: compiler-reference
+        shell: pwsh
+        run: |
+          $assets = @(Get-ChildItem -LiteralPath "artifacts/compiler-reference" -Filter "MyFhirSdk.dll" -Recurse)
+          if ($assets.Count -ne 1) {
+            throw "Expected exactly one compiler reference asset; found $($assets.Count)."
+          }
+          "path=$($assets[0].FullName)" >> $env:GITHUB_OUTPUT
 
       - name: Restore
         run: dotnet restore "${{ env.SOLUTION_PATH }}"
 
       - name: Build
-        run: dotnet build "${{ env.SOLUTION_PATH }}" --configuration Release --no-restore
+        run: dotnet build "${{ env.SOLUTION_PATH }}" --configuration Release --no-restore -p:RuntimeReferenceAssetPath="${{ steps.compiler-reference.outputs.path }}"
 
       - name: Test
         run: dotnet test "${{ env.SOLUTION_PATH }}" --configuration Release --no-build --verbosity normal
