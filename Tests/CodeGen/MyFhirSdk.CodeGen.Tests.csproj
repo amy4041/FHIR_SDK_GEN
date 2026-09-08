@@ -68,7 +68,7 @@
       <TestRuntimeReferenceDirectory>$(TargetDir)Assets\RuntimeReferences\$(TargetFramework)</TestRuntimeReferenceDirectory>
     </PropertyGroup>
     <MSBuild Projects="..\..\MyFhirSdk.csproj"
-             Targets="Build"
+             Targets="GetCompilerReferenceAsset"
              Properties="Configuration=Release">
       <Output TaskParameter="TargetOutputs" ItemName="TestRuntimeReferenceAsset" />
     </MSBuild>

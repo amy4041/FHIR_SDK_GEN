@@ -1,3 +1,5 @@
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MyFhirSdk.CodeGen.Assets;
@@ -33,6 +35,7 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
             CodeGenTestRuntime.RuntimeContract.CompilerReference.Sha256,
             references.ReferenceSha256);
         Assert.Single(references.RuntimeContractReferences);
+        AssertReferenceAssembly(references.RuntimeContractReferences[0].Path);
         Assert.NotEmpty(references.TrustedPlatformReferences);
         Assert.Equal(
             references.OrderedReferences
@@ -279,6 +282,33 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
 
     private static string ReferenceSnapshot(ResolvedRuntimeReference reference) =>
         $"{reference.Kind}|{reference.LogicalIdentity}";
+
+    private static void AssertReferenceAssembly(string path)
+    {
+        using var stream = File.OpenRead(path);
+        using var reader = new PEReader(stream);
+        var metadata = reader.GetMetadataReader();
+        var definition = metadata.GetAssemblyDefinition();
+        Assert.Contains(definition.GetCustomAttributes(), handle =>
+        {
+            var attribute = metadata.GetCustomAttribute(handle);
+            if (attribute.Constructor.Kind != HandleKind.MemberReference)
+            {
+                return false;
+            }
+
+            var constructor = metadata.GetMemberReference(
+                (MemberReferenceHandle)attribute.Constructor);
+            if (constructor.Parent.Kind != HandleKind.TypeReference)
+            {
+                return false;
+            }
+
+            var type = metadata.GetTypeReference((TypeReferenceHandle)constructor.Parent);
+            return metadata.GetString(type.Namespace) == "System.Runtime.CompilerServices" &&
+                metadata.GetString(type.Name) == "ReferenceAssemblyAttribute";
+        });
+    }
 
     private static string[] CompilationSnapshot(
         GenerationResult<IReadOnlyList<GeneratedSource>> result) =>

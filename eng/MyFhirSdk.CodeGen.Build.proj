@@ -15,7 +15,7 @@
     <Error Condition="'$(Configuration)' != 'Release'"
            Text="The CodeGen Runtime reference pipeline requires Configuration=Release." />
     <MSBuild Projects="$(RepositoryRoot)MyFhirSdk.csproj"
-             Targets="Build"
+             Targets="GetCompilerReferenceAsset"
              Properties="Configuration=$(Configuration)">
       <Output TaskParameter="TargetOutputs" ItemName="RuntimeReferenceAsset" />
     </MSBuild>

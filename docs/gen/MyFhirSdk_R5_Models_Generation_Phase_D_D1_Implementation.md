@@ -7,7 +7,7 @@ Version 1.0
 - Runtime contract：`phase-a-v1+c4-primitives-v1`
 - Descriptor schema：`1`
 - D1 descriptor SHA-256：`4923075ae0eb4ac88fefe6292b68a893b2e55d25e79c1746dfffa0bc266ce210`
-- Current descriptor SHA-256：`7dcb6c6429f1738beb6a103b20803bc4021f81127c06f6b9b5bf1d8732847fe8`
+- Current descriptor SHA-256：`b8362333a3a26514eead62b2ca5e2abd130bc37b36c8290748f01497593aa333`
   （D3 materialize compiler asset 後更新）
 
 ## 1. 交付內容

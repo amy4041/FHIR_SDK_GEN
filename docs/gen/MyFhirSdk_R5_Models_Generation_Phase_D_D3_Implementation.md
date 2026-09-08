@@ -6,8 +6,8 @@ Version 1.0
 - 前置基線：D0-D2 completed、Runtime contract schema 1
 - Runtime contract：`phase-a-v1+c4-primitives-v1`
 - Target framework：`net9.0`
-- Runtime reference SHA-256：`aea0a52abdfb5906f52e65eaa43c88f83250453656fe30c83e0b3610dda83581`
-- Descriptor SHA-256：`7dcb6c6429f1738beb6a103b20803bc4021f81127c06f6b9b5bf1d8732847fe8`
+- Runtime reference SHA-256：`7c945def6e2414e7944367d0df0ac33aa6386e4cdbedce0d05922ae5023176c9`
+- Descriptor SHA-256：`b8362333a3a26514eead62b2ca5e2abd130bc37b36c8290748f01497593aa333`
 
 ## 1. 完成範圍
 
@@ -20,14 +20,16 @@ package-owned compiler-only baseline 固定為：
 Assets/RuntimeReferences/net9.0/MyFhirSdk.dll
 ```
 
-Git 不保存此 DLL。`eng/MyFhirSdk.CodeGen.Build.proj` 先以可重現的 Release 設定建置 SDK，再將
-MSBuild 回傳的明確 `TargetOutputs` 以 `RuntimeReferenceAssetPath` 傳入 CodeGen project，複製至
-相同 output layout。CodeGen 未加入 SDK ProjectReference，也不自行搜尋 repository、`bin`、
-`obj` 或任意已載入 assembly。`.gitignore` 另明確拒絕此路徑下的 DLL。
+Git 不保存此 DLL。`MyFhirSdk.csproj` 的 `GetCompilerReferenceAsset` target 先建置 SDK，再明確
+回傳 SDK reference assembly；`eng/MyFhirSdk.CodeGen.Build.proj` 將該 `TargetOutputs` 以
+`RuntimeReferenceAssetPath` 傳入 CodeGen project，複製至相同 output layout。CodeGen 未加入
+SDK ProjectReference，也不自行搜尋 repository、`bin`、`obj` 或任意已載入 assembly。
+`.gitignore` 另明確拒絕此路徑下的 DLL。
 
-SDK compiler asset build 關閉 commit-dependent informational version，並以固定 `PathMap` 排除
-checkout root，讓相同 Runtime source 的 Release DLL bytes 可重現。普通 CodeGen build 不要求
-asset；packaging 則必須明確提供 `RuntimeReferenceAssetPath`。
+compiler-only asset 使用 SDK 產生的 reference assembly，不包含 implementation method body 與
+platform-specific debug payload。SDK build 另關閉 commit-dependent informational version，並以
+固定 `PathMap` 排除 checkout root。普通 CodeGen build 不要求 asset；packaging 則必須明確提供
+`RuntimeReferenceAssetPath`。
 
 Repository root 的 `global.json` 固定 compiler asset build 使用的 .NET SDK；TFM 升級時由 D7
 明確更新 SDK pin、project target framework、Runtime descriptor 與 reference hash。這避免同一個
@@ -81,8 +83,8 @@ contract，並以 executable/tool root 解析固定 package asset layout。
 pipelines。所有 Runtime reference diagnostics 都映射為 input/preflight exit code `2`。
 
 兩個 Roslyn validators 都接受同一個 explicit `RuntimeReferenceSet`，不再各自讀取 TPA。Test
-project 以明確的 Release SDK build output 建立 package-like staging layout，再使用相同 resolver；
-production CodeGen 不會取得 test SDK ProjectReference。
+project 以 `GetCompilerReferenceAsset` 明確取得 Release SDK reference assembly，建立 package-like
+staging layout，再使用相同 resolver；production CodeGen 不會取得 test SDK ProjectReference。
 
 ## 5. 驗收結果
 

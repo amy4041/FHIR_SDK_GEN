@@ -13,4 +13,14 @@
     <Compile Remove="core\obj\**\*.cs" />
     <Compile Remove="Tests\**\*.cs" />
   </ItemGroup>
+
+  <Target Name="GetCompilerReferenceAsset"
+          DependsOnTargets="Build"
+          Returns="@(CompilerReferenceAsset)">
+    <ItemGroup>
+      <CompilerReferenceAsset Include="$(TargetRefPath)" />
+    </ItemGroup>
+    <Error Condition="!Exists('$(TargetRefPath)')"
+           Text="The SDK build did not produce its compiler reference assembly." />
+  </Target>
 </Project>
