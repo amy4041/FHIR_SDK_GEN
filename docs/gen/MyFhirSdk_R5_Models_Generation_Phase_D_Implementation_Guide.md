@@ -375,6 +375,10 @@ concrete SDK models 做決策。
 5. reference asset 缺少、不可讀、identity 不符、重複 identity 或 target framework 不符時，
    在 Roslyn emit 前失敗。
 6. package reference asset 只能作 compilation metadata；不得作 inventory scan。
+7. D3 所建立的 build pipeline 與 test asset staging 不得寫死 `net9.0` 等 TFM literal；
+   asset path 與 staging directory 必須由 MSBuild `$(TargetFramework)` 或同一個明確的
+   target framework property 推導。versioned Runtime contract 仍保存實際 TFM 與 hash，
+   不在執行時以 MSBuild 變數取代。
 
 ### 10.2 測試
 
@@ -390,6 +394,8 @@ concrete SDK models 做決策。
 - production 不搜尋 repository `bin/obj`。
 - tool package 解壓後的 reference assets 足以執行 full-batch Roslyn validation。
 - generated source與manifest不因reference的實體安裝路徑而改變。
+- pipeline/test reference asset location 不含目前 TFM 的硬編碼；切換專案
+  `TargetFramework` 時會解析到對應的 staging/package path。
 
 ## 11. D4：移除 repository-root 與 asset-location assumptions
 
@@ -542,7 +548,9 @@ Windows與Ubuntu至少驗證：
 6. 執行 primitive generation；
 7. 比對 committed/staged artifact hashes；
 8. 卸載或由舊版本升級至目前版本；
-9. 再次生成並比對 deterministic output。
+9. 再次生成並比對 deterministic output；
+10. 以受控的 target framework 升級案例重新建置 Runtime compiler asset 與 CodeGen，驗證
+    package asset path、TPA resolution、Runtime contract TFM/identity/hash 與完整 generation。
 
 ### 14.2 CI 分層
 
@@ -563,6 +571,13 @@ cross-platform drift
 CI 不依賴網路下載 FHIR package；NuGet restore 仍依標準 lock/cache policy。tool smoke 使用
 本次 build 的 local package source，不使用公開 feed 上可能同名版本。
 
+D7 必須建立可重複執行的 .NET/TFM 升級流程，而不只驗證 tool package version upgrade。
+流程至少應從單一 target framework 設定開始，重新產生 Runtime compiler asset，計算新
+SHA-256，更新或驗證 Runtime descriptor 的 `targetFramework`、
+`compilerReference.targetFramework`、logical name 與 hash，然後在 Windows/Linux CI
+執行 build、pack、install 與 generation smoke。descriptor 內仍提交具體 TFM/hash，讓版本
+不一致在 preflight 階段 fail-fast。
+
 ### 14.3 完成與驗收
 
 - Windows/Linux均通過 clean-environment full batch。
@@ -570,6 +585,8 @@ CI 不依賴網路下載 FHIR package；NuGet restore 仍依標準 lock/cache po
 - failed generation不破壞既有 output。
 - upgrade後 manifest/tool version正確更新；若 generation contract 未改，831 個 model
   source artifacts仍保持一致。
+- target framework 升級流程不需修改 pipeline/test 中的 TFM literal，且 CI 能偵測未同步的
+  Runtime asset、descriptor TFM/identity/hash 或不相容的 host TPA。
 - CI 上傳 `.nupkg`、normalized package inventory 與 smoke logs作 artifacts。
 
 ## 15. D8：cleanup、操作文件與後續 handoff
