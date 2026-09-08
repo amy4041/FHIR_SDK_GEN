@@ -48,4 +48,10 @@ public static class GeneratorDiagnosticCodes
     public const string InvalidRuntimeContract = "FSG0103";
     public const string DuplicateRuntimeContractEntry = "FSG0104";
     public const string UnknownRuntimeContractRole = "FSG0105";
+    public const string RuntimeReferenceMissing = "FSG0110";
+    public const string RuntimeReferenceReadFailure = "FSG0111";
+    public const string RuntimeReferenceIdentityMismatch = "FSG0112";
+    public const string RuntimeReferenceHashMismatch = "FSG0113";
+    public const string DuplicateRuntimeReferenceIdentity = "FSG0114";
+    public const string RuntimeReferenceTargetFrameworkMismatch = "FSG0115";
 }

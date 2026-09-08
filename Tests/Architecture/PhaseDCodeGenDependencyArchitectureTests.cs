@@ -36,4 +36,29 @@ public sealed class PhaseDCodeGenDependencyArchitectureTests
 
         Assert.Equal(typeof(RuntimeReferenceSet), parameter.ParameterType);
     }
+
+    [Fact]
+    public void RuntimeReferenceSetExposesVersionedDeterministicIdentity()
+    {
+        var properties = typeof(RuntimeReferenceSet)
+            .GetProperties()
+            .Select(property => property.Name)
+            .ToHashSet(StringComparer.Ordinal);
+
+        Assert.Contains(nameof(RuntimeReferenceSet.TargetFramework), properties);
+        Assert.Contains(nameof(RuntimeReferenceSet.OrderedReferences), properties);
+        Assert.Contains(nameof(RuntimeReferenceSet.LogicalAssemblyIdentity), properties);
+        Assert.Contains(nameof(RuntimeReferenceSet.ContractSha256), properties);
+        Assert.Contains(nameof(RuntimeReferenceSet.ReferenceSha256), properties);
+    }
+
+    [Fact]
+    public void PrimitiveRegistryCompilationRequiresExplicitRuntimeReferenceSet()
+    {
+        var constructor = Assert.Single(
+            typeof(PrimitiveRegistryCompositionCompilationValidator).GetConstructors());
+        var parameter = Assert.Single(constructor.GetParameters());
+
+        Assert.Equal(typeof(RuntimeReferenceSet), parameter.ParameterType);
+    }
 }

@@ -19,6 +19,8 @@ public sealed class RoslynCompilationValidator
         _referenceSet = referenceSet;
     }
 
+    public RuntimeReferenceSet ReferenceSet => _referenceSet;
+
     public GenerationResult<IReadOnlyList<GeneratedSource>> Validate(
         IReadOnlyList<GeneratedSource> generatedSources)
     {
@@ -38,7 +40,7 @@ public sealed class RoslynCompilationValidator
         var compilation = CSharpCompilation.Create(
             ValidationAssemblyName,
             syntaxTrees,
-            _referenceSet.ReferencePaths.Select(path => MetadataReference.CreateFromFile(path)),
+            _referenceSet.OrderedReferences.Select(CreateMetadataReference),
             new CSharpCompilationOptions(
                 OutputKind.DynamicallyLinkedLibrary,
                 nullableContextOptions: NullableContextOptions.Enable,
@@ -111,5 +113,11 @@ public sealed class RoslynCompilationValidator
             lineSuffix,
             sourceFile);
     }
+
+    private static MetadataReference CreateMetadataReference(
+        ResolvedRuntimeReference reference) =>
+        reference.Kind == RuntimeReferenceKind.RuntimeContract
+            ? MetadataReference.CreateFromImage(reference.ValidatedImage)
+            : MetadataReference.CreateFromFile(reference.Path);
 
 }

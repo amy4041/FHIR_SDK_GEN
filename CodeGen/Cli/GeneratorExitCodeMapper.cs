@@ -52,7 +52,13 @@ public static class GeneratorExitCodeMapper
                 GeneratorDiagnosticCodes.ExtraPrimitivePolicyEntry or
                 GeneratorDiagnosticCodes.PrimitivePolicyIdentityMismatch or
                 GeneratorDiagnosticCodes.InvalidPrimitiveWrapperModel or
-                GeneratorDiagnosticCodes.InvalidPrimitiveRegistryModel))
+                GeneratorDiagnosticCodes.InvalidPrimitiveRegistryModel or
+                GeneratorDiagnosticCodes.RuntimeReferenceMissing or
+                GeneratorDiagnosticCodes.RuntimeReferenceReadFailure or
+                GeneratorDiagnosticCodes.RuntimeReferenceIdentityMismatch or
+                GeneratorDiagnosticCodes.RuntimeReferenceHashMismatch or
+                GeneratorDiagnosticCodes.DuplicateRuntimeReferenceIdentity or
+                GeneratorDiagnosticCodes.RuntimeReferenceTargetFrameworkMismatch))
         {
             return 2;
         }

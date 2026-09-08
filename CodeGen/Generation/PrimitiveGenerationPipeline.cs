@@ -35,7 +35,8 @@ public sealed class PrimitiveGenerationPipeline
             new PrimitiveGenerationManifestModelBuilder(),
             new PrimitiveGenerationManifestRenderer(),
             compilationValidator,
-            new PrimitiveRegistryCompositionCompilationValidator(),
+            new PrimitiveRegistryCompositionCompilationValidator(
+                compilationValidator.ReferenceSet),
             new GeneratedFileWriter(repositoryRoot))
     {
     }
