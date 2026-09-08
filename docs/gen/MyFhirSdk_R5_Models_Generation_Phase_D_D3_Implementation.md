@@ -32,8 +32,9 @@ platform-specific debug payload。SDK build 另關閉 commit-dependent informati
 `RuntimeReferenceAssetPath`。
 
 Repository root 的 `global.json` 固定 compiler asset build 使用的 .NET SDK；TFM 升級時由 D7
-明確更新 SDK pin、project target framework、Runtime descriptor 與 reference hash。這避免同一個
-TFM 因機器預設 SDK 不同而產生不同 compiler asset bytes。
+明確更新 SDK pin、project target framework、Runtime descriptor 與 reference hash。SDK pin
+固定 compiler toolchain，但不假設不同 OS 各自 build 的 reference assembly 會 byte-identical；
+exact-byte hash 驗證要求 packaging/CI 先產生一次 canonical asset，再將同一份 asset 分送給各平台。
 
 ## 2. RuntimeReferenceSet
 
@@ -82,9 +83,11 @@ contract，並以 executable/tool root 解析固定 package asset layout。
 只有 contract 與 reference set 均成功時，才建立 `RoslynCompilationValidator` 及 generation
 pipelines。所有 Runtime reference diagnostics 都映射為 input/preflight exit code `2`。
 
-兩個 Roslyn validators 都接受同一個 explicit `RuntimeReferenceSet`，不再各自讀取 TPA。Test
-project 以 `GetCompilerReferenceAsset` 明確取得 Release SDK reference assembly，建立 package-like
-staging layout，再使用相同 resolver；production CodeGen 不會取得 test SDK ProjectReference。
+兩個 Roslyn validators 都接受同一個 explicit `RuntimeReferenceSet`，不再各自讀取 TPA。本機
+test project 以 `GetCompilerReferenceAsset` 明確取得 Release SDK reference assembly；CI 則先在
+固定 runner build/upload canonical asset，Windows/Linux jobs 下載並以
+`RuntimeReferenceAssetPath` 注入同一份 bytes。兩者都建立 package-like staging layout，再使用
+相同 resolver；production CodeGen 不會取得 test SDK ProjectReference。
 
 ## 5. 驗收結果
 
@@ -96,8 +99,9 @@ staging layout，再使用相同 resolver；production CodeGen 不會取得 test
 - committed model output 與 manifest hash 不變；
 - CodeGen standalone build、solution Release build、完整 tests 與 `git diff --check` 通過。
 
-Windows/Linux 實機使用相同 package asset 的 smoke matrix 由 D7 執行；D3 已固定 logical ordering、
-path-independent diagnostics 與可重現 Runtime compiler asset inputs。
+目前 repository regression CI 已讓 Windows/Linux 使用同一份 canonical compiler asset；完整的
+package install/restore/full-generation smoke matrix 仍由 D7 執行。D3 已固定 logical ordering、
+path-independent diagnostics 與 exact-byte asset distribution。
 
 ## 6. D4 交接
 
