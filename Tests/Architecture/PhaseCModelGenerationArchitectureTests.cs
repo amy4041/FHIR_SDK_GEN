@@ -1,5 +1,6 @@
 using System.Reflection;
 using MyFhirSdk.CodeGen.Cli;
+using MyFhirSdk.CodeGen.Assets;
 using MyFhirSdk.CodeGen.Mapping;
 using MyFhirSdk.Core;
 using MyFhirSdk.Serialization.Json;
@@ -35,7 +36,8 @@ public sealed class PhaseCModelGenerationArchitectureTests
     [Fact]
     public void CliRejectsRemovedPreviewMode()
     {
-        var result = new GeneratorCommandLineParser().Parse(
+        var result = new GeneratorCommandLineParser(
+            new ToolAssetResolver(AppContext.BaseDirectory)).Parse(
             ["--mode", "datatype-preview"]);
 
         Assert.False(result.IsSuccess);

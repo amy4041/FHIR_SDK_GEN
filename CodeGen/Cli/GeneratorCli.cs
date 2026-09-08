@@ -14,18 +14,19 @@ public sealed class GeneratorCli
     public GeneratorCli(
         TextWriter output,
         TextWriter error,
-        GeneratorCommandLineParser? commandLineParser = null,
+        GeneratorCommandLineParser commandLineParser,
         PrimitiveGenerationPipeline? primitivePipeline = null,
         ModelGenerationPipeline? modelPipeline = null)
     {
         ArgumentNullException.ThrowIfNull(output);
         ArgumentNullException.ThrowIfNull(error);
+        ArgumentNullException.ThrowIfNull(commandLineParser);
 
         _primitivePipeline = primitivePipeline;
         _modelPipeline = modelPipeline;
         _output = output;
         _error = error;
-        _commandLineParser = commandLineParser ?? new GeneratorCommandLineParser();
+        _commandLineParser = commandLineParser;
     }
 
     public async Task<int> RunAsync(

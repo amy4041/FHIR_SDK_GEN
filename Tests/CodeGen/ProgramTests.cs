@@ -1,10 +1,12 @@
 using MyFhirSdk.CodeGen;
+using MyFhirSdk.CodeGen.Assets;
 using MyFhirSdk.CodeGen.Cli;
 using MyFhirSdk.CodeGen.Generation;
 using Xunit;
 
 namespace MyFhirSdk.CodeGen.Tests;
 
+[Collection(ProcessStateCollection.Name)]
 public sealed class ProgramTests
 {
     [Fact]
@@ -16,6 +18,8 @@ public sealed class ProgramTests
         var cli = new GeneratorCli(
             output,
             error,
+            new GeneratorCommandLineParser(
+                new ToolAssetResolver(AppContext.BaseDirectory)),
             modelPipeline: CodeGenTestRuntime.CreateModelPipeline(directory.RepositoryRoot));
 
         var exitCode = await cli.RunAsync([
@@ -63,6 +67,36 @@ public sealed class ProgramTests
     }
 
     [Fact]
+    public void Main_FromEmptyDirectory_UsesPackagedAssetsWithoutRepositoryDiscovery()
+    {
+        using var directory = new TestDirectory();
+        using var error = new StringWriter();
+        var originalDirectory = Directory.GetCurrentDirectory();
+        var originalError = Console.Error;
+        try
+        {
+            Directory.SetCurrentDirectory(directory.Path);
+            Console.SetError(error);
+
+            var exitCode = Program.Main([
+                "--mode", "model",
+                "--input", Path.Combine(directory.Path, "missing.tgz"),
+                "--output", Path.Combine(directory.Path, "output"),
+                "--fhir-version", "5.0.0",
+                "--package-id", "hl7.fhir.r5.core",
+                "--package-version", "5.0.0"]);
+
+            Assert.Equal(2, exitCode);
+            Assert.Contains("[FSG0026]", error.ToString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            Console.SetError(originalError);
+            Directory.SetCurrentDirectory(originalDirectory);
+        }
+    }
+
+    [Fact]
     public async Task RunAsync_PrimitiveMode_GeneratesCompleteBatch()
     {
         using var directory = new TestDirectory();
@@ -72,6 +106,8 @@ public sealed class ProgramTests
         var cli = new GeneratorCli(
             output,
             error,
+            new GeneratorCommandLineParser(
+                new ToolAssetResolver(AppContext.BaseDirectory)),
             primitivePipeline: CodeGenTestRuntime.CreatePrimitivePipeline(directory.RepositoryRoot));
 
         var exitCode = await cli.RunAsync([

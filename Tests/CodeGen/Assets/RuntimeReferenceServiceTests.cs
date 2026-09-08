@@ -18,7 +18,7 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
         Guid.NewGuid().ToString("N"));
 
     [Fact]
-    public void ResolvePackageOwned_ValidAssetCreatesDeterministicCompilationSet()
+    public void Resolve_ValidPackageAssetCreatesDeterministicCompilationSet()
     {
         var result = ResolvePackageOwned();
 
@@ -58,25 +58,21 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
     }
 
     [Fact]
-    public void ResolvePackageOwned_MissingAssetReturnsStableLogicalDiagnostic()
+    public void Resolve_MissingPackageAssetReturnsStableLogicalDiagnostic()
     {
-        var result = new RuntimeReferenceService().ResolvePackageOwned(
-            CodeGenTestRuntime.RuntimeContract,
-            _directory);
+        var result = ResolveFromToolRoot(_directory);
 
         AssertFailure(result, GeneratorDiagnosticCodes.RuntimeReferenceMissing);
         AssertNoPhysicalPath(result.Diagnostics);
     }
 
     [Fact]
-    public void ResolvePackageOwned_CorruptAssetReturnsStableLogicalDiagnostic()
+    public void Resolve_CorruptPackageAssetReturnsStableLogicalDiagnostic()
     {
         var path = CreatePackageAssetPath();
         File.WriteAllBytes(path, [0x46, 0x48, 0x49, 0x52]);
 
-        var result = new RuntimeReferenceService().ResolvePackageOwned(
-            CodeGenTestRuntime.RuntimeContract,
-            _directory);
+        var result = ResolveFromToolRoot(_directory);
 
         AssertFailure(result, GeneratorDiagnosticCodes.RuntimeReferenceReadFailure);
         AssertNoPhysicalPath(result.Diagnostics);
@@ -222,9 +218,19 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
     }
 
     private static GenerationResult<RuntimeReferenceSet?> ResolvePackageOwned() =>
-        new RuntimeReferenceService().ResolvePackageOwned(
+        ResolveFromToolRoot(AppContext.BaseDirectory);
+
+    private static GenerationResult<RuntimeReferenceSet?> ResolveFromToolRoot(
+        string toolRoot)
+    {
+        var paths = new ToolAssetResolver(toolRoot).ResolveRuntimeReferencePaths(
             CodeGenTestRuntime.RuntimeContract,
-            AppContext.BaseDirectory);
+            new ToolAssetOverrides());
+        return new RuntimeReferenceService().Resolve(
+            CodeGenTestRuntime.RuntimeContract,
+            paths,
+            RuntimeReferenceService.GetTrustedPlatformAssemblyPaths());
+    }
 
     private static GenerationResult<RuntimeReferenceSet?> ResolveExplicit(string path) =>
         new RuntimeReferenceService().Resolve(

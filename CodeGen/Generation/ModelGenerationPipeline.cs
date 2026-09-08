@@ -33,13 +33,13 @@ public sealed class ModelGenerationPipeline
     private readonly GeneratedFileWriter _writer;
 
     public ModelGenerationPipeline(
-        string repositoryRoot,
+        OutputSafetyContext outputSafetyContext,
         RuntimeContractView runtimeContract,
         RoslynCompilationValidator compilationValidator)
     {
         ArgumentNullException.ThrowIfNull(runtimeContract);
         ArgumentNullException.ThrowIfNull(compilationValidator);
-        _writer = new GeneratedFileWriter(repositoryRoot);
+        _writer = new GeneratedFileWriter(outputSafetyContext);
         _renderPipeline = new ModelMetadataGenerationPipeline(
             runtimeContract,
             compilationValidator);
