@@ -1,4 +1,5 @@
 using MyFhirSdk.CodeGen.Compatibility;
+using MyFhirSdk.CodeGen.Cli;
 using MyFhirSdk.CodeGen.Models;
 
 namespace MyFhirSdk.Tests.Architecture;
@@ -30,5 +31,17 @@ public sealed class PhaseDCompatibilityManifestArchitectureTests
             propertyNames);
         Assert.Contains(nameof(GenerationManifestProvenance.CompilerReferenceLogicalIdentity),
             propertyNames);
+    }
+
+    [Fact]
+    public void CliUsageRemainsACompileTimeConstant()
+    {
+        var field = typeof(GeneratorCommandLineParser).GetField(
+            nameof(GeneratorCommandLineParser.Usage));
+
+        Assert.NotNull(field);
+        Assert.True(field.IsLiteral);
+        Assert.False(field.IsInitOnly);
+        Assert.Equal(GeneratorCommandLineParser.Usage, field.GetRawConstantValue());
     }
 }

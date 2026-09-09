@@ -2,6 +2,7 @@
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <RepositoryRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</RepositoryRoot>
+    <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$(RepositoryRoot)artifacts\packages</PackageOutputPath>
   </PropertyGroup>
 
   <Target Name="Restore">
@@ -27,5 +28,12 @@
     <MSBuild Projects="$(RepositoryRoot)CodeGen\MyFhirSdk.CodeGen.csproj"
              Targets="Build"
              Properties="Configuration=$(Configuration);RuntimeReferenceAssetPath=$(RuntimeReferenceAssetPath)" />
+  </Target>
+
+  <Target Name="Pack" DependsOnTargets="Build">
+    <MakeDir Directories="$(PackageOutputPath)" />
+    <MSBuild Projects="$(RepositoryRoot)CodeGen\MyFhirSdk.CodeGen.csproj"
+             Targets="Pack"
+             Properties="Configuration=$(Configuration);NoBuild=true;RuntimeReferenceAssetPath=$(RuntimeReferenceAssetPath);PackageOutputPath=$(PackageOutputPath)" />
   </Target>
 </Project>

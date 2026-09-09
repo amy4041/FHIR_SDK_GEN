@@ -1,4 +1,5 @@
 using MyFhirSdk.CodeGen.Assets;
+using MyFhirSdk.CodeGen.Compatibility;
 using MyFhirSdk.CodeGen.Generation;
 
 namespace MyFhirSdk.CodeGen.Cli;
@@ -14,10 +15,13 @@ public sealed class GeneratorCommandLineParser
     }
 
     public const string Usage =
+        GenerationCompatibilityMatrix.ToolPackageId + " " +
+        GenerationCompatibilityMatrix.ToolVersion + "\n" +
+        "Command: myfhir-codegen\n\n" +
         """
         Usage:
           # Phase B primitive batch mode
-          dotnet run --project CodeGen/MyFhirSdk.CodeGen.csproj -- \
+          dotnet myfhir-codegen \
             --mode primitive \
             --input <definitions-path> \
             --policy <policy-path> \
@@ -29,7 +33,7 @@ public sealed class GeneratorCommandLineParser
             [--runtime-reference <file> ...]
 
           # Phase C R5 model batch mode (omit --canonical for full scope)
-          dotnet run --project CodeGen/MyFhirSdk.CodeGen.csproj -- \
+          dotnet myfhir-codegen \
             --mode model \
             --input <package.tgz> \
             --output <path> \

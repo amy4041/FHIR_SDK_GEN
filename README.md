@@ -49,6 +49,22 @@ Until NuGet publishing is prepared, reference the SDK project directly from anot
 dotnet add reference path\to\MyFhirSdk\MyFhirSdk.csproj
 ```
 
+## Repository-local CodeGen tool
+
+Build the compiler-only Runtime reference and pack the pinned local tool with:
+
+```powershell
+dotnet msbuild eng/MyFhirSdk.CodeGen.Build.proj /t:Pack /p:Configuration=Release
+dotnet tool restore --add-source artifacts/packages --ignore-failed-sources
+dotnet myfhir-codegen --help
+```
+
+The repository manifest pins `MyFhirSdk.CodeGen.Tool` version `1.0.0` and command
+`myfhir-codegen`. The package includes its default model policies, Runtime contract
+descriptor, and compiler-only Runtime reference; it does not require repository discovery
+when installed. The current package is for repository-local development only; an approved
+license and matching package metadata are required before any public NuGet release.
+
 ## Basic JSON Usage
 
 ```csharp

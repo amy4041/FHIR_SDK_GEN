@@ -28,7 +28,7 @@ public sealed class ToolAssetResolverTests : IDisposable
             var policies = resolver.ResolveModelPolicies(new ToolAssetOverrides(), null);
 
             Assert.Equal(
-                Path.Combine(toolRoot, "Policy", "runtime-contract.json"),
+                Path.Combine(toolRoot, "Contracts", "runtime-contract.json"),
                 contract);
             Assert.Equal(
                 Path.Combine(toolRoot, "Policy", "primitive-generation-policy.json"),
