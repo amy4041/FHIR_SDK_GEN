@@ -86,7 +86,16 @@ public sealed class ModelGenerationPipelineTests : IDisposable
             ModelGenerationManifestModel.FileName.Replace('/', Path.DirectorySeparatorChar));
         Assert.True(File.Exists(manifestPath));
         using var manifest = JsonDocument.Parse(await File.ReadAllTextAsync(manifestPath));
+        var manifestText = await File.ReadAllTextAsync(manifestPath);
+        Assert.Equal(2, manifest.RootElement.GetProperty("schemaVersion").GetInt32());
         Assert.Equal("selected", manifest.RootElement.GetProperty("generationScope").GetProperty("mode").GetString());
+        var compatibility = manifest.RootElement.GetProperty("compatibility");
+        Assert.Equal(1, compatibility.GetProperty("schemaVersion").GetInt32());
+        Assert.Equal("exact", compatibility.GetProperty("versionPolicy").GetString());
+        Assert.Equal("MyFhirSdk.CodeGen.Tool",
+            compatibility.GetProperty("tool").GetProperty("packageId").GetString());
+        Assert.Equal("net9.0", compatibility.GetProperty("targetFramework").GetString());
+        Assert.DoesNotContain(AppContext.BaseDirectory, manifestText, StringComparison.OrdinalIgnoreCase);
         Assert.True(File.Exists(Path.Combine(output, "Generated", "R5", "Resources", "Patient", "Patient.g.cs")));
     }
 
@@ -104,6 +113,30 @@ public sealed class ModelGenerationPipelineTests : IDisposable
 
         Assert.False(result.IsSuccess);
         Assert.Equal("keep", await File.ReadAllTextAsync(marker));
+    }
+
+    [Fact]
+    public async Task BuildAsync_FullAndSelectedScope_UseSameCompatibilityGate()
+    {
+        Directory.CreateDirectory(_root);
+        var pipeline = CodeGenTestRuntime.CreateModelPipeline(_root);
+        var full = await pipeline.BuildAsync(Options([]) with
+        {
+            CodeGenVersion = "2.0.0"
+        });
+        var selected = await pipeline.BuildAsync(Options(
+            ["http://hl7.org/fhir/StructureDefinition/Patient"]) with
+        {
+            CodeGenVersion = "2.0.0"
+        });
+
+        Assert.False(full.IsSuccess);
+        Assert.False(selected.IsSuccess);
+        Assert.Equal(
+            full.Diagnostics.Select(item => (item.Code, item.SourceFile, item.Message)),
+            selected.Diagnostics.Select(item => (item.Code, item.SourceFile, item.Message)));
+        Assert.All(full.Diagnostics, item =>
+            Assert.Equal("FSG0122", item.Code));
     }
 
     [Fact]

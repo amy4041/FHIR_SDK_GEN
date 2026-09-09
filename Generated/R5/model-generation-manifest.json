@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "package": {
     "id": "hl7.fhir.r5.core",
     "version": "5.0.0",
@@ -12,6 +12,25 @@
   },
   "codeGenVersion": "1.0.0",
   "runtimeContractVersion": "phase-a-v1\u002Bc4-primitives-v1",
+  "compatibility": {
+    "schemaVersion": 1,
+    "versionPolicy": "exact",
+    "tool": {
+      "packageId": "MyFhirSdk.CodeGen.Tool",
+      "version": "1.0.0"
+    },
+    "codeGenVersion": "1.0.0",
+    "runtimeDescriptor": {
+      "schemaVersion": 1,
+      "version": "phase-a-v1\u002Bc4-primitives-v1",
+      "sha256": "8a715d62f206b47ace1649d4a0898c29594bf71c389a619221f12fabfa3eb863"
+    },
+    "compilerReference": {
+      "logicalIdentity": "MyFhirSdk, Version=1.0.0.0, PublicKeyToken=null, TargetFramework=net9.0",
+      "sha256": "7c945def6e2414e7944367d0df0ac33aa6386e4cdbedce0d05922ae5023176c9"
+    },
+    "targetFramework": "net9.0"
+  },
   "generationScope": {
     "mode": "full",
     "selectedCanonicals": []

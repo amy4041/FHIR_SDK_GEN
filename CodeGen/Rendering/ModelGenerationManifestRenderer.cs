@@ -25,6 +25,7 @@ public sealed class ModelGenerationManifestRenderer
             writer.WriteEndObject();
             writer.WriteString("codeGenVersion", model.CodeGenVersion);
             writer.WriteString("runtimeContractVersion", model.RuntimeContractVersion);
+            GenerationManifestProvenanceRenderer.Write(writer, model.Provenance);
             writer.WriteStartObject("generationScope");
             writer.WriteString("mode", model.Scope);
             writer.WriteStartArray("selectedCanonicals");
@@ -54,4 +55,5 @@ public sealed class ModelGenerationManifestRenderer
         }
         return Encoding.UTF8.GetString(stream.ToArray()) + "\n";
     }
+
 }

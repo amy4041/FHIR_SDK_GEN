@@ -4,7 +4,7 @@ namespace MyFhirSdk.CodeGen.Models;
 
 public sealed class ModelGenerationManifestModel
 {
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = 2;
     public const string FileName = "Generated/R5/model-generation-manifest.json";
 
     public ModelGenerationManifestModel(
@@ -16,6 +16,7 @@ public sealed class ModelGenerationManifestModel
         string primitivePolicySha256,
         string codeGenVersion,
         string runtimeContractVersion,
+        GenerationManifestProvenance provenance,
         string scope,
         IEnumerable<string> selectedCanonicals,
         IEnumerable<ModelManifestPolicyModel> modelPolicies,
@@ -30,6 +31,7 @@ public sealed class ModelGenerationManifestModel
         PrimitivePolicySha256 = primitivePolicySha256;
         CodeGenVersion = codeGenVersion;
         RuntimeContractVersion = runtimeContractVersion;
+        Provenance = provenance;
         Scope = scope;
         SelectedCanonicals = Array.AsReadOnly(selectedCanonicals.OrderBy(x => x, StringComparer.Ordinal).ToArray());
         ModelPolicies = new ReadOnlyCollection<ModelManifestPolicyModel>(modelPolicies.OrderBy(x => x.Name, StringComparer.Ordinal).ToArray());
@@ -46,6 +48,7 @@ public sealed class ModelGenerationManifestModel
     public string PrimitivePolicySha256 { get; }
     public string CodeGenVersion { get; }
     public string RuntimeContractVersion { get; }
+    public GenerationManifestProvenance Provenance { get; }
     public string Scope { get; }
     public IReadOnlyList<string> SelectedCanonicals { get; }
     public IReadOnlyList<ModelManifestPolicyModel> ModelPolicies { get; }

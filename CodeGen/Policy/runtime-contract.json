@@ -8,6 +8,8 @@
     "publicKeyToken": "null"
   },
   "compatibility": {
+    "schemaVersion": 1,
+    "versionPolicy": "exact",
     "toolVersion": "1.0.0",
     "codeGenVersion": "1.0.0",
     "fhirPackage": {

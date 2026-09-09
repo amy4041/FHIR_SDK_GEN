@@ -59,6 +59,8 @@ public sealed partial class RuntimeContractValidator
             document.TargetFramework!,
             CreateAssembly(document.RuntimeAssembly!),
             new RuntimeCompatibility(
+                compatibility.SchemaVersion!.Value,
+                compatibility.VersionPolicy!,
                 compatibility.ToolVersion!,
                 compatibility.CodeGenVersion!,
                 new RuntimeFhirPackageIdentity(
@@ -109,6 +111,17 @@ public sealed partial class RuntimeContractValidator
             AddInvalid(diagnostics, sourceFile, "Required object 'compatibility' is missing.");
             return;
         }
+
+        if (compatibility.SchemaVersion is null || compatibility.SchemaVersion <= 0)
+        {
+            AddInvalid(diagnostics, sourceFile,
+                "Required field 'compatibility.schemaVersion' must be a positive integer.");
+        }
+        RequireText(
+            compatibility.VersionPolicy,
+            "compatibility.versionPolicy",
+            diagnostics,
+            sourceFile);
 
         RequireVersion(compatibility.ToolVersion, "compatibility.toolVersion", diagnostics, sourceFile);
         RequireVersion(compatibility.CodeGenVersion, "compatibility.codeGenVersion", diagnostics, sourceFile);

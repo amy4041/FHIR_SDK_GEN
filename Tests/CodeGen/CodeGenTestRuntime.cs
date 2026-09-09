@@ -39,7 +39,10 @@ internal static class CodeGenTestRuntime
         new(CreateDevelopmentSafetyContext(repositoryRoot), RuntimeContract, CreateCompilationValidator());
 
     internal static PrimitiveGenerationPipeline CreatePrimitivePipeline(string repositoryRoot) =>
-        new(CreateDevelopmentSafetyContext(repositoryRoot), CreateCompilationValidator());
+        new(
+            CreateDevelopmentSafetyContext(repositoryRoot),
+            RuntimeContract,
+            CreateCompilationValidator());
 
     private static OutputSafetyContext CreateDevelopmentSafetyContext(
         string repositoryRoot) =>

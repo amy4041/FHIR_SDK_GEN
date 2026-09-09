@@ -43,6 +43,12 @@ public sealed class RuntimeAssemblyIdentityDocument
 
 public sealed class RuntimeCompatibilityDocument
 {
+    [JsonPropertyName("schemaVersion")]
+    public int? SchemaVersion { get; init; }
+
+    [JsonPropertyName("versionPolicy")]
+    public string? VersionPolicy { get; init; }
+
     [JsonPropertyName("toolVersion")]
     public string? ToolVersion { get; init; }
 

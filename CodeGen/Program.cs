@@ -84,6 +84,7 @@ public static class Program
         var compilationValidator = new RoslynCompilationValidator(referenceResult.Value);
         var primitivePipeline = new PrimitiveGenerationPipeline(
             outputSafetyContext,
+            contractResult.Value,
             compilationValidator);
         var modelPipeline = new ModelGenerationPipeline(
             outputSafetyContext,
