@@ -52,8 +52,8 @@ Phase D 不包含：
 - 改變既有 public CLR type 的 assembly identity；若需要，必須另立 ADR 與 migration phase。
 - 生成 constraint Profile；`SimpleQuantity` 仍依 Phase D handoff 保持手寫。
 - 新增 FHIRPath、terminology、fixed/pattern value 等 Phase C deferred capabilities。
-- 發布到公開 NuGet feed、簽章、SBOM 或正式 release promotion；可建立 pack-ready artifact，
-  正式發佈流程另由 release phase 決定。
+- 發布到公開 NuGet feed、正式 license 決策、簽章、SBOM 或正式 release promotion；可建立
+  repository-local pack-ready artifact，正式發佈流程另由 release phase 決定。
 - 以 assembly scan、現存 generated output 或 handwritten concrete model 反推 inventory。
 
 ## 4. 目前基準與已知差距
@@ -498,8 +498,16 @@ manifest 不記錄 absolute path、NuGet cache path 或 OS-specific separator。
 <PackageVersion>1.0.0</PackageVersion>
 ```
 
-並補齊 authors、description、license、repository、readme、deterministic build、
-`ContinuousIntegrationBuild` 等 package metadata。package 不得意外包含：
+並補齊 authors、description、repository、readme、deterministic build、
+`ContinuousIntegrationBuild` 等 repository-local package metadata。D6 不得在團隊尚未核准時
+自行選擇 license、加入臨時 license text 或宣告 redistribution 權利；此時 local package 必須
+省略 license metadata，並清楚標示不得進行 public publish。
+
+任何公開 NuGet 發布前，release pipeline 必須以 fail-fast gate 驗證：正式 license 已由團隊
+核准並記錄、`PackageLicenseExpression` 或 `PackageLicenseFile` 與該決策完全一致，而且 package
+實際包含必要 notice/license assets。缺少或未核准時不得 publish。
+
+package 不得意外包含：
 
 - FHIR test fixtures；
 - repository absolute paths；
@@ -620,7 +628,7 @@ SHA-256，更新或驗證 Runtime descriptor 的 `targetFramework`、
 
 後續 handoff 應區分：
 
-- 公開 NuGet release/signing/SBOM/provenance；
+- 公開 NuGet license decision/release/signing/SBOM/provenance；
 - physical Runtime/Models assembly split（若仍需要）；
 - Profile generation與`SimpleQuantity` migration；
 - deferred validation capabilities；

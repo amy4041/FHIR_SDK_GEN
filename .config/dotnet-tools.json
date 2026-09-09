@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "myfhirsdk.codegen.tool": {
+      "version": "1.0.0",
+      "commands": [
+        "myfhir-codegen"
+      ]
+    }
+  }
+}

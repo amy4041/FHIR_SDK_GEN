@@ -19,7 +19,7 @@ public sealed class ToolAssetResolver
         ArgumentNullException.ThrowIfNull(overrides);
         return ResolveOverride(
             overrides.RuntimeContractPath,
-            Path.Combine(_toolRoot, "Policy", "runtime-contract.json"));
+            Path.Combine(_toolRoot, "Contracts", "runtime-contract.json"));
     }
 
     public IReadOnlyList<string> ResolveRuntimeReferencePaths(

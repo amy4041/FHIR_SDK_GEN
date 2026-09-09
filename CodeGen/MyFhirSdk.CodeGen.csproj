@@ -1,9 +1,28 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk"
+         TreatAsLocalProperty="ExpectedToolPackageId;ExpectedToolCommandName;ExpectedToolPackageVersion;ToolContractTargetFramework">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <ToolContractTargetFramework>net9.0</ToolContractTargetFramework>
+    <TargetFramework>$(ToolContractTargetFramework)</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <ExpectedToolPackageId>MyFhirSdk.CodeGen.Tool</ExpectedToolPackageId>
+    <ExpectedToolCommandName>myfhir-codegen</ExpectedToolCommandName>
+    <ExpectedToolPackageVersion>1.0.0</ExpectedToolPackageVersion>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>$(ExpectedToolCommandName)</ToolCommandName>
+    <PackageId>$(ExpectedToolPackageId)</PackageId>
+    <PackageVersion>$(ExpectedToolPackageVersion)</PackageVersion>
+    <Authors>MyFhirSdk contributors</Authors>
+    <Description>Deterministic FHIR R5 model and primitive source generator.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/amy4041/FHIR_SDK_GEN</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <PathMap>$(MSBuildProjectDirectory)=/_/CodeGen</PathMap>
     <RuntimeReferenceTargetPath>Assets\RuntimeReferences\$(TargetFramework)\MyFhirSdk.dll</RuntimeReferenceTargetPath>
   </PropertyGroup>
   <ItemGroup>
@@ -30,12 +49,14 @@
     </None>
     <None Update="Policy\runtime-contract.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Contracts\runtime-contract.json</TargetPath>
     </None>
     <None Include="$(RuntimeReferenceAssetPath)"
           Condition="'$(RuntimeReferenceAssetPath)' != ''">
       <Link>$(RuntimeReferenceTargetPath)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <Target Name="ValidateRuntimeReferenceAssetInput"
           BeforeTargets="PrepareForBuild"
@@ -47,5 +68,18 @@
           BeforeTargets="Pack"
           Condition="'$(RuntimeReferenceAssetPath)' == ''">
     <Error Text="RuntimeReferenceAssetPath is required when packaging CodeGen." />
+  </Target>
+  <Target Name="ValidateToolPackageContract"
+          BeforeTargets="Pack">
+    <Error Condition="'$(PackAsTool)' != 'true'"
+           Text="Tool package contract violation: PackAsTool must be 'true'." />
+    <Error Condition="'$(PackageId)' != '$(ExpectedToolPackageId)'"
+           Text="Tool package contract violation: PackageId '$(PackageId)' must be '$(ExpectedToolPackageId)'." />
+    <Error Condition="'$(ToolCommandName)' != '$(ExpectedToolCommandName)'"
+           Text="Tool package contract violation: ToolCommandName '$(ToolCommandName)' must be '$(ExpectedToolCommandName)'." />
+    <Error Condition="'$(PackageVersion)' != '$(ExpectedToolPackageVersion)'"
+           Text="Tool package contract violation: PackageVersion '$(PackageVersion)' must be '$(ExpectedToolPackageVersion)'." />
+    <Error Condition="'$(TargetFramework)' != '$(ToolContractTargetFramework)'"
+           Text="Tool package contract violation: TargetFramework '$(TargetFramework)' must be '$(ToolContractTargetFramework)'." />
   </Target>
 </Project>

@@ -1,4 +1,5 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk"
+         TreatAsLocalProperty="CodeGenToolPackageConfiguration">
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -34,6 +35,14 @@
       <Link>Policy\r5-package-lock.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\CodeGen\Policy\primitive-generation-policy.json">
+      <Link>Policy\primitive-generation-policy.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\CodeGen\Policy\runtime-contract.json">
+      <Link>Policy\runtime-contract.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\CodeGen\Policy\r5-model-ownership-policy.json">
       <Link>Policy\r5-model-ownership-policy.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -61,6 +70,17 @@
       <Link>CommittedGenerated\R5\Primitives\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\Generated\R5\model-generation-manifest.json">
+      <Link>CommittedGenerated\R5\model-generation-manifest.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\.config\dotnet-tools.json">
+      <Link>RepositoryToolManifest\dotnet-tools.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Packaging\codegen-tool-package-layout.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <Target Name="StageTestRuntimeReference" AfterTargets="Build">
@@ -83,5 +103,25 @@
     <MakeDir Directories="$(TestRuntimeReferenceDirectory)" />
     <Copy SourceFiles="@(TestRuntimeReferenceAsset)"
           DestinationFiles="$(TestRuntimeReferenceDirectory)\MyFhirSdk.dll" />
+  </Target>
+
+  <Target Name="StageCodeGenToolPackages"
+          AfterTargets="Build"
+          DependsOnTargets="StageTestRuntimeReference">
+    <PropertyGroup>
+      <CodeGenToolPackageRoot>$(TargetDir)ToolPackages</CodeGenToolPackageRoot>
+      <CodeGenToolPackageFirst>$(CodeGenToolPackageRoot)\first</CodeGenToolPackageFirst>
+      <CodeGenToolPackageSecond>$(CodeGenToolPackageRoot)\second</CodeGenToolPackageSecond>
+      <CodeGenToolPackageConfiguration>Release</CodeGenToolPackageConfiguration>
+      <TestRuntimeReferenceAssetPath>@(TestRuntimeReferenceAsset->'%(FullPath)')</TestRuntimeReferenceAssetPath>
+    </PropertyGroup>
+    <RemoveDir Directories="$(CodeGenToolPackageRoot)" />
+    <MakeDir Directories="$(CodeGenToolPackageFirst);$(CodeGenToolPackageSecond)" />
+    <MSBuild Projects="..\..\CodeGen\MyFhirSdk.CodeGen.csproj"
+             Targets="Pack"
+             Properties="Configuration=$(CodeGenToolPackageConfiguration);RuntimeReferenceAssetPath=$(TestRuntimeReferenceAssetPath);PackageOutputPath=$(CodeGenToolPackageFirst)" />
+    <MSBuild Projects="..\..\CodeGen\MyFhirSdk.CodeGen.csproj"
+             Targets="Pack"
+             Properties="Configuration=$(CodeGenToolPackageConfiguration);RuntimeReferenceAssetPath=$(TestRuntimeReferenceAssetPath);PackageOutputPath=$(CodeGenToolPackageSecond)" />
   </Target>
 </Project>

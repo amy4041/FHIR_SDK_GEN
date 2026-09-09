@@ -12,7 +12,7 @@ public sealed class RuntimeContractDescriptorArchitectureTests
     {
         var result = await new RuntimeContractLoader().LoadAsync(Path.Combine(
             AppContext.BaseDirectory,
-            "Policy",
+            "Contracts",
             "runtime-contract.json"));
 
         Assert.True(result.IsSuccess, string.Join(Environment.NewLine,
