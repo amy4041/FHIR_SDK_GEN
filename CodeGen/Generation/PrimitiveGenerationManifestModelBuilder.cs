@@ -11,11 +11,13 @@ public sealed class PrimitiveGenerationManifestModelBuilder
     public PrimitiveGenerationManifestModel Build(
         PrimitiveInventoryPolicyCoverage coverage,
         PrimitiveGenerationOptions options,
-        IReadOnlyList<GeneratedSource> sources)
+        IReadOnlyList<GeneratedSource> sources,
+        GenerationManifestProvenance provenance)
     {
         ArgumentNullException.ThrowIfNull(coverage);
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(sources);
+        ArgumentNullException.ThrowIfNull(provenance);
 
         var decisions = coverage.Matches.Select(match =>
             new PrimitiveManifestDecisionModel(
@@ -40,6 +42,7 @@ public sealed class PrimitiveGenerationManifestModelBuilder
             coverage.Policy.PolicyVersion,
             options.CodeGenVersion,
             coverage.Policy.RuntimeContractVersion,
+            provenance,
             coverage.Policy.PrimitiveNamespace,
             decisions,
             artifacts);

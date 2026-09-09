@@ -33,12 +33,15 @@ public sealed class PrimitiveGenerationPipelineTests : IDisposable
             output,
             "primitive-generation-manifest.json");
         using var manifest = JsonDocument.Parse(await File.ReadAllTextAsync(manifestPath));
+        var manifestText = await File.ReadAllTextAsync(manifestPath);
         var root = manifest.RootElement;
-        Assert.Equal(1, root.GetProperty("schemaVersion").GetInt32());
+        Assert.Equal(2, root.GetProperty("schemaVersion").GetInt32());
         Assert.Equal("hl7.fhir.r5.core", root.GetProperty("fhirPackageId").GetString());
         Assert.Equal("5.0.0", root.GetProperty("fhirPackageVersion").GetString());
         Assert.Equal("1.1.0", root.GetProperty("policyVersion").GetString());
         Assert.Equal("phase-a-v1+c4-primitives-v1", root.GetProperty("runtimeContractVersion").GetString());
+        AssertManifestCompatibility(root.GetProperty("compatibility"));
+        Assert.DoesNotContain(AppContext.BaseDirectory, manifestText, StringComparison.OrdinalIgnoreCase);
         Assert.Equal("MyFhirSdk.Primitives", root.GetProperty("primitiveNamespace").GetString());
         Assert.Equal(21, root.GetProperty("primitives").GetArrayLength());
         Assert.Equal(21, root.GetProperty("artifacts").GetArrayLength());
@@ -72,27 +75,42 @@ public sealed class PrimitiveGenerationPipelineTests : IDisposable
     }
 
     [Fact]
-    public async Task BuildAsync_ReorderedDefinitionsAndPolicy_ProducesIdenticalArtifacts()
+    public async Task BuildAsync_ReorderedDefinitions_ProducesIdenticalArtifacts()
     {
         Directory.CreateDirectory(_testRoot);
         var definitions = Path.Combine(_testRoot, "definitions");
         CopyDefinitions(definitions, reverse: true);
-        var reversedPolicy = Path.Combine(_testRoot, "reversed-policy.json");
-        await WriteReversedPolicyAsync(reversedPolicy);
         var pipeline = CreatePipeline();
 
         var original = await pipeline.BuildAsync(CreateOptions(
             Path.Combine(_testRoot, "original")));
         var reordered = await pipeline.BuildAsync(CreateOptions(
             Path.Combine(_testRoot, "reordered"),
-            definitions,
-            reversedPolicy));
+            definitions));
 
         Assert.True(original.IsSuccess, FormatDiagnostics(original.Diagnostics));
         Assert.True(reordered.IsSuccess, FormatDiagnostics(reordered.Diagnostics));
         var first = Assert.IsType<PrimitiveGenerationBatch>(original.Value);
         var second = Assert.IsType<PrimitiveGenerationBatch>(reordered.Value);
         Assert.Equal(first.Artifacts, second.Artifacts);
+    }
+
+    [Fact]
+    public async Task BuildAsync_ModifiedPolicyBytes_FailsCompatibilityPreflight()
+    {
+        Directory.CreateDirectory(_testRoot);
+        var reversedPolicy = Path.Combine(_testRoot, "reversed-policy.json");
+        await WriteReversedPolicyAsync(reversedPolicy);
+
+        var result = await CreatePipeline().BuildAsync(CreateOptions(
+            Path.Combine(_testRoot, "output"),
+            policy: reversedPolicy));
+
+        var diagnostic = Assert.Single(result.Diagnostics);
+        Assert.Equal("FSG0124", diagnostic.Code);
+        Assert.Equal(
+            "<compatibility:primitive-policy-sha256>",
+            diagnostic.SourceFile);
     }
 
     [Fact]
@@ -166,6 +184,24 @@ public sealed class PrimitiveGenerationPipelineTests : IDisposable
     private static string NormalizeNewlines(string value) => value
         .Replace("\r\n", "\n", StringComparison.Ordinal)
         .Replace('\r', '\n');
+
+    private static void AssertManifestCompatibility(JsonElement compatibility)
+    {
+        Assert.Equal(1, compatibility.GetProperty("schemaVersion").GetInt32());
+        Assert.Equal("exact", compatibility.GetProperty("versionPolicy").GetString());
+        Assert.Equal("MyFhirSdk.CodeGen.Tool",
+            compatibility.GetProperty("tool").GetProperty("packageId").GetString());
+        Assert.Equal("1.0.0",
+            compatibility.GetProperty("tool").GetProperty("version").GetString());
+        Assert.Equal("phase-a-v1+c4-primitives-v1",
+            compatibility.GetProperty("runtimeDescriptor").GetProperty("version").GetString());
+        Assert.Equal(64,
+            compatibility.GetProperty("runtimeDescriptor").GetProperty("sha256").GetString()!.Length);
+        Assert.Contains("MyFhirSdk, Version=1.0.0.0",
+            compatibility.GetProperty("compilerReference").GetProperty("logicalIdentity").GetString(),
+            StringComparison.Ordinal);
+        Assert.Equal("net9.0", compatibility.GetProperty("targetFramework").GetString());
+    }
 
     public void Dispose()
     {

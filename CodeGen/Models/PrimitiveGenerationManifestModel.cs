@@ -4,7 +4,7 @@ namespace MyFhirSdk.CodeGen.Models;
 
 public sealed class PrimitiveGenerationManifestModel
 {
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = 2;
 
     public PrimitiveGenerationManifestModel(
         string fhirSpecification,
@@ -14,6 +14,7 @@ public sealed class PrimitiveGenerationManifestModel
         string policyVersion,
         string codeGenVersion,
         string runtimeContractVersion,
+        GenerationManifestProvenance provenance,
         string primitiveNamespace,
         IEnumerable<PrimitiveManifestDecisionModel> primitives,
         IEnumerable<PrimitiveManifestArtifactModel> artifacts)
@@ -25,6 +26,7 @@ public sealed class PrimitiveGenerationManifestModel
         ArgumentException.ThrowIfNullOrWhiteSpace(policyVersion);
         ArgumentException.ThrowIfNullOrWhiteSpace(codeGenVersion);
         ArgumentException.ThrowIfNullOrWhiteSpace(runtimeContractVersion);
+        ArgumentNullException.ThrowIfNull(provenance);
         ArgumentException.ThrowIfNullOrWhiteSpace(primitiveNamespace);
         ArgumentNullException.ThrowIfNull(primitives);
         ArgumentNullException.ThrowIfNull(artifacts);
@@ -36,6 +38,7 @@ public sealed class PrimitiveGenerationManifestModel
         PolicyVersion = policyVersion;
         CodeGenVersion = codeGenVersion;
         RuntimeContractVersion = runtimeContractVersion;
+        Provenance = provenance;
         PrimitiveNamespace = primitiveNamespace;
         Primitives = new ReadOnlyCollection<PrimitiveManifestDecisionModel>(
             primitives.OrderBy(item => item.FhirTypeName, StringComparer.Ordinal).ToArray());
@@ -51,6 +54,7 @@ public sealed class PrimitiveGenerationManifestModel
     public string PolicyVersion { get; }
     public string CodeGenVersion { get; }
     public string RuntimeContractVersion { get; }
+    public GenerationManifestProvenance Provenance { get; }
     public string PrimitiveNamespace { get; }
     public IReadOnlyList<PrimitiveManifestDecisionModel> Primitives { get; }
     public IReadOnlyList<PrimitiveManifestArtifactModel> Artifacts { get; }

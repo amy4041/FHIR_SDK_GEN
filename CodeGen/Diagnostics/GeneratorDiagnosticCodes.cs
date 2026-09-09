@@ -54,4 +54,15 @@ public static class GeneratorDiagnosticCodes
     public const string RuntimeReferenceHashMismatch = "FSG0113";
     public const string DuplicateRuntimeReferenceIdentity = "FSG0114";
     public const string RuntimeReferenceTargetFrameworkMismatch = "FSG0115";
+    public const string UnsupportedTargetFramework = "FSG0120";
+    public const string IncompatibleToolVersion = "FSG0121";
+    public const string IncompatibleCodeGenVersion = "FSG0122";
+    public const string IncompatibleRuntimeContractVersion = "FSG0123";
+    public const string IncompatiblePrimitivePolicy = "FSG0124";
+    public const string IncompatibleFhirPackage = "FSG0125";
+    public const string IncompatibleModelPolicy = "FSG0126";
+    public const string IncompatibleCompatibilitySchema = "FSG0127";
+    public const string RuntimeContractReferenceMismatch = "FSG0128";
+    public const string PackagedAssetMissing = "FSG0130";
+    public const string PackagedAssetCorrupt = "FSG0131";
 }

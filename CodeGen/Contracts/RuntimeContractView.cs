@@ -83,6 +83,8 @@ public sealed record RuntimeAssemblyIdentity(
     string PublicKeyToken);
 
 public sealed record RuntimeCompatibility(
+    int SchemaVersion,
+    string VersionPolicy,
     string ToolVersion,
     string CodeGenVersion,
     RuntimeFhirPackageIdentity FhirPackage,

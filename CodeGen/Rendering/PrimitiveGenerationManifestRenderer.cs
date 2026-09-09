@@ -25,6 +25,7 @@ public sealed class PrimitiveGenerationManifestRenderer
             writer.WriteString("policyVersion", model.PolicyVersion);
             writer.WriteString("codeGenVersion", model.CodeGenVersion);
             writer.WriteString("runtimeContractVersion", model.RuntimeContractVersion);
+            GenerationManifestProvenanceRenderer.Write(writer, model.Provenance);
             writer.WriteString("primitiveNamespace", model.PrimitiveNamespace);
             writer.WriteStartArray("primitives");
             foreach (var primitive in model.Primitives)
@@ -71,4 +72,5 @@ public sealed class PrimitiveGenerationManifestRenderer
 
         return Encoding.UTF8.GetString(stream.ToArray()) + "\n";
     }
+
 }

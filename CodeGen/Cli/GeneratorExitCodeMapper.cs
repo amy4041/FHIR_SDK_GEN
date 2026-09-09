@@ -58,7 +58,18 @@ public static class GeneratorExitCodeMapper
                 GeneratorDiagnosticCodes.RuntimeReferenceIdentityMismatch or
                 GeneratorDiagnosticCodes.RuntimeReferenceHashMismatch or
                 GeneratorDiagnosticCodes.DuplicateRuntimeReferenceIdentity or
-                GeneratorDiagnosticCodes.RuntimeReferenceTargetFrameworkMismatch))
+                GeneratorDiagnosticCodes.RuntimeReferenceTargetFrameworkMismatch or
+                GeneratorDiagnosticCodes.UnsupportedTargetFramework or
+                GeneratorDiagnosticCodes.IncompatibleToolVersion or
+                GeneratorDiagnosticCodes.IncompatibleCodeGenVersion or
+                GeneratorDiagnosticCodes.IncompatibleRuntimeContractVersion or
+                GeneratorDiagnosticCodes.IncompatiblePrimitivePolicy or
+                GeneratorDiagnosticCodes.IncompatibleFhirPackage or
+                GeneratorDiagnosticCodes.IncompatibleModelPolicy or
+                GeneratorDiagnosticCodes.IncompatibleCompatibilitySchema or
+                GeneratorDiagnosticCodes.RuntimeContractReferenceMismatch or
+                GeneratorDiagnosticCodes.PackagedAssetMissing or
+                GeneratorDiagnosticCodes.PackagedAssetCorrupt))
         {
             return 2;
         }

@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using MyFhirSdk.CodeGen.Compilation;
+using MyFhirSdk.CodeGen.Compatibility;
 using MyFhirSdk.CodeGen.Contracts;
 using MyFhirSdk.CodeGen.Diagnostics;
 using MyFhirSdk.CodeGen.Graph;
@@ -31,6 +32,7 @@ public sealed class ModelGenerationPipeline
     private readonly ModelMetadataGenerationPipeline _renderPipeline;
     private readonly ModelGenerationManifestRenderer _manifestRenderer = new();
     private readonly GeneratedFileWriter _writer;
+    private readonly GenerationCompatibilityService _compatibilityService;
 
     public ModelGenerationPipeline(
         OutputSafetyContext outputSafetyContext,
@@ -40,6 +42,9 @@ public sealed class ModelGenerationPipeline
         ArgumentNullException.ThrowIfNull(runtimeContract);
         ArgumentNullException.ThrowIfNull(compilationValidator);
         _writer = new GeneratedFileWriter(outputSafetyContext);
+        _compatibilityService = new GenerationCompatibilityService(
+            runtimeContract,
+            compilationValidator.ReferenceSet);
         _renderPipeline = new ModelMetadataGenerationPipeline(
             runtimeContract,
             compilationValidator);
@@ -51,6 +56,36 @@ public sealed class ModelGenerationPipeline
     {
         ArgumentNullException.ThrowIfNull(options);
         cancellationToken.ThrowIfCancellationRequested();
+
+        var compatibilityResult = await _compatibilityService.ValidateAsync(
+            new GenerationCompatibilityRequest(
+                options.CodeGenVersion,
+                options.PackageId,
+                options.PackageVersion,
+                options.FhirVersion,
+                options.PrimitivePolicyPath,
+                [
+                    new GenerationPolicyAsset(
+                        "backbone",
+                        options.ModelIrPolicyPaths.BackbonePolicyPath),
+                    new GenerationPolicyAsset(
+                        "choice-open-type",
+                        options.ModelIrPolicyPaths.ChoicePolicyPath),
+                    new GenerationPolicyAsset(
+                        "model-naming",
+                        options.ModelIrPolicyPaths.NamingPolicyPath),
+                    new GenerationPolicyAsset(
+                        "model-ownership",
+                        options.OwnershipPolicyPath),
+                    new GenerationPolicyAsset(
+                        "validation-capability",
+                        options.ValidationPolicyPath)
+                ]),
+            cancellationToken);
+        if (!compatibilityResult.IsSuccess || compatibilityResult.Value is null)
+        {
+            return Failure(compatibilityResult.Diagnostics);
+        }
 
         var primitiveDocument = await _primitivePolicyLoader.LoadAsync(options.PrimitivePolicyPath, cancellationToken);
         if (!primitiveDocument.IsSuccess || primitiveDocument.Value is null) return Failure(primitiveDocument.Diagnostics);
@@ -121,6 +156,7 @@ public sealed class ModelGenerationPipeline
                 primitivePolicy.Value.PolicyVersion,
                 await HashTextFileAsync(options.PrimitivePolicyPath, cancellationToken),
                 options.CodeGenVersion, primitivePolicy.Value.RuntimeContractVersion,
+                compatibilityResult.Value,
                 options.SelectedCanonicals.Count == 0 ? "full" : "selected",
                 options.SelectedCanonicals, policyModels, artifactModels, deferred);
             return new GenerationResult<ModelGenerationBatch?>(

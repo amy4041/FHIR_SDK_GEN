@@ -32,8 +32,10 @@ public sealed class RuntimeContractLoaderTests : IDisposable
         Assert.Equal("net9.0", view.TargetFramework);
         Assert.Equal(13, view.Symbols.Count);
         Assert.Equal(3, view.DeclaredSlots.Count);
+        Assert.Equal(1, view.Compatibility.SchemaVersion);
+        Assert.Equal("exact", view.Compatibility.VersionPolicy);
         Assert.Equal(
-            "b8362333a3a26514eead62b2ca5e2abd130bc37b36c8290748f01497593aa333",
+            "8a715d62f206b47ace1649d4a0898c29594bf71c389a619221f12fabfa3eb863",
             view.DescriptorSha256);
         Assert.Equal(
             Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(path))).ToLowerInvariant(),
@@ -99,8 +101,8 @@ public sealed class RuntimeContractLoaderTests : IDisposable
     {
         var json = await File.ReadAllTextAsync(GetRepositoryDescriptorPath());
         json = json.Replace(
-            "  \"schemaVersion\": 1,",
-            "  \"schemaVersion\": 1,\n  \"schemaVersion\": 1,",
+            "{\n  \"schemaVersion\": 1,",
+            "{\n  \"schemaVersion\": 1,\n  \"schemaVersion\": 1,",
             StringComparison.Ordinal);
 
         var result = await LoadTextAsync(json);
@@ -246,7 +248,7 @@ public sealed class RuntimeContractLoaderTests : IDisposable
     [
         $"schema|{view.SchemaVersion}|{view.ContractVersion}|{view.TargetFramework}|{view.DescriptorSha256}",
         $"assembly|{view.RuntimeAssembly.Name}|{view.RuntimeAssembly.Version}|{view.RuntimeAssembly.PublicKeyToken}",
-        $"compatibility|{view.Compatibility.ToolVersion}|{view.Compatibility.CodeGenVersion}|{view.Compatibility.FhirPackage.Id}|{view.Compatibility.FhirPackage.Version}|{view.Compatibility.FhirPackage.FhirVersion}|{view.Compatibility.PrimitivePolicy.Version}|{view.Compatibility.PrimitivePolicy.Sha256}",
+        $"compatibility|{view.Compatibility.SchemaVersion}|{view.Compatibility.VersionPolicy}|{view.Compatibility.ToolVersion}|{view.Compatibility.CodeGenVersion}|{view.Compatibility.FhirPackage.Id}|{view.Compatibility.FhirPackage.Version}|{view.Compatibility.FhirPackage.FhirVersion}|{view.Compatibility.PrimitivePolicy.Version}|{view.Compatibility.PrimitivePolicy.Sha256}",
         .. view.Compatibility.ModelPolicies.Select(policy =>
             $"policy|{policy.Name}|{policy.Sha256}"),
         .. view.Symbols.Select(symbol =>

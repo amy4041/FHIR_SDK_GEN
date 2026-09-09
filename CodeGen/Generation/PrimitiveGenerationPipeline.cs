@@ -1,4 +1,6 @@
 using MyFhirSdk.CodeGen.Compilation;
+using MyFhirSdk.CodeGen.Compatibility;
+using MyFhirSdk.CodeGen.Contracts;
 using MyFhirSdk.CodeGen.Diagnostics;
 using MyFhirSdk.CodeGen.Inventory;
 using MyFhirSdk.CodeGen.Models;
@@ -22,9 +24,11 @@ public sealed class PrimitiveGenerationPipeline
     private readonly PrimitiveRegistryCompositionCompilationValidator
         _registryCompilationValidator;
     private readonly GeneratedFileWriter _writer;
+    private readonly GenerationCompatibilityService _compatibilityService;
 
     public PrimitiveGenerationPipeline(
         OutputSafetyContext outputSafetyContext,
+        RuntimeContractView runtimeContract,
         RoslynCompilationValidator compilationValidator)
         : this(
             new PrimitiveInventoryCoveragePipeline(),
@@ -34,6 +38,9 @@ public sealed class PrimitiveGenerationPipeline
             new PrimitiveRegistryCompositionRenderer(),
             new PrimitiveGenerationManifestModelBuilder(),
             new PrimitiveGenerationManifestRenderer(),
+            new GenerationCompatibilityService(
+                runtimeContract,
+                compilationValidator.ReferenceSet),
             compilationValidator,
             new PrimitiveRegistryCompositionCompilationValidator(
                 compilationValidator.ReferenceSet),
@@ -49,6 +56,7 @@ public sealed class PrimitiveGenerationPipeline
         PrimitiveRegistryCompositionRenderer registryRenderer,
         PrimitiveGenerationManifestModelBuilder manifestModelBuilder,
         PrimitiveGenerationManifestRenderer manifestRenderer,
+        GenerationCompatibilityService compatibilityService,
         RoslynCompilationValidator wrapperCompilationValidator,
         PrimitiveRegistryCompositionCompilationValidator registryCompilationValidator,
         GeneratedFileWriter writer)
@@ -60,6 +68,7 @@ public sealed class PrimitiveGenerationPipeline
         ArgumentNullException.ThrowIfNull(registryRenderer);
         ArgumentNullException.ThrowIfNull(manifestModelBuilder);
         ArgumentNullException.ThrowIfNull(manifestRenderer);
+        ArgumentNullException.ThrowIfNull(compatibilityService);
         ArgumentNullException.ThrowIfNull(wrapperCompilationValidator);
         ArgumentNullException.ThrowIfNull(registryCompilationValidator);
         ArgumentNullException.ThrowIfNull(writer);
@@ -71,6 +80,7 @@ public sealed class PrimitiveGenerationPipeline
         _registryRenderer = registryRenderer;
         _manifestModelBuilder = manifestModelBuilder;
         _manifestRenderer = manifestRenderer;
+        _compatibilityService = compatibilityService;
         _wrapperCompilationValidator = wrapperCompilationValidator;
         _registryCompilationValidator = registryCompilationValidator;
         _writer = writer;
@@ -82,6 +92,19 @@ public sealed class PrimitiveGenerationPipeline
     {
         ArgumentNullException.ThrowIfNull(options);
         cancellationToken.ThrowIfCancellationRequested();
+
+        var compatibilityResult = await _compatibilityService.ValidateAsync(
+            GenerationCompatibilityRequest.Primitive(
+                options.CodeGenVersion,
+                options.FhirPackageId,
+                options.FhirPackageVersion,
+                options.FhirVersion,
+                options.PolicyPath),
+            cancellationToken);
+        if (!compatibilityResult.IsSuccess || compatibilityResult.Value is null)
+        {
+            return Failure(compatibilityResult.Diagnostics);
+        }
 
         var coverageResult = await _coveragePipeline.BuildAsync(
             options.DefinitionsPath,
@@ -128,7 +151,11 @@ public sealed class PrimitiveGenerationPipeline
             .Append(composition)
             .OrderBy(source => source.FileName, StringComparer.Ordinal)
             .ToArray();
-        var manifest = _manifestModelBuilder.Build(coverage, options, sources);
+        var manifest = _manifestModelBuilder.Build(
+            coverage,
+            options,
+            sources,
+            compatibilityResult.Value);
         var batch = new PrimitiveGenerationBatch(
             sources,
             manifest,
