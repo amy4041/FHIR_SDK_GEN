@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using MyFhirSdk.CodeGen.Compatibility;
 using MyFhirSdk.CodeGen.Contracts;
 using MyFhirSdk.CodeGen.Diagnostics;
 using Xunit;
@@ -29,7 +30,7 @@ public sealed class RuntimeContractLoaderTests : IDisposable
         var secondView = Assert.IsType<RuntimeContractView>(second.Value);
         Assert.Equal(1, view.SchemaVersion);
         Assert.Equal("phase-a-v1+c4-primitives-v1", view.ContractVersion);
-        Assert.Equal("net9.0", view.TargetFramework);
+        Assert.Equal(GenerationCompatibilityMatrix.TargetFramework, view.TargetFramework);
         Assert.Equal(13, view.Symbols.Count);
         Assert.Equal(3, view.DeclaredSlots.Count);
         Assert.Equal(1, view.Compatibility.SchemaVersion);

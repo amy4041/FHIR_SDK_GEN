@@ -12,7 +12,6 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: "1"
   DOTNET_NOLOGO: "1"
   SOLUTION_PATH: MyFhirSdk.sln
-  PROJECT_PATH: MyFhirSdk.csproj
 
 jobs:
   compiler-reference-asset:
@@ -28,29 +27,113 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Validate toolchain contract
+        shell: pwsh
+        run: ./eng/Test-CodeGenToolchainContract.ps1 -OutputPath artifacts/toolchain/toolchain-contract.json
+
       - name: Restore
         run: dotnet restore "${{ env.SOLUTION_PATH }}"
 
       - name: Build compiler reference asset
         run: dotnet build eng/MyFhirSdk.CodeGen.Build.proj --configuration Release --no-restore
 
+      - name: Stage compiler reference asset
+        shell: pwsh
+        run: |
+          [xml] $props = Get-Content -LiteralPath Directory.Build.props -Raw
+          $tfm = [string] $props.Project.PropertyGroup.MyFhirSdkTargetFramework
+          $source = "CodeGen/bin/Release/$tfm/Assets/RuntimeReferences/$tfm/MyFhirSdk.dll"
+          if (-not (Test-Path -LiteralPath $source -PathType Leaf)) {
+            throw "Compiler reference asset was not staged at $source."
+          }
+          $destination = "artifacts/compiler-reference/$tfm"
+          New-Item -ItemType Directory -Path $destination -Force | Out-Null
+          Copy-Item -LiteralPath $source -Destination "$destination/MyFhirSdk.dll"
+
       - name: Upload compiler reference asset
         uses: actions/upload-artifact@v4
         with:
           name: compiler-reference-asset
-          path: CodeGen/bin/Release/*/Assets/RuntimeReferences/*/MyFhirSdk.dll
+          path: |
+            artifacts/compiler-reference
+            artifacts/toolchain
           if-no-files-found: error
 
-  build-test-pack:
-    name: Build and test (${{ matrix.os }})
-    needs: compiler-reference-asset
+  baseline-tool-package:
+    name: Rebuild recorded tool upgrade baseline
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout current baseline metadata
+        uses: actions/checkout@v4
+        with:
+          path: metadata
+
+      - name: Resolve baseline source revision
+        id: baseline
+        shell: pwsh
+        run: |
+          $baseline = Get-Content -LiteralPath metadata/eng/codegen-tool-upgrade-baseline.json -Raw | ConvertFrom-Json
+          if ([string] $baseline.sourceRevision -notmatch '^[0-9a-f]{40}$') {
+            throw 'Upgrade baseline must contain a full Git sourceRevision.'
+          }
+          "revision=$($baseline.sourceRevision)" >> $env:GITHUB_OUTPUT
+
+      - name: Checkout recorded baseline source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.baseline.outputs.revision }}
+          path: baseline-source
+
+      - name: Setup baseline .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: baseline-source/global.json
+
+      - name: Restore baseline source
+        run: dotnet msbuild baseline-source/eng/MyFhirSdk.CodeGen.Build.proj /t:Restore
+
+      - name: Pack baseline tool from recorded source
+        shell: pwsh
+        run: |
+          $output = Join-Path $PWD artifacts/baseline-package
+          dotnet msbuild baseline-source/eng/MyFhirSdk.CodeGen.Build.proj `
+            /t:Pack `
+            /p:Configuration=Release `
+            "/p:PackageOutputPath=$output"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Baseline tool pack failed with exit code $LASTEXITCODE."
+          }
+          $packages = @(Get-ChildItem -LiteralPath $output -Filter *.nupkg -File)
+          if ($packages.Count -ne 1) {
+            throw "Expected exactly one baseline tool package; found $($packages.Count)."
+          }
+          ./metadata/eng/Test-CodeGenToolUpgrade.ps1 `
+            -CurrentPackagePath $packages[0].FullName `
+            -BaselinePath metadata/eng/codegen-tool-upgrade-baseline.json `
+            -OutputPath artifacts/baseline-package-status.json
+
+      - name: Upload real baseline package
+        uses: actions/upload-artifact@v4
+        with:
+          name: baseline-tool-package
+          path: artifacts/baseline-package/*.nupkg
+          if-no-files-found: error
+
+  build-test-tool-smoke:
+    name: Build, test and tool smoke (${{ matrix.id }})
+    needs:
+      - compiler-reference-asset
+      - baseline-tool-package
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
+        include:
+          - id: linux
+            os: ubuntu-latest
+          - id: windows
+            os: windows-latest
 
     steps:
       - name: Checkout
@@ -65,35 +148,135 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: compiler-reference-asset
-          path: artifacts/compiler-reference
+          path: artifacts/compiler-reference-download
 
-      - name: Resolve compiler reference asset
-        id: compiler-reference
+      - name: Download real baseline package
+        uses: actions/download-artifact@v4
+        with:
+          name: baseline-tool-package
+          path: artifacts/baseline-package-download
+
+      - name: Resolve build contract
+        id: contract
         shell: pwsh
         run: |
-          $assets = @(Get-ChildItem -LiteralPath "artifacts/compiler-reference" -Filter "MyFhirSdk.dll" -Recurse)
+          [xml] $props = Get-Content -LiteralPath Directory.Build.props -Raw
+          $tfm = [string] $props.Project.PropertyGroup.MyFhirSdkTargetFramework
+          $assets = @(Get-ChildItem -LiteralPath artifacts/compiler-reference-download -Filter MyFhirSdk.dll -Recurse -File)
           if ($assets.Count -ne 1) {
             throw "Expected exactly one compiler reference asset; found $($assets.Count)."
           }
-          "path=$($assets[0].FullName)" >> $env:GITHUB_OUTPUT
+          "tfm=$tfm" >> $env:GITHUB_OUTPUT
+          "runtime-reference=$($assets[0].FullName)" >> $env:GITHUB_OUTPUT
 
       - name: Restore
         run: dotnet restore "${{ env.SOLUTION_PATH }}"
 
       - name: Build
-        run: dotnet build "${{ env.SOLUTION_PATH }}" --configuration Release --no-restore -p:RuntimeReferenceAssetPath="${{ steps.compiler-reference.outputs.path }}"
+        run: dotnet build "${{ env.SOLUTION_PATH }}" --configuration Release --no-restore -p:RuntimeReferenceAssetPath="${{ steps.contract.outputs.runtime-reference }}"
 
       - name: Test
         run: dotnet test "${{ env.SOLUTION_PATH }}" --configuration Release --no-build --verbosity normal
 
-      - name: Pack
-        if: matrix.os == 'ubuntu-latest'
-        run: dotnet pack "${{ env.PROJECT_PATH }}" --configuration Release --no-build --output artifacts/packages
+      - name: Pack local tool
+        run: dotnet pack CodeGen/MyFhirSdk.CodeGen.csproj --configuration Release --no-build --no-restore -p:RuntimeReferenceAssetPath="${{ steps.contract.outputs.runtime-reference }}" --output artifacts/d7/package
 
-      - name: Upload package artifact
-        if: matrix.os == 'ubuntu-latest'
+      - name: Inspect package and upgrade baseline
+        id: package
+        shell: pwsh
+        run: |
+          $packages = @(Get-ChildItem -LiteralPath artifacts/d7/package -Filter *.nupkg -File)
+          if ($packages.Count -ne 1) {
+            throw "Expected exactly one tool package; found $($packages.Count)."
+          }
+          $baselinePackages = @(Get-ChildItem -LiteralPath artifacts/baseline-package-download -Filter *.nupkg -File)
+          if ($baselinePackages.Count -ne 1) {
+            throw "Expected exactly one baseline tool package; found $($baselinePackages.Count)."
+          }
+          $baseline = Get-Content -LiteralPath eng/codegen-tool-upgrade-baseline.json -Raw | ConvertFrom-Json
+          [xml] $project = Get-Content -LiteralPath CodeGen/MyFhirSdk.CodeGen.csproj -Raw
+          $properties = $project.SelectSingleNode('/Project/PropertyGroup[ExpectedToolPackageVersion]')
+          . ./eng/SemanticVersion.ps1
+          $versionComparison = Compare-MyFhirSdkSemanticVersion `
+            ([string] $properties.ExpectedToolPackageVersion) `
+            ([string] $baseline.baselineVersion)
+          $upgradeRequired = $versionComparison -gt 0
+          "path=$($packages[0].FullName)" >> $env:GITHUB_OUTPUT
+          "upgrade-required=$($upgradeRequired.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+          $upgradeParameters = @{
+            CurrentPackagePath = $packages[0].FullName
+            BaselinePath = 'eng/codegen-tool-upgrade-baseline.json'
+            OutputPath = 'artifacts/d7/upgrade-status.json'
+          }
+          if ($upgradeRequired) {
+            $upgradeParameters.PreviousPackagePath = $baselinePackages[0].FullName
+          }
+          ./eng/Write-CodeGenToolPackageInventory.ps1 `
+            -PackagePath $packages[0].FullName `
+            -ExpectedTargetFramework '${{ steps.contract.outputs.tfm }}' `
+            -OutputPath artifacts/d7/package-inventory.txt
+          ./eng/Test-CodeGenToolUpgrade.ps1 @upgradeParameters
+
+      - name: Clean-environment local tool smoke
+        shell: pwsh
+        run: |
+          $smokeParameters = @{
+            PackagePath = '${{ steps.package.outputs.path }}'
+            ToolManifestPath = '.config/dotnet-tools.json'
+            FhirPackagePath = 'Tests/CodeGen/Fixtures/FhirPackages/R5/hl7.fhir.r5.core-5.0.0.tgz'
+            PrimitiveDefinitionsPath = 'Tests/CodeGen/Fixtures/StructureDefinitions/Primitives/R5'
+            PrimitivePolicyPath = 'CodeGen/Policy/primitive-generation-policy.json'
+            CommittedGeneratedRoot = 'Generated/R5'
+            OutputDirectory = 'artifacts/d7/smoke'
+          }
+          if ('${{ steps.package.outputs.upgrade-required }}' -eq 'true') {
+            $baselinePackage = @(Get-ChildItem -LiteralPath artifacts/baseline-package-download -Filter *.nupkg -File)
+            $smokeParameters.PreviousPackagePath = $baselinePackage[0].FullName
+          }
+          ./eng/Invoke-CodeGenToolSmoke.ps1 @smokeParameters
+
+      - name: Upload D7 evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: nuget-package
-          path: artifacts/packages/*.nupkg
+          name: d7-tool-${{ matrix.id }}
+          path: artifacts/d7
+          if-no-files-found: warn
+
+  cross-platform-drift:
+    name: Compare Windows and Linux tool artifacts
+    needs: build-test-tool-smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Windows evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: d7-tool-windows
+          path: artifacts/cross/windows
+
+      - name: Download Linux evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: d7-tool-linux
+          path: artifacts/cross/linux
+
+      - name: Compare normalized inventories and generated hashes
+        shell: pwsh
+        run: |
+          ./eng/Compare-CodeGenToolArtifacts.ps1 `
+            -WindowsPackageInventory artifacts/cross/windows/package-inventory.txt `
+            -LinuxPackageInventory artifacts/cross/linux/package-inventory.txt `
+            -WindowsArtifactHashes artifacts/cross/windows/smoke/artifact-hashes.txt `
+            -LinuxArtifactHashes artifacts/cross/linux/smoke/artifact-hashes.txt `
+            -OutputPath artifacts/cross/cross-platform-drift.json
+
+      - name: Upload cross-platform report
+        uses: actions/upload-artifact@v4
+        with:
+          name: d7-cross-platform-drift
+          path: artifacts/cross/cross-platform-drift.json
           if-no-files-found: error

@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using MyFhirSdk.CodeGen.Compatibility;
 using MyFhirSdk.CodeGen.Generation;
 using MyFhirSdk.CodeGen.Models;
 using Xunit;
@@ -200,7 +201,9 @@ public sealed class PrimitiveGenerationPipelineTests : IDisposable
         Assert.Contains("MyFhirSdk, Version=1.0.0.0",
             compatibility.GetProperty("compilerReference").GetProperty("logicalIdentity").GetString(),
             StringComparison.Ordinal);
-        Assert.Equal("net9.0", compatibility.GetProperty("targetFramework").GetString());
+        Assert.Equal(
+            GenerationCompatibilityMatrix.TargetFramework,
+            compatibility.GetProperty("targetFramework").GetString());
     }
 
     public void Dispose()

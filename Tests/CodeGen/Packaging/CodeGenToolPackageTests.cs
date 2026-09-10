@@ -344,12 +344,26 @@ public sealed class CodeGenToolPackageTests
         }
     }
 
-    private static string NormalizeContainerEntry(string path) =>
-        path.StartsWith(
-            "package/services/metadata/core-properties/",
-            StringComparison.Ordinal)
-            ? "package/services/metadata/core-properties/<generated>.psmdcp"
-            : path;
+    private static string NormalizeContainerEntry(string path)
+    {
+        if (path.StartsWith(
+                "package/services/metadata/core-properties/",
+                StringComparison.Ordinal))
+        {
+            return "package/services/metadata/core-properties/<generated>.psmdcp";
+        }
+
+        return path
+            .Replace(
+                "tools/" + GenerationCompatibilityMatrix.TargetFramework + "/any/",
+                "tools/<tfm>/any/",
+                StringComparison.Ordinal)
+            .Replace(
+                "/RuntimeReferences/" +
+                GenerationCompatibilityMatrix.TargetFramework + "/",
+                "/RuntimeReferences/<tfm>/",
+                StringComparison.Ordinal);
+    }
 
     private static string GetRepositoryRoot() => Path.GetFullPath(Path.Combine(
         AppContext.BaseDirectory,

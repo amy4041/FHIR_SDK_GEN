@@ -1,4 +1,5 @@
 using System.Text.Json;
+using MyFhirSdk.CodeGen.Compatibility;
 using MyFhirSdk.CodeGen.Generation;
 using MyFhirSdk.CodeGen.Models;
 using MyFhirSdk.CodeGen.Policy;
@@ -94,7 +95,9 @@ public sealed class ModelGenerationPipelineTests : IDisposable
         Assert.Equal("exact", compatibility.GetProperty("versionPolicy").GetString());
         Assert.Equal("MyFhirSdk.CodeGen.Tool",
             compatibility.GetProperty("tool").GetProperty("packageId").GetString());
-        Assert.Equal("net9.0", compatibility.GetProperty("targetFramework").GetString());
+        Assert.Equal(
+            GenerationCompatibilityMatrix.TargetFramework,
+            compatibility.GetProperty("targetFramework").GetString());
         Assert.DoesNotContain(AppContext.BaseDirectory, manifestText, StringComparison.OrdinalIgnoreCase);
         Assert.True(File.Exists(Path.Combine(output, "Generated", "R5", "Resources", "Patient", "Patient.g.cs")));
     }
