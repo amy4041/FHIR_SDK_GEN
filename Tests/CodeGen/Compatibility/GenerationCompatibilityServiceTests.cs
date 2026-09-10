@@ -30,7 +30,7 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
         Assert.Equal(64, provenance.RuntimeDescriptorSha256.Length);
         Assert.Equal(CodeGenTestRuntime.RuntimeReferences.ReferenceSha256,
             provenance.CompilerReferenceSha256);
-        Assert.Equal("net9.0", provenance.TargetFramework);
+        Assert.Equal(GenerationCompatibilityMatrix.TargetFramework, provenance.TargetFramework);
     }
 
     [Theory]

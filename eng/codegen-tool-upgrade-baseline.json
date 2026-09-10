@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "packageId": "MyFhirSdk.CodeGen.Tool",
+  "baselineVersion": "1.0.0",
+  "sourceRevision": "48ef9f96a964889c4efcea9bad5dd7308b56dc37",
+  "status": "initial-package-baseline",
+  "requirePreviousPackageWhenCurrentVersionAdvances": true
+}

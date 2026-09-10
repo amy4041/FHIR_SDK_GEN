@@ -3,6 +3,7 @@ using System.Reflection.PortableExecutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MyFhirSdk.CodeGen.Assets;
+using MyFhirSdk.CodeGen.Compatibility;
 using MyFhirSdk.CodeGen.Compilation;
 using MyFhirSdk.CodeGen.Contracts;
 using MyFhirSdk.CodeGen.Diagnostics;
@@ -24,9 +25,9 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
 
         Assert.True(result.IsSuccess, Describe(result.Diagnostics));
         var references = Assert.IsType<RuntimeReferenceSet>(result.Value);
-        Assert.Equal("net9.0", references.TargetFramework);
+        Assert.Equal(GenerationCompatibilityMatrix.TargetFramework, references.TargetFramework);
         Assert.Equal(
-            "MyFhirSdk, Version=1.0.0.0, PublicKeyToken=null, TargetFramework=net9.0",
+            $"MyFhirSdk, Version=1.0.0.0, PublicKeyToken=null, TargetFramework={GenerationCompatibilityMatrix.TargetFramework}",
             references.LogicalAssemblyIdentity.ToString());
         Assert.Equal(
             CodeGenTestRuntime.RuntimeContract.DescriptorSha256,

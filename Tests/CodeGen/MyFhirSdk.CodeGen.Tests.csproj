@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk"
          TreatAsLocalProperty="CodeGenToolPackageConfiguration">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>$(MyFhirSdkTargetFramework)</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsTestProject>true</IsTestProject>

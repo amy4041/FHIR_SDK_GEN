@@ -2,7 +2,7 @@
          TreatAsLocalProperty="ExpectedToolPackageId;ExpectedToolCommandName;ExpectedToolPackageVersion;ToolContractTargetFramework">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <ToolContractTargetFramework>net9.0</ToolContractTargetFramework>
+    <ToolContractTargetFramework>$(MyFhirSdkTargetFramework)</ToolContractTargetFramework>
     <TargetFramework>$(ToolContractTargetFramework)</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>

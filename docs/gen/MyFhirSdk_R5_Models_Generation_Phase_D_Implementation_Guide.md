@@ -560,6 +560,15 @@ Windows與Ubuntu至少驗證：
 10. 以受控的 target framework 升級案例重新建置 Runtime compiler asset 與 CodeGen，驗證
     package asset path、TPA resolution、Runtime contract TFM/identity/hash 與完整 generation。
 
+若目前只有首個正式 package version，D7 不得為了製造測試資料而人工將版本從 `1.0.0`
+改成 `1.0.1`。此時應將 `1.0.0` 記錄為 upgrade baseline，執行 install → uninstall →
+reinstall lifecycle，並在測試證據明確標示 `upgradeExecuted: false`。只有取得同 package ID、
+版本嚴格較舊的真實 `.nupkg` 時，才可執行並宣稱 upgrade smoke；目前版本一旦高於已記錄
+baseline，CI 若未提供該真實舊版 package 必須 fail-fast。
+舊版 package 應由已記錄的 immutable source revision 重建或由受信任 artifact store 取得，不得
+以修改目前 source 的版本號來模擬。舊版執行時使用舊 package 所屬 policy；只有 semantic
+generation contract fingerprint 未變時，才要求新舊 generated sources byte-identical。
+
 ### 14.2 CI 分層
 
 ```text
@@ -592,7 +601,8 @@ SHA-256，更新或驗證 Runtime descriptor 的 `targetFramework`、
 - 沒有 current-directory、path separator、case sensitivity 或 file enumeration drift。
 - failed generation不破壞既有 output。
 - upgrade後 manifest/tool version正確更新；若 generation contract 未改，831 個 model
-  source artifacts仍保持一致。
+  source artifacts仍保持一致；首版尚無真實舊版時，以已記錄 baseline 與 uninstall/reinstall
+  證據驗收，不得把同版重裝標示為 upgrade。
 - target framework 升級流程不需修改 pipeline/test 中的 TFM literal，且 CI 能偵測未同步的
   Runtime asset、descriptor TFM/identity/hash 或不相容的 host TPA。
 - CI 上傳 `.nupkg`、normalized package inventory 與 smoke logs作 artifacts。
