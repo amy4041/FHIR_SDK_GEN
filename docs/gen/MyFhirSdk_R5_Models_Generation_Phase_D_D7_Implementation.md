@@ -65,6 +65,13 @@ build、test、pack 及執行 clean-environment smoke，避免比較兩個平台
 baseline bytes 與 CodeGen 寫出的 deterministic LF bytes 相同；toolchain contract 會防止此規則
 被意外移除。
 
+package inventory 對 policy、descriptor、canonical Runtime reference 與第三方 assemblies 保留
+SHA-256 嚴格比對。NuGet/MSBuild 產生的 nuspec、tool settings、deps 與 runtimeconfig 先將換行
+正規化為 LF 再計算 hash；CodeGen 自身 DLL/PDB 則記為 platform build output，因 portable PDB
+包含 build host 產生之 source checksum，PE debug identity 會連帶不同。它們的跨平台行為由兩側
+完整 test、clean-environment generation 與 generated artifact hashes 驗證。`CodeGen/**` 也固定
+為 LF，以避免 README、policy 與 source checkout 換行造成額外差異。
+
 每個平台即使 smoke 失敗也嘗試上傳 `.nupkg`、package inventory、upgrade status、smoke
 summary/log/hashes；cross-platform job 另上傳 drift report。FHIR generation 全程使用 repository
 中的 locked offline fixtures。

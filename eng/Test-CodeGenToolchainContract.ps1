@@ -112,6 +112,20 @@ $gitAttributes = Get-Content -LiteralPath $gitAttributesPath -Raw -Encoding utf8
 if ($gitAttributes -notmatch '(?m)^Generated/R5/\*\* text eol=lf\s*$') {
     throw 'Generated/R5 artifacts must be pinned to LF in .gitattributes.'
 }
+if ($gitAttributes -notmatch '(?m)^CodeGen/\*\* text eol=lf\s*$') {
+    throw 'CodeGen package inputs must be pinned to LF in .gitattributes.'
+}
+
+$inventoryScript = Get-Content -LiteralPath (
+    Join-Path $root 'eng/Write-CodeGenToolPackageInventory.ps1') -Raw -Encoding utf8
+if ($inventoryScript.IndexOf(
+        '<platform-build-output>',
+        [System.StringComparison]::Ordinal) -lt 0 -or
+    $inventoryScript.IndexOf(
+        'Get-NormalizedTextHash',
+        [System.StringComparison]::Ordinal) -lt 0) {
+    throw 'Package inventory must normalize platform-generated binary and text outputs.'
+}
 
 $result = [ordered]@{
     schemaVersion = 1

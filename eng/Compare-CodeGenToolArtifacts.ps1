@@ -22,7 +22,31 @@ function Assert-IdenticalFile {
     $secondHash = [System.Convert]::ToHexString(
         [System.Security.Cryptography.SHA256]::HashData($secondBytes))
     if ($firstHash -cne $secondHash) {
-        throw "$Label differs between Windows and Linux."
+        $firstLines = [System.IO.File]::ReadAllLines(
+            (Resolve-Path -LiteralPath $First).Path)
+        $secondLines = [System.IO.File]::ReadAllLines(
+            (Resolve-Path -LiteralPath $Second).Path)
+        $differences = [System.Collections.Generic.List[string]]::new()
+        $lineCount = [System.Math]::Max($firstLines.Length, $secondLines.Length)
+        for ($index = 0; $index -lt $lineCount -and $differences.Count -lt 10; $index++) {
+            $windowsLine = if ($index -lt $firstLines.Length) {
+                $firstLines[$index]
+            }
+            else {
+                '<missing>'
+            }
+            $linuxLine = if ($index -lt $secondLines.Length) {
+                $secondLines[$index]
+            }
+            else {
+                '<missing>'
+            }
+            if ($windowsLine -cne $linuxLine) {
+                $differences.Add(
+                    "line $($index + 1): windows='$windowsLine'; linux='$linuxLine'")
+            }
+        }
+        throw "$Label differs between Windows and Linux. $($differences -join ' | ')"
     }
 }
 

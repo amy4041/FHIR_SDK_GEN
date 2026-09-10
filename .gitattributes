@@ -1,4 +1,5 @@
 Generated/R5/** text eol=lf
+CodeGen/** text eol=lf
 Tests/CodeGen/Fixtures/FhirPackages/R5/*.approved.json text eol=lf
 Tests/Architecture/ApprovedPublicApi.txt text eol=lf
 Tests/Architecture/ApprovedR5ModelApi.txt text eol=lf
