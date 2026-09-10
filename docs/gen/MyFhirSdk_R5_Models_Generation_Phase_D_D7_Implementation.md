@@ -61,6 +61,9 @@ matrix 仍保留具體 TFM，作為可稽核的 committed contract。
 CI 先在 Windows 建立單一 canonical compiler reference asset，Windows/Ubuntu 都使用該 artifact
 build、test、pack 及執行 clean-environment smoke，避免比較兩個平台各自編出的 Runtime DLL。
 最後由獨立 job 比對 normalized package inventory 與 generated artifact hashes。
+`.gitattributes` 將整個 `Generated/R5/**` 固定為 LF，確保 Windows checkout 的 committed
+baseline bytes 與 CodeGen 寫出的 deterministic LF bytes 相同；toolchain contract 會防止此規則
+被意外移除。
 
 每個平台即使 smoke 失敗也嘗試上傳 `.nupkg`、package inventory、upgrade status、smoke
 summary/log/hashes；cross-platform job 另上傳 drift report。FHIR generation 全程使用 repository

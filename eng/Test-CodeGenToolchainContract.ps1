@@ -17,6 +17,7 @@ $matrixPath = Join-Path $root 'CodeGen/Compatibility/GenerationCompatibilityMatr
 $toolManifestPath = Join-Path $root '.config/dotnet-tools.json'
 $globalJsonPath = Join-Path $root 'global.json'
 $packageSnapshotPath = Join-Path $root 'Tests/CodeGen/Packaging/codegen-tool-package-layout.txt'
+$gitAttributesPath = Join-Path $root '.gitattributes'
 
 [xml] $buildProps = Get-Content -LiteralPath $buildPropsPath -Raw -Encoding utf8
 $targetFramework = [string] $buildProps.Project.PropertyGroup.MyFhirSdkTargetFramework
@@ -91,7 +92,11 @@ if ($sdkMajor -ne $targetMajor) {
     throw "global.json SDK major '$sdkMajor' does not match TFM major '$targetMajor'."
 }
 
+$artifactsRoot = Join-Path $root 'artifacts'
 $literalProjects = @(Get-ChildItem -LiteralPath $root -Filter '*.csproj' -Recurse -File | Where-Object {
+    -not $_.FullName.StartsWith(
+        $artifactsRoot + [System.IO.Path]::DirectorySeparatorChar,
+        [System.StringComparison]::OrdinalIgnoreCase) -and
     (Get-Content -LiteralPath $_.FullName -Raw -Encoding utf8) -match '<TargetFramework>\s*net[0-9]'
 })
 if ($literalProjects.Count -ne 0) {
@@ -102,6 +107,10 @@ if ($packageSnapshot.IndexOf(
         $targetFramework,
         [System.StringComparison]::Ordinal) -ge 0) {
     throw 'Package inventory snapshot must normalize target framework paths as <tfm>.'
+}
+$gitAttributes = Get-Content -LiteralPath $gitAttributesPath -Raw -Encoding utf8
+if ($gitAttributes -notmatch '(?m)^Generated/R5/\*\* text eol=lf\s*$') {
+    throw 'Generated/R5 artifacts must be pinned to LF in .gitattributes.'
 }
 
 $result = [ordered]@{
