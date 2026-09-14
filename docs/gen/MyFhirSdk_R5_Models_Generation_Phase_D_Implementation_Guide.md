@@ -1,9 +1,8 @@
 # MyFhirSdk CodeGen Phase D 實作指引
 
-Version 0.1
+Version 1.0
 
-- 文件狀態：Accepted for implementation；D0 baseline 與 dependency/package 決策已於
-  `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_D0_Decisions.md` 固定
+- 文件狀態：D0–D8 implemented；等待 D8 PR 完整 CI 驗收
 - 適用範圍：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、MyFhirSdk、.NET 9
 - Phase C 基準：Completed
 - 上位架構文件：`docs/gen/MyFhirSdk_Runtime_R5_Models_CodeGen_Boundaries.md`
@@ -609,6 +608,8 @@ SHA-256，更新或驗證 Runtime descriptor 的 `targetFramework`、
 
 ## 15. D8：cleanup、操作文件與後續 handoff
 
+實作紀錄：`docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_D8_Implementation.md`。
+
 ### 15.1 Cleanup
 
 移除：
@@ -717,15 +718,15 @@ dotnet tool install MyFhirSdk.CodeGen.Tool `
 ### 18.3 靜態快速檢查
 
 ```powershell
+pwsh ./eng/Test-CodeGenToolchainContract.ps1
 rg 'ProjectReference.*MyFhirSdk.csproj' CodeGen
-rg 'using MyFhirSdk.Core|typeof\(FhirObject|typeof\(DataType' CodeGen
-rg 'GetTypes\(|Assembly.Load|bin[/\\]|obj[/\\]' CodeGen
-rg 'RepositoryRootLocator|MyFhirSdk.sln' CodeGen
-rg 'DefaultComplexTypeNames|PrimitiveTypeNames|datatype-preview' CodeGen
+rg 'RepositoryRootLocator|WithDevelopmentRepository|DevelopmentRepositoryRoot' CodeGen
+rg 'Directory.GetCurrentDirectory|Assembly.Location|MyFhirSdk.sln|bin[/\\]|obj[/\\]' CodeGen
 ```
 
-預期 production CodeGen 無上述 dependency/discovery/fallback；若測試或development adapter
-需要命中，必須位於明確test scope且有退出條件。
+預期 production CodeGen 無上述 dependency/discovery/fallback。renderer 內輸出的
+`using MyFhirSdk.Core`/`typeof(...)` 是 generated source contract，不是 production assembly
+dependency；D8 後不再允許 development repository adapter 留在 CodeGen assembly。
 
 ### 18.4 人工驗收情境
 

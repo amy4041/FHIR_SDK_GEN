@@ -20,7 +20,7 @@ public sealed class ProgramTests
             error,
             new GeneratorCommandLineParser(
                 new ToolAssetResolver(AppContext.BaseDirectory)),
-            modelPipeline: CodeGenTestRuntime.CreateModelPipeline(directory.RepositoryRoot));
+            modelPipeline: CodeGenTestRuntime.CreateModelPipeline());
 
         var exitCode = await cli.RunAsync([
             "--mode", "model", "--input", Path.Combine(directory.Path, "missing.tgz"),
@@ -108,7 +108,7 @@ public sealed class ProgramTests
             error,
             new GeneratorCommandLineParser(
                 new ToolAssetResolver(AppContext.BaseDirectory)),
-            primitivePipeline: CodeGenTestRuntime.CreatePrimitivePipeline(directory.RepositoryRoot));
+            primitivePipeline: CodeGenTestRuntime.CreatePrimitivePipeline());
 
         var exitCode = await cli.RunAsync([
             "--mode", "primitive",
@@ -146,13 +146,10 @@ public sealed class ProgramTests
                 System.IO.Path.GetTempPath(),
                 "MyFhirSdk-CodeGen-CliTests",
                 Guid.NewGuid().ToString("N"));
-            RepositoryRoot = System.IO.Path.Combine(Path, "repository");
-            Directory.CreateDirectory(RepositoryRoot);
+            Directory.CreateDirectory(Path);
         }
 
         public string Path { get; }
-
-        public string RepositoryRoot { get; }
 
         public void Dispose()
         {

@@ -35,19 +35,17 @@ internal static class CodeGenTestRuntime
     internal static ModelMetadataGenerationPipeline CreateModelMetadataPipeline() =>
         new(RuntimeContract, CreateCompilationValidator());
 
-    internal static ModelGenerationPipeline CreateModelPipeline(string repositoryRoot) =>
-        new(CreateDevelopmentSafetyContext(repositoryRoot), RuntimeContract, CreateCompilationValidator());
+    internal static ModelGenerationPipeline CreateModelPipeline() =>
+        new(CreateSafetyContext(), RuntimeContract, CreateCompilationValidator());
 
-    internal static PrimitiveGenerationPipeline CreatePrimitivePipeline(string repositoryRoot) =>
+    internal static PrimitiveGenerationPipeline CreatePrimitivePipeline() =>
         new(
-            CreateDevelopmentSafetyContext(repositoryRoot),
+            CreateSafetyContext(),
             RuntimeContract,
             CreateCompilationValidator());
 
-    private static OutputSafetyContext CreateDevelopmentSafetyContext(
-        string repositoryRoot) =>
-        new OutputSafetyContext(AppContext.BaseDirectory)
-            .WithDevelopmentRepository(repositoryRoot);
+    private static OutputSafetyContext CreateSafetyContext() =>
+        new(AppContext.BaseDirectory);
 
     private static RuntimeReferenceSet LoadReferences()
     {

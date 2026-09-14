@@ -15,6 +15,19 @@ public sealed class PhaseDRepositoryIndependentHostArchitectureTests
     }
 
     [Fact]
+    public void OutputSafetyContextDoesNotExposeDevelopmentRepositoryAdapter()
+    {
+        var members = typeof(OutputSafetyContext)
+            .GetMembers()
+            .Select(member => member.Name)
+            .ToHashSet(StringComparer.Ordinal);
+
+        Assert.DoesNotContain("WithDevelopmentRepository", members);
+        Assert.DoesNotContain("DevelopmentRepositoryRoot", members);
+        Assert.DoesNotContain("DevelopmentProtectedPaths", members);
+    }
+
+    [Fact]
     public void WriterRequiresExplicitOutputSafetyContext()
     {
         var constructor = Assert.Single(
@@ -34,5 +47,19 @@ public sealed class PhaseDRepositoryIndependentHostArchitectureTests
         Assert.Equal(
             [typeof(ToolAssetResolver)],
             constructor.GetParameters().Select(parameter => parameter.ParameterType));
+    }
+
+    [Fact]
+    public void OutputSafetyContextOnlyCarriesUniversalProtectionInputs()
+    {
+        Assert.Equal(
+            [
+                nameof(OutputSafetyContext.ProtectedAssetPaths),
+                nameof(OutputSafetyContext.ToolInstallationDirectory)
+            ],
+            typeof(OutputSafetyContext)
+                .GetProperties()
+                .Select(property => property.Name)
+                .OrderBy(name => name, StringComparer.Ordinal));
     }
 }

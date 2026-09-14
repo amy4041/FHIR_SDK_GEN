@@ -155,8 +155,10 @@ See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Handoff.md` for the Phase C
 remaining complex-model ownership, and entry gates.
 See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Implementation_Guide.md` for the completed
 C0-C9 implementation order, gates, artifact layout, testing, and rollback strategy.
-See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_Handoff.md` for the remaining local-tool
-packaging and dependency-seam work.
+See `CodeGen/README.md` for local-tool build, install, generation, upgrade, rollback, and
+troubleshooting operations. See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_Handoff.md`
+for the completed Phase D dependency seam, compatibility contract, ownership register, release
+gates, and next-phase work.
 
 ## TW Core Profile Validation
 

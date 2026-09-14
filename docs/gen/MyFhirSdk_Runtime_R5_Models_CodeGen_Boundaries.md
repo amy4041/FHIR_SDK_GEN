@@ -280,7 +280,7 @@ CodeGen 是 build-time tool，負責把規格資料轉換成可重現的 R5 Mode
 
 ## 6. Local tool 的交付模型
 
-建議將 CodeGen 發布為 .NET tool package：
+Phase D 已將 CodeGen 封裝為 repository-local .NET tool package：
 
 ```text
 PackageId:       MyFhirSdk.CodeGen.Tool
@@ -290,18 +290,14 @@ ToolCommandName: myfhir-codegen
 repository 使用 local tool manifest 固定版本：
 
 ```powershell
-dotnet tool restore
-dotnet myfhir-codegen --input <definitions> --output <generated> ...
+dotnet tool restore --add-source artifacts/packages --ignore-failed-sources
+dotnet myfhir-codegen --help
 ```
 
-Local tool package 可以攜帶自己執行所需的 Runtime assembly；這只表示工具可以獨立
-安裝和執行，不表示 generated source 不需要 Runtime package。
-
-產生的 R5 Models project 應明確引用相容的 Runtime：
-
-```xml
-<PackageReference Include="MyFhirSdk.Runtime" Version="0.1.0" />
-```
+Local tool package 攜帶 compiler-only Runtime reference、versioned descriptor 與 policies，
+因此安裝後不需要 repository clone 或 SDK build output。這不改變 generated source 的執行期
+依賴；目前 Runtime 與 R5 Models 仍編譯於同一 `MyFhirSdk` assembly。未來 physical package
+split 必須另立 ADR 與 migration，不是 Phase D 的隱含結果。
 
 CodeGen tool、Runtime 與 generated R5 Models 必須定義相容版本。至少應在 generated
 source 或 manifest 記錄：
@@ -339,19 +335,22 @@ types 留在 Runtime，直到完成下列其中一種設計：
 在選定方案前，不應為了形式上的專案拆分破壞目前 serializer、parser 與 validator
 contract。Local tool 的發布不以完成此拆分為必要條件。
 
-## 8. 目前實作與目標架構的差距
+## 8. Phase D 完成後的實際狀態
 
-Phase C 已完成完整 R5 specialization model、Resource、Backbone、factory、metadata 與
-validation composition 的生成及主 SDK 原子切換。目前剩餘差距均已交接 Phase D：
+Phase C 的完整 R5 specialization model、Resource、Backbone、factory、metadata 與 validation
+composition 維持不變。Phase D 已完成：
 
-- `MyFhirSdk.CodeGen` 以 `ProjectReference` 依賴整個 `MyFhirSdk.csproj`。
-- Roslyn validator 直接使用 `DataType` 所在的現有 SDK assembly。
-- metadata IR 只為 C0 核准的 external bootstrap nodes，以 CLR identity 從目前 SDK assembly
-  解析既有 declaration；不以 reflection 建立 concrete R5 inventory。
-- CLI 的 policy default 與啟動流程仍依賴 executable 位置及 repository-root locator。
-- CodeGen 尚未設定 `PackAsTool`、tool command/package metadata 與 local-tool manifest smoke tests。
-- Runtime、R5 Models 目前仍編譯於單一 SDK assembly；bootstrap debt 與未來 assembly seam
-  保留到 Phase D 重新評估。
+- CodeGen production project 不含 `MyFhirSdk` `ProjectReference`；
+- metadata IR 只從 validated Runtime contract view 取得 external bootstrap shape；
+- Roslyn validator 只接受 explicit Runtime reference set；packaging pipeline 產生並注入 asset；
+- packaged host 從 tool installation root 解析 assets，不搜尋 repository/current directory；
+- `PackAsTool`、local manifest、exact compatibility、manifest provenance 與 package content gates；
+- Windows/Linux clean-environment、upgrade 與 generated artifact drift CI；
+- temporary development repository adapter 已在 D8 移除。
+
+Runtime foundation 與 generated R5 Models 仍編譯於單一 SDK assembly。這是保護 public type
+assembly identity 的已接受決策；bootstrap ownership 與 future physical split 詳見 Phase D
+handoff，而不是尚未完成的 local-tool dependency seam。
 
 詳細 owner、理由、退出條件與版本基準見 Phase D handoff。
 
@@ -396,9 +395,9 @@ source；Phase C 必須依
 Phase C 已完成。正式輸出位於 `Generated/R5`，共 831 個 model artifacts；舊 MVP preview
 pipeline、mapping fallback、手寫 concrete model 與手寫 R5 metadata entry list 均已移除。
 
-### Phase D：local tool 發布
+### Phase D：local tool 封裝（已完成）
 
-Local tool 的技術包裝可提早進行，但正式支援範圍必須清楚標示。發布前至少應：
+Phase D 已完成下列 repository-local delivery gates：
 
 1. 將 CLI 與 generation pipeline 保持分離。
 2. 移除對 repository root 的非必要假設。
@@ -406,6 +405,9 @@ Local tool 的技術包裝可提早進行，但正式支援範圍必須清楚標
 4. 加入 `PackAsTool`、`ToolCommandName`、`PackageId` 與版本 metadata。
 5. 使用 local tool manifest 做安裝、restore、generation 與 upgrade smoke test。
 6. 驗證 tool package 不需要 clone 本 repository 即可執行。
+
+公開 NuGet 發布仍未授權，必須通過 handoff 中獨立列出的 license、signing、SBOM、
+provenance 與 release promotion gates。
 
 ## 10. 驗收原則
 

@@ -98,77 +98,7 @@ public sealed class GeneratedFileWriterTests : IDisposable
     }
 
     [Fact]
-    public async Task WriteAsync_RepositoryRoot_ReturnsFsg0011WithoutModification()
-    {
-        var markerPath = Path.Combine(_repositoryRoot, "marker.txt");
-        await File.WriteAllTextAsync(markerPath, "keep");
-
-        var result = await CreateWriter().WriteAsync(
-            _repositoryRoot,
-            [Source("HumanName.g.cs", "class HumanName { }")]);
-
-        AssertUnsafeOutput(result, _repositoryRoot);
-        Assert.Equal("keep", await File.ReadAllTextAsync(markerPath));
-    }
-
-    [Theory]
-    [InlineData("core")]
-    [InlineData("Types")]
-    [InlineData("Resources")]
-    [InlineData("Serialization")]
-    [InlineData("Validation")]
-    public async Task WriteAsync_SdkSourceDirectory_ReturnsFsg0011(
-        string directoryName)
-    {
-        var outputRoot = Path.Combine(_repositoryRoot, directoryName);
-
-        var result = await CreateWriter().WriteAsync(
-            outputRoot,
-            [Source("HumanName.g.cs", "class HumanName { }")]);
-
-        AssertUnsafeOutput(result, Path.GetFullPath(outputRoot));
-        Assert.False(Directory.Exists(outputRoot));
-    }
-
-    [Theory]
-    [InlineData("CodeGen", "Generated")]
-    [InlineData("Primitives", "Runtime")]
-    public async Task WriteAsync_ProtectedPhaseBSourceTree_ReturnsFsg0011(
-        string firstSegment,
-        string secondSegment)
-    {
-        var outputRoot = Path.Combine(
-            _repositoryRoot,
-            firstSegment,
-            secondSegment);
-
-        var result = await CreateWriter().WriteAsync(
-            outputRoot,
-            [Source("FhirString.g.cs", "class FhirString { }")]);
-
-        AssertUnsafeOutput(result, Path.GetFullPath(outputRoot));
-        Assert.False(Directory.Exists(outputRoot));
-    }
-
-    [Fact]
-    public async Task WriteAsync_FormalPrimitiveOutput_IsAllowed()
-    {
-        var outputRoot = Path.Combine(
-            _repositoryRoot,
-            "Generated",
-            "R5",
-            "Primitives");
-
-        var result = await CreateWriter().WriteAsync(
-            outputRoot,
-            [Source("FhirString.g.cs", "class FhirString { }")]);
-
-        Assert.True(result.IsSuccess, FormatDiagnostics(result.Diagnostics));
-        Assert.True(File.Exists(Path.Combine(outputRoot, "FhirString.g.cs")));
-    }
-
-    [Fact]
-    public async Task WriteAsync_WithoutRepositoryContext_WritesAtomically()
+    public async Task WriteAsync_RepositoryIndependentOutput_WritesAtomically()
     {
         var outputRoot = Path.Combine(_testRoot, "repo-free-output");
         var writer = new GeneratedFileWriter(new OutputSafetyContext(
@@ -181,6 +111,29 @@ public sealed class GeneratedFileWriterTests : IDisposable
         Assert.True(result.IsSuccess, FormatDiagnostics(result.Diagnostics));
         Assert.True(File.Exists(Path.Combine(outputRoot, "HumanName.g.cs")));
         Assert.Empty(FindTransactionDirectories(outputRoot));
+    }
+
+    [Theory]
+    [InlineData("core")]
+    [InlineData("Types")]
+    [InlineData("Resources")]
+    [InlineData("Serialization")]
+    [InlineData("Validation")]
+    [InlineData("CodeGen")]
+    [InlineData("Primitives/Runtime")]
+    public async Task WriteAsync_RepositoryNamedDirectory_HasNoImplicitMeaning(
+        string relativePath)
+    {
+        var outputRoot = Path.Combine(
+            _repositoryRoot,
+            relativePath.Replace('/', Path.DirectorySeparatorChar));
+
+        var result = await CreateWriter().WriteAsync(
+            outputRoot,
+            [Source("Generated.g.cs", "class Generated { }")]);
+
+        Assert.True(result.IsSuccess, FormatDiagnostics(result.Diagnostics));
+        Assert.True(File.Exists(Path.Combine(outputRoot, "Generated.g.cs")));
     }
 
     [Fact]
@@ -328,8 +281,7 @@ public sealed class GeneratedFileWriterTests : IDisposable
     private GeneratedFileWriter CreateWriter()
     {
         return new GeneratedFileWriter(new OutputSafetyContext(
-                Path.Combine(_testRoot, "tool"))
-            .WithDevelopmentRepository(_repositoryRoot));
+            Path.Combine(_testRoot, "tool")));
     }
 
     private static GeneratedSource Source(string fileName, string content)

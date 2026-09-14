@@ -8,6 +8,7 @@
     <PathMap>$(MSBuildProjectDirectory)=/_/</PathMap>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="artifacts\**\*.cs" />
     <Compile Remove="CodeGen\**\*.cs" />
     <Compile Remove="core\bin\**\*.cs" />
     <Compile Remove="core\obj\**\*.cs" />
