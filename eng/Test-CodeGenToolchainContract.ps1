@@ -11,6 +11,7 @@ $ErrorActionPreference = 'Stop'
 
 $root = (Resolve-Path -LiteralPath $RepositoryRoot).Path
 $buildPropsPath = Join-Path $root 'Directory.Build.props'
+$sdkProjectPath = Join-Path $root 'MyFhirSdk.csproj'
 $codeGenProjectPath = Join-Path $root 'CodeGen/MyFhirSdk.CodeGen.csproj'
 $descriptorPath = Join-Path $root 'CodeGen/Policy/runtime-contract.json'
 $matrixPath = Join-Path $root 'CodeGen/Compatibility/GenerationCompatibilityMatrix.cs'
@@ -27,6 +28,13 @@ if ($targetFramework -notmatch '^net(?<major>[1-9][0-9]*)\.0$') {
 $targetMajor = [int] $Matches.major
 
 [xml] $codeGenProject = Get-Content -LiteralPath $codeGenProjectPath -Raw -Encoding utf8
+[xml] $sdkProject = Get-Content -LiteralPath $sdkProjectPath -Raw -Encoding utf8
+$artifactSourceExclusion = @($sdkProject.SelectNodes('//Compile[@Remove]') | Where-Object {
+    [string] $_.Remove -ceq 'artifacts\**\*.cs'
+})
+if ($artifactSourceExclusion.Count -ne 1) {
+    throw 'The SDK project must exclude generated sources under artifacts/ from compilation.'
+}
 $projectProperties = $codeGenProject.SelectSingleNode(
     '/Project/PropertyGroup[ExpectedToolPackageId]')
 if ($null -eq $projectProperties) {
@@ -37,6 +45,39 @@ $packageVersion = [string] $projectProperties.ExpectedToolPackageVersion
 $toolCommand = [string] $projectProperties.ExpectedToolCommandName
 if ([string] $projectProperties.ToolContractTargetFramework -cne '$(MyFhirSdkTargetFramework)') {
     throw 'CodeGen ToolContractTargetFramework must derive from MyFhirSdkTargetFramework.'
+}
+if ($codeGenProject.SelectNodes('//ProjectReference').Count -ne 0) {
+    throw 'CodeGen production project must not contain ProjectReference items.'
+}
+if ($codeGenProject.SelectNodes(
+        '//PropertyGroup/RuntimeReferenceAssetPath').Count -ne 0) {
+    throw 'CodeGen RuntimeReferenceAssetPath must be supplied explicitly; a project default is forbidden.'
+}
+
+$forbiddenProductionPatterns = [ordered]@{
+    'repository-root locator' = 'RepositoryRootLocator'
+    'development repository adapter' = 'WithDevelopmentRepository|DevelopmentRepositoryRoot|DevelopmentProtectedPaths'
+    'current-directory discovery' = 'Directory\.GetCurrentDirectory\s*\('
+    'solution discovery' = 'MyFhirSdk\.sln'
+    'loaded assembly discovery' = '\.Assembly\.Location'
+    'build-output discovery' = '(?i)["''][^"'']*(?:bin|obj)[/\\][^"'']*["'']'
+    'build-output directory literal' = '(?i)["''](?:bin|obj)["'']'
+}
+$productionSources = @(Get-ChildItem -LiteralPath (
+    Join-Path $root 'CodeGen') -Filter '*.cs' -Recurse -File)
+$productionInputs = @($productionSources) + @(
+    Get-Item -LiteralPath $codeGenProjectPath)
+foreach ($entry in $forbiddenProductionPatterns.GetEnumerator()) {
+    $matches = @($productionInputs | Where-Object {
+        (Get-Content -LiteralPath $_.FullName -Raw -Encoding utf8) -match $entry.Value
+    })
+    if ($matches.Count -ne 0) {
+        $relativePaths = $matches.FullName | ForEach-Object {
+            [System.IO.Path]::GetRelativePath($root, $_)
+        }
+        throw "CodeGen production input contains forbidden $($entry.Key): " +
+            ($relativePaths -join ', ')
+    }
 }
 
 $descriptor = Get-Content -LiteralPath $descriptorPath -Raw -Encoding utf8 | ConvertFrom-Json

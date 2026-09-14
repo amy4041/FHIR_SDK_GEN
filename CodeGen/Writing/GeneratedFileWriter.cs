@@ -246,30 +246,6 @@ public sealed class GeneratedFileWriter
             }
         }
 
-        if (_safetyContext.DevelopmentRepositoryRoot is { } repositoryRoot)
-        {
-            var normalizedRepositoryRoot = NormalizeDirectoryPath(repositoryRoot);
-            if (PathsEqual(outputPath, normalizedRepositoryRoot))
-            {
-                return OutputPathValidation.Failure(CreateDiagnostic(
-                    outputPath,
-                    "The repository root cannot be used as the output root."));
-            }
-
-            foreach (var protectedPathValue in
-                     _safetyContext.DevelopmentProtectedPaths)
-            {
-                var protectedPath = NormalizeDirectoryPath(protectedPathValue);
-                if (IsSameOrChildPath(outputPath, protectedPath))
-                {
-                    return OutputPathValidation.Failure(CreateDiagnostic(
-                        outputPath,
-                        $"Development protected path '{protectedPath}' cannot be used " +
-                        "as the output root."));
-                }
-            }
-        }
-
         if (File.Exists(outputPath))
         {
             return OutputPathValidation.Failure(CreateDiagnostic(

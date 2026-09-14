@@ -215,7 +215,7 @@ public sealed class PrimitiveGenerationPipelineTests : IDisposable
     }
 
     private PrimitiveGenerationPipeline CreatePipeline() =>
-        CodeGenTestRuntime.CreatePrimitivePipeline(_testRoot);
+        CodeGenTestRuntime.CreatePrimitivePipeline();
 
     private static PrimitiveGenerationOptions CreateOptions(
         string output,
