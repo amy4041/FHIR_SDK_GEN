@@ -2,7 +2,7 @@
 
 Version 2.0
 
-- 狀態：D0–D8 implemented；等待 D8 PR 的完整 CI 驗收
+- 狀態：D0–D8 implemented、CI passed，已合併至 `main`
 - Baseline：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、.NET 9 / `net9.0`
 - Tool package：`MyFhirSdk.CodeGen.Tool` `1.0.0`
 - Tool command：`myfhir-codegen`
@@ -96,7 +96,7 @@ package、重新產生 staging output 並比較。不得用修改目前 source �
 | 項目 | Owner | 目前理由 | Exit criterion / gate |
 | --- | --- | --- | --- |
 | 公開 NuGet license/release | Release + legal maintainers | Phase D 未核准 license、公開 feed 或 promotion policy | 核准 license 與 package metadata；signing、SBOM、provenance、credentials、rollback/promotion CI 全部通過 |
-| Runtime/Models physical split | Architecture + Runtime maintainers | 現有單一 assembly 保護 public type assembly identity 並避免 bootstrap cycle | 核准 ADR/migration；consumer recompilation、API/JSON/runtime compatibility gates 通過 |
+| Runtime/Models physical split | Architecture + Runtime maintainers | 現有單一 assembly 保護 public type assembly identity 並避免 bootstrap cycle | 先依 `MyFhirSdk_Runtime_Kernel_Extraction_ADR.md` 與 implementation guide 核准/完成 Runtime kernel extraction；consumer recompilation、舊 binary、API/JSON/runtime compatibility gates 通過 |
 | Profile generation / `SimpleQuantity` | future Profile CodeGen owner | constraint Profiles 不在 R5 specialization scope | 定義 Profile ownership/policy，生成 migration 通過 public API 與 behavior baseline |
 | Deferred validation capabilities | Validation + CodeGen maintainers | terminology、FHIRPath invariant、fixed/pattern、targetProfile 尚需 Runtime support | 各 capability 有 versioned policy、Runtime executor、positive/negative generation/runtime tests |
 | 新 FHIR patch/minor 版本 | CodeGen compatibility owner | 目前只核准 R5 `5.0.0` exact matrix | 新 package lock/hash、policy review、descriptor/matrix 更新及 831-equivalent full regression |
@@ -104,6 +104,14 @@ package、重新產生 staging output 並比較。不得用修改目前 source �
 | Contract-only Runtime reference | Packaging + Runtime owner | 目前使用完整 `MyFhirSdk.dll` 作 compiler-only asset | reference assembly 覆蓋 required surface、identity/hash 更新並通過 full-batch Roslyn/runtime gates |
 
 沒有 owner、理由與退出條件的新 debt 不得只留在 PR 描述。
+
+Runtime kernel extraction 的 proposed decision 與工作分解位於：
+
+- `docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
+- `docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md`
+
+ADR 核准前，上述文件只代表 migration proposal，不取代 D0-002 的已接受單一 assembly
+baseline。
 
 ## 7. Phase D 最終 gates
 
