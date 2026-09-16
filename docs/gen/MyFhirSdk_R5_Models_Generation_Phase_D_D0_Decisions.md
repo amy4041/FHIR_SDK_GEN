@@ -136,6 +136,11 @@ fallback。CLI 指定 `--policy-root` 時整組 model policy 都由該 root 解�
 policies 混用；缺檔直接失敗。repeatable references 先解析 logical identity，再依 identity
 ordinal 排序，CLI 順序不影響結果。
 
+Post-Phase-D proposed additive extension：
+`docs/gen/MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md`提出primitive `.tgz` preferred input，
+同時保留directory input與required explicit `--policy`。該decision不supersede本節的policy
+規則；尚未Accepted或實作尚未merge前，primitive仍只支援現有directory input。
+
 ### D0-007：packaged host 與 development adapter
 
 狀態：Accepted。`Program.Main` 只建立 packaged host，asset root 來自 tool installation

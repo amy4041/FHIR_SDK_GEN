@@ -18,6 +18,8 @@ Version 1.3
   - `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_Implementation_Guide.md`
   - `docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
   - `docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md`
+  - `docs/gen/MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md`
+  - `docs/gen/MyFhirSdk_CodeGen_Primitive_Tgz_Input_Implementation_Guide.md`
 
 ## 1. 文件目的
 
@@ -258,6 +260,12 @@ CodeGen 是 build-time tool，負責把規格資料轉換成可重現的 R5 Mode
 - 要生成的型別或 package 範圍。
 - 目標 namespace、輸出目錄與 FHIR version。
 - MyFhirSdk generation policy，包括 primitive CLR mapping 與 Runtime contract mapping。
+
+Post-Phase-D proposed enhancement將primitive mode的preferred input從flat
+StructureDefinition directory擴充為相同的versioned FHIR `.tgz` package；directory input與
+required explicit policy繼續支援。在
+`MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md` Accepted且實作完成前，現有directory-only
+input仍是production contract。
 
 ### 5.2 處理責任
 

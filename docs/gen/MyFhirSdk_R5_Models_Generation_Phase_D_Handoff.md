@@ -102,6 +102,7 @@ package、重新產生 staging output 並比較。不得用修改目前 source �
 | 新 FHIR patch/minor 版本 | CodeGen compatibility owner | 目前只核准 R5 `5.0.0` exact matrix | 新 package lock/hash、policy review、descriptor/matrix 更新及 831-equivalent full regression |
 | 新 .NET/TFM | Build + Runtime contract owner | 目前 central TFM 為 `net9.0` | 更新單一 TFM/SDK 設定，重建 Runtime reference/hash，Windows/Linux build/pack/smoke/TPA CI 通過 |
 | Contract-only Runtime reference | Packaging + Runtime owner | 目前使用完整 `MyFhirSdk.dll` 作 compiler-only asset | reference assembly 覆蓋 required surface、identity/hash 更新並通過 full-batch Roslyn/runtime gates |
+| Primitive `.tgz` input | CodeGen + Compatibility maintainers | primitive mode目前要求flat directory，無法直接消費與model mode相同的FHIR package | 核准`MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md`；保留required policy，`.tgz`/directory完整output equivalence、真實tool upgrade與Windows/Linux clean smoke通過 |
 
 沒有 owner、理由與退出條件的新 debt 不得只留在 PR 描述。
 
@@ -112,6 +113,13 @@ Runtime kernel extraction 的 proposed decision 與工作分解位於：
 
 ADR 核准前，上述文件只代表 migration proposal，不取代 D0-002 的已接受單一 assembly
 baseline。
+
+Runtime extraction前的primitive package-input proposal位於：
+
+- `docs/gen/MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md`
+- `docs/gen/MyFhirSdk_CodeGen_Primitive_Tgz_Input_Implementation_Guide.md`
+
+它在Accepted及實作merge前不改變目前primitive directory/required-policy操作契約。
 
 ## 7. Phase D 最終 gates
 

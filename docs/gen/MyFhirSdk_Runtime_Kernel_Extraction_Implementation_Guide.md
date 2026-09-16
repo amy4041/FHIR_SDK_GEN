@@ -56,6 +56,13 @@ assembly 改為 `MyFhirSdk.Runtime`。相容性由 type forwarding、old-binary 
 - 已保存拆分前可重建的 Git commit/tag 與 Release artifacts。
 - rollback 不需要改寫或刪除使用者資料。
 
+### 3.1 Primitive package-input前置順序
+
+`MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md`若被Accepted，必須先完成其P0-P7並通過CI，
+再建立本階段K0 baseline。K0應固定完成後的Tool/CodeGen版本、primitive manifest schema與
+`.tgz`/directory equivalence hashes；不得讓package-input與assembly extraction在同一migration
+PR平行變動。
+
 ## 4. 固定 ownership
 
 ### 4.1 Runtime kernel
