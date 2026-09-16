@@ -74,6 +74,11 @@ docs/gen/baselines/primitive-tgz-input/
 
 Exit gate：現有production code、CLI與generated output不變；`git diff --check`及Phase D gates通過。
 
+P0實作與重現方式見[entry baseline](baselines/primitive-tgz-input/README.md)。
+已建立directory/package fixture等價測試、完整產物hash與manifest、CLI help及archive fixture
+contract；本機Windows驗證已通過，跨平台CI gate仍由既有workflow確認。Decision維持Proposed，
+本次沒有啟用production primitive `.tgz` input。
+
 ### P1：抽出共用primitive definition input contract
 
 1. 讓primitive inventory pipeline接受明確input abstraction，而不是只接受directory path。
