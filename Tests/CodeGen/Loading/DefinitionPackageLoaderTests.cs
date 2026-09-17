@@ -96,6 +96,24 @@ public sealed class DefinitionPackageLoaderTests
                     StringComparison.Ordinal));
     }
 
+    [Theory]
+    [InlineData("null")]
+    [InlineData("[]")]
+    [InlineData("42")]
+    [InlineData("\"invalid\"")]
+    public async Task LoadAsync_WithNonObjectJson_ReturnsSourceDiagnostic(string json)
+    {
+        var input = CreateInput(
+            ("package/package.json", CreatePackageJson()),
+            ("package/broken.json", json));
+        var result = await _loader.LoadAsync(input, R5Options);
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Value);
+        Assert.Contains(result.Diagnostics, diagnostic =>
+            diagnostic.Code == GeneratorDiagnosticCodes.DefinitionPackageReadFailure &&
+            diagnostic.SourceFile == "package/broken.json");
+    }
+
     [Fact]
     public async Task LoadAsync_WithoutPackageDocument_ReturnsFsg0026()
     {

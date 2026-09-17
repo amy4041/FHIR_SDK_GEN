@@ -170,11 +170,19 @@ public sealed class DefinitionPackageLoader
         {
             using var document = JsonDocument.Parse(stream);
             var root = document.RootElement;
-            if (!root.TryGetProperty("resourceType", out var resourceType) ||
-                !string.Equals(
-                    resourceType.GetString(),
-                    "StructureDefinition",
-                    StringComparison.Ordinal))
+            if (root.ValueKind != JsonValueKind.Object)
+            {
+                diagnostics.Add(CreateDiagnostic(
+                    GeneratorDiagnosticCodes.DefinitionPackageReadFailure,
+                    sourceIdentity,
+                    "The JSON entry must contain an object."));
+                return null;
+            }
+            // Preserve primitive-shaped entries for selector validation even when
+            // resourceType is missing or incorrect; filtering here would hide corruption.
+            var primitiveShaped = HasString(root, "kind", "primitive-type") ||
+                HasString(root, "baseDefinition", "http://hl7.org/fhir/StructureDefinition/PrimitiveType");
+            if (!HasString(root, "resourceType", "StructureDefinition") && !primitiveShaped)
             {
                 return null;
             }
@@ -190,6 +198,11 @@ public sealed class DefinitionPackageLoader
             return null;
         }
     }
+
+    private static bool HasString(JsonElement element, string name, string expected) =>
+        element.TryGetProperty(name, out var value) &&
+        value.ValueKind == JsonValueKind.String &&
+        string.Equals(value.GetString(), expected, StringComparison.Ordinal);
 
     private static bool ValidateOptions(
         DefinitionPackageLoadOptions options,

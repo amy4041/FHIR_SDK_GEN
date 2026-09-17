@@ -105,6 +105,30 @@ shape則失敗，不得因selector filter而靜默消失。需要時保留entry�
 
 Exit gate：同一package entry順序正反排列得到相同inventory與diagnostics。
 
+P2先行實作採用`PackagePrimitiveSelector.Select(LoadedDefinitionPackage, expectedFhirVersion)`，
+回傳`GenerationResult<PrimitiveDefinitionInventory?>`，供後續P1/P3接入；目前未連接CLI。
+Selector沿用primitive inventory builder的identity與duplicate驗證，補齊id、derivation、
+abstract、snapshot/differential與FHIR version檢查，保留`xhtml`供policy判定unsupported。
+合法complex/resource及primitive constraint profiles忽略；primitive specialization錯誤不以filter吞掉。
+只有已知的non-primitive kind（complex-type/resource/logical）可直接略過；未知kind必須回報，
+包含baseDefinition為Element的xhtml。Primitive constraint略過前檢查id/url/type/baseDefinition
+非空，不套用specialization的version/snapshot/differential要求。
+Loader保留`kind=primitive-type`或`baseDefinition=.../PrimitiveType`的entry，即使resourceType
+缺少或錯誤也交由驗證回報；JSON型別錯誤由既有package read diagnostic回報。
+沒有primitive時使用`FSG0019`，其他檢查沿用`FSG0002`–`FSG0005`、`FSG0019`–`FSG0020`及
+`FSG0026`–`FSG0027`，沒有新增或重編diagnostic code。
+`PackagePrimitiveSelectorTests`涵蓋official package/directory inventory一致、缺漏/錯誤欄位、
+duplicate type/canonical與archive entry正反順序的inventory/diagnostic一致性。
+P1輸入分類、archive path/duplicate-entry hardening及P3–P4 CLI/version切換仍未實作；
+Decision仍維持Proposed，本段記錄P2開發結果，不替代決策文件的acceptance gates。
+
+本機Windows驗證（含review修正）：Release build零warning/error；完整solution tests 697 passed、1個既有
+external-server integration smoke skipped，其中CodeGen tests 402 passed。
+新增regression tests先在修正前重現未知kind與constraint缺漏identity的失敗案例，再驗證修正後
+正反archive順序的diagnostic一致；合法profile仍不受specialization shape要求影響。
+P0 baseline、canonical pack、toolchain contract及`git diff --check`通過；
+Windows/Linux CI仍須由既有workflow確認。
+
 ### P3：接入primitive generation pipeline與CLI
 
 1. `--input`接受`.tgz`file或existing directory；help將兩種模式明確列出。
