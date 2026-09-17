@@ -171,6 +171,54 @@ public sealed class DefinitionPackageLoaderTests
         Assert.Equal("package/unconventional-name.json", definition.SourceFile);
     }
 
+    [Theory]
+    [InlineData("/package/broken.json")]
+    [InlineData("C:/package/broken.json")]
+    [InlineData("package/../broken.json")]
+    [InlineData("package/./broken.json")]
+    [InlineData("package//broken.json")]
+    [InlineData("package\\broken.json")]
+    public async Task LoadAsync_RejectsNonCanonicalArchiveEntries(string name)
+    {
+        var result = await _loader.LoadAsync(CreateInput(
+            ("package/package.json", CreatePackageJson()),
+            (name, CreateDefinitionJson("Patient"))), R5Options);
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Value);
+        Assert.Contains(result.Diagnostics, item => item.Code == GeneratorDiagnosticCodes.DefinitionPackageReadFailure && item.SourceFile == name);
+    }
+
+    [Theory]
+    [InlineData("package/package.json")]
+    [InlineData("package/definition.json")]
+    public async Task LoadAsync_RejectsDuplicateEntriesRegardlessOfDeserialization(string name)
+    {
+        var result = await _loader.LoadAsync(CreateInput(
+            ("package/package.json", CreatePackageJson()),
+            ("package/definition.json", CreateDefinitionJson("Patient")),
+            (name, "{}")), R5Options);
+        Assert.False(result.IsSuccess);
+        Assert.Contains(result.Diagnostics, item => item.SourceFile == name && item.Message.Contains("duplicate logical entry", StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData("package/package.json")]
+    [InlineData("package/definition.json")]
+    public async Task LoadAsync_DuplicateCorruptEntry_HasOrderIndependentDiagnostics(string duplicateName)
+    {
+        var entries = new[] {
+            ("package/package.json", CreatePackageJson()),
+            ("package/definition.json", CreateDefinitionJson("Patient")),
+            (duplicateName, "{") };
+        var forward = await _loader.LoadAsync(CreateInput(entries), R5Options);
+        var backward = await _loader.LoadAsync(CreateInput(entries.Reverse().ToArray()), R5Options);
+        Assert.False(forward.IsSuccess);
+        Assert.False(backward.IsSuccess);
+        Assert.Equal(forward.Diagnostics, backward.Diagnostics);
+        Assert.Contains(forward.Diagnostics, item => item.SourceFile == duplicateName &&
+            item.Message.Contains("duplicate logical entry", StringComparison.Ordinal));
+    }
+
     private static IDefinitionPackageInput CreateInput(
         params (string Name, string Json)[] entries) =>
         new MemoryDefinitionPackageInput(CreateArchive(entries));

@@ -403,6 +403,7 @@ try {
 
     $modelFirst = Join-Path $workRoot 'model-first'
     $primitiveFirst = Join-Path $workRoot 'primitive-first'
+    $primitiveDirectory = Join-Path $workRoot 'primitive-directory'
     [void] (Invoke-DotNet $workRoot $environment $logPath @(
         $toolCommand,
         '--mode', 'model',
@@ -414,9 +415,19 @@ try {
     [void] (Invoke-DotNet $workRoot $environment $logPath @(
         $toolCommand,
         '--mode', 'primitive',
-        '--input', $primitiveDefinitions,
+        '--input', $fhirPackage,
         '--policy', $primitivePolicy,
         '--output', $primitiveFirst,
+        '--fhir-version', '5.0.0',
+        '--package-id', 'hl7.fhir.r5.core',
+        '--package-version', '5.0.0'))
+
+    [void] (Invoke-DotNet $workRoot $environment $logPath @(
+        $toolCommand,
+        '--mode', 'primitive',
+        '--input', $primitiveDefinitions,
+        '--policy', $primitivePolicy,
+        '--output', $primitiveDirectory,
         '--fhir-version', '5.0.0',
         '--package-id', 'hl7.fhir.r5.core',
         '--package-version', '5.0.0'))
@@ -439,7 +450,7 @@ try {
     [void] (Invoke-DotNet $workRoot $environment $logPath @(
         $toolCommand,
         '--mode', 'primitive',
-        '--input', $primitiveDefinitions,
+        '--input', $fhirPackage,
         '--policy', $primitivePolicy,
         '--output', $primitiveSecond,
         '--fhir-version', '5.0.0',
@@ -454,6 +465,7 @@ try {
     $secondModel = Get-FileHashMap $secondModelRoot
     $firstPrimitives = Get-FileHashMap $primitiveFirst
     $secondPrimitives = Get-FileHashMap $primitiveSecond
+    $directoryPrimitives = Get-FileHashMap $primitiveDirectory
 
     Assert-HashMapsEqual $committedModel $firstModel 'First full model generation'
     Assert-HashMapsEqual $committedModel $secondModel 'Second full model generation'
@@ -461,6 +473,7 @@ try {
     Assert-HashMapsEqual $committedPrimitives $firstPrimitives 'First primitive generation'
     Assert-HashMapsEqual $committedPrimitives $secondPrimitives 'Second primitive generation'
     Assert-HashMapsEqual $firstPrimitives $secondPrimitives 'Primitive reinstall determinism'
+    Assert-HashMapsEqual $firstPrimitives $directoryPrimitives 'Primitive tgz/directory complete output equivalence'
 
     if ($null -ne $previousIdentity) {
         $previousManifest = Get-Content -LiteralPath (
@@ -535,6 +548,7 @@ try {
         modelSourceCount = $modelSourceCount
         modelArtifactCount = $firstModel.Count
         primitiveArtifactCount = $firstPrimitives.Count
+        primitiveInputEquivalence = 'tgz-directory-byte-identical'
         packageSha256 = (Get-FileHash -LiteralPath $package -Algorithm SHA256).Hash.ToLowerInvariant()
     }
     Write-Utf8NoBomLf (

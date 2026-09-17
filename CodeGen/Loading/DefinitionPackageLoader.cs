@@ -26,6 +26,7 @@ public sealed class DefinitionPackageLoader
 
         DefinitionPackageDocumentDto? packageDocument = null;
         var definitions = new List<LoadedStructureDefinition>();
+        var entryNames = new HashSet<string>(StringComparer.Ordinal);
 
         try
         {
@@ -37,6 +38,35 @@ public sealed class DefinitionPackageLoader
             while ((entry = reader.GetNextEntry()) is not null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                var logicalName = entry.EntryType == TarEntryType.Directory && entry.Name.EndsWith('/')
+                    ? entry.Name[..^1] : entry.Name;
+                if (!IsCanonicalEntryName(logicalName))
+                {
+                    diagnostics.Add(CreateDiagnostic(
+                        GeneratorDiagnosticCodes.DefinitionPackageReadFailure,
+                        entry.Name, "Archive entry must use a canonical relative package/ path."));
+                    continue;
+                }
+                if (!entryNames.Add(logicalName))
+                {
+                    // Neither copy of an ambiguous entry may determine inventory or
+                    // diagnostics. This also handles a corrupt first package.json.
+                    definitions.RemoveAll(definition => definition.SourceFile == logicalName);
+                    diagnostics.RemoveAll(diagnostic => diagnostic.SourceFile == logicalName);
+                    if (logicalName == PackageDocumentEntry) packageDocument = null;
+                    diagnostics.Add(CreateDiagnostic(
+                        GeneratorDiagnosticCodes.DefinitionPackageReadFailure,
+                        entry.Name, "The package archive contains a duplicate logical entry."));
+                    continue;
+                }
+                if (entry.EntryType == TarEntryType.Directory) continue;
+                if (entry.EntryType is not (TarEntryType.RegularFile or TarEntryType.V7RegularFile))
+                {
+                    diagnostics.Add(CreateDiagnostic(
+                        GeneratorDiagnosticCodes.DefinitionPackageReadFailure,
+                        entry.Name, "The package archive must not contain links or special files."));
+                    continue;
+                }
                 if (entry.DataStream is null)
                 {
                     continue;
@@ -44,15 +74,6 @@ public sealed class DefinitionPackageLoader
 
                 if (string.Equals(entry.Name, PackageDocumentEntry, StringComparison.Ordinal))
                 {
-                    if (packageDocument is not null)
-                    {
-                        diagnostics.Add(CreateDiagnostic(
-                            GeneratorDiagnosticCodes.DefinitionPackageReadFailure,
-                            entry.Name,
-                            "The package archive contains more than one package/package.json entry."));
-                        continue;
-                    }
-
                     packageDocument = Deserialize<DefinitionPackageDocumentDto>(
                         entry.DataStream,
                         entry.Name,
@@ -74,6 +95,8 @@ public sealed class DefinitionPackageLoader
                     definitions.Add(new LoadedStructureDefinition(entry.Name, definition));
                 }
             }
+            // TarReader can stop at the tar terminator before gzip has checked its trailer.
+            await gzip.CopyToAsync(Stream.Null, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -275,6 +298,11 @@ public sealed class DefinitionPackageLoader
     private static bool IsPackageJsonEntry(string name) =>
         name.StartsWith("package/", StringComparison.Ordinal) &&
         name.EndsWith(".json", StringComparison.Ordinal);
+
+    private static bool IsCanonicalEntryName(string name) =>
+        (name == "package" || name.StartsWith("package/", StringComparison.Ordinal)) &&
+        !name.Contains('\\') && !name.Contains(':') &&
+        name.Split('/').All(segment => segment.Length > 0 && segment is not ("." or ".."));
 
     private static GeneratorDiagnostic CreateDiagnostic(
         string code,

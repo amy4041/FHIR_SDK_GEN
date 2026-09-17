@@ -3,6 +3,7 @@ using MyFhirSdk.CodeGen.Compatibility;
 using MyFhirSdk.CodeGen.Contracts;
 using MyFhirSdk.CodeGen.Diagnostics;
 using MyFhirSdk.CodeGen.Inventory;
+using MyFhirSdk.CodeGen.Loading;
 using MyFhirSdk.CodeGen.Models;
 using MyFhirSdk.CodeGen.Rendering;
 using MyFhirSdk.CodeGen.Writing;
@@ -11,7 +12,7 @@ namespace MyFhirSdk.CodeGen.Generation;
 
 public sealed class PrimitiveGenerationPipeline
 {
-    public const string DefaultCodeGenVersion = "1.0.0";
+    public const string DefaultCodeGenVersion = "1.1.0";
 
     private readonly PrimitiveInventoryCoveragePipeline _coveragePipeline;
     private readonly PrimitiveWrapperModelBuilder _wrapperModelBuilder;
@@ -93,6 +94,9 @@ public sealed class PrimitiveGenerationPipeline
         ArgumentNullException.ThrowIfNull(options);
         cancellationToken.ThrowIfCancellationRequested();
 
+        var input = PrimitiveDefinitionInput.Resolve(options.DefinitionsPath, options.InputKind);
+        if (!input.IsSuccess || input.Value is null) return Failure(input.Diagnostics);
+
         var compatibilityResult = await _compatibilityService.ValidateAsync(
             GenerationCompatibilityRequest.Primitive(
                 options.CodeGenVersion,
@@ -107,9 +111,10 @@ public sealed class PrimitiveGenerationPipeline
         }
 
         var coverageResult = await _coveragePipeline.BuildAsync(
-            options.DefinitionsPath,
+            input.Value,
             options.PolicyPath,
-            options.FhirVersion,
+            new DefinitionPackageLoadOptions(
+                options.FhirPackageId, options.FhirPackageVersion, options.FhirVersion),
             cancellationToken);
         if (!coverageResult.IsSuccess || coverageResult.Value is null)
         {
@@ -193,7 +198,7 @@ public sealed class PrimitiveGenerationPipeline
                 buildResult.Diagnostics);
         }
 
-        return await _writer.WriteArtifactsAsync(
+        return await _writer.WithProtectedPaths([options.DefinitionsPath, options.PolicyPath]).WriteArtifactsAsync(
             options.OutputPath,
             buildResult.Value.Artifacts,
             cancellationToken);

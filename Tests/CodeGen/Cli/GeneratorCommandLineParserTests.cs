@@ -1,6 +1,7 @@
 using MyFhirSdk.CodeGen.Assets;
 using MyFhirSdk.CodeGen.Cli;
 using MyFhirSdk.CodeGen.Generation;
+using MyFhirSdk.CodeGen.Loading;
 using Xunit;
 
 namespace MyFhirSdk.CodeGen.Tests.Cli;
@@ -57,10 +58,12 @@ public sealed class GeneratorCommandLineParserTests
     [Fact]
     public void Parse_PrimitiveMode_ReturnsPrimitiveOptions()
     {
+        var definitions = Path.Combine(AppContext.BaseDirectory,
+            "Fixtures", "StructureDefinitions", "Primitives", "R5");
         var result = _parser.Parse(
         [
             "--mode", "primitive",
-            "--input", "definitions",
+            "--input", definitions,
             "--policy", "policy.json",
             "--output", "Generated/R5/Primitives",
             "--fhir-version", "5.0.0",
@@ -71,11 +74,12 @@ public sealed class GeneratorCommandLineParserTests
         Assert.True(result.IsSuccess);
         var options = Assert.IsType<PrimitiveGenerationOptions>(
             result.PrimitiveOptions);
-        Assert.Equal("definitions", options.DefinitionsPath);
+        Assert.Equal(definitions, options.DefinitionsPath);
+        Assert.Equal(PrimitiveDefinitionInputKind.Directory, options.InputKind);
         Assert.Equal("policy.json", options.PolicyPath);
         Assert.Equal("hl7.fhir.r5.core", options.FhirPackageId);
         Assert.Equal("5.0.0", options.FhirPackageVersion);
-        Assert.Equal("1.0.0", options.CodeGenVersion);
+        Assert.Equal("1.1.0", options.CodeGenVersion);
     }
 
     [Fact]

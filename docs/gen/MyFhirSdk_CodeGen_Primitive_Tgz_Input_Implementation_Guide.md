@@ -1,8 +1,8 @@
 # MyFhirSdk CodeGen primitive `.tgz` input 實作指引
 
-Version 0.2
+Version 0.3
 
-- 狀態：Planning；P0可在decision Proposed時建立，P1後需decision Accepted
+- 狀態：P3接線與必要的P1/P4變更已在開發分支實作；Decision的正式acceptance與跨平台CI仍需確認
 - 實作方案：A（`.tgz` preferred、directory compatible、`--policy` required）
 - Baseline：Tool/CodeGen `1.0.0`、primitive policy `1.1.0`、manifest schema v2
 - 目標版本：Tool/CodeGen `1.1.0`、primitive manifest維持schema v2
@@ -89,6 +89,11 @@ contract；本機Windows驗證已通過，跨平台CI gate仍由既有workflow�
 
 Exit gate：package loader沒有第二份tar/gzip實作；directory現有正負測試全部保持。
 
+P3接線時補齊`PrimitiveDefinitionInput`與`PrimitiveDefinitionInputKind`：分類集中於`Resolve`，
+existing directory優先，其次為existing `.tgz` file；CLI與直接呼叫pipeline都沿用此規則。
+`PrimitiveGenerationOptions.InputKind`記錄CLI判定的模式，pipeline再次驗證其與實際input一致。
+Coverage pipeline接受typed input；directory沿用原loader，archive重用package loader與P2 selector。
+
 ### P2：建立package primitive selector
 
 從validated`LoadedDefinitionPackage`選取primitive specializations，並驗證：
@@ -106,7 +111,7 @@ shape則失敗，不得因selector filter而靜默消失。需要時保留entry�
 Exit gate：同一package entry順序正反排列得到相同inventory與diagnostics。
 
 P2先行實作採用`PackagePrimitiveSelector.Select(LoadedDefinitionPackage, expectedFhirVersion)`，
-回傳`GenerationResult<PrimitiveDefinitionInventory?>`，供後續P1/P3接入；目前未連接CLI。
+回傳`GenerationResult<PrimitiveDefinitionInventory?>`；P2提交時未連接CLI，現由P3接入。
 Selector沿用primitive inventory builder的identity與duplicate驗證，補齊id、derivation、
 abstract、snapshot/differential與FHIR version檢查，保留`xhtml`供policy判定unsupported。
 合法complex/resource及primitive constraint profiles忽略；primitive specialization錯誤不以filter吞掉。
@@ -119,8 +124,8 @@ Loader保留`kind=primitive-type`或`baseDefinition=.../PrimitiveType`的entry�
 `FSG0026`–`FSG0027`，沒有新增或重編diagnostic code。
 `PackagePrimitiveSelectorTests`涵蓋official package/directory inventory一致、缺漏/錯誤欄位、
 duplicate type/canonical與archive entry正反順序的inventory/diagnostic一致性。
-P1輸入分類、archive path/duplicate-entry hardening及P3–P4 CLI/version切換仍未實作；
-Decision仍維持Proposed，本段記錄P2開發結果，不替代決策文件的acceptance gates。
+以下驗證結果為P2提交時的歷史紀錄；P1接點與P3–P4更新見各階段說明。
+Decision仍維持Proposed，開發結果不替代決策文件的acceptance gates。
 
 本機Windows驗證（含review修正）：Release build零warning/error；完整solution tests 697 passed、1個既有
 external-server integration smoke skipped，其中CodeGen tests 402 passed。
@@ -141,6 +146,20 @@ Windows/Linux CI仍須由既有workflow確認。
 
 Exit gate：`.tgz`與directory產生byte-identical wrappers、registry和schema v2 manifest。
 
+已接入`PrimitiveGenerationPipeline`及CLI help；兩種輸入經過相同policy preflight、coverage、
+model builders、renderers與writer。`--policy`仍required，`ToolAssetResolver`的policy precedence未改。
+Writer保留staging/atomic swap/rollback，且pipeline會將本次input與explicit policy加入protected
+paths，因此直接呼叫pipeline也不能把output設為包含input/policy的目錄。
+
+共用package loader在串流讀取時拒絕rooted/traversal/backslash/empty-segment paths、duplicate
+logical entries及links/special files。官方archive含`package/other`、`package/openapi`等合法
+附屬檔案，允許其canonical relative paths；沒有新增第二套tar/gzip parser或filesystem extraction。
+重複entry即使其中一份JSON損壞，正反順序亦回傳相同diagnostics。
+
+測試覆蓋CLI雙模式與required policy、input分類、實際archive identity mismatch、empty primitive
+selection、損壞archive、policy missing/corrupt/hash/version、output保護、repeat generation及完整
+output equivalence。Installed-tool smoke新增`.tgz`/directory byte-equivalence與真實舊版升級驗證。
+
 ### P4：版本與compatibility contract升級
 
 以一個原子變更將實際功能版本設為`1.1.0`：
@@ -158,6 +177,15 @@ Runtime assembly identity、TFM、Runtime symbol contract與compiler reference D
 
 Exit gate：每個compatibility dimension有positive/negative tests，所有committed descriptor與
 manifest hash由canonical pipeline產生。
+
+P3與必要P4 identity更新在同一變更交付：Tool/CodeGen、local manifest及descriptor compatibility
+升為`1.1.0`。Runtime assembly、TFM、symbol contract及compiler-reference SHA-256保持不變。
+Descriptor SHA-256為`128ba716806fa276186586ec735bb30525a8d0ddfaf00f9525f48b68fd8cad5a`。
+兩份committed generation manifests由canonical pipeline重建，852個generated C# sources保持
+byte-identical。`baselines/primitive-tgz-input/`保留所有`1.0.0`證據並新增`1.1.0`證據；
+測試只允許歷史manifest的tool/CodeGen版本與descriptor hash變動，其餘內容仍須一致。
+舊版package從`eng/codegen-tool-upgrade-baseline.json`的immutable revision重建，未修改現行
+source版本來模擬`1.0.0`。
 
 ### P5：CLI與pipeline test matrix
 

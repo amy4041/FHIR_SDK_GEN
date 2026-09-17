@@ -48,7 +48,7 @@ public sealed class CommittedModelGenerationTests
             result.Value.Artifacts,
             artifact => artifact.FileName == "Generated/R5/model-generation-manifest.json");
         Assert.Equal(
-            "77ffb4af1ef2b01bd138908f2dd0d14ac44226c5a736e23e9c704285b0351c53",
+            "a78fc4d816d7f445134547310e1bd0c978dc2c03b0f4ba787171f344bf17b32d",
             Convert.ToHexString(SHA256.HashData(
                 Encoding.UTF8.GetBytes(Normalize(manifest.Content))))
                 .ToLowerInvariant());

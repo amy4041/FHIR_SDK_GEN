@@ -10,8 +10,8 @@
   "compatibility": {
     "schemaVersion": 1,
     "versionPolicy": "exact",
-    "toolVersion": "1.0.0",
-    "codeGenVersion": "1.0.0",
+    "toolVersion": "1.1.0",
+    "codeGenVersion": "1.1.0",
     "fhirPackage": {
       "id": "hl7.fhir.r5.core",
       "version": "5.0.0",

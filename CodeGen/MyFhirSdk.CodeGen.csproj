@@ -8,7 +8,7 @@
     <Nullable>enable</Nullable>
     <ExpectedToolPackageId>MyFhirSdk.CodeGen.Tool</ExpectedToolPackageId>
     <ExpectedToolCommandName>myfhir-codegen</ExpectedToolCommandName>
-    <ExpectedToolPackageVersion>1.0.0</ExpectedToolPackageVersion>
+    <ExpectedToolPackageVersion>1.1.0</ExpectedToolPackageVersion>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>$(ExpectedToolCommandName)</ToolCommandName>
     <PackageId>$(ExpectedToolPackageId)</PackageId>

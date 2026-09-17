@@ -28,6 +28,11 @@ public sealed class GeneratedFileWriter
             : StringComparer.Ordinal;
     }
 
+    public GeneratedFileWriter WithProtectedPaths(IEnumerable<string> paths) =>
+        new(new OutputSafetyContext(
+            _safetyContext.ToolInstallationDirectory,
+            _safetyContext.ProtectedAssetPaths.Concat(paths)));
+
     public async Task<GenerationResult<IReadOnlyList<string>>> WriteAsync(
         string outputRoot,
         IReadOnlyList<GeneratedSource> generatedSources,
