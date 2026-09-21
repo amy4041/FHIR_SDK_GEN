@@ -41,7 +41,8 @@ function Invoke-DotNet {
         [string] $WorkingDirectory,
         [hashtable] $Environment,
         [string] $LogPath,
-        [string[]] $Arguments
+        [string[]] $Arguments,
+        [int] $ExpectedExitCode = 0
     )
 
     $startInfo = [System.Diagnostics.ProcessStartInfo]::new('dotnet')
@@ -83,9 +84,9 @@ function Invoke-DotNet {
         $record,
         [System.Text.UTF8Encoding]::new($false))
 
-    if ($exitCode -ne 0) {
+    if ($exitCode -ne $ExpectedExitCode) {
         Write-Host $record
-        throw "dotnet command failed with exit code $exitCode. See $LogPath"
+        throw "dotnet command returned exit code $exitCode; expected $ExpectedExitCode. See $LogPath"
     }
     return [pscustomobject]@{
         ExitCode = $exitCode
@@ -432,6 +433,33 @@ try {
         '--fhir-version', '5.0.0',
         '--package-id', 'hl7.fhir.r5.core',
         '--package-version', '5.0.0'))
+
+    # Exercise the installed tool's runtime configuration, not just testhost.
+    # All tar content remains readable, but the gzip CRC/size trailer is missing.
+    $truncatedPackage = Join-Path $workRoot 'truncated-tail.tgz'
+    Copy-Item -LiteralPath $fhirPackage -Destination $truncatedPackage
+    $truncatedStream = [System.IO.File]::OpenWrite($truncatedPackage)
+    try {
+        $truncatedStream.SetLength($truncatedStream.Length - 8)
+    }
+    finally {
+        $truncatedStream.Dispose()
+    }
+    foreach ($mode in @('primitive', 'model')) {
+        $protectedOutput = Join-Path $workRoot "$mode-truncated-output"
+        [void] (New-Item -ItemType Directory -Path $protectedOutput)
+        Write-Utf8NoBomLf (Join-Path $protectedOutput 'keep.txt') 'keep'
+        $beforeFailure = Get-FileHashMap $protectedOutput
+        $failure = Invoke-DotNet $workRoot $environment $logPath @(
+            $toolCommand, '--mode', $mode,
+            '--input', $truncatedPackage, '--policy', $primitivePolicy,
+            '--output', $protectedOutput, '--fhir-version', '5.0.0',
+            '--package-id', 'hl7.fhir.r5.core', '--package-version', '5.0.0') -ExpectedExitCode 2
+        if (-not $failure.StandardError.Contains('[FSG0026]', [System.StringComparison]::Ordinal)) {
+            throw "$mode truncated archive did not report FSG0026. See $logPath"
+        }
+        Assert-HashMapsEqual $beforeFailure (Get-FileHashMap $protectedOutput) "$mode truncated archive output preservation"
+    }
 
     [void] (Invoke-DotNet $workRoot $environment $logPath @(
         'tool', 'uninstall', $packageId))

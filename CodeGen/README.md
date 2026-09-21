@@ -35,6 +35,11 @@ packaging build 先建立 canonical compiler-only `MyFhirSdk.dll`，再明確注
 CodeGen project 本身沒有 SDK `ProjectReference`。已安裝的 tool 從 package installation root
 解析資產，不搜尋 solution、repository、目前工作目錄或 `bin/obj`。
 
+工具的 runtimeconfig 啟用 `System.IO.Compression.UseStrictValidation`，使尾端截斷的
+gzip archive 回報 `FSG0026` 並保留既有輸出。此設定須在程序第一次使用壓縮串流前生效；
+直接呼叫 pipeline 的測試 host 也使用相同設定。Loader 仍使用 .NET tar/gzip 串流，
+並在 tar 結束後讀完 gzip，以完成 trailer 驗證。
+
 ## 產生完整 R5 models
 
 建議一律先輸出到 staging directory，驗證 diff 後才更新 committed output：

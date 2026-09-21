@@ -77,6 +77,9 @@ public sealed class CodeGenToolPackageTests
     public void PackageAssetsMatchManifestProvenanceAndDescriptorHashes()
     {
         using var package = OpenPackage("first");
+        using var runtimeConfig = JsonDocument.Parse(ReadBytes(package, ToolRoot + "MyFhirSdk.CodeGen.runtimeconfig.json"));
+        Assert.True(runtimeConfig.RootElement.GetProperty("runtimeOptions")
+            .GetProperty("configProperties").GetProperty("System.IO.Compression.UseStrictValidation").GetBoolean());
         using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(
             AppContext.BaseDirectory,
             "CommittedGenerated",

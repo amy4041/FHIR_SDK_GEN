@@ -96,6 +96,8 @@ public sealed class DefinitionPackageLoader
                 }
             }
             // TarReader can stop at the tar terminator before gzip has checked its trailer.
+            // The host enables System.IO.Compression.UseStrictValidation at startup:
+            // without it, reaching EOF with a missing trailer does not throw.
             await gzip.CopyToAsync(Stream.Null, cancellationToken);
         }
         catch (OperationCanceledException)

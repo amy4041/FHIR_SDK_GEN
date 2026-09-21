@@ -122,6 +122,29 @@ public sealed class PrimitivePackageGenerationTests : IDisposable
     }
 
     [Theory]
+    [InlineData(1)]
+    [InlineData(4)]
+    [InlineData(8)]
+    [InlineData(9)]
+    public async Task Pipeline_TruncatedGzipTailPreservesExistingOutput(int missingBytes)
+    {
+        var archive = Path.Combine(_root, "truncated-tail.tgz");
+        File.WriteAllBytes(archive, File.ReadAllBytes(ArchiveInput)[..^missingBytes]);
+        var options = Options(archive);
+        Directory.CreateDirectory(options.OutputPath);
+        var marker = Path.Combine(options.OutputPath, "keep.txt");
+        File.WriteAllText(marker, "keep");
+
+        var result = await CodeGenTestRuntime.CreatePrimitivePipeline().GenerateAsync(options);
+
+        Assert.False(result.IsSuccess);
+        Assert.Contains(result.Diagnostics, item => item.Code == GeneratorDiagnosticCodes.DefinitionPackageReadFailure);
+        Assert.Equal("keep", File.ReadAllText(marker));
+        Assert.Equal(new[] { marker }, Directory.GetFiles(options.OutputPath));
+        Assert.Empty(Directory.GetDirectories(_root, ".*.staging-*"));
+    }
+
+    [Theory]
     [InlineData("archive")]
     [InlineData("directory")]
     [InlineData("policy")]

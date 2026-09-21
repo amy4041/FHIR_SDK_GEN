@@ -27,6 +27,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
+    <!-- Must be enabled before the first compression stream initializes. -->
+    <RuntimeHostConfigurationOption Include="System.IO.Compression.UseStrictValidation" Value="true" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Policy\primitive-generation-policy.json">
