@@ -7,7 +7,7 @@ deterministic C# source 的 repository-local .NET tool。命令為 `myfhir-codeg
 
 | 項目 | 支援值 |
 | --- | --- |
-| Tool / CodeGen | `1.0.0` |
+| Tool / CodeGen | `1.1.0` |
 | .NET target framework | `net9.0` |
 | FHIR package | `hl7.fhir.r5.core#5.0.0` |
 | FHIR version | `5.0.0` |
@@ -35,6 +35,11 @@ packaging build 先建立 canonical compiler-only `MyFhirSdk.dll`，再明確注
 CodeGen project 本身沒有 SDK `ProjectReference`。已安裝的 tool 從 package installation root
 解析資產，不搜尋 solution、repository、目前工作目錄或 `bin/obj`。
 
+工具的 runtimeconfig 啟用 `System.IO.Compression.UseStrictValidation`，使尾端截斷的
+gzip archive 回報 `FSG0026` 並保留既有輸出。此設定須在程序第一次使用壓縮串流前生效；
+直接呼叫 pipeline 的測試 host 也使用相同設定。Loader 仍使用 .NET tar/gzip 串流，
+並在 tar 結束後讀完 gzip，以完成 trailer 驗證。
+
 ## 產生完整 R5 models
 
 建議一律先輸出到 staging directory，驗證 diff 後才更新 committed output：
@@ -54,18 +59,24 @@ dotnet myfhir-codegen `
 
 ## 產生 primitives
 
-primitive mode 保留 required explicit `--policy`：
+primitive mode 建議直接讀取本機FHIR `.tgz`，並保留 required explicit `--policy`：
 
 ```powershell
 dotnet myfhir-codegen `
   --mode primitive `
-  --input Tests/CodeGen/Fixtures/StructureDefinitions/Primitives/R5 `
+  --input Tests/CodeGen/Fixtures/FhirPackages/R5/hl7.fhir.r5.core-5.0.0.tgz `
   --policy CodeGen/Policy/primitive-generation-policy.json `
   --output artifacts/manual-primitives `
   --fhir-version 5.0.0 `
   --package-id hl7.fhir.r5.core `
   --package-version 5.0.0
 ```
+
+既有flat-directory input仍受支援：將`--input`改為
+`Tests/CodeGen/Fixtures/StructureDefinitions/Primitives/R5`即可。兩種模式都必須提供`--policy`，
+在相同definitions與policy下產生逐位元相同的wrappers、registry與schema v2 manifest。
+工具只接受existing directory或本機`.tgz`，不下載URL、不搜尋cache，也不將archive解壓至filesystem。
+Package identity必須符合命令中的package ID/version/FHIR version。
 
 ## Package assets 與 override 規則
 
@@ -104,7 +115,9 @@ manifest 不記錄實體 repository、cache 或 temporary path。
 
 ## 升級與 rollback
 
-目前 `1.0.0` 是第一個 baseline，不以人工修改版本為 `1.0.1` 模擬升級。未來版本提升時：
+`1.1.0`新增primitive `.tgz` input。`1.0.0`是immutable upgrade baseline，仍使用directory input。
+升級測試由`eng/codegen-tool-upgrade-baseline.json`固定的source revision重建真實舊版package，
+不修改目前source版本來模擬舊版。版本提升時：
 
 1. 同步更新 package、CodeGen、compatibility matrix、descriptor 與 local manifest 版本；
 2. 更新 Runtime/TFM 時重新建立 compiler reference，並同步 descriptor identity/hash；

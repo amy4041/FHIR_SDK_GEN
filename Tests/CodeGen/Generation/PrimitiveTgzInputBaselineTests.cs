@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using MyFhirSdk.CodeGen.Assets;
 using MyFhirSdk.CodeGen.Cli;
+using MyFhirSdk.CodeGen.Compatibility;
 using MyFhirSdk.CodeGen.Generation;
 using MyFhirSdk.CodeGen.Loading;
 using Xunit;
@@ -49,6 +50,9 @@ public sealed class PrimitiveTgzInputBaselineTests : IDisposable
         var directoryOutput = await GenerateAsync(directory, "directory-output");
         var packageOutput = await GenerateAsync(materialized, "package-output");
         var repeatedOutput = await GenerateAsync(directory, "repeated-output");
+        var archiveOutput = await GenerateAsync(Path.Combine(AppContext.BaseDirectory,
+            "Fixtures", "FhirPackages", "R5", "hl7.fhir.r5.core-5.0.0.tgz"), "archive-output");
+        AssertArtifactsEqual(directoryOutput, archiveOutput);
         AssertArtifactsEqual(directoryOutput, packageOutput);
         AssertArtifactsEqual(directoryOutput, repeatedOutput);
         AssertArtifactsEqual(directoryOutput, ReadFiles(Path.Combine(
@@ -57,7 +61,8 @@ public sealed class PrimitiveTgzInputBaselineTests : IDisposable
         using var manifest = JsonDocument.Parse(directoryOutput[ManifestName]);
         var root = manifest.RootElement;
         Assert.Equal(2, root.GetProperty("schemaVersion").GetInt32());
-        Assert.Equal("1.0.0", root.GetProperty("codeGenVersion").GetString());
+        var version = GenerationCompatibilityMatrix.CodeGenVersion;
+        Assert.Equal(version, root.GetProperty("codeGenVersion").GetString());
         var decisions = root.GetProperty("primitives").EnumerateArray().ToArray();
         var supported = decisions.Count(item => item.GetProperty("supportStatus").GetString() == "supported");
         Assert.Equal(20, supported);
@@ -80,11 +85,11 @@ public sealed class PrimitiveTgzInputBaselineTests : IDisposable
 
         var evidence = new SortedDictionary<string, byte[]>(StringComparer.Ordinal)
         {
-            ["cli-help-1.0.0.txt"] = await CaptureHelpAsync(),
-            ["directory-artifact-inventory-1.0.0.txt"] = Utf8(string.Join("\n", directoryOutput.Keys) + "\n"),
-            ["directory-artifact-hashes-1.0.0.txt"] = Utf8(string.Join("\n", directoryOutput.Select(
+            [$"cli-help-{version}.txt"] = await CaptureHelpAsync(),
+            [$"directory-artifact-inventory-{version}.txt"] = Utf8(string.Join("\n", directoryOutput.Keys) + "\n"),
+            [$"directory-artifact-hashes-{version}.txt"] = Utf8(string.Join("\n", directoryOutput.Select(
                 item => $"{Hash(item.Value)}  {item.Key}")) + "\n"),
-            ["directory-manifest-1.0.0.json"] = directoryOutput[ManifestName],
+            [$"directory-manifest-{version}.json"] = directoryOutput[ManifestName],
             ["package-primitive-fixture-contract.txt"] = BuildFixtureContract(packagePrimitives)
         };
         var exportPath = Environment.GetEnvironmentVariable("MYFHIRSDK_PRIMITIVE_P0_EXPORT");
@@ -99,6 +104,20 @@ public sealed class PrimitiveTgzInputBaselineTests : IDisposable
         }
 
         var baseline = Path.Combine(AppContext.BaseDirectory, "Baselines", "PrimitiveTgzInput");
+        // Historical 1.0.0 evidence remains immutable. Only tool/CodeGen and descriptor
+        // provenance may change; primitive decisions, source hashes and Runtime bytes may not.
+        var historical = JsonNode.Parse(File.ReadAllBytes(Path.Combine(baseline, "directory-manifest-1.0.0.json")))!;
+        historical["codeGenVersion"] = version;
+        historical["compatibility"]!["codeGenVersion"] = version;
+        historical["compatibility"]!["tool"]!["version"] = GenerationCompatibilityMatrix.ToolVersion;
+        historical["compatibility"]!["runtimeDescriptor"]!["sha256"] = CodeGenTestRuntime.RuntimeContract.DescriptorSha256;
+        Assert.True(JsonNode.DeepEquals(historical, JsonNode.Parse(directoryOutput[ManifestName])),
+            "Only approved version/descriptor provenance may differ from the P0 manifest.");
+        foreach (var line in File.ReadAllLines(Path.Combine(baseline, "directory-artifact-hashes-1.0.0.txt")))
+        {
+            var name = line[66..];
+            if (name != ManifestName) Assert.Equal(line[..64], Hash(directoryOutput[name]));
+        }
         foreach (var (name, bytes) in evidence)
         {
             Assert.True(File.Exists(Path.Combine(baseline, name)), $"Missing approved P0 baseline: {name}");

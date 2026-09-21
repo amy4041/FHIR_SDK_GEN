@@ -25,7 +25,7 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
         Assert.Equal(1, provenance.CompatibilitySchemaVersion);
         Assert.Equal("exact", provenance.CompatibilityVersionPolicy);
         Assert.Equal("MyFhirSdk.CodeGen.Tool", provenance.ToolPackageId);
-        Assert.Equal("1.0.0", provenance.ToolVersion);
+        Assert.Equal("1.1.0", provenance.ToolVersion);
         Assert.Equal("phase-a-v1+c4-primitives-v1", provenance.RuntimeDescriptorVersion);
         Assert.Equal(64, provenance.RuntimeDescriptorSha256.Length);
         Assert.Equal(CodeGenTestRuntime.RuntimeReferences.ReferenceSha256,
@@ -230,7 +230,7 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
 
     private static GenerationCompatibilityRequest ModelRequest() =>
         new(
-            "1.0.0",
+            "1.1.0",
             "hl7.fhir.r5.core",
             "5.0.0",
             "5.0.0",

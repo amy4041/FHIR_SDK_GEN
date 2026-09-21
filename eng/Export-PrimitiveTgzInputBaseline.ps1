@@ -22,9 +22,9 @@ try {
     dotnet test (Join-Path $repositoryRoot 'Tests/CodeGen/MyFhirSdk.CodeGen.Tests.csproj') `
         -c Release --no-restore --filter FullyQualifiedName~PrimitiveTgzInputBaselineTests
     if ($LASTEXITCODE -ne 0) {
-        throw "P0 verification failed. Any rebuilt evidence is at '$output'; review differences without automatically accepting them."
+        throw "Primitive baseline verification failed. Any rebuilt evidence is at '$output'; review differences without automatically accepting them."
     }
-    Write-Output "P0 baseline verified and exported to $output"
+    Write-Output "Primitive generation baseline verified and exported to $output"
 }
 finally {
     [Environment]::SetEnvironmentVariable('MYFHIRSDK_PRIMITIVE_P0_EXPORT', $previousExport)

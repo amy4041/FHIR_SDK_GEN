@@ -26,6 +26,7 @@ public sealed class DefinitionPackageLoader
 
         DefinitionPackageDocumentDto? packageDocument = null;
         var definitions = new List<LoadedStructureDefinition>();
+        var entryNames = new HashSet<string>(StringComparer.Ordinal);
 
         try
         {
@@ -37,6 +38,35 @@ public sealed class DefinitionPackageLoader
             while ((entry = reader.GetNextEntry()) is not null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                var logicalName = entry.EntryType == TarEntryType.Directory && entry.Name.EndsWith('/')
+                    ? entry.Name[..^1] : entry.Name;
+                if (!IsCanonicalEntryName(logicalName))
+                {
+                    diagnostics.Add(CreateDiagnostic(
+                        GeneratorDiagnosticCodes.DefinitionPackageReadFailure,
+                        entry.Name, "Archive entry must use a canonical relative package/ path."));
+                    continue;
+                }
+                if (!entryNames.Add(logicalName))
+                {
+                    // Neither copy of an ambiguous entry may determine inventory or
+                    // diagnostics. This also handles a corrupt first package.json.
+                    definitions.RemoveAll(definition => definition.SourceFile == logicalName);
+                    diagnostics.RemoveAll(diagnostic => diagnostic.SourceFile == logicalName);
+                    if (logicalName == PackageDocumentEntry) packageDocument = null;
+                    diagnostics.Add(CreateDiagnostic(
+                        GeneratorDiagnosticCodes.DefinitionPackageReadFailure,
+                        entry.Name, "The package archive contains a duplicate logical entry."));
+                    continue;
+                }
+                if (entry.EntryType == TarEntryType.Directory) continue;
+                if (entry.EntryType is not (TarEntryType.RegularFile or TarEntryType.V7RegularFile))
+                {
+                    diagnostics.Add(CreateDiagnostic(
+                        GeneratorDiagnosticCodes.DefinitionPackageReadFailure,
+                        entry.Name, "The package archive must not contain links or special files."));
+                    continue;
+                }
                 if (entry.DataStream is null)
                 {
                     continue;
@@ -44,15 +74,6 @@ public sealed class DefinitionPackageLoader
 
                 if (string.Equals(entry.Name, PackageDocumentEntry, StringComparison.Ordinal))
                 {
-                    if (packageDocument is not null)
-                    {
-                        diagnostics.Add(CreateDiagnostic(
-                            GeneratorDiagnosticCodes.DefinitionPackageReadFailure,
-                            entry.Name,
-                            "The package archive contains more than one package/package.json entry."));
-                        continue;
-                    }
-
                     packageDocument = Deserialize<DefinitionPackageDocumentDto>(
                         entry.DataStream,
                         entry.Name,
@@ -74,6 +95,10 @@ public sealed class DefinitionPackageLoader
                     definitions.Add(new LoadedStructureDefinition(entry.Name, definition));
                 }
             }
+            // TarReader can stop at the tar terminator before gzip has checked its trailer.
+            // The host enables System.IO.Compression.UseStrictValidation at startup:
+            // without it, reaching EOF with a missing trailer does not throw.
+            await gzip.CopyToAsync(Stream.Null, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -170,11 +195,19 @@ public sealed class DefinitionPackageLoader
         {
             using var document = JsonDocument.Parse(stream);
             var root = document.RootElement;
-            if (!root.TryGetProperty("resourceType", out var resourceType) ||
-                !string.Equals(
-                    resourceType.GetString(),
-                    "StructureDefinition",
-                    StringComparison.Ordinal))
+            if (root.ValueKind != JsonValueKind.Object)
+            {
+                diagnostics.Add(CreateDiagnostic(
+                    GeneratorDiagnosticCodes.DefinitionPackageReadFailure,
+                    sourceIdentity,
+                    "The JSON entry must contain an object."));
+                return null;
+            }
+            // Preserve primitive-shaped entries for selector validation even when
+            // resourceType is missing or incorrect; filtering here would hide corruption.
+            var primitiveShaped = HasString(root, "kind", "primitive-type") ||
+                HasString(root, "baseDefinition", "http://hl7.org/fhir/StructureDefinition/PrimitiveType");
+            if (!HasString(root, "resourceType", "StructureDefinition") && !primitiveShaped)
             {
                 return null;
             }
@@ -190,6 +223,11 @@ public sealed class DefinitionPackageLoader
             return null;
         }
     }
+
+    private static bool HasString(JsonElement element, string name, string expected) =>
+        element.TryGetProperty(name, out var value) &&
+        value.ValueKind == JsonValueKind.String &&
+        string.Equals(value.GetString(), expected, StringComparison.Ordinal);
 
     private static bool ValidateOptions(
         DefinitionPackageLoadOptions options,
@@ -262,6 +300,11 @@ public sealed class DefinitionPackageLoader
     private static bool IsPackageJsonEntry(string name) =>
         name.StartsWith("package/", StringComparison.Ordinal) &&
         name.EndsWith(".json", StringComparison.Ordinal);
+
+    private static bool IsCanonicalEntryName(string name) =>
+        (name == "package" || name.StartsWith("package/", StringComparison.Ordinal)) &&
+        !name.Contains('\\') && !name.Contains(':') &&
+        name.Split('/').All(segment => segment.Length > 0 && segment is not ("." or ".."));
 
     private static GeneratorDiagnostic CreateDiagnostic(
         string code,

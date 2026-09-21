@@ -10,20 +10,20 @@
     "version": "1.1.0",
     "sha256": "4cf90cda592b468e080fdfe49ace27b7c1fc858ab933a08355f02cd80ccf6419"
   },
-  "codeGenVersion": "1.0.0",
+  "codeGenVersion": "1.1.0",
   "runtimeContractVersion": "phase-a-v1\u002Bc4-primitives-v1",
   "compatibility": {
     "schemaVersion": 1,
     "versionPolicy": "exact",
     "tool": {
       "packageId": "MyFhirSdk.CodeGen.Tool",
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
-    "codeGenVersion": "1.0.0",
+    "codeGenVersion": "1.1.0",
     "runtimeDescriptor": {
       "schemaVersion": 1,
       "version": "phase-a-v1\u002Bc4-primitives-v1",
-      "sha256": "8a715d62f206b47ace1649d4a0898c29594bf71c389a619221f12fabfa3eb863"
+      "sha256": "128ba716806fa276186586ec735bb30525a8d0ddfaf00f9525f48b68fd8cad5a"
     },
     "compilerReference": {
       "logicalIdentity": "MyFhirSdk, Version=1.0.0.0, PublicKeyToken=null, TargetFramework=net9.0",

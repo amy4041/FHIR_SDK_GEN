@@ -192,7 +192,7 @@ public sealed class PrimitiveGenerationPipelineTests : IDisposable
         Assert.Equal("exact", compatibility.GetProperty("versionPolicy").GetString());
         Assert.Equal("MyFhirSdk.CodeGen.Tool",
             compatibility.GetProperty("tool").GetProperty("packageId").GetString());
-        Assert.Equal("1.0.0",
+        Assert.Equal("1.1.0",
             compatibility.GetProperty("tool").GetProperty("version").GetString());
         Assert.Equal("phase-a-v1+c4-primitives-v1",
             compatibility.GetProperty("runtimeDescriptor").GetProperty("version").GetString());

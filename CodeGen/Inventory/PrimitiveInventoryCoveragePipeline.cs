@@ -66,6 +66,40 @@ public sealed class PrimitiveInventoryCoveragePipeline
             return Failure(inventoryResult.Diagnostics);
         }
 
+        return await JoinPolicyAsync(inventoryResult.Value, policyPath, cancellationToken);
+    }
+
+    public async Task<GenerationResult<PrimitiveInventoryPolicyCoverage?>> BuildAsync(
+        PrimitiveDefinitionInput input,
+        string policyPath,
+        DefinitionPackageLoadOptions packageOptions,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+        ArgumentNullException.ThrowIfNull(packageOptions);
+        if (input.Kind == PrimitiveDefinitionInputKind.Directory)
+        {
+            return await BuildAsync(input.Path, policyPath, packageOptions.FhirVersion, cancellationToken);
+        }
+        if (input.Kind != PrimitiveDefinitionInputKind.PackageArchive)
+        {
+            return Failure([new GeneratorDiagnostic(
+                GeneratorDiagnosticCodes.InvalidInput, GeneratorDiagnosticSeverity.Error,
+                "Unknown primitive definition input kind.", input.Path)]);
+        }
+        var loaded = await new DefinitionPackageLoader().LoadAsync(
+            new FileDefinitionPackageInput(input.Path), packageOptions, cancellationToken);
+        if (!loaded.IsSuccess || loaded.Value is null) return Failure(loaded.Diagnostics);
+        var inventory = new PackagePrimitiveSelector().Select(loaded.Value, packageOptions.FhirVersion);
+        if (!inventory.IsSuccess || inventory.Value is null) return Failure(inventory.Diagnostics);
+        return await JoinPolicyAsync(inventory.Value, policyPath, cancellationToken);
+    }
+
+    private async Task<GenerationResult<PrimitiveInventoryPolicyCoverage?>> JoinPolicyAsync(
+        PrimitiveDefinitionInventory inventory,
+        string policyPath,
+        CancellationToken cancellationToken)
+    {
         var policyLoadResult = await _policyLoader.LoadAsync(
             policyPath,
             cancellationToken);
@@ -82,7 +116,7 @@ public sealed class PrimitiveInventoryCoveragePipeline
             return Failure(policyResult.Diagnostics);
         }
 
-        return _joiner.Join(inventoryResult.Value, policyResult.Value);
+        return _joiner.Join(inventory, policyResult.Value);
     }
 
     private static GenerationResult<PrimitiveInventoryPolicyCoverage?> Failure(

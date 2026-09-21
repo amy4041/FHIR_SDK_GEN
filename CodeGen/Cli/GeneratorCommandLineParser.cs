@@ -1,6 +1,7 @@
 using MyFhirSdk.CodeGen.Assets;
 using MyFhirSdk.CodeGen.Compatibility;
 using MyFhirSdk.CodeGen.Generation;
+using MyFhirSdk.CodeGen.Loading;
 
 namespace MyFhirSdk.CodeGen.Cli;
 
@@ -20,10 +21,10 @@ public sealed class GeneratorCommandLineParser
         "Command: myfhir-codegen\n\n" +
         """
         Usage:
-          # Phase B primitive batch mode
+          # Primitive batch mode (.tgz preferred; flat directory supported; --policy required)
           dotnet myfhir-codegen \
             --mode primitive \
-            --input <definitions-path> \
+            --input <package.tgz|definitions-directory> \
             --policy <policy-path> \
             --output <path> \
             --fhir-version <version> \
@@ -166,6 +167,12 @@ public sealed class GeneratorCommandLineParser
             return Invalid($"Required option '{missing.Item1}' was not provided.");
         }
 
+        var input = PrimitiveDefinitionInput.Resolve(inputPath!);
+        if (!input.IsSuccess || input.Value is null)
+        {
+            return Invalid(input.Diagnostics[0].Message);
+        }
+
         return new CommandLineParseResult(
             null,
             ShowHelp: false,
@@ -176,7 +183,8 @@ public sealed class GeneratorCommandLineParser
                 fhirVersion!,
                 packageId!,
                 packageVersion!,
-                PrimitiveGenerationPipeline.DefaultCodeGenVersion),
+                PrimitiveGenerationPipeline.DefaultCodeGenVersion,
+                InputKind: input.Value.Kind),
             AssetOverrides: assetOverrides);
     }
 

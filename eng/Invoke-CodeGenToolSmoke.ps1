@@ -41,7 +41,8 @@ function Invoke-DotNet {
         [string] $WorkingDirectory,
         [hashtable] $Environment,
         [string] $LogPath,
-        [string[]] $Arguments
+        [string[]] $Arguments,
+        [int] $ExpectedExitCode = 0
     )
 
     $startInfo = [System.Diagnostics.ProcessStartInfo]::new('dotnet')
@@ -83,8 +84,9 @@ function Invoke-DotNet {
         $record,
         [System.Text.UTF8Encoding]::new($false))
 
-    if ($exitCode -ne 0) {
-        throw "dotnet command failed with exit code $exitCode. See $LogPath"
+    if ($exitCode -ne $ExpectedExitCode) {
+        Write-Host $record
+        throw "dotnet command returned exit code $exitCode; expected $ExpectedExitCode. See $LogPath"
     }
     return [pscustomobject]@{
         ExitCode = $exitCode
@@ -403,6 +405,7 @@ try {
 
     $modelFirst = Join-Path $workRoot 'model-first'
     $primitiveFirst = Join-Path $workRoot 'primitive-first'
+    $primitiveDirectory = Join-Path $workRoot 'primitive-directory'
     [void] (Invoke-DotNet $workRoot $environment $logPath @(
         $toolCommand,
         '--mode', 'model',
@@ -414,12 +417,49 @@ try {
     [void] (Invoke-DotNet $workRoot $environment $logPath @(
         $toolCommand,
         '--mode', 'primitive',
-        '--input', $primitiveDefinitions,
+        '--input', $fhirPackage,
         '--policy', $primitivePolicy,
         '--output', $primitiveFirst,
         '--fhir-version', '5.0.0',
         '--package-id', 'hl7.fhir.r5.core',
         '--package-version', '5.0.0'))
+
+    [void] (Invoke-DotNet $workRoot $environment $logPath @(
+        $toolCommand,
+        '--mode', 'primitive',
+        '--input', $primitiveDefinitions,
+        '--policy', $primitivePolicy,
+        '--output', $primitiveDirectory,
+        '--fhir-version', '5.0.0',
+        '--package-id', 'hl7.fhir.r5.core',
+        '--package-version', '5.0.0'))
+
+    # Exercise the installed tool's runtime configuration, not just testhost.
+    # All tar content remains readable, but the gzip CRC/size trailer is missing.
+    $truncatedPackage = Join-Path $workRoot 'truncated-tail.tgz'
+    Copy-Item -LiteralPath $fhirPackage -Destination $truncatedPackage
+    $truncatedStream = [System.IO.File]::OpenWrite($truncatedPackage)
+    try {
+        $truncatedStream.SetLength($truncatedStream.Length - 8)
+    }
+    finally {
+        $truncatedStream.Dispose()
+    }
+    foreach ($mode in @('primitive', 'model')) {
+        $protectedOutput = Join-Path $workRoot "$mode-truncated-output"
+        [void] (New-Item -ItemType Directory -Path $protectedOutput)
+        Write-Utf8NoBomLf (Join-Path $protectedOutput 'keep.txt') 'keep'
+        $beforeFailure = Get-FileHashMap $protectedOutput
+        $failure = Invoke-DotNet $workRoot $environment $logPath @(
+            $toolCommand, '--mode', $mode,
+            '--input', $truncatedPackage, '--policy', $primitivePolicy,
+            '--output', $protectedOutput, '--fhir-version', '5.0.0',
+            '--package-id', 'hl7.fhir.r5.core', '--package-version', '5.0.0') -ExpectedExitCode 2
+        if (-not $failure.StandardError.Contains('[FSG0026]', [System.StringComparison]::Ordinal)) {
+            throw "$mode truncated archive did not report FSG0026. See $logPath"
+        }
+        Assert-HashMapsEqual $beforeFailure (Get-FileHashMap $protectedOutput) "$mode truncated archive output preservation"
+    }
 
     [void] (Invoke-DotNet $workRoot $environment $logPath @(
         'tool', 'uninstall', $packageId))
@@ -439,7 +479,7 @@ try {
     [void] (Invoke-DotNet $workRoot $environment $logPath @(
         $toolCommand,
         '--mode', 'primitive',
-        '--input', $primitiveDefinitions,
+        '--input', $fhirPackage,
         '--policy', $primitivePolicy,
         '--output', $primitiveSecond,
         '--fhir-version', '5.0.0',
@@ -454,6 +494,7 @@ try {
     $secondModel = Get-FileHashMap $secondModelRoot
     $firstPrimitives = Get-FileHashMap $primitiveFirst
     $secondPrimitives = Get-FileHashMap $primitiveSecond
+    $directoryPrimitives = Get-FileHashMap $primitiveDirectory
 
     Assert-HashMapsEqual $committedModel $firstModel 'First full model generation'
     Assert-HashMapsEqual $committedModel $secondModel 'Second full model generation'
@@ -461,6 +502,7 @@ try {
     Assert-HashMapsEqual $committedPrimitives $firstPrimitives 'First primitive generation'
     Assert-HashMapsEqual $committedPrimitives $secondPrimitives 'Second primitive generation'
     Assert-HashMapsEqual $firstPrimitives $secondPrimitives 'Primitive reinstall determinism'
+    Assert-HashMapsEqual $firstPrimitives $directoryPrimitives 'Primitive tgz/directory complete output equivalence'
 
     if ($null -ne $previousIdentity) {
         $previousManifest = Get-Content -LiteralPath (
@@ -535,6 +577,7 @@ try {
         modelSourceCount = $modelSourceCount
         modelArtifactCount = $firstModel.Count
         primitiveArtifactCount = $firstPrimitives.Count
+        primitiveInputEquivalence = 'tgz-directory-byte-identical'
         packageSha256 = (Get-FileHash -LiteralPath $package -Algorithm SHA256).Hash.ToLowerInvariant()
     }
     Write-Utf8NoBomLf (

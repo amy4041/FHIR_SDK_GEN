@@ -1,0 +1,29 @@
+MyFhirSdk.CodeGen.Tool 1.1.0
+Command: myfhir-codegen
+
+Usage:
+  # Primitive batch mode (.tgz preferred; flat directory supported; --policy required)
+  dotnet myfhir-codegen \
+    --mode primitive \
+    --input <package.tgz|definitions-directory> \
+    --policy <policy-path> \
+    --output <path> \
+    --fhir-version <version> \
+    --package-id <package-id> \
+    --package-version <package-version> \
+    [--runtime-contract <file>] \
+    [--runtime-reference <file> ...]
+
+  # Phase C R5 model batch mode (omit --canonical for full scope)
+  dotnet myfhir-codegen \
+    --mode model \
+    --input <package.tgz> \
+    --output <path> \
+    --fhir-version <version> \
+    --package-id <package-id> \
+    --package-version <package-version> \
+    [--policy <primitive-policy-file>] \
+    [--policy-root <directory>] \
+    [--runtime-contract <file>] \
+    [--runtime-reference <file> ...] \
+    [--canonical <structure-definition-canonical> ...]

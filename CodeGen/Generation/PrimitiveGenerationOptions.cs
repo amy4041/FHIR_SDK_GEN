@@ -1,3 +1,5 @@
+using MyFhirSdk.CodeGen.Loading;
+
 namespace MyFhirSdk.CodeGen.Generation;
 
 public sealed record PrimitiveGenerationOptions(
@@ -8,4 +10,5 @@ public sealed record PrimitiveGenerationOptions(
     string FhirPackageId,
     string FhirPackageVersion,
     string CodeGenVersion,
-    string FhirSpecification = "FHIR R5");
+    string FhirSpecification = "FHIR R5",
+    PrimitiveDefinitionInputKind? InputKind = null);
