@@ -233,6 +233,27 @@ tests）；toolchain contract與`git diff --check`通過。Runtime reference仍�
 
 Exit gate：CodeGen unit/integration、committed generation與全部SDK Runtime behavior regression通過。
 
+P5測試落點：
+
+- `PrimitiveCliFailureMatrixTests`：實際執行`GeneratorCli.RunAsync`，覆蓋兩種input缺少explicit
+  policy、invocation identity不符、policy missing/corrupt/hash/version、損壞與截斷archive、
+  metadata missing/duplicate/corrupt、危險entry path、duplicate entry、沒有primitive、損壞
+  primitive shape、duplicate type/canonical及tool/asset output overlap。
+- 每個CLI失敗案例驗證exit code、特定diagnostic、沒有成功生成訊息，並逐byte比較暫存工作區
+  既有檔案、檔案清單與staging清理；duplicate identity另驗證正反archive順序及ordinal diagnostics。
+- `PrimitivePackageGenerationTests`保留package實際identity驗證與input/policy overlap的直接
+  pipeline測試；成功案例比較兩種input與兩者重複生成的完整22個產物。
+- `PrimitiveTgzInputBaselineTests`與committed generation tests持續驗證wrappers、registry、
+  schema v2 manifests及歷史baseline。沒有修改production generation或更新expected hashes。
+
+Unknown primitive kind沿用既有`UnsupportedDefinition`優先序，CLI exit code為3；其他本次
+archive/identity/policy失敗為2、缺少required option為1、unsafe output為5。
+
+本機P5驗證：完整solution tests 798 passed、1個既有external-server integration smoke skipped；
+其中CodeGen 503 passed（本階段新增38個CLI cases）。最後調整duplicate type/canonical fixture
+以隔離兩種collision後，兩個案例重跑通過。Release build無warning/error、`git diff --check`
+通過；本次變更的Windows/Linux CI待push後確認。
+
 ### P6：local tool package、upgrade與cross-platform CI
 
 1. Pack後在隔離目錄放置`.nupkg`、FHIR`.tgz`和explicit primitive policy。
