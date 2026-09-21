@@ -187,6 +187,28 @@ byte-identical。`baselines/primitive-tgz-input/`保留所有`1.0.0`證據並新
 舊版package從`eng/codegen-tool-upgrade-baseline.json`的immutable revision重建，未修改現行
 source版本來模擬`1.0.0`。
 
+P4補齊的compatibility驗證（版本沿用P3的`1.1.0`）：
+
+| Dimension | Positive / negative evidence |
+| --- | --- |
+| Tool / CodeGen version | 兩種模式的current provenance；舊版、patch與prerelease不符；descriptor與request同為舊版仍不可繞過current matrix |
+| Compatibility schema / version policy | current schema與exact policy成功；不支援的schema與range policy失敗 |
+| Runtime contract / descriptor binding | current contract成功；contract version不符、reference set綁定不同descriptor失敗 |
+| FHIR package ID / package version / FHIR version | current identity成功；大小寫不同ID與錯誤版本失敗 |
+| Primitive policy | 兩種模式驗證version、FHIR version、Runtime contract與hash；僅LF/CRLF差異仍成功 |
+| Model policies | 五份policy正確時成功；各自hash不符、遺漏或未知logical name失敗 |
+| Runtime DLL identity / TFM / hash | `RuntimeReferenceServiceTests`既有正負測試；不更動assembly identity或reference bytes |
+| Descriptor / generated manifest / package provenance | `RuntimeContractLoaderTests`、committed generation、primitive baseline與package tests驗證canonical hashes與產物一致性 |
+
+主要測試為`GenerationCompatibilityServiceTests`。P4不再次變更版本、descriptor或generated
+manifests；其canonical provenance已於P3升級。本階段不取代P5的CLI/pipeline錯誤矩陣。
+Contract與invocation負向案例同時比對diagnostic code與精確的`<compatibility:dimension>`
+source identity，避免共用diagnostic code的其他維度掩蓋遺漏的檢查。
+本機P4驗證：CodeGen tests 465 passed（較P3增加23 cases，含既有canonical generation與package
+tests）；toolchain contract與`git diff --check`通過。Runtime reference仍為
+`7c945def6e2414e7944367d0df0ac33aa6386e4cdbedce0d05922ae5023176c9`。
+跨平台CI須在本次變更push後確認。
+
 ### P5：CLI與pipeline test matrix
 
 至少新增：
@@ -210,6 +232,27 @@ source版本來模擬`1.0.0`。
 | output與input/policy/tool asset重疊 | safety failure，不破壞既有output |
 
 Exit gate：CodeGen unit/integration、committed generation與全部SDK Runtime behavior regression通過。
+
+P5測試落點：
+
+- `PrimitiveCliFailureMatrixTests`：實際執行`GeneratorCli.RunAsync`，覆蓋兩種input缺少explicit
+  policy、invocation identity不符、policy missing/corrupt/hash/version、損壞與截斷archive、
+  metadata missing/duplicate/corrupt、危險entry path、duplicate entry、沒有primitive、損壞
+  primitive shape、duplicate type/canonical及tool/asset output overlap。
+- 每個CLI失敗案例驗證exit code、特定diagnostic、沒有成功生成訊息，並逐byte比較暫存工作區
+  既有檔案、檔案清單與staging清理；duplicate identity另驗證正反archive順序及ordinal diagnostics。
+- `PrimitivePackageGenerationTests`保留package實際identity驗證與input/policy overlap的直接
+  pipeline測試；成功案例比較兩種input與兩者重複生成的完整22個產物。
+- `PrimitiveTgzInputBaselineTests`與committed generation tests持續驗證wrappers、registry、
+  schema v2 manifests及歷史baseline。沒有修改production generation或更新expected hashes。
+
+Unknown primitive kind沿用既有`UnsupportedDefinition`優先序，CLI exit code為3；其他本次
+archive/identity/policy失敗為2、缺少required option為1、unsafe output為5。
+
+本機P5驗證：完整solution tests 798 passed、1個既有external-server integration smoke skipped；
+其中CodeGen 503 passed（本階段新增38個CLI cases）。最後調整duplicate type/canonical fixture
+以隔離兩種collision後，兩個案例重跑通過。Release build無warning/error、`git diff --check`
+通過；本次變更的Windows/Linux CI待push後確認。
 
 ### P6：local tool package、upgrade與cross-platform CI
 

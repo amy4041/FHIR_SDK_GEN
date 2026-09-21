@@ -95,11 +95,10 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
     public void Resolve_WrongHashReturnsStableDiagnostic()
     {
         var path = Path.Combine(CreateDirectory(), "MyFhirSdk.dll");
-        File.Copy(GetPackageAssetPath(), path);
-        using (var stream = File.Open(path, FileMode.Append, FileAccess.Write, FileShare.None))
-        {
-            stream.WriteByte(0);
-        }
+        // Write the corrupted fixture once; reopening a just-copied DLL for
+        // exclusive append can race with Windows file scanning.
+        var bytes = File.ReadAllBytes(GetPackageAssetPath());
+        File.WriteAllBytes(path, [.. bytes, 0]);
 
         var result = ResolveExplicit(path);
 

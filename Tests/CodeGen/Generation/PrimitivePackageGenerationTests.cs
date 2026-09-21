@@ -69,13 +69,16 @@ public sealed class PrimitivePackageGenerationTests : IDisposable
         var cli = new GeneratorCli(output, error, Parser(), primitivePipeline: CodeGenTestRuntime.CreatePrimitivePipeline());
         Assert.Equal(0, await cli.RunAsync(Arguments(ArchiveInput, archiveOutput)));
         Assert.Equal(0, await cli.RunAsync(Arguments(DirectoryInput, directoryOutput)));
+        var original = Directory.GetFiles(directoryOutput).ToDictionary(path => Path.GetFileName(path)!, File.ReadAllBytes);
         Assert.Equal(0, await cli.RunAsync(Arguments(ArchiveInput, archiveOutput)));
+        Assert.Equal(0, await cli.RunAsync(Arguments(DirectoryInput, directoryOutput)));
         Assert.Empty(error.ToString());
         var names = Directory.GetFiles(directoryOutput).Select(Path.GetFileName).Order(StringComparer.Ordinal).ToArray();
         Assert.Equal(22, names.Length);
         Assert.Equal(names, Directory.GetFiles(archiveOutput).Select(Path.GetFileName).Order(StringComparer.Ordinal));
         foreach (var name in names) Assert.Equal(File.ReadAllBytes(Path.Combine(directoryOutput, name!)),
             File.ReadAllBytes(Path.Combine(archiveOutput, name!)));
+        foreach (var (name, bytes) in original) Assert.Equal(bytes, File.ReadAllBytes(Path.Combine(directoryOutput, name!)));
     }
 
     [Theory]
