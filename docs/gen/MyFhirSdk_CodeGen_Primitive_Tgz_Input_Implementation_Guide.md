@@ -187,6 +187,28 @@ byte-identical。`baselines/primitive-tgz-input/`保留所有`1.0.0`證據並新
 舊版package從`eng/codegen-tool-upgrade-baseline.json`的immutable revision重建，未修改現行
 source版本來模擬`1.0.0`。
 
+P4補齊的compatibility驗證（版本沿用P3的`1.1.0`）：
+
+| Dimension | Positive / negative evidence |
+| --- | --- |
+| Tool / CodeGen version | 兩種模式的current provenance；舊版、patch與prerelease不符；descriptor與request同為舊版仍不可繞過current matrix |
+| Compatibility schema / version policy | current schema與exact policy成功；不支援的schema與range policy失敗 |
+| Runtime contract / descriptor binding | current contract成功；contract version不符、reference set綁定不同descriptor失敗 |
+| FHIR package ID / package version / FHIR version | current identity成功；大小寫不同ID與錯誤版本失敗 |
+| Primitive policy | 兩種模式驗證version、FHIR version、Runtime contract與hash；僅LF/CRLF差異仍成功 |
+| Model policies | 五份policy正確時成功；各自hash不符、遺漏或未知logical name失敗 |
+| Runtime DLL identity / TFM / hash | `RuntimeReferenceServiceTests`既有正負測試；不更動assembly identity或reference bytes |
+| Descriptor / generated manifest / package provenance | `RuntimeContractLoaderTests`、committed generation、primitive baseline與package tests驗證canonical hashes與產物一致性 |
+
+主要測試為`GenerationCompatibilityServiceTests`。P4不再次變更版本、descriptor或generated
+manifests；其canonical provenance已於P3升級。本階段不取代P5的CLI/pipeline錯誤矩陣。
+Contract與invocation負向案例同時比對diagnostic code與精確的`<compatibility:dimension>`
+source identity，避免共用diagnostic code的其他維度掩蓋遺漏的檢查。
+本機P4驗證：CodeGen tests 465 passed（較P3增加23 cases，含既有canonical generation與package
+tests）；toolchain contract與`git diff --check`通過。Runtime reference仍為
+`7c945def6e2414e7944367d0df0ac33aa6386e4cdbedce0d05922ae5023176c9`。
+跨平台CI須在本次變更push後確認。
+
 ### P5：CLI與pipeline test matrix
 
 至少新增：

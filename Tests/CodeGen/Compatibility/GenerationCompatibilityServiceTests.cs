@@ -14,11 +14,13 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
         "MyFhirSdk-CompatibilityTests",
         Guid.NewGuid().ToString("N"));
 
-    [Fact]
-    public async Task ValidateAsync_BaselineModelMatrix_ReturnsManifestProvenance()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ValidateAsync_CurrentMatrix_ReturnsManifestProvenance(bool primitive)
     {
         var result = await CreateService(CodeGenTestRuntime.RuntimeContract)
-            .ValidateAsync(ModelRequest());
+            .ValidateAsync(Request(primitive));
 
         Assert.True(result.IsSuccess, Describe(result.Diagnostics));
         var provenance = Assert.IsType<GenerationManifestProvenance>(result.Value);
@@ -26,29 +28,34 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
         Assert.Equal("exact", provenance.CompatibilityVersionPolicy);
         Assert.Equal("MyFhirSdk.CodeGen.Tool", provenance.ToolPackageId);
         Assert.Equal("1.1.0", provenance.ToolVersion);
+        Assert.Equal("1.1.0", provenance.CodeGenVersion);
         Assert.Equal("phase-a-v1+c4-primitives-v1", provenance.RuntimeDescriptorVersion);
-        Assert.Equal(64, provenance.RuntimeDescriptorSha256.Length);
+        Assert.Equal(CodeGenTestRuntime.RuntimeContract.DescriptorSha256, provenance.RuntimeDescriptorSha256);
         Assert.Equal(CodeGenTestRuntime.RuntimeReferences.ReferenceSha256,
             provenance.CompilerReferenceSha256);
         Assert.Equal(GenerationCompatibilityMatrix.TargetFramework, provenance.TargetFramework);
     }
 
     [Theory]
-    [InlineData("toolVersion", "2.0.0", GeneratorDiagnosticCodes.IncompatibleToolVersion)]
-    [InlineData("contractVersion", "phase-x-v2", GeneratorDiagnosticCodes.IncompatibleRuntimeContractVersion)]
-    [InlineData("targetFramework", "net10.0", GeneratorDiagnosticCodes.UnsupportedTargetFramework)]
-    [InlineData("compatibilitySchemaVersion", "2", GeneratorDiagnosticCodes.IncompatibleCompatibilitySchema)]
-    [InlineData("versionPolicy", "range", GeneratorDiagnosticCodes.IncompatibleCompatibilitySchema)]
+    [InlineData("toolVersion", "2.0.0", GeneratorDiagnosticCodes.IncompatibleToolVersion, "tool-version")]
+    [InlineData("toolVersion", "1.0.0", GeneratorDiagnosticCodes.IncompatibleToolVersion, "tool-version")]
+    [InlineData("codeGenVersion", "1.0.0", GeneratorDiagnosticCodes.IncompatibleCodeGenVersion, "codegen-version")]
+    [InlineData("codeGenVersion", "1.1.1", GeneratorDiagnosticCodes.IncompatibleCodeGenVersion, "codegen-version")]
+    [InlineData("contractVersion", "phase-x-v2", GeneratorDiagnosticCodes.IncompatibleRuntimeContractVersion, "runtime-contract-version")]
+    [InlineData("targetFramework", "net10.0", GeneratorDiagnosticCodes.UnsupportedTargetFramework, "target-framework")]
+    [InlineData("compatibilitySchemaVersion", "2", GeneratorDiagnosticCodes.IncompatibleCompatibilitySchema, "compatibility-schema-version")]
+    [InlineData("versionPolicy", "range", GeneratorDiagnosticCodes.IncompatibleCompatibilitySchema, "compatibility-version-policy")]
     public async Task ValidateAsync_IncompatibleContractDimension_ReturnsDedicatedDiagnostic(
         string dimension,
         string value,
-        string expectedCode)
+        string expectedCode,
+        string expectedDimension)
     {
         var contract = await LoadModifiedContractAsync(root =>
         {
-            if (dimension == "toolVersion")
+            if (dimension is "toolVersion" or "codeGenVersion")
             {
-                root["compatibility"]!["toolVersion"] = value;
+                root["compatibility"]![dimension] = value;
             }
             else if (dimension == "contractVersion")
             {
@@ -71,37 +78,59 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
             }
         });
 
-        var result = await CreateService(contract).ValidateAsync(ModelRequest());
-
-        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == expectedCode);
-        Assert.All(result.Diagnostics, diagnostic =>
-            Assert.StartsWith("<compatibility:", diagnostic.SourceFile));
+        foreach (var primitive in new[] { false, true })
+        {
+            var result = await CreateService(contract).ValidateAsync(Request(primitive));
+            Assert.False(result.IsSuccess);
+            Assert.Null(result.Value);
+            Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == expectedCode &&
+                diagnostic.SourceFile == $"<compatibility:{expectedDimension}>");
+            Assert.All(result.Diagnostics, diagnostic =>
+                Assert.StartsWith("<compatibility:", diagnostic.SourceFile));
+        }
     }
 
     [Theory]
-    [InlineData("CodeGenVersion", GeneratorDiagnosticCodes.IncompatibleCodeGenVersion)]
-    [InlineData("FhirPackageVersion", GeneratorDiagnosticCodes.IncompatibleFhirPackage)]
+    [InlineData("CodeGenVersion", "1.0.0", GeneratorDiagnosticCodes.IncompatibleCodeGenVersion, "codegen-version")]
+    [InlineData("CodeGenVersion", "1.1.1", GeneratorDiagnosticCodes.IncompatibleCodeGenVersion, "codegen-version")]
+    [InlineData("CodeGenVersion", "1.1.0-preview.1", GeneratorDiagnosticCodes.IncompatibleCodeGenVersion, "codegen-version")]
+    [InlineData("FhirPackageId", "HL7.fhir.r5.core", GeneratorDiagnosticCodes.IncompatibleFhirPackage, "fhir-package-id")]
+    [InlineData("FhirPackageVersion", "5.0.1", GeneratorDiagnosticCodes.IncompatibleFhirPackage, "fhir-package-version")]
+    [InlineData("FhirVersion", "4.0.1", GeneratorDiagnosticCodes.IncompatibleFhirPackage, "fhir-version")]
     public async Task ValidateAsync_IncompatibleInvocationDimension_ReturnsDedicatedDiagnostic(
         string dimension,
-        string expectedCode)
+        string value,
+        string expectedCode,
+        string expectedDimension)
     {
-        var request = dimension == "CodeGenVersion"
-            ? ModelRequest() with { CodeGenVersion = "2.0.0" }
-            : ModelRequest() with { FhirPackageVersion = "5.0.1" };
-
-        var result = await CreateService(CodeGenTestRuntime.RuntimeContract)
-            .ValidateAsync(request);
-
-        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == expectedCode);
+        foreach (var primitive in new[] { false, true })
+        {
+            var baseline = Request(primitive);
+            var request = dimension switch
+            {
+                "CodeGenVersion" => baseline with { CodeGenVersion = value },
+                "FhirPackageId" => baseline with { FhirPackageId = value },
+                "FhirPackageVersion" => baseline with { FhirPackageVersion = value },
+                "FhirVersion" => baseline with { FhirVersion = value },
+                _ => throw new ArgumentOutOfRangeException(nameof(dimension))
+            };
+            var result = await CreateService(CodeGenTestRuntime.RuntimeContract).ValidateAsync(request);
+            Assert.False(result.IsSuccess);
+            Assert.Null(result.Value);
+            Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == expectedCode &&
+                diagnostic.SourceFile == $"<compatibility:{expectedDimension}>");
+        }
     }
 
-    [Fact]
-    public async Task ValidateAsync_ReferenceSetFromDifferentDescriptor_ReturnsDedicatedDiagnostic()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ValidateAsync_ReferenceSetFromDifferentDescriptor_ReturnsDedicatedDiagnostic(bool primitive)
     {
         var republishedContract = await LoadModifiedContractAsync(_ => { });
 
         var result = await CreateService(republishedContract)
-            .ValidateAsync(ModelRequest());
+            .ValidateAsync(Request(primitive));
 
         var diagnostic = Assert.Single(result.Diagnostics);
         Assert.Equal(
@@ -129,18 +158,23 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
             diagnostic.Code == GeneratorDiagnosticCodes.IncompatiblePrimitivePolicy);
     }
 
-    [Fact]
-    public async Task ValidateAsync_ModifiedModelPolicy_ReturnsDedicatedDiagnostic()
+    [Theory]
+    [InlineData("backbone", "r5-backbone-policy.json")]
+    [InlineData("choice-open-type", "r5-choice-open-type-policy.json")]
+    [InlineData("model-naming", "r5-model-naming-policy.json")]
+    [InlineData("model-ownership", "r5-model-ownership-policy.json")]
+    [InlineData("validation-capability", "r5-validation-capability-policy.json")]
+    public async Task ValidateAsync_ModifiedModelPolicy_ReturnsDedicatedDiagnostic(string name, string file)
     {
         Directory.CreateDirectory(_root);
         var policyPath = Path.Combine(_root, "model-naming.json");
         await File.WriteAllTextAsync(policyPath,
-            await File.ReadAllTextAsync(Policy("r5-model-naming-policy.json")) + "\n ");
+            await File.ReadAllTextAsync(Policy(file)) + "\n ");
         var request = ModelRequest();
         request = request with
         {
             ModelPolicies = request.ModelPolicies
-                .Select(asset => asset.LogicalName == "model-naming"
+                .Select(asset => asset.LogicalName == name
                     ? asset with { Path = policyPath }
                     : asset)
                 .ToArray()
@@ -150,7 +184,58 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
             .ValidateAsync(request);
 
         Assert.Contains(result.Diagnostics, diagnostic =>
-            diagnostic.Code == GeneratorDiagnosticCodes.IncompatibleModelPolicy);
+            diagnostic.Code == GeneratorDiagnosticCodes.IncompatibleModelPolicy &&
+            diagnostic.SourceFile == $"<compatibility:model-policy:{name}>");
+    }
+
+    [Theory]
+    [InlineData("policyVersion", "1.2.0", "primitive-policy-version", GeneratorDiagnosticCodes.IncompatiblePrimitivePolicy)]
+    [InlineData("fhirVersion", "4.0.1", "primitive-policy-fhir-version", GeneratorDiagnosticCodes.IncompatiblePrimitivePolicy)]
+    [InlineData("runtimeContractVersion", "phase-x-v2", "primitive-runtime-contract-version", GeneratorDiagnosticCodes.IncompatibleRuntimeContractVersion)]
+    [InlineData("hash", "", "primitive-policy-sha256", GeneratorDiagnosticCodes.IncompatiblePrimitivePolicy)]
+    public async Task ValidateAsync_PrimitivePolicyDimensions_RejectInBothModes(
+        string field, string value, string dimension, string code)
+    {
+        Directory.CreateDirectory(_root);
+        var text = await File.ReadAllTextAsync(Policy("primitive-generation-policy.json"));
+        if (field != "hash")
+        {
+            var node = JsonNode.Parse(text)!;
+            node[field] = value;
+            if (field == "fhirVersion")
+            {
+                foreach (var primitive in node["primitives"]!.AsArray())
+                    primitive!["fhirVersion"] = value;
+            }
+            text = node.ToJsonString();
+        }
+        var path = Path.Combine(_root, "changed-policy.json");
+        await File.WriteAllTextAsync(path, text + "\n");
+        foreach (var primitive in new[] { false, true })
+        {
+            var result = await CreateService(CodeGenTestRuntime.RuntimeContract)
+                .ValidateAsync(Request(primitive) with { PrimitivePolicyPath = path });
+            Assert.False(result.IsSuccess);
+            Assert.Null(result.Value);
+            Assert.Contains(result.Diagnostics, item => item.Code == code &&
+                item.SourceFile == $"<compatibility:{dimension}>");
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ValidateAsync_PolicyLineEndings_DoNotChangeCompatibility(bool primitive)
+    {
+        Directory.CreateDirectory(_root);
+        var text = await File.ReadAllTextAsync(Policy("primitive-generation-policy.json"));
+        var path = Path.Combine(_root, "crlf-policy.json");
+        await File.WriteAllTextAsync(path, text.Replace("\r\n", "\n").Replace("\n", "\r\n"));
+        var service = CreateService(CodeGenTestRuntime.RuntimeContract);
+        var baseline = await service.ValidateAsync(Request(primitive));
+        var actual = await service.ValidateAsync(Request(primitive) with { PrimitivePolicyPath = path });
+        Assert.True(actual.IsSuccess, Describe(actual.Diagnostics));
+        Assert.Equal(baseline.Value, actual.Value);
     }
 
     [Fact]
@@ -173,6 +258,35 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
             item.Code == GeneratorDiagnosticCodes.PackagedAssetMissing);
         Assert.Equal("<asset:model-policy:model-naming>", diagnostic.SourceFile);
         Assert.DoesNotContain(_root, diagnostic.Message, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ValidateAsync_MatchingOldDescriptorAndRequest_CannotBypassCurrentCodeGen(bool primitive)
+    {
+        var contract = await LoadModifiedContractAsync(root => root["compatibility"]!["codeGenVersion"] = "1.0.0");
+        var result = await CreateService(contract).ValidateAsync(Request(primitive) with { CodeGenVersion = "1.0.0" });
+        Assert.False(result.IsSuccess);
+        Assert.Contains(result.Diagnostics, item => item.Code == GeneratorDiagnosticCodes.IncompatibleCodeGenVersion &&
+            item.SourceFile == "<compatibility:supported-codegen-version>");
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ValidateAsync_ModelPolicySetMustMatchDescriptor(bool unknownPolicy)
+    {
+        var request = ModelRequest();
+        var policies = request.ModelPolicies.Where(asset => asset.LogicalName != "model-naming").ToList();
+        if (unknownPolicy) policies.Add(new("unknown-policy", Policy("r5-model-naming-policy.json")));
+        var result = await CreateService(CodeGenTestRuntime.RuntimeContract)
+            .ValidateAsync(request with { ModelPolicies = policies });
+        Assert.False(result.IsSuccess);
+        Assert.Contains(result.Diagnostics, item => item.Code == GeneratorDiagnosticCodes.IncompatibleModelPolicy &&
+            item.SourceFile == "<compatibility:model-naming>");
+        if (unknownPolicy) Assert.Contains(result.Diagnostics, item =>
+            item.Code == GeneratorDiagnosticCodes.IncompatibleModelPolicy && item.SourceFile == "<compatibility:unknown-policy>");
     }
 
     [Fact]
@@ -227,6 +341,11 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
     private static GenerationCompatibilityService CreateService(
         RuntimeContractView contract) =>
         new(contract, CodeGenTestRuntime.RuntimeReferences);
+
+    private static GenerationCompatibilityRequest Request(bool primitive) => primitive
+        ? GenerationCompatibilityRequest.Primitive("1.1.0", "hl7.fhir.r5.core", "5.0.0", "5.0.0",
+            Policy("primitive-generation-policy.json"))
+        : ModelRequest();
 
     private static GenerationCompatibilityRequest ModelRequest() =>
         new(
