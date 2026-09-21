@@ -84,6 +84,7 @@ function Invoke-DotNet {
         [System.Text.UTF8Encoding]::new($false))
 
     if ($exitCode -ne 0) {
+        Write-Host $record
         throw "dotnet command failed with exit code $exitCode. See $LogPath"
     }
     return [pscustomobject]@{

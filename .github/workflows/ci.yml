@@ -91,13 +91,18 @@ jobs:
           global-json-file: baseline-source/global.json
 
       - name: Restore baseline source
-        run: dotnet msbuild baseline-source/eng/MyFhirSdk.CodeGen.Build.proj /t:Restore
+        working-directory: baseline-source
+        run: dotnet msbuild eng/MyFhirSdk.CodeGen.Build.proj /t:Restore
 
       - name: Pack baseline tool from recorded source
         shell: pwsh
+        working-directory: baseline-source
         run: |
-          $output = Join-Path $PWD artifacts/baseline-package
-          dotnet msbuild baseline-source/eng/MyFhirSdk.CodeGen.Build.proj `
+          # Resolve the SDK from the immutable baseline's global.json, not the
+          # runner workspace (which has no global.json in this job).
+          $workspace = $env:GITHUB_WORKSPACE
+          $output = Join-Path $workspace artifacts/baseline-package
+          dotnet msbuild eng/MyFhirSdk.CodeGen.Build.proj `
             /t:Pack `
             /p:Configuration=Release `
             "/p:PackageOutputPath=$output"
@@ -108,10 +113,15 @@ jobs:
           if ($packages.Count -ne 1) {
             throw "Expected exactly one baseline tool package; found $($packages.Count)."
           }
-          ./metadata/eng/Test-CodeGenToolUpgrade.ps1 `
+          $descriptor = Get-Content CodeGen/Policy/runtime-contract.json -Raw | ConvertFrom-Json
+          & (Join-Path $workspace metadata/eng/Write-CodeGenToolPackageInventory.ps1) `
+            -PackagePath $packages[0].FullName `
+            -ExpectedTargetFramework $descriptor.targetFramework `
+            -OutputPath (Join-Path $workspace artifacts/baseline-package-inventory.txt)
+          & (Join-Path $workspace metadata/eng/Test-CodeGenToolUpgrade.ps1) `
             -CurrentPackagePath $packages[0].FullName `
-            -BaselinePath metadata/eng/codegen-tool-upgrade-baseline.json `
-            -OutputPath artifacts/baseline-package-status.json
+            -BaselinePath (Join-Path $workspace metadata/eng/codegen-tool-upgrade-baseline.json) `
+            -OutputPath (Join-Path $workspace artifacts/baseline-package-status.json)
 
       - name: Upload real baseline package
         uses: actions/upload-artifact@v4

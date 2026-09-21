@@ -52,6 +52,23 @@ try {
         throw 'Package layout, descriptor targetFramework, and compilerReference targetFramework must match.'
     }
 
+    $referencePath = "tools/$ExpectedTargetFramework/any/Assets/RuntimeReferences/$ExpectedTargetFramework/MyFhirSdk.dll"
+    $referenceEntry = $archive.GetEntry($referencePath)
+    if ($null -eq $referenceEntry) {
+        throw "Package is missing $referencePath."
+    }
+    $referenceStream = $referenceEntry.Open()
+    try {
+        $referenceHash = [System.Convert]::ToHexString(
+            [System.Security.Cryptography.SHA256]::HashData($referenceStream)).ToLowerInvariant()
+    }
+    finally {
+        $referenceStream.Dispose()
+    }
+    if ($referenceHash -cne [string] $descriptor.compilerReference.sha256) {
+        throw "Packaged Runtime reference SHA-256 '$referenceHash' does not match descriptor '$($descriptor.compilerReference.sha256)'. Package: $package"
+    }
+
     [System.Collections.Generic.List[string]] $lines = @()
     foreach ($entry in $archive.Entries) {
         $path = $entry.FullName
