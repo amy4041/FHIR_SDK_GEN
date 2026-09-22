@@ -59,6 +59,16 @@ jobs:
             artifacts/toolchain
           if-no-files-found: error
 
+      - name: Pack canonical tool
+        run: dotnet msbuild eng/MyFhirSdk.CodeGen.Build.proj /t:Pack /p:Configuration=Release
+
+      - name: Upload canonical tool
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-tool-package
+          path: artifacts/packages/*.nupkg
+          if-no-files-found: error
+
   baseline-tool-package:
     name: Rebuild recorded tool upgrade baseline
     runs-on: windows-latest
@@ -166,6 +176,12 @@ jobs:
           name: baseline-tool-package
           path: artifacts/baseline-package-download
 
+      - name: Download canonical tool package
+        uses: actions/download-artifact@v4
+        with:
+          name: canonical-tool-package
+          path: artifacts/canonical-package-download
+
       - name: Resolve build contract
         id: contract
         shell: pwsh
@@ -245,6 +261,22 @@ jobs:
           }
           ./eng/Invoke-CodeGenToolSmoke.ps1 @smokeParameters
 
+      - name: Same-package cross-platform smoke
+        shell: pwsh
+        run: |
+          $packages = @(Get-ChildItem artifacts/canonical-package-download -Filter *.nupkg -File)
+          $baseline = @(Get-ChildItem artifacts/baseline-package-download -Filter *.nupkg -File)
+          if ($packages.Count -ne 1 -or $baseline.Count -ne 1) { throw 'Expected one current and one baseline package.' }
+          ./eng/Invoke-CodeGenToolSmoke.ps1 `
+            -PackagePath $packages[0].FullName `
+            -PreviousPackagePath $baseline[0].FullName `
+            -ToolManifestPath .config/dotnet-tools.json `
+            -FhirPackagePath Tests/CodeGen/Fixtures/FhirPackages/R5/hl7.fhir.r5.core-5.0.0.tgz `
+            -PrimitiveDefinitionsPath Tests/CodeGen/Fixtures/StructureDefinitions/Primitives/R5 `
+            -PrimitivePolicyPath CodeGen/Policy/primitive-generation-policy.json `
+            -CommittedGeneratedRoot Generated/R5 `
+            -OutputDirectory artifacts/d7/canonical-smoke
+
       - name: Upload D7 evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -283,10 +315,23 @@ jobs:
             -WindowsArtifactHashes artifacts/cross/windows/smoke/artifact-hashes.txt `
             -LinuxArtifactHashes artifacts/cross/linux/smoke/artifact-hashes.txt `
             -OutputPath artifacts/cross/cross-platform-drift.json
+          $windows = Get-Content artifacts/cross/windows/canonical-smoke/smoke-summary.json -Raw | ConvertFrom-Json
+          $linux = Get-Content artifacts/cross/linux/canonical-smoke/smoke-summary.json -Raw | ConvertFrom-Json
+          foreach ($field in @('packageSha256', 'fhirPackageSha256', 'primitivePolicySha256')) {
+            if ([string]::IsNullOrWhiteSpace([string] $windows.$field) -or $windows.$field -cne $linux.$field) {
+              throw "Canonical smoke input mismatch: $field"
+            }
+          }
+          ./eng/Compare-CodeGenToolArtifacts.ps1 `
+            -WindowsPackageInventory artifacts/cross/windows/package-inventory.txt `
+            -LinuxPackageInventory artifacts/cross/linux/package-inventory.txt `
+            -WindowsArtifactHashes artifacts/cross/windows/canonical-smoke/artifact-hashes.txt `
+            -LinuxArtifactHashes artifacts/cross/linux/canonical-smoke/artifact-hashes.txt `
+            -OutputPath artifacts/cross/canonical-cross-platform-drift.json
 
       - name: Upload cross-platform report
         uses: actions/upload-artifact@v4
         with:
           name: d7-cross-platform-drift
-          path: artifacts/cross/cross-platform-drift.json
+          path: artifacts/cross/*cross-platform-drift.json
           if-no-files-found: error
