@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using MyFhirSdk.CodeGen.Compatibility;
 using MyFhirSdk.CodeGen.Generation;
+using MyFhirSdk.CodeGen.Writing;
 using MyFhirSdk.CodeGen.Models;
 using Xunit;
 
@@ -11,6 +12,40 @@ namespace MyFhirSdk.CodeGen.Tests.Generation;
 
 public sealed class PrimitiveGenerationPipelineTests : IDisposable
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task GenerateAsync_CancelledAfterBackup_RestoresOutputForBothInputs(bool archive)
+    {
+        var output = Path.Combine(_testRoot, "cancel-output");
+        Directory.CreateDirectory(output);
+        var marker = Path.Combine(output, "keep.txt");
+        await File.WriteAllTextAsync(marker, "keep");
+        using var cancellation = new CancellationTokenSource();
+        var reached = false;
+        var writer = new GeneratedFileWriter(new OutputSafetyContext(AppContext.BaseDirectory), checkpoint =>
+        {
+            if (checkpoint != GeneratedFileWriter.WriteCheckpoint.PreviousOutputBackedUp) return;
+            reached = true;
+            Assert.False(Directory.Exists(output));
+            cancellation.Cancel();
+        });
+        var pipeline = new PrimitiveGenerationPipeline(
+            coveragePipeline: new(), wrapperModelBuilder: new(), registryModelBuilder: new(),
+            wrapperRenderer: new(), registryRenderer: new(), manifestModelBuilder: new(), manifestRenderer: new(),
+            compatibilityService: new(CodeGenTestRuntime.RuntimeContract, CodeGenTestRuntime.RuntimeReferences),
+            wrapperCompilationValidator: CodeGenTestRuntime.CreateCompilationValidator(),
+            registryCompilationValidator: new(CodeGenTestRuntime.RuntimeReferences), writer: writer);
+        var options = CreateOptions(output);
+        if (archive) options = options with { DefinitionsPath = Path.Combine(AppContext.BaseDirectory,
+            "Fixtures", "FhirPackages", "R5", "hl7.fhir.r5.core-5.0.0.tgz") };
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pipeline.GenerateAsync(options, cancellation.Token));
+        Assert.True(reached);
+        Assert.Equal("keep", await File.ReadAllTextAsync(marker));
+        Assert.Equal(new[] { marker }, Directory.GetFiles(output));
+        Assert.Empty(Directory.GetDirectories(_testRoot, ".cancel-output.*-*"));
+    }
+
     private readonly string _testRoot = Path.Combine(
         Path.GetTempPath(),
         "MyFhirSdk-PrimitivePipelineTests",

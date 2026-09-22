@@ -267,6 +267,27 @@ archive/identity/policy失敗為2、缺少required option為1、unsafe output為
 
 Exit gate：build、test、pack、clean smoke、upgrade與Windows/Linux drift jobs全部綠燈。
 
+P6實作：
+
+- Smoke將FHIR archive、directory fixtures與explicit policy複製到repository外的暫存目錄；
+  policy按既有hash規則正規化為UTF-8/LF。工具使用隔離local manifest、NuGet來源與cache。
+- 真實`1.0.0`生成完成後，使用`dotnet tool update --version 1.1.0`，驗證manifest與help；
+  保留uninstall/reinstall、兩種input equivalence與完整committed output比較。
+- 放置無效的current-directory contract/policy，確認package defaults不受影響；missing explicit
+  Runtime contract/reference必須回報專屬diagnostic，不能退回package defaults。
+- Windows canonical asset job另產生一份`.nupkg`供Windows/Linux共同執行。既有各平台pack與
+  normalized inventory比較保留；新增canonical smoke比對package、FHIR、policy hashes與
+  complete generated output hashes。
+- Writer提供internal transaction checkpoint供測試注入取消或I/O失敗，不擴充public API。
+  staging完成與backup完成後均驗證舊output保留及交易目錄清理；backup之後新增cancellation
+  check，確保此時取消也會rollback。兩種primitive input另有完整pipeline取消測試。
+
+本機證據位於`artifacts/primitive-tgz-p6/`。Windows/Linux workflow的實際執行及cross-platform
+gate仍須在push後確認，不能以本機Windows結果宣告跨平台驗收完成。
+本機驗證：完整solution 804 passed、1個既有external-server integration smoke skipped，
+其中CodeGen 509 passed。Canonical pack、toolchain contract、package inventory、真實update與
+reinstall smoke通過；workflow YAML與9個PowerShell blocks語法檢查、`git diff --check`通過。
+
 ### P7：操作文件與handoff
 
 實作完成後更新：
