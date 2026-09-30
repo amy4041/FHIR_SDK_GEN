@@ -8,6 +8,81 @@ namespace MyFhirSdk.CodeGen.Tests.Writing;
 
 public sealed class GeneratedFileWriterTests : IDisposable
 {
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public async Task TransactionInterruption_PreservesOutputAndCleansTransaction(bool afterBackup, bool ioFailure)
+    {
+        var output = Path.Combine(_testRoot, "transaction-output");
+        Directory.CreateDirectory(output);
+        var marker = Path.Combine(output, "keep.txt");
+        byte[] original = [0, 1, 2, 255];
+        await File.WriteAllBytesAsync(marker, original);
+        using var cancellation = new CancellationTokenSource();
+        var reached = false;
+        var target = afterBackup ? GeneratedFileWriter.WriteCheckpoint.PreviousOutputBackedUp : GeneratedFileWriter.WriteCheckpoint.Staged;
+        var writer = new GeneratedFileWriter(new OutputSafetyContext(Path.Combine(_testRoot, "tool")), checkpoint =>
+        {
+            if (checkpoint != target) return;
+            reached = true;
+            Assert.Equal(!afterBackup, Directory.Exists(output));
+            Assert.Contains(FindTransactionDirectories(output), path => path.Contains(".staging-", StringComparison.Ordinal));
+            if (ioFailure) throw new IOException("Injected transaction failure");
+            cancellation.Cancel();
+        });
+        if (ioFailure)
+        {
+            var result = await writer.WriteAsync(output, [Source("new.g.cs", "class NewType {}")], cancellation.Token);
+            AssertUnsafeOutput(result, output);
+            Assert.Contains("Injected transaction failure", Assert.Single(result.Diagnostics).Message);
+        }
+        else
+        {
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => writer.WriteAsync(
+                output, [Source("new.g.cs", "class NewType {}")], cancellation.Token));
+        }
+        Assert.True(reached);
+        Assert.Equal(original, await File.ReadAllBytesAsync(marker));
+        Assert.Equal(new[] { marker }, Directory.GetFiles(output));
+        Assert.Empty(FindTransactionDirectories(output));
+    }
+
+    [Fact]
+    public async Task Cancellation_WhenRollbackFails_ReportsBackupAndPreservesBothOutputs()
+    {
+        var output = Path.Combine(_testRoot, "rollback-failure-output");
+        Directory.CreateDirectory(output);
+        byte[] original = [0, 1, 2, 255];
+        byte[] concurrent = [255, 2, 1, 0];
+        await File.WriteAllBytesAsync(Path.Combine(output, "keep.txt"), original);
+        using var cancellation = new CancellationTokenSource();
+        var reached = false;
+        var writer = new GeneratedFileWriter(new OutputSafetyContext(Path.Combine(_testRoot, "tool")), checkpoint =>
+        {
+            if (checkpoint != GeneratedFileWriter.WriteCheckpoint.PreviousOutputBackedUp) return;
+            reached = true;
+            Directory.CreateDirectory(output);
+            File.WriteAllBytes(Path.Combine(output, "concurrent.txt"), concurrent);
+            cancellation.Cancel();
+        });
+
+        var result = await writer.WriteAsync(
+            output, [Source("new.g.cs", "class NewType {}")], cancellation.Token);
+
+        Assert.True(reached);
+        var diagnostic = AssertUnsafeOutput(result, output);
+        Assert.Contains("canceled, but rollback failed", diagnostic.Message, StringComparison.Ordinal);
+        var backup = Assert.Single(FindTransactionDirectories(output));
+        Assert.Contains(".backup-", backup, StringComparison.Ordinal);
+        Assert.Contains(backup, diagnostic.Message, StringComparison.Ordinal);
+        Assert.Equal(original, await File.ReadAllBytesAsync(Path.Combine(backup, "keep.txt")));
+        Assert.Equal(new[] { Path.Combine(backup, "keep.txt") }, Directory.GetFiles(backup));
+        Assert.Equal(concurrent, await File.ReadAllBytesAsync(Path.Combine(output, "concurrent.txt")));
+        Assert.Equal(new[] { Path.Combine(output, "concurrent.txt") }, Directory.GetFiles(output));
+    }
+
     private readonly string _testRoot;
     private readonly string _repositoryRoot;
 

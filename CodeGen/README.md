@@ -80,6 +80,63 @@ Package identity必須符合命令中的package ID/version/FHIR version。
 
 ## Package assets 與 override 規則
 
+### 在 repository 外操作
+
+準備 .NET 9 SDK、一份已驗證的 `MyFhirSdk.CodeGen.Tool.1.1.0.nupkg`、
+`hl7.fhir.r5.core-5.0.0.tgz`，以及同一版本 source 的
+[`primitive-generation-policy.json`](Policy/primitive-generation-policy.json)。
+交付時將 policy 原樣複製成獨立檔案；primitive mode 即使安裝包內有 policy，仍要求
+`--policy`。不可自行刪減 policy entries 或只改 version，因為工具也驗證內容 hash。
+
+在新的工作目錄準備以下配置（`feed` 僅放本次核准的 package）：
+
+```text
+work/
+  NuGet.Config
+  feed/MyFhirSdk.CodeGen.Tool.1.1.0.nupkg
+  inputs/hl7.fhir.r5.core-5.0.0.tgz
+  inputs/primitive-generation-policy.json
+```
+
+將以下內容存為 `work/NuGet.Config`，清除繼承的 package sources，只使用本機 `feed`。
+`./feed` 相對於此設定檔所在目錄解析：
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <clear />
+    <add key="local-tool" value="./feed" />
+  </packageSources>
+</configuration>
+```
+
+於 `work` 執行下列 PowerShell 指令；工具不會替使用者下載 FHIR archive。
+使用獨立的 NuGet packages 目錄，避免重用其他來源已快取的同版本 package；
+後續 restore 也應在設定此環境變數的 shell 執行：
+
+```powershell
+dotnet new tool-manifest
+$env:NUGET_PACKAGES = Join-Path (Get-Location).Path '.nuget/packages'
+dotnet tool install MyFhirSdk.CodeGen.Tool --local --version 1.1.0 --configfile ./NuGet.Config
+dotnet myfhir-codegen --help
+dotnet myfhir-codegen `
+  --mode primitive `
+  --input ./inputs/hl7.fhir.r5.core-5.0.0.tgz `
+  --policy ./inputs/primitive-generation-policy.json `
+  --output ./generated-primitives `
+  --fhir-version 5.0.0 `
+  --package-id hl7.fhir.r5.core `
+  --package-version 5.0.0
+```
+
+預期產物為 20 個 wrappers、1 個 registry composition 與 1 份 manifest，共 22 個檔案；
+`xhtml` 維持 policy 明確列出的 unsupported primitive。再次執行應得到相同 bytes。
+已有 pin 為 `1.1.0` 的 manifest 時，省略建立 manifest 與 install，改用
+`dotnet tool restore --configfile ./NuGet.Config`。若仍 pin 舊版，先依下方升級流程更新版本。
+
+### 資產解析
+
 package 內含：
 
 - model 與 primitive generation policies；
@@ -112,6 +169,9 @@ schema v2 manifest 記錄 package/policy hashes、artifact inventory，以及：
 - target framework 與 exact compatibility policy。
 
 manifest 不記錄實體 repository、cache 或 temporary path。
+primitive manifest 也不記錄 input mode 或 archive exact-bytes SHA-256；上述 equivalence
+是同一工具版本下的完整產物相等。跨 `1.0.0`／`1.1.0` 時 sources 相同，但 manifest 的
+tool/CodeGen version 與 Runtime descriptor hash 不同，不應要求整份 manifest 相同。
 
 ## 升級與 rollback
 
@@ -147,7 +207,21 @@ dotnet tool update MyFhirSdk.CodeGen.Tool --local `
 
 CI 的 upgrade smoke 會使用真實前版 package 驗證相同 lifecycle。
 
+降回 `1.0.0` 後必須將 primitive `--input` 改回 flat directory，且仍提供 `--policy`。
+回退前先準備與 archive 對應的 primitive definitions；repository 的
+`Tests/CodeGen/Fixtures/StructureDefinitions/Primitives/R5` 可供本專案重現。
+不要將完整 package 解壓目錄直接當成 primitive-only directory。
+
 ## Troubleshooting
+
+- 缺少 `--policy`（exit code 1）：兩種 primitive input 都必須明確提供 policy 檔案；
+  `--policy-root` 不能代替它。
+- `FSG0026`：archive 無法讀取、損壞、截斷或含不安全／重複 entry；核對
+  [`r5-package-lock.json`](Policy/r5-package-lock.json) 的 archive SHA-256，重新取得原始檔案。
+- `FSG0027`：package metadata 與 CLI identity 不符；核對 ID、package version、FHIR version。
+- `FSG0013`／`FSG0124`：policy 路徑不可讀或契約不符；提供對應版本的原始 policy。
+- `FSG0019`／`FSG0020`：沒有可用 primitive、shape 損壞或 identity 重複；檢查診斷指向的
+  logical entry。合法 profiles 會被忽略，損壞的 primitive specialization 不會被靜默略過。
 
 - `NU1101` 或 tool restore 找不到 package：確認 `artifacts/packages` 含唯一 `.nupkg`，並以
   `--add-source artifacts/packages` restore。
@@ -157,6 +231,9 @@ CI 的 upgrade smoke 會使用真實前版 package 驗證相同 lifecycle。
 - `FSG0130`–`FSG0139`：package asset 缺失或 layout 錯誤；重新 pack 並執行 package tests。
 - `FSG0011`：output 與 tool/input/contract/policy/reference 重疊，或 artifact path 不安全；改用
   獨立 staging directory。
+- `FSG0011` 含 `rollback failed`：取消後未能還原原 output。先停止其他寫入 output 的程序，
+  保留診斷列出的 backup 與目前 output，確認兩者內容後將目前 output 移至另一個保留位置，
+  再把 backup 移回原 output 路徑。不要直接刪除 backup 或覆蓋同時寫入的檔案。
 - clean environment 與本機結果不同：先清除該測試專用 NuGet/tool cache，再確認使用同一
   `.nupkg`、FHIR fixture 與 CLI arguments。
 

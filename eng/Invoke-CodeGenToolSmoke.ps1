@@ -322,6 +322,21 @@ $workRoot = Join-Path ([System.IO.Path]::GetTempPath()) (
     'MyFhirSdk-D7-Smoke-' + [System.Guid]::NewGuid().ToString('N'))
 [void] (New-Item -ItemType Directory -Path $workRoot)
 try {
+    # All generator inputs live outside the checkout, alongside the isolated manifest.
+    $inputRoot = Join-Path $workRoot 'inputs'
+    [void] (New-Item -ItemType Directory -Path $inputRoot)
+    Copy-Item -LiteralPath $fhirPackage -Destination (Join-Path $inputRoot 'core.tgz')
+    Write-Utf8NoBomLf (Join-Path $inputRoot 'primitive-policy.json') (
+        Get-Content -LiteralPath $primitivePolicy -Raw -Encoding utf8)
+    Copy-Item -LiteralPath $primitiveDefinitions -Destination (Join-Path $inputRoot 'definitions') -Recurse
+    $fhirPackage = Join-Path $inputRoot 'core.tgz'
+    $primitivePolicy = Join-Path $inputRoot 'primitive-policy.json'
+    $primitiveDefinitions = Join-Path $inputRoot 'definitions'
+    # These invalid current-directory assets must never replace package-owned defaults.
+    [void] (New-Item -ItemType Directory -Path (Join-Path $workRoot 'Contracts'))
+    [void] (New-Item -ItemType Directory -Path (Join-Path $workRoot 'Policy'))
+    Write-Utf8NoBomLf (Join-Path $workRoot 'Contracts/runtime-contract.json') '{invalid'
+    Write-Utf8NoBomLf (Join-Path $workRoot 'Policy/primitive-generation-policy.json') '{invalid'
     $manifestRoot = Join-Path $workRoot '.config'
     [void] (New-Item -ItemType Directory -Path $manifestRoot)
     $installedManifest = Join-Path $manifestRoot 'dotnet-tools.json'
@@ -393,14 +408,39 @@ try {
             '--package-id', 'hl7.fhir.r5.core',
             '--package-version', '5.0.0'))
 
-        Copy-Item -LiteralPath $toolManifest -Destination $installedManifest -Force
-        [void] (Invoke-DotNet $workRoot $environment $logPath $restoreArguments)
+        [void] (Invoke-DotNet $workRoot $environment $logPath @(
+            'tool', 'update', $packageId, '--version', $toolVersion,
+            '--tool-manifest', $installedManifest, '--configfile', $nugetConfig))
+        $updatedManifest = Get-Content -LiteralPath $installedManifest -Raw | ConvertFrom-Json
+        $updatedTool = @($updatedManifest.tools.PSObject.Properties | Where-Object { $_.Name -ieq $packageId })
+        if ($updatedTool.Count -ne 1 -or [string] $updatedTool[0].Value.version -cne $toolVersion) {
+            throw 'Tool update did not persist the requested version in the local manifest.'
+        }
         $currentHelp = Invoke-DotNet $workRoot $environment $logPath @($toolCommand, '--help')
         if (-not $currentHelp.StandardOutput.Contains(
                 "$packageId $toolVersion",
                 [System.StringComparison]::Ordinal)) {
-            throw 'Tool help did not change to the current version after restore.'
+            throw 'Tool help did not change to the current version after update.'
         }
+    }
+
+    # Invalid explicit overrides must fail rather than fall back to installed assets.
+    foreach ($override in @(
+        @{ Option = '--runtime-contract'; Code = '[FSG0100]'; File = 'missing-contract.json' },
+        @{ Option = '--runtime-reference'; Code = '[FSG0110]'; File = 'missing-reference.dll' })) {
+        $overrideOutput = Join-Path $workRoot $override.File.Replace('.', '-')
+        [void] (New-Item -ItemType Directory -Path $overrideOutput)
+        Write-Utf8NoBomLf (Join-Path $overrideOutput 'keep.txt') 'keep'
+        $beforeOverride = Get-FileHashMap $overrideOutput
+        $failure = Invoke-DotNet $workRoot $environment $logPath @(
+            $toolCommand, '--mode', 'primitive', '--input', $fhirPackage,
+            '--policy', $primitivePolicy, '--output', $overrideOutput,
+            '--fhir-version', '5.0.0', '--package-id', 'hl7.fhir.r5.core', '--package-version', '5.0.0',
+            $override.Option, (Join-Path $workRoot $override.File)) -ExpectedExitCode 2
+        if (-not $failure.StandardError.Contains($override.Code, [System.StringComparison]::Ordinal)) {
+            throw "Explicit override did not report $($override.Code). See $logPath"
+        }
+        Assert-HashMapsEqual $beforeOverride (Get-FileHashMap $overrideOutput) 'Explicit override failure preservation'
     }
 
     $modelFirst = Join-Path $workRoot 'model-first'
@@ -564,6 +604,10 @@ try {
             'clean-install-upgrade-uninstall-reinstall'
         }
         upgradeExecuted = $null -ne $previousIdentity
+        upgradeCommand = if ($null -eq $previousIdentity) { $null } else { 'dotnet tool update' }
+        isolatedInputs = $true
+        fhirPackageSha256 = (Get-FileHash -LiteralPath $fhirPackage -Algorithm SHA256).Hash.ToLowerInvariant()
+        primitivePolicySha256 = (Get-FileHash -LiteralPath $primitivePolicy -Algorithm SHA256).Hash.ToLowerInvariant()
         previousToolVersion = if ($null -eq $previousIdentity) { $null } else { $previousIdentity.Version }
         generationContractUnchanged = if ($null -eq $previousGenerationContract) {
             $null

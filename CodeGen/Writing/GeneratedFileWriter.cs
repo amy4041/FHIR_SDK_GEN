@@ -14,12 +14,22 @@ public sealed class GeneratedFileWriter
     private readonly OutputSafetyContext _safetyContext;
     private readonly StringComparison _pathComparison;
     private readonly StringComparer _fileNameComparer;
+    private readonly Action<WriteCheckpoint>? _checkpoint;
+
+    internal enum WriteCheckpoint { Staged, PreviousOutputBackedUp }
 
     public GeneratedFileWriter(OutputSafetyContext safetyContext)
+        : this(safetyContext, null)
+    {
+    }
+
+    // Deterministic transaction fault injection for tests, without timing/file watcher races.
+    internal GeneratedFileWriter(OutputSafetyContext safetyContext, Action<WriteCheckpoint>? checkpoint)
     {
         ArgumentNullException.ThrowIfNull(safetyContext);
 
         _safetyContext = safetyContext;
+        _checkpoint = checkpoint;
         _pathComparison = OperatingSystem.IsWindows()
             ? StringComparison.OrdinalIgnoreCase
             : StringComparison.Ordinal;
@@ -31,7 +41,7 @@ public sealed class GeneratedFileWriter
     public GeneratedFileWriter WithProtectedPaths(IEnumerable<string> paths) =>
         new(new OutputSafetyContext(
             _safetyContext.ToolInstallationDirectory,
-            _safetyContext.ProtectedAssetPaths.Concat(paths)));
+            _safetyContext.ProtectedAssetPaths.Concat(paths)), _checkpoint);
 
     public async Task<GenerationResult<IReadOnlyList<string>>> WriteAsync(
         string outputRoot,
@@ -147,14 +157,17 @@ public sealed class GeneratedFileWriter
                     cancellationToken);
             }
 
+            _checkpoint?.Invoke(WriteCheckpoint.Staged);
             cancellationToken.ThrowIfCancellationRequested();
 
             if (Directory.Exists(outputPath))
             {
                 Directory.Move(outputPath, backupPath);
                 existingOutputMoved = true;
+                _checkpoint?.Invoke(WriteCheckpoint.PreviousOutputBackedUp);
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
             Directory.Move(stagingPath, outputPath);
             newOutputInstalled = true;
 
@@ -167,11 +180,19 @@ public sealed class GeneratedFileWriter
         }
         catch (OperationCanceledException)
         {
-            RestorePreviousOutput(
+            var rollbackFailure = RestorePreviousOutput(
                 outputPath,
                 backupPath,
                 existingOutputMoved,
                 newOutputInstalled);
+            if (rollbackFailure is not null)
+            {
+                return Failure(CreateDiagnostic(
+                    outputPath,
+                    $"Generation was canceled, but rollback failed: {rollbackFailure.Message} " +
+                    $"The previous output backup is at '{backupPath}'."));
+            }
+
             throw;
         }
         catch (Exception exception) when (IsFileSystemException(exception))

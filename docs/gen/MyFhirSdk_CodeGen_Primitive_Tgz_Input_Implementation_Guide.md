@@ -1,8 +1,8 @@
 # MyFhirSdk CodeGen primitive `.tgz` input 實作指引
 
-Version 0.3
+Version 0.4
 
-- 狀態：P3接線與必要的P1/P4變更已在開發分支實作；Decision的正式acceptance與跨平台CI仍需確認
+- 狀態：P0–P6已實作，使用者回報P6 push後CI通過；P7操作文件與handoff已補齊，待本次CI；Decision正式owner acceptance仍未記錄
 - 實作方案：A（`.tgz` preferred、directory compatible、`--policy` required）
 - Baseline：Tool/CodeGen `1.0.0`、primitive policy `1.1.0`、manifest schema v2
 - 目標版本：Tool/CodeGen `1.1.0`、primitive manifest維持schema v2
@@ -267,6 +267,27 @@ archive/identity/policy失敗為2、缺少required option為1、unsafe output為
 
 Exit gate：build、test、pack、clean smoke、upgrade與Windows/Linux drift jobs全部綠燈。
 
+P6實作：
+
+- Smoke將FHIR archive、directory fixtures與explicit policy複製到repository外的暫存目錄；
+  policy按既有hash規則正規化為UTF-8/LF。工具使用隔離local manifest、NuGet來源與cache。
+- 真實`1.0.0`生成完成後，使用`dotnet tool update --version 1.1.0`，驗證manifest與help；
+  保留uninstall/reinstall、兩種input equivalence與完整committed output比較。
+- 放置無效的current-directory contract/policy，確認package defaults不受影響；missing explicit
+  Runtime contract/reference必須回報專屬diagnostic，不能退回package defaults。
+- Windows canonical asset job另產生一份`.nupkg`供Windows/Linux共同執行。既有各平台pack與
+  normalized inventory比較保留；新增canonical smoke比對package、FHIR、policy hashes與
+  complete generated output hashes。
+- Writer提供internal transaction checkpoint供測試注入取消或I/O失敗，不擴充public API。
+  staging完成與backup完成後均驗證舊output保留及交易目錄清理；backup之後新增cancellation
+  check，確保此時取消也會rollback。兩種primitive input另有完整pipeline取消測試。
+
+本機證據位於`artifacts/primitive-tgz-p6/`。Windows/Linux workflow的實際執行及cross-platform
+gate仍須在push後確認，不能以本機Windows結果宣告跨平台驗收完成。
+本機驗證：完整solution 804 passed、1個既有external-server integration smoke skipped，
+其中CodeGen 509 passed。Canonical pack、toolchain contract、package inventory、真實update與
+reinstall smoke通過；workflow YAML與9個PowerShell blocks語法檢查、`git diff --check`通過。
+
 ### P7：操作文件與handoff
 
 實作完成後更新：
@@ -280,6 +301,28 @@ Exit gate：build、test、pack、clean smoke、upgrade與Windows/Linux drift jo
 
 Exit gate：使用者不需整理primitive-only definitions directory；required policy來源與命令有清楚
 文件，沒有新debt只留在PR描述。
+
+P7交付：
+
+- [CodeGen README](../../CodeGen/README.md)提供repository外安裝、explicit policy來源、
+  `.tgz` preferred command、22個產物預期、升級／降版與rollback failure復原步驟。
+- CLI help已於P3同步，沿用`cli-help-1.1.0.txt`；由`PrimitiveTgzInputBaselineTests`核對
+  實際help及完整產物，不另改寫歷史`1.0.0`證據。
+- [Phase D handoff](MyFhirSdk_R5_Models_Generation_Phase_D_Handoff.md)區分歷史與post-D
+  current contract，記錄版本、hash、CI交付及manifest archive provenance限制。
+- [責任邊界](MyFhirSdk_Runtime_R5_Models_CodeGen_Boundaries.md)記錄versioned package
+  input由CodeGen處理，Runtime與Models ownership不變。
+- [Kernel extraction指引](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)
+  固定K0的`1.1.0`版本與hash來源；K0須待P7完成並通過CI後記錄immutable commit。
+
+P6 review修正後的完整CodeGen測試為510 passed，新增取消後rollback失敗的保留備份與
+diagnostic測試。上方P0–P6各節的本機數字與「待push」敘述為當時的歷史紀錄；
+使用者已於P7開始前回報P6 CI通過。本次文件更新不替代Decision指定owner的正式acceptance，
+亦不代表P7 CI已執行。
+
+P7本機驗證：`PrimitiveTgzInputBaselineTests`通過（1個整合案例，涵蓋help snapshot、
+archive／directory完整產物、repeat generation及歷史baseline）；`git diff --check`通過。
+本階段僅更新文件，沒有變更CLI行為、generated output或baseline bytes。
 
 ## 5. Diagnostic與安全規則
 
