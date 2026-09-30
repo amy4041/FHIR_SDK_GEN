@@ -1,8 +1,8 @@
 # MyFhirSdk CodeGen primitive `.tgz` input 決策
 
-Version 0.3
+Version 0.4
 
-- 狀態：Proposed（正式owner acceptance尚未記錄）；方案A已實作於Tool/CodeGen `1.1.0`，P6 CI由使用者確認通過
+- 狀態：Proposed（正式owner acceptance尚未記錄）；方案A與P0–P7已交付，PR #39已合併main，分支及merge commit的main CI均由使用者確認通過
 - 決策日期：2026-09-15
 - 決策 owner：CodeGen + Package/Compatibility maintainers
 - 適用基準：Phase D handoff、Tool/CodeGen `1.0.0`、FHIR R5 `5.0.0`、.NET 9
@@ -234,6 +234,10 @@ Deferred。archive provenance值得另行評估，但不是讀取`.tgz`的必要
   擴充schema。
 
 ## 6. Acceptance gates
+
+交接紀錄（2026-09-30）：P6 commit `4a46463`、P7 commit `999fdbf`已隨PR #39合併至
+`1a28f01d8a4c3aeea46c63da875d01594aeee086`。使用者已確認分支及此merge commit的main CI
+均通過。本紀錄不替代下列owners的正式簽核；正式acceptance仍須補記。
 
 本決策標為Accepted前必須確認：
 

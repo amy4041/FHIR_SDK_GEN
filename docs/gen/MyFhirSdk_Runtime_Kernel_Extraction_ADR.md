@@ -1,16 +1,27 @@
 # ADR：MyFhirSdk Runtime kernel physical extraction
 
-Version 0.1
+Version 0.2
 
 - 狀態：Proposed；核准前不得搬移 public type declaration
 - 決策 owner：Architecture + Runtime maintainers
-- 適用基準：Phase D handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
+- 適用基準：post-D primitive package input `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 實作指引：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md`
 - 上位文件：
   - `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_Handoff.md`
   - `docs/gen/MyFhirSdk_Runtime_R5_Models_CodeGen_Boundaries.md`
 
 ## 1. Context
+
+Primitive `.tgz` P0–P7已交付；P6/P7於PR #39合併至main，合併commit為
+`1a28f01d8a4c3aeea46c63da875d01594aeee086`。使用者已確認P6/P7分支CI通過；
+合併commit的main CI亦於2026-09-30由使用者確認通過。Tool/CodeGen為`1.1.0`，
+primitive policy為`1.1.0`，manifest維持schema v2；`.tgz`與directory都要求explicit policy。
+本ADR的拆分前基準應使用此post-D狀態，不回用Tool `1.0.0`的descriptor或manifest。
+
+本ADR維持Proposed。K0可先建立唯讀baseline、assembly-aware inventory與consumer test
+harness，供本ADR審查使用；不授權新增production Runtime assembly、搬移types、加入
+forwarders、改public API／production behavior或升版descriptor。K1仍須先完成第6節核准。
+Primitive input Decision的正式owner acceptance另行記錄，不能以CI通過代替。
 
 Phase D 已將 production CodeGen 與完整 SDK project/implementation 解耦，但 Runtime
 foundation、generated R5 Models、Serializer/Parser/Validator、Client 與 TW Core
@@ -238,8 +249,8 @@ metadata、Runtime behavior、831-source generation 與 Windows/Linux tool smoke
 
 1. 將 compile ownership 回復到原 `MyFhirSdk.csproj`；
 2. 移除尚未發布的 Runtime project/output；
-3. 回復 Phase D descriptor、reference identity/hash 與 tool package inventory；
-4. 重新執行 Phase D 完整 gates，確認 generated output 無 drift。
+3. 回復K0固定的post-D `1.1.0` descriptor、reference identity/hash與tool package inventory；
+4. 重新執行Phase D與primitive `.tgz`完整gates，確認兩種input及generated output無drift。
 
 已發布後不得以刪除 `MyFhirSdk.Runtime.dll` 回復；必須依 package rollback/promotion policy 發布
 修正版並繼續提供 compatibility facade。

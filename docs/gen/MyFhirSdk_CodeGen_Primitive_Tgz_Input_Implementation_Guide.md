@@ -1,8 +1,8 @@
 # MyFhirSdk CodeGen primitive `.tgz` input 實作指引
 
-Version 0.4
+Version 0.5
 
-- 狀態：P0–P6已實作，使用者回報P6 push後CI通過；P7操作文件與handoff已補齊，待本次CI；Decision正式owner acceptance仍未記錄
+- 狀態：P0–P7已交付，PR #39已合併main，分支及merge commit的main CI均由使用者確認通過；Decision正式owner acceptance仍未記錄
 - 實作方案：A（`.tgz` preferred、directory compatible、`--policy` required）
 - Baseline：Tool/CodeGen `1.0.0`、primitive policy `1.1.0`、manifest schema v2
 - 目標版本：Tool/CodeGen `1.1.0`、primitive manifest維持schema v2
@@ -317,12 +317,17 @@ P7交付：
 
 P6 review修正後的完整CodeGen測試為510 passed，新增取消後rollback失敗的保留備份與
 diagnostic測試。上方P0–P6各節的本機數字與「待push」敘述為當時的歷史紀錄；
-使用者已於P7開始前回報P6 CI通過。本次文件更新不替代Decision指定owner的正式acceptance，
-亦不代表P7 CI已執行。
+使用者已確認P6與P7分支CI通過。此紀錄不替代Decision指定owner的正式acceptance。
 
 P7本機驗證：`PrimitiveTgzInputBaselineTests`通過（1個整合案例，涵蓋help snapshot、
 archive／directory完整產物、repeat generation及歷史baseline）；`git diff --check`通過。
 本階段僅更新文件，沒有變更CLI行為、generated output或baseline bytes。
+
+合併交接（2026-09-30）：PR #39已合併main，commit為
+`1a28f01d8a4c3aeea46c63da875d01594aeee086`（P6 `4a46463`、P7 `999fdbf`）。
+此commit的main CI已於2026-09-30由使用者確認通過，作為K0拆分前source pin，
+K0由clean checkout重建baseline。P0–P7實作交付完成，正式Decision acceptance仍待owner記錄；
+Runtime kernel extraction尚未開始。
 
 ## 5. Diagnostic與安全規則
 

@@ -1,6 +1,6 @@
 # MyFhirSdk CodeGen Phase D handoff
 
-Version 2.1
+Version 2.2
 
 - 狀態：D0–D8 implemented、CI passed，已合併至 `main`
 - Baseline：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、.NET 9 / `net9.0`
@@ -30,7 +30,8 @@ Tool/CodeGen `1.1.0` 的 primitive mode 以本機 versioned FHIR `.tgz` 為 pref
   [primitive input baselines](baselines/primitive-tgz-input/README.md)。
 - P6 使用真實舊版 package 執行 `dotnet tool update`；Windows/Linux 除各自 pack 外，
   另消費同一 canonical package，核對 package/FHIR/policy 與 generated output hashes。
-  使用者已回報 P6 push 後 CI 通過；P7 文件變更仍需自己的 CI gate。
+  使用者已確認P6/P7分支CI通過；PR #39已合併main，commit為
+  `1a28f01d8a4c3aeea46c63da875d01594aeee086`。此merge commit的main CI亦於2026-09-30由使用者確認通過。
 - 取消或寫入失敗會嘗試還原 output；取消後 rollback 失敗回報 FSG0011 與 backup 路徑，
   保留可復原的備份。Recovery 操作見 README。
 
@@ -127,7 +128,7 @@ package、重新產生 staging output 並比較。不得用修改目前 source �
 | 新 FHIR patch/minor 版本 | CodeGen compatibility owner | 目前只核准 R5 `5.0.0` exact matrix | 新 package lock/hash、policy review、descriptor/matrix 更新及 831-equivalent full regression |
 | 新 .NET/TFM | Build + Runtime contract owner | 目前 central TFM 為 `net9.0` | 更新單一 TFM/SDK 設定，重建 Runtime reference/hash，Windows/Linux build/pack/smoke/TPA CI 通過 |
 | Contract-only Runtime reference | Packaging + Runtime owner | 目前使用完整 `MyFhirSdk.dll` 作 compiler-only asset | reference assembly 覆蓋 required surface、identity/hash 更新並通過 full-batch Roslyn/runtime gates |
-| Primitive `.tgz` input acceptance／handoff | CodeGen + Compatibility maintainers | `1.1.0`已實作雙input與required policy；使用者已回報P6 CI通過，正式owner acceptance尚未記錄，P7文件待本次CI | 記錄`MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md`正式acceptance；P7完成並通過CI後，以完成狀態建立K0 baseline |
+| Primitive `.tgz` input acceptance／handoff | CodeGen + Compatibility maintainers | P0–P7已交付；PR #39已合併main，分支及merge commit的CI均由使用者確認通過，正式owner acceptance尚未記錄 | 補記Decision正式acceptance；K0以post-D `1.1.0`合併commit重建baseline |
 
 沒有 owner、理由與退出條件的新 debt 不得只留在 PR 描述。
 
@@ -146,8 +147,8 @@ Runtime extraction前的primitive package-input決策與實作紀錄位於：
 
 目前Tool/CodeGen `1.1.0`已支援preferred `.tgz`與相容directory input，兩者均維持required
 explicit policy。Decision仍為Proposed，表示正式owner acceptance尚未記錄，不表示功能尚未
-實作；P7 CI亦須於本次push後確認。後續K0應依implementation guide，在P0–P7完成並通過
-CI後固定immutable baseline。
+實作。P6/P7已合併，分支及merge commit的main CI均由使用者確認通過；後續K0依
+implementation guide重建immutable baseline，不直接搬移Runtime types或修改production behavior。
 
 ## 7. Phase D 最終 gates
 

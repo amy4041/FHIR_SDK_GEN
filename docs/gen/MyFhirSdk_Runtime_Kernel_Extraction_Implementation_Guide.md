@@ -1,11 +1,11 @@
 # MyFhirSdk Runtime kernel extraction 實作指引
 
-Version 0.2
+Version 0.3
 
 - 狀態：Planning；K0 可在 ADR Proposed 時建立，ADR Accepted 後才可進入 K1 並搬移
   public declarations
 - 適用範圍：第一階段 Runtime kernel physical extraction
-- Baseline：Phase D handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
+- Baseline：post-D Tool/CodeGen `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 決策文件：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
 - 不包含：完整 Models/Client/IG package split、公開 NuGet release、新 FHIR/TFM
 
@@ -63,8 +63,10 @@ Primitive package input已在Tool/CodeGen `1.1.0`實作；必須先完成其P0-P
 `.tgz`/directory equivalence hashes；不得讓package-input與assembly extraction在同一migration
 PR平行變動。
 
-K0 開始時記錄完成 P7 後的 immutable commit 與可重建 artifacts；本文件不預先指定尚未
-合併的 commit。固定 Tool/CodeGen `1.1.0`、primitive policy `1.1.0`、manifest schema `2`，
+P6/P7已由PR #39合併，拆分前source pin為`1a28f01d8a4c3aeea46c63da875d01594aeee086`。
+使用者於2026-09-30確認P6/P7分支及此merge commit的main CI均通過；此處記錄使用者
+確認結果，未附CI run URL。後續純文件commit不自動改變source pin。
+固定Tool/CodeGen `1.1.0`、primitive policy `1.1.0`、manifest schema `2`，
 以及下列現行 hash，再由 canonical pipeline 重建核對：
 
 | Asset | SHA-256 |
@@ -174,6 +176,32 @@ Serializer/Parser/Validator 目前的 default constructors 直接使用
 5. 建立 current source consumer fixture，供 split 後重新編譯驗證。
 
 Exit gate：baseline 可在 clean checkout 重現，且未改 production behavior/generated output。
+
+#### K0執行範圍與驗收
+
+- Baseline metadata記錄完整source revision、CI證據、SDK `9.0.317`（依pinned `global.json`）、
+  Release／TFM、assembly full identity與public key token、descriptor/reference/policy/FHIR
+  hashes。實際SDK assembly與compiler-only asset分別標示用途，不將既有reference hash
+  當成所有Release DLL的預期值；`.nupkg` hash由本次canonical pack取得。
+- Inventory輸出採ordinal排序及固定換行，不含machine path或timestamp；generic arguments、
+  constraints、nested types、constructors、events及signature中的type references也需包含
+  assembly identity。既有API snapshots保留，不以新增inventory覆寫核准快照。
+- 13 symbols、842 R5 surface types與831 model artifacts是核對基準，數量由實際資料取得；
+  有差異先解釋，不刪減inventory來符合數字。另保存21個primitive/registry sources及兩份
+  schema v2 manifests的inventory/hash，重跑22個primitive產物的雙input equivalence。
+- Old consumer fixture source由K0提交，明確固定fixture revision與SDK baseline revision，
+  不要求歷史SDK commit已含fixture。以隔離checkout產生的舊Release SDK編譯fixture，
+  保存consumer DLL hash與編譯reference identity；後續驗證只置換SDK依賴，不重新編譯consumer。
+- K0時尚無split assemblies：old binary先對拆分前SDK執行成功，current source fixture
+  對目前單一SDK重新編譯／執行成功。拆分後old-binary與type-forwarding驗證屬K3，
+  不列為K0已通過。兩種fixture至少觸及primitive value、model/base assignment與
+  public parser/serializer round-trip，避免只有assembly載入而沒有實際API使用。
+- 測試harness可增加獨立test projects、scripts及CI gate；不得新增production Runtime
+  project、改Compile ownership／public declarations、加入forwarders、修改production seams、
+  descriptor／compatibility版本或generated output。DLL只存ignored artifacts／CI artifacts。
+- K0出口證據包含clean checkout重現、inventory deterministic比較、old/current consumer
+  執行、既有API與Runtime regression及tool smoke結果。完成K0不表示ADR已Accepted，
+  也不表示K1或physical extraction已開始。
 
 ### K1：建立跨 assembly integration seams
 
