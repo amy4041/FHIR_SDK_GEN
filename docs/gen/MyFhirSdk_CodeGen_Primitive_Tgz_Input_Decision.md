@@ -1,8 +1,8 @@
 # MyFhirSdk CodeGen primitive `.tgz` input 決策
 
-Version 0.2
+Version 0.3
 
-- 狀態：Proposed；核准與實作完成前，現有 primitive CLI contract 不變
+- 狀態：Proposed（正式owner acceptance尚未記錄）；方案A已實作於Tool/CodeGen `1.1.0`，P6 CI由使用者確認通過
 - 決策日期：2026-09-15
 - 決策 owner：CodeGen + Package/Compatibility maintainers
 - 適用基準：Phase D handoff、Tool/CodeGen `1.0.0`、FHIR R5 `5.0.0`、.NET 9
@@ -15,7 +15,8 @@ Version 0.2
 
 ## 1. Context
 
-目前 model mode 可直接讀取 versioned FHIR package archive：
+以下記錄決策前`1.0.0`的context；目前`1.1.0`操作方式見[CodeGen README](../../CodeGen/README.md)。
+決策前 model mode 可直接讀取 versioned FHIR package archive：
 
 ```powershell
 dotnet myfhir-codegen `
@@ -115,7 +116,7 @@ canonical必須在render/write前失敗。
 所有package entry、primitive inventory與diagnostic使用logical package entry name及ordinal
 排序，不受tar entry order、filesystem enumeration或作業系統影響。
 
-archive entry name必須是canonical relative `package/<file>.json`；rooted path、反斜線、空segment、
+archive entry name必須是canonical relative `package/...` path，允許官方package的附屬檔案與子目錄；rooted path、反斜線、空segment、
 `.`/`..` traversal與duplicate logical entry必須拒絕。loader維持stream-only讀取，不將archive
 內容解壓至current directory或temporary filesystem。
 

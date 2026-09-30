@@ -1,6 +1,6 @@
 # MyFhirSdk Runtime kernel extraction 實作指引
 
-Version 0.1
+Version 0.2
 
 - 狀態：Planning；K0 可在 ADR Proposed 時建立，ADR Accepted 後才可進入 K1 並搬移
   public declarations
@@ -58,10 +58,26 @@ assembly 改為 `MyFhirSdk.Runtime`。相容性由 type forwarding、old-binary 
 
 ### 3.1 Primitive package-input前置順序
 
-`MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md`若被Accepted，必須先完成其P0-P7並通過CI，
+Primitive package input已在Tool/CodeGen `1.1.0`實作；必須先完成其P0-P7並通過CI，
 再建立本階段K0 baseline。K0應固定完成後的Tool/CodeGen版本、primitive manifest schema與
 `.tgz`/directory equivalence hashes；不得讓package-input與assembly extraction在同一migration
 PR平行變動。
+
+K0 開始時記錄完成 P7 後的 immutable commit 與可重建 artifacts；本文件不預先指定尚未
+合併的 commit。固定 Tool/CodeGen `1.1.0`、primitive policy `1.1.0`、manifest schema `2`，
+以及下列現行 hash，再由 canonical pipeline 重建核對：
+
+| Asset | SHA-256 |
+| --- | --- |
+| Runtime descriptor | `128ba716806fa276186586ec735bb30525a8d0ddfaf00f9525f48b68fd8cad5a` |
+| Compiler reference `MyFhirSdk/net9.0` | `7c945def6e2414e7944367d0df0ac33aa6386e4cdbedce0d05922ae5023176c9` |
+
+完整 primitive inventory/hash 與 help 使用
+[目前 `1.1.0` baseline](baselines/primitive-tgz-input/README.md)，保留 `1.0.0` 作歷史證據。
+K0 同時重跑 `.tgz`／directory 完整 output equivalence 與 installed-tool smoke，記錄
+FHIR archive、policy 及本次 `.nupkg` hash；package hash 由該次 canonical pack 取得。
+目前 assembly 仍是 `MyFhirSdk, Version=1.0.0.0`，本前置功能沒有啟動 kernel extraction，
+K1 的 ADR acceptance gate 保持有效。
 
 ## 4. 固定 ownership
 

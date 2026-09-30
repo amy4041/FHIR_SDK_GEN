@@ -1,6 +1,6 @@
 # MyFhirSdk Runtime、R5 Models 與 CodeGen 責任邊界
 
-Version 1.3
+Version 1.4
 
 - 文件狀態：Runtime Phase A、Primitive Phase B、Models Phase C Completed；Phase D handoff ready
 - 適用範圍：FHIR R5 5.0.0、MyFhirSdk、.NET 9
@@ -28,6 +28,14 @@ Version 1.3
 Generator 取代大量手寫 FHIR model 的架構基準。
 
 本文件中的 Runtime 是 MyFhirSdk 提供的執行核心，不是 Microsoft .NET Runtime。
+
+Post-D Tool/CodeGen `1.1.0` 的 primitive 與 model generation 共用 versioned
+`hl7.fhir.r5.core#5.0.0` package input。Primitive mode 保留 flat-directory 相容路徑，
+兩種 input 都必須提供 explicit primitive policy；policy 決定 supported coverage 與生成語意，
+不能由 package 中的 profiles 取代。CodeGen 負責驗證 archive identity、安全與 primitive
+specialization shape，忽略合法非 primitive definitions；Runtime 不讀取 FHIR archive 或 policy。
+此變更只調整建置輸入，generated API、Runtime 行為及目前 `MyFhirSdk` physical assembly
+ownership 不變。操作契約見 [CodeGen README](../../CodeGen/README.md)。
 
 ## 2. 核心決策
 
@@ -261,11 +269,9 @@ CodeGen 是 build-time tool，負責把規格資料轉換成可重現的 R5 Mode
 - 目標 namespace、輸出目錄與 FHIR version。
 - MyFhirSdk generation policy，包括 primitive CLR mapping 與 Runtime contract mapping。
 
-Post-Phase-D proposed enhancement將primitive mode的preferred input從flat
-StructureDefinition directory擴充為相同的versioned FHIR `.tgz` package；directory input與
-required explicit policy繼續支援。在
-`MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md` Accepted且實作完成前，現有directory-only
-input仍是production contract。
+Post-Phase-D Tool/CodeGen `1.1.0` 已將primitive mode的preferred input擴充為相同的
+versioned FHIR `.tgz` package；flat StructureDefinition directory與required explicit
+policy繼續支援。`1.0.0`的directory-only行為保留為歷史upgrade baseline。
 
 ### 5.2 處理責任
 

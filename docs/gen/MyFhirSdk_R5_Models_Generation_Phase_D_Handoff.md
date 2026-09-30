@@ -1,16 +1,41 @@
 # MyFhirSdk CodeGen Phase D handoff
 
-Version 2.0
+Version 2.1
 
 - 狀態：D0–D8 implemented、CI passed，已合併至 `main`
 - Baseline：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、.NET 9 / `net9.0`
-- Tool package：`MyFhirSdk.CodeGen.Tool` `1.0.0`
+- Tool package：Phase D baseline `MyFhirSdk.CodeGen.Tool` `1.0.0`；post-D current `1.1.0`
 - Tool command：`myfhir-codegen`
 - Runtime contract：`phase-a-v1+c4-primitives-v1`
 - Compatibility policy：schema `1`、exact ordinal match
 - Model/primitive manifest：schema `2`
 
 ## 1. Phase D 交付結果
+
+### Post-D：primitive package input handoff
+
+Tool/CodeGen `1.1.0` 的 primitive mode 以本機 versioned FHIR `.tgz` 為 preferred input，
+保留 flat-directory compatibility mode；兩者都要求 explicit `--policy`。操作與復原步驟見
+[CodeGen README](../../CodeGen/README.md)，實作與驗證落點見
+[P0–P7 指引](MyFhirSdk_CodeGen_Primitive_Tgz_Input_Implementation_Guide.md)。
+
+- 同版本兩種 input 的完整 22 個 primitive artifacts byte-identical；與 `1.0.0` 比較，
+  21 個 primitive/registry sources 與 831 個 model sources 不變。
+- Manifest 維持 schema v2，tool/CodeGen provenance 與 descriptor SHA-256 更新；
+  沒有新增 archive hash 或 input mode 欄位。archive provenance 擴充需另立 schema decision。
+- Runtime 仍為 `MyFhirSdk, Version=1.0.0.0`／`net9.0`，13-symbol contract 與 reference bytes 不變。
+- Descriptor SHA-256：`128ba716806fa276186586ec735bb30525a8d0ddfaf00f9525f48b68fd8cad5a`。
+- Compiler reference SHA-256：`7c945def6e2414e7944367d0df0ac33aa6386e4cdbedce0d05922ae5023176c9`。
+- 歷史 `1.0.0` 與目前 `1.1.0` help、manifest、inventory/hash 證據保存在
+  [primitive input baselines](baselines/primitive-tgz-input/README.md)。
+- P6 使用真實舊版 package 執行 `dotnet tool update`；Windows/Linux 除各自 pack 外，
+  另消費同一 canonical package，核對 package/FHIR/policy 與 generated output hashes。
+  使用者已回報 P6 push 後 CI 通過；P7 文件變更仍需自己的 CI gate。
+- 取消或寫入失敗會嘗試還原 output；取消後 rollback 失敗回報 FSG0011 與 backup 路徑，
+  保留可復原的備份。Recovery 操作見 README。
+
+下列 D0–D8 交付表保留 Phase D 歷史；後續 kernel extraction K0 應以 post-D `1.1.0`
+完成狀態建立新的 immutable baseline，不能回用 `1.0.0` manifest 當 current contract。
 
 | WP | 結果 |
 | --- | --- |
@@ -57,7 +82,7 @@ seam 已建立，未來 physical split 必須另立 ADR/migration。
 
 | Dimension | 固定值/規則 |
 | --- | --- |
-| Tool package / CodeGen | `MyFhirSdk.CodeGen.Tool` / `1.0.0` |
+| Tool package / CodeGen | `MyFhirSdk.CodeGen.Tool` / `1.1.0`（Phase D baseline 為 `1.0.0`） |
 | Runtime descriptor | schema `1` / `phase-a-v1+c4-primitives-v1` |
 | Runtime compiler reference | `MyFhirSdk, Version=1.0.0.0`, `net9.0`, descriptor SHA-256 |
 | FHIR | `hl7.fhir.r5.core#5.0.0`, FHIR `5.0.0` |
@@ -102,7 +127,7 @@ package、重新產生 staging output 並比較。不得用修改目前 source �
 | 新 FHIR patch/minor 版本 | CodeGen compatibility owner | 目前只核准 R5 `5.0.0` exact matrix | 新 package lock/hash、policy review、descriptor/matrix 更新及 831-equivalent full regression |
 | 新 .NET/TFM | Build + Runtime contract owner | 目前 central TFM 為 `net9.0` | 更新單一 TFM/SDK 設定，重建 Runtime reference/hash，Windows/Linux build/pack/smoke/TPA CI 通過 |
 | Contract-only Runtime reference | Packaging + Runtime owner | 目前使用完整 `MyFhirSdk.dll` 作 compiler-only asset | reference assembly 覆蓋 required surface、identity/hash 更新並通過 full-batch Roslyn/runtime gates |
-| Primitive `.tgz` input | CodeGen + Compatibility maintainers | primitive mode目前要求flat directory，無法直接消費與model mode相同的FHIR package | 核准`MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md`；保留required policy，`.tgz`/directory完整output equivalence、真實tool upgrade與Windows/Linux clean smoke通過 |
+| Primitive `.tgz` input acceptance／handoff | CodeGen + Compatibility maintainers | `1.1.0`已實作雙input與required policy；使用者已回報P6 CI通過，正式owner acceptance尚未記錄，P7文件待本次CI | 記錄`MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md`正式acceptance；P7完成並通過CI後，以完成狀態建立K0 baseline |
 
 沒有 owner、理由與退出條件的新 debt 不得只留在 PR 描述。
 
@@ -114,12 +139,15 @@ Runtime kernel extraction 的 proposed decision 與工作分解位於：
 ADR 核准前，上述文件只代表 migration proposal，不取代 D0-002 的已接受單一 assembly
 baseline。
 
-Runtime extraction前的primitive package-input proposal位於：
+Runtime extraction前的primitive package-input決策與實作紀錄位於：
 
 - `docs/gen/MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md`
 - `docs/gen/MyFhirSdk_CodeGen_Primitive_Tgz_Input_Implementation_Guide.md`
 
-它在Accepted及實作merge前不改變目前primitive directory/required-policy操作契約。
+目前Tool/CodeGen `1.1.0`已支援preferred `.tgz`與相容directory input，兩者均維持required
+explicit policy。Decision仍為Proposed，表示正式owner acceptance尚未記錄，不表示功能尚未
+實作；P7 CI亦須於本次push後確認。後續K0應依implementation guide，在P0–P7完成並通過
+CI後固定immutable baseline。
 
 ## 7. Phase D 最終 gates
 
