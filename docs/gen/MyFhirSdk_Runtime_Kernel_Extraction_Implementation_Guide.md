@@ -294,6 +294,11 @@ Exit gate：Phase D D7/D8 gates 在新 topology 下保持綠燈。
 
 ### K7：文件、rollback 與 handoff
 
+directory 退場與 packaged policy default 延後至 K0–K7 完成後，另立決策處理。
+K7 handoff須保留此後續事項與CodeGen + Compatibility maintainers ownership；
+本migration不移除directory input，也不將`--policy`改為optional。K7完成不等於核准
+上述CLI變更，決策範圍見[Primitive input Decision](MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md)。
+
 交付：
 
 1. 更新 Runtime/Models/CodeGen boundaries 的實際狀態與 dependency diagram。

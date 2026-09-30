@@ -197,6 +197,12 @@ D0的asset precedence、repository-independent host、reference validation與out
 
 ## 4. Alternatives considered
 
+directory 退場與 packaged policy default 延後至 K0–K7 完成後，另立決策處理。
+K0–K7期間維持`.tgz` preferred、directory相容模式及required explicit `--policy`，
+避免同時變更CLI input／policy解析契約與Runtime assembly邊界。後續決策須分別評估
+directory退場的migration／版本策略，以及packaged policy default的override優先序、
+compatibility與manifest provenance；完成K0–K7不代表自動啟用這些變更。
+
 ### 4.1 方案 B：`.tgz`加packaged policy default
 
 Deferred。把`--policy`改為optional可改善clean UX，但會同時改變D0-006 asset contract，增加
@@ -204,7 +210,7 @@ CLI、resolver、compatibility與negative-test範圍。本階段先只解決defi
 
 ### 4.2 移除directory mode
 
-Rejected。這會不必要地破壞Phase B fixture、自訂離線definitions與既有script；保留明確雙模式
+本階段不採用，延後至K0–K7完成後另立決策。移除會影響Phase B fixture、自訂離線definitions與既有script；保留明確雙模式
 不會削弱`.tgz`的preferred production status。
 
 ### 4.3 執行時從網路下載FHIR package

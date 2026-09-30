@@ -132,6 +132,11 @@ package、重新產生 staging output 並比較。不得用修改目前 source �
 
 沒有 owner、理由與退出條件的新 debt 不得只留在 PR 描述。
 
+directory 退場與 packaged policy default 延後至 K0–K7 完成後，另立決策處理。
+Owner為CodeGen + Compatibility maintainers；延後理由是固定Runtime拆分期間的CLI與policy
+基準。退出條件為K0–K7完成，且另案核准directory migration／版本策略與packaged policy
+解析、override及相容性測試；目前directory支援與required `--policy`不變。
+
 Runtime kernel extraction 的 proposed decision 與工作分解位於：
 
 - `docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
