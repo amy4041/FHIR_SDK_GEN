@@ -28,7 +28,7 @@ jobs:
           global-json-file: global.json
       - name: Test K0 metadata and locale isolation, fixture pin and failure evidence
         shell: pwsh
-        run: ./eng/Test-KernelMigrationHarness.ps1
+        run: ./eng/Test-KernelMigrationHarnessExitCode.ps1
       - name: Rebuild baseline and run consumer, regression and smoke gates
         shell: pwsh
         run: ./eng/Test-KernelMigrationBaseline.ps1 -RunRegressionAndSmoke

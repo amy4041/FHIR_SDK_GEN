@@ -11,7 +11,7 @@ From the repository root with the pinned .NET SDK 9.0.317, PowerShell 7.2 or new
 Git, tar, and NuGet access:
 
 ```powershell
-pwsh -NoProfile -File eng/Test-KernelMigrationHarness.ps1
+pwsh -NoProfile -File eng/Test-KernelMigrationHarnessExitCode.ps1
 pwsh -NoProfile -File eng/Test-KernelMigrationBaseline.ps1 -RunRegressionAndSmoke
 ```
 
@@ -130,6 +130,15 @@ actual hash details in failed evidence. Uncorrected metadata is rejected.
 Additional cases cover frozen fixture
 tampering, live-fixture independence, final-comparison failures, early failures and
 the distinction between partial and complete verification.
+
+The CI entry point `Test-KernelMigrationHarnessExitCode.ps1` runs the actual harness
+with the Actions PowerShell prefix/suffix, including `exit $LASTEXITCODE`. The
+`missing.csproj` error is intentional: it verifies environment restoration after a
+failed native command. The harness explicitly exits zero only after all assertions
+and summary writes succeed, so that expected failure cannot leak into the CI step's
+status. The entry point also verifies that an unhandled harness precondition failure
+still returns nonzero. Its results are saved as `shell-exit-summary.json` alongside
+the harness summary; it does not alter the SDK baseline or claim a new full K0 run.
 
 ## Review corrections to the baseline
 

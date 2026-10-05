@@ -178,3 +178,6 @@ Write-KernelJson "$output/summary.json" ([ordered]@{
     independentCallerLanguageAndPath = $true; languageRestoredOnFailure = $true; actualHashInFailureEvidence = $true
 })
 Write-Output 'K0 harness regression tests passed.'
+# Expected native failures leave LASTEXITCODE nonzero. Actions' pwsh wrapper uses
+# that value after this script returns; report success only after every assertion.
+exit 0
