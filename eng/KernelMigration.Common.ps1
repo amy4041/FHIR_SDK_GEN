@@ -1,4 +1,13 @@
 # Shared by the K0 runner and its regression tests. No production build defaults change.
+function Export-KernelBaselineSource {
+    param([string] $RepositoryRoot, [string] $SourceRevision, [string] $ArchivePath)
+    if ($SourceRevision -notmatch '^[0-9a-f]{40}$') { throw 'Expected immutable full source revision.' }
+    # archive applies working-tree conversions, including the host's autocrlf/eol.
+    # Override only this invocation; retain committed attributes and binary bytes.
+    & git -C $RepositoryRoot -c core.autocrlf=false -c core.eol=lf archive --format=tar "--output=$ArchivePath" $SourceRevision
+    if ($LASTEXITCODE -ne 0) { throw "Baseline source export failed ($LASTEXITCODE)." }
+}
+
 function Get-KernelBuildUiLanguage { 'en-US' }
 
 function Invoke-KernelDotNet {

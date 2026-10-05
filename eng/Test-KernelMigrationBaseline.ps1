@@ -33,7 +33,7 @@ Invoke-KernelEvidenceRun -Evidence $result -OutputPath "$output/evidence.json" -
     if ($pin.sourceRevision -notmatch '^[0-9a-f]{40}$') { throw 'Expected immutable full source revision.' }
     $source = Join-Path $output 'baseline-source'
     New-Item -ItemType Directory -Path $source | Out-Null
-    Run git @('-C', $root, 'archive', '--format=tar', "--output=$output/source.tar", $pin.sourceRevision)
+    Export-KernelBaselineSource $root $pin.sourceRevision "$output/source.tar"
     Run tar @('-xf', "$output/source.tar", '-C', $source)
     [xml] $props = Get-Content "$source/Directory.Build.props" -Raw
     $tfm = [string] $props.Project.PropertyGroup.MyFhirSdkTargetFramework

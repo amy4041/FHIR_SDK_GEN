@@ -26,6 +26,12 @@ branch and machine paths from entering the package or PDB. The packed nuspec is
 checked before accepting its inventory. NuGet zip hashes are run evidence, not
 assumed stable across packs.
 
+Source export uses invocation-local `core.autocrlf=false` and `core.eol=lf`.
+`git archive` applies working-tree conversions, so the runner's Git configuration
+can otherwise change source bytes and hence Portable PDB checksums and DLL hashes.
+Committed attributes and binary bytes are preserved; caller Git settings are not
+modified. This retains the existing pinned implementation hash.
+
 K0 dotnet build commands explicitly use `DOTNET_CLI_UI_LANGUAGE=en-US` through
 `Invoke-KernelDotNet`, restoring the caller's environment even on failure. This is
 part of the canonical build contract: MSBuild's generated AssemblyInfo comment is
@@ -127,6 +133,9 @@ They reproduce the uncorrected locale-sensitive DLL hashes, then prove canonical
 DLL bytes and package metadata are identical while reference bytes are unchanged.
 They also verify environment restoration after success/failure and the expected/
 actual hash details in failed evidence. Uncorrected metadata is rejected.
+Archive regression cases exercise both autocrlf settings with `core.eol=crlf`,
+verify canonical LF exports for ordinary and attributed text, preserve binary
+bytes, and check that caller Git settings remain unchanged.
 Additional cases cover frozen fixture
 tampering, live-fixture independence, final-comparison failures, early failures and
 the distinction between partial and complete verification.

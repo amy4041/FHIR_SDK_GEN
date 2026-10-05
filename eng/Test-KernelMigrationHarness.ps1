@@ -108,9 +108,33 @@ foreach ($hostName in @('host-a', 'host-b')) {
     New-Item -ItemType Directory -Path $projectRoot, "$hostRoot/no-hooks" -Force | Out-Null
     Run git @('init', '--quiet', '-b', $hostName, $hostRoot)
     Run git @('-C', $hostRoot, '-c', 'user.name=K0 regression', '-c', 'user.email=k0@example.invalid', '-c', 'commit.gpgsign=false', '-c', "core.hooksPath=$hostRoot/no-hooks", 'commit', '--quiet', '--allow-empty', '-m', $hostName)
+    # Exercise the actual archive path; writing LF probe sources alone misses Git
+    # working-tree conversions on Windows runners. Include attributed text and binary.
+    WriteText "$hostRoot/ArchiveProbe.cs" "public class ArchiveProbe { }`n"
+    WriteText "$hostRoot/.gitattributes" "*.txt text`n*.bin -text`n"
+    WriteText "$hostRoot/attributed.txt" "attributed text`n"
+    $binary = [byte[]] @(0, 13, 10, 255, 10)
+    [IO.File]::WriteAllBytes("$hostRoot/probe.bin", $binary)
+    Run git @('-C', $hostRoot, '-c', 'core.autocrlf=false', '-c', 'core.eol=lf', 'add', 'ArchiveProbe.cs', '.gitattributes', 'attributed.txt', 'probe.bin')
+    Run git @('-C', $hostRoot, '-c', 'user.name=K0 regression', '-c', 'user.email=k0@example.invalid', '-c', 'commit.gpgsign=false', '-c', "core.hooksPath=$hostRoot/no-hooks", 'commit', '--quiet', '-m', 'Archive inputs')
+    $callerAutoCrlf = if ($hostName -eq 'host-a') { 'true' } else { 'false' }
+    Run git @('-C', $hostRoot, 'config', 'core.autocrlf', $callerAutoCrlf)
+    Run git @('-C', $hostRoot, 'config', 'core.eol', 'crlf')
     $hostRevision = (& git -C $hostRoot rev-parse HEAD).Trim()
     if ($LASTEXITCODE -ne 0) { throw 'Cannot read test host revision.' }
     $hostRevisions += $hostRevision
+    $export = "$hostRoot/archive-check"
+    New-Item -ItemType Directory -Path $export | Out-Null
+    Run git @('-C', $hostRoot, 'archive', '--format=tar', "--output=$hostRoot/unfixed.tar", $hostRevision)
+    Run tar @('-xf', "$hostRoot/unfixed.tar", '-C', $export)
+    Assert ([IO.File]::ReadAllText("$export/attributed.txt").Contains("`r`n")) 'Archive probe did not reproduce host line-ending conversion.'
+    Export-KernelBaselineSource $hostRoot $hostRevision "$hostRoot/canonical.tar"
+    Run tar @('-xf', "$hostRoot/canonical.tar", '-C', $export)
+    Assert ([IO.File]::ReadAllText("$export/ArchiveProbe.cs") -ceq "public class ArchiveProbe { }`n") 'Archive source depends on core.autocrlf.'
+    Assert ([IO.File]::ReadAllText("$export/attributed.txt") -ceq "attributed text`n") 'Archive text depends on core.eol.'
+    Assert ([Convert]::ToHexString([IO.File]::ReadAllBytes("$export/probe.bin")) -ceq [Convert]::ToHexString($binary)) 'Archive changed binary bytes.'
+    Assert ((& git -C $hostRoot config core.autocrlf) -ceq $callerAutoCrlf) 'Export changed caller autocrlf configuration.'
+    Assert ((& git -C $hostRoot config core.eol) -ceq 'crlf') 'Export changed caller eol configuration.'
     # Share the real TFM without hard-coding a production contract in this probe.
     [xml] $props = Get-Content "$root/Directory.Build.props" -Raw
     $tfm = [string] $props.Project.PropertyGroup.MyFhirSdkTargetFramework
@@ -176,6 +200,7 @@ Write-KernelJson "$output/summary.json" ([ordered]@{
     status = 'passed'; independentHostMetadata = $true; frozenFixtureTamperRejected = $true
     liveFixtureIsIndependent = $true; failedEvidencePreserved = $true; partialAndPassedStatesVerified = $true
     independentCallerLanguageAndPath = $true; languageRestoredOnFailure = $true; actualHashInFailureEvidence = $true
+    archiveIndependentOfGitLineEndings = $true; archiveBinaryBytesPreserved = $true
 })
 Write-Output 'K0 harness regression tests passed.'
 # Expected native failures leave LASTEXITCODE nonzero. Actions' pwsh wrapper uses
