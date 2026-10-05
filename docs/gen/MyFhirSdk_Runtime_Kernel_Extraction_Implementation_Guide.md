@@ -159,6 +159,11 @@ Serializer/Parser/Validator 目前的 default constructors 直接使用
 
 ### K0：固定 migration baseline
 
+K0 harness、固定 inventory 與本機驗證記錄見
+[Runtime kernel K0 baseline](baselines/kernel-k0/README.md)。
+執行入口為 `eng/Test-KernelMigrationBaseline.ps1 -RunRegressionAndSmoke`；
+branch CI 與提交後的 clean-checkout 驗證仍是出口條件，不因新增 harness 自動視為已通過。
+
 交付：
 
 1. 記錄 baseline commit/tag、assembly identity、TFM、public key token 與 deterministic Release
