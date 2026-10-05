@@ -1,0 +1,25 @@
+{
+  "sourceRevision": "1a28f01d8a4c3aeea46c63da875d01594aeee086",
+  "sdkVersion": "9.0.317",
+  "configuration": "Release",
+  "fixture": {
+    "directory": "Tests/KernelMigration/BaselineConsumer/v1",
+    "revision": "sha256:09af538e046a474209de45400674f574841a398df8978fea67da531df354542f",
+    "files": {
+      "Consumer.csproj": "e93eafa02ad3acb45cd0f626a2bdbb0d8a195ed88750d8c979dd6af5fc2b5d01",
+      "Program.cs": "c7c9fe53f6980c08c18c94af200e610517e56e43011d624c63a886066ca668ef"
+    }
+  },
+  "sdkAssemblyIdentity": "MyFhirSdk, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+  "sdkImplementationSha256": "d47a702c5b52277d81f96867ad026b447fc46cfc9e7fcf08d16fd47de1615afc",
+  "toolVersion": "1.1.0",
+  "primitivePolicyVersion": "1.1.0",
+  "manifestSchemaVersion": 2,
+  "descriptorSha256": "128ba716806fa276186586ec735bb30525a8d0ddfaf00f9525f48b68fd8cad5a",
+  "compilerReferenceSha256": "7c945def6e2414e7944367d0df0ac33aa6386e4cdbedce0d05922ae5023176c9",
+  "expectedRuntimeSymbols": 13,
+  "expectedR5SurfaceTypes": 842,
+  "expectedModelSources": 831,
+  "expectedPrimitiveSources": 21,
+  "ciEvidence": "User confirmed PR #39 branch CI and merge-commit main CI passed on 2026-09-30; run URL not supplied. New K0 execution evidence is recorded separately."
+}
