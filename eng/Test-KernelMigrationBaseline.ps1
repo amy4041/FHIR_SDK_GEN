@@ -15,6 +15,7 @@ if (-not $output.StartsWith($artifactRoot + [IO.Path]::DirectorySeparatorChar, $
 if (Test-Path $output) { throw 'Use a fresh output directory to prove isolated reconstruction.' }
 New-Item -ItemType Directory -Path $output | Out-Null
 function Run([string] $Command, [string[]] $Arguments) {
+    if ($Command -eq 'dotnet') { Invoke-KernelDotNet -Arguments $Arguments; return }
     & $Command @Arguments
     if ($LASTEXITCODE -ne 0) { throw "$Command failed ($LASTEXITCODE): $Arguments" }
 }
@@ -23,6 +24,7 @@ function WriteText([string] $Path, [string] $Content) {
     [IO.File]::WriteAllText($Path, $Content.Replace("`r`n", "`n") + "`n", [Text.UTF8Encoding]::new($false))
 }
 $result = New-KernelEvidence -RunRegressionAndSmoke:$RunRegressionAndSmoke
+$result.buildUiLanguage = Get-KernelBuildUiLanguage
 Invoke-KernelEvidenceRun -Evidence $result -OutputPath "$output/evidence.json" -Action {
     param($result)
     Start-KernelGate $result 'baselineBuild'
@@ -45,7 +47,7 @@ Invoke-KernelEvidenceRun -Evidence $result -OutputPath "$output/evidence.json" -
     $sdk = "$source/bin/Release/$tfm/MyFhirSdk.dll"
     $reference = "$source/CodeGen/bin/Release/$tfm/Assets/RuntimeReferences/$tfm/MyFhirSdk.dll"
     $descriptor = "$source/CodeGen/Policy/runtime-contract.json"
-    if ([Reflection.AssemblyName]::GetAssemblyName($sdk).FullName -cne $pin.sdkAssemblyIdentity -or (Hash $sdk) -cne $pin.sdkImplementationSha256) { throw 'Pinned SDK implementation identity/hash mismatch.' }
+    Assert-KernelSdkBaseline -AssemblyPath $sdk -Pin $pin -Evidence $result
     if ((Hash $descriptor) -cne $pin.descriptorSha256 -or (Hash $reference) -cne $pin.compilerReferenceSha256) { throw 'Pinned descriptor/reference hash mismatch.' }
     $packages = @(Get-ChildItem "$output/package" -Filter *.nupkg)
     if ($packages.Count -ne 1) { throw 'Expected exactly one canonical package.' }

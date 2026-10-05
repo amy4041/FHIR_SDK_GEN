@@ -11,7 +11,7 @@
     }
   },
   "sdkAssemblyIdentity": "MyFhirSdk, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-  "sdkImplementationSha256": "2bf89074d5cbaaa22261c80ef62d63821ccf97e9f304b162a7b7684fc8d4ed7f",
+  "sdkImplementationSha256": "d47a702c5b52277d81f96867ad026b447fc46cfc9e7fcf08d16fd47de1615afc",
   "toolVersion": "1.1.0",
   "primitivePolicyVersion": "1.1.0",
   "manifestSchemaVersion": 2,

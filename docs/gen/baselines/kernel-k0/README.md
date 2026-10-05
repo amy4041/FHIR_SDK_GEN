@@ -26,11 +26,20 @@ branch and machine paths from entering the package or PDB. The packed nuspec is
 checked before accepting its inventory. NuGet zip hashes are run evidence, not
 assumed stable across packs.
 
+K0 dotnet build commands explicitly use `DOTNET_CLI_UI_LANGUAGE=en-US` through
+`Invoke-KernelDotNet`, restoring the caller's environment even on failure. This is
+part of the canonical build contract: MSBuild's generated AssemblyInfo comment is
+localized, and its Portable PDB document checksum affects the implementation DLL's
+deterministic hash. A fixed SDK version and source revision alone are insufficient.
+
 Without `-RunRegressionAndSmoke`, evidence reports `status: partial` and marks the
 three omitted gates `skipped`. A full successful run reports `passed` only after
 the final committed-inventory comparison. Any exception reports `failed`, the
 failing gate and its message; later gates remain pending. CI's always-uploaded
 evidence must be read using this overall status, not individual success fields.
+SDK identity and implementation-hash failures are reported separately, with expected
+and actual values plus the canonical build language persisted in
+`sdkBaselineComparison` before the gate throws.
 
 ## Evidence and inventory
 
@@ -113,8 +122,12 @@ evidence, not a claim that the new branch CI has run.
 Twelve inventory regression cases verify detectable changes in nullable contracts,
 defaults, constants/enums, assembly identity, nested types and constraints, including
 culture-independent escaping. Harness tests create two independent Git repositories
-with different HEADs/branches and prove fixed package metadata is identical; they
-also prove uncorrected metadata is rejected. Additional cases cover frozen fixture
+with different HEADs/branches, source paths and caller UI languages (`zh-TW`, `en-US`).
+They reproduce the uncorrected locale-sensitive DLL hashes, then prove canonical
+DLL bytes and package metadata are identical while reference bytes are unchanged.
+They also verify environment restoration after success/failure and the expected/
+actual hash details in failed evidence. Uncorrected metadata is rejected.
+Additional cases cover frozen fixture
 tampering, live-fixture independence, final-comparison failures, early failures and
 the distinction between partial and complete verification.
 
@@ -128,6 +141,15 @@ this accidental SourceLink changes the deterministic implementation DLL hash fro
 `6d4c068a9bd92be275b5de3c450fb3b30d69cecdbd8bc4866930a87a59e50e9e`
 to `2bf89074d5cbaaa22261c80ef62d63821ccf97e9f304b162a7b7684fc8d4ed7f`.
 The source revision, assembly identity and compiler reference hash stay unchanged.
+
+That intermediate hash was generated under `zh-TW`. The first branch CI exposed
+another missing build input: its English MSBuild emits a different generated comment.
+Rebuilding the same pinned SDK locally under both languages reproduced the mismatch.
+The canonical build now fixes `en-US`, with implementation SHA-256
+`d47a702c5b52277d81f96867ad026b447fc46cfc9e7fcf08d16fd47de1615afc`.
+This correction changes the implementation/PDB and old-consumer binary hashes,
+without changing assembly identity, compiler reference, API or generated-source
+inventories. The strict implementation hash check remains enabled.
 
 P2 expands `public-api.txt` with previously omitted contract details. Existing
 ApprovedPublicApi/ApprovedR5ModelApi snapshots and the source inventory are unchanged.

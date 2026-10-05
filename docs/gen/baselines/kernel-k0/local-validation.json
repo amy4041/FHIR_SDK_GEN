@@ -14,6 +14,14 @@
                   "inventoryComparison":  "passed"
               },
     "failure":  null,
+    "buildUiLanguage":  "en-US",
+    "sdkBaselineComparison":  {
+                                  "expectedIdentity":  "MyFhirSdk, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+                                  "actualIdentity":  "MyFhirSdk, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+                                  "expectedSha256":  "d47a702c5b52277d81f96867ad026b447fc46cfc9e7fcf08d16fd47de1615afc",
+                                  "actualSha256":  "d47a702c5b52277d81f96867ad026b447fc46cfc9e7fcf08d16fd47de1615afc",
+                                  "buildUiLanguage":  "en-US"
+                              },
     "sourceRevision":  "1a28f01d8a4c3aeea46c63da875d01594aeee086",
     "fixtureRevision":  "sha256:09af538e046a474209de45400674f574841a398df8978fea67da531df354542f",
     "fixtureSourceSha256":  "c7c9fe53f6980c08c18c94af200e610517e56e43011d624c63a886066ca668ef",
@@ -22,13 +30,13 @@
     "configuration":  "Release",
     "targetFramework":  "net9.0",
     "sdkAssemblyIdentity":  "MyFhirSdk, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-    "sdkImplementationSha256":  "2bf89074d5cbaaa22261c80ef62d63821ccf97e9f304b162a7b7684fc8d4ed7f",
+    "sdkImplementationSha256":  "d47a702c5b52277d81f96867ad026b447fc46cfc9e7fcf08d16fd47de1615afc",
     "compilerOnlyReferenceSha256":  "7c945def6e2414e7944367d0df0ac33aa6386e4cdbedce0d05922ae5023176c9",
     "descriptorSha256":  "128ba716806fa276186586ec735bb30525a8d0ddfaf00f9525f48b68fd8cad5a",
-    "packageSha256":  "2245bc4877160b602a7ffe2e1e6b3fa088f7f62863a9025b3a43f5a6447a7e87",
+    "packageSha256":  "01f726b0302ea665a6d5a58e55cb7db588a7b71f29bb3e3a73aa327423fddc27",
     "primitivePolicySha256":  "4cf90cda592b468e080fdfe49ace27b7c1fc858ab933a08355f02cd80ccf6419",
     "fhirArchiveSha256":  "74b27cd1bfce9e80eaceac431edf230b0945a443564fbf5512f82e5fa50a80d4",
-    "oldConsumerSha256":  "4a36f296226c84bfbee49a3a43d0b8d7b39fe05d64e88cb2662d080a69d001ee",
+    "oldConsumerSha256":  "a11a48bccdda51daec132f2212aa1a14ba1a4463e810c6c75104eab5aa56449b",
     "oldConsumerCompileReferenceIdentity":  "MyFhirSdk, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
     "runtimeSymbols":  13,
     "r5SurfaceTypes":  842,
@@ -54,6 +62,9 @@
                               "frozenFixtureTamperRejected":  true,
                               "liveFixtureIsIndependent":  true,
                               "failedEvidencePreserved":  true,
-                              "partialAndPassedStatesVerified":  true
+                              "partialAndPassedStatesVerified":  true,
+                              "independentCallerLanguageAndPath":  true,
+                              "languageRestoredOnFailure":  true,
+                              "actualHashInFailureEvidence":  true
                           }
 }

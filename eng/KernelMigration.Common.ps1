@@ -1,4 +1,36 @@
 # Shared by the K0 runner and its regression tests. No production build defaults change.
+function Get-KernelBuildUiLanguage { 'en-US' }
+
+function Invoke-KernelDotNet {
+    param([Parameter(Mandatory)] [string[]] $Arguments)
+    # WriteCodeFragment localizes a generated AssemblyInfo comment. Its PDB checksum
+    # changes the deterministic PE bytes, even when assembly identity and IL agree.
+    $previous = [Environment]::GetEnvironmentVariable('DOTNET_CLI_UI_LANGUAGE')
+    try {
+        [Environment]::SetEnvironmentVariable('DOTNET_CLI_UI_LANGUAGE', (Get-KernelBuildUiLanguage))
+        & dotnet @Arguments
+        if ($LASTEXITCODE -ne 0) { throw "dotnet failed ($LASTEXITCODE): $Arguments" }
+    }
+    finally { [Environment]::SetEnvironmentVariable('DOTNET_CLI_UI_LANGUAGE', $previous) }
+}
+
+function Assert-KernelSdkBaseline {
+    param([string] $AssemblyPath, $Pin, [System.Collections.IDictionary] $Evidence)
+    $actualIdentity = [Reflection.AssemblyName]::GetAssemblyName($AssemblyPath).FullName
+    $actualHash = (Get-FileHash -LiteralPath $AssemblyPath -Algorithm SHA256).Hash.ToLowerInvariant()
+    $Evidence.sdkBaselineComparison = [ordered]@{
+        expectedIdentity = $Pin.sdkAssemblyIdentity; actualIdentity = $actualIdentity
+        expectedSha256 = $Pin.sdkImplementationSha256; actualSha256 = $actualHash
+        buildUiLanguage = Get-KernelBuildUiLanguage
+    }
+    if ($actualIdentity -cne $Pin.sdkAssemblyIdentity) {
+        throw "Pinned SDK assembly identity mismatch. Expected: $($Pin.sdkAssemblyIdentity); actual: $actualIdentity."
+    }
+    if ($actualHash -cne $Pin.sdkImplementationSha256) {
+        throw "Pinned SDK implementation SHA-256 mismatch. Expected: $($Pin.sdkImplementationSha256); actual: $actualHash; build UI language: $(Get-KernelBuildUiLanguage)."
+    }
+}
+
 function Write-KernelJson {
     param([string] $Path, [System.Collections.IDictionary] $Value)
     [IO.File]::WriteAllText($Path, ($Value | ConvertTo-Json -Depth 12).Replace("`r`n", "`n") + "`n", [Text.UTF8Encoding]::new($false))

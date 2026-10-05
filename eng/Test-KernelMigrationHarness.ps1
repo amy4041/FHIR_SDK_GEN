@@ -84,6 +84,8 @@ foreach ($full in @($false, $true)) {
 # Real, separate parent Git repositories reproduce the P1 trigger without changing the user's HEAD.
 $buildProperties = @(Get-KernelBaselineBuildProperties $pin.sourceRevision)
 $nuspecHashes = @()
+$implementationHashes = @()
+$unfixedLocaleHashes = @()
 $hostRevisions = @()
 $project = @'
 <Project Sdk="Microsoft.NET.Sdk">
@@ -95,6 +97,8 @@ $project = @'
     <RepositoryUrl>https://example.invalid/kernel-test</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <Deterministic>true</Deterministic>
+    <PathMap>$(MSBuildProjectDirectory)=/_/kernel-probe</PathMap>
   </PropertyGroup>
 </Project>
 '@
@@ -117,7 +121,24 @@ foreach ($hostName in @('host-a', 'host-b')) {
         $unfixed = @(Get-ChildItem "$hostRoot/unfixed" -Filter *.nupkg)
         ExpectFailure { Assert-KernelPackageProvenance $unfixed[0].FullName $pin.sourceRevision } 'Package repository provenance does not match*'
     }
-    Run dotnet (@('pack', "$projectRoot/Probe.csproj", '-c', 'Release', '-o', "$hostRoot/fixed") + $buildProperties)
+    $previousLanguage = [Environment]::GetEnvironmentVariable('DOTNET_CLI_UI_LANGUAGE')
+    $callerLanguage = if ($hostName -eq 'host-a') { 'zh-TW' } else { 'en-US' }
+    try {
+        [Environment]::SetEnvironmentVariable('DOTNET_CLI_UI_LANGUAGE', $callerLanguage)
+        # Hold source and Git metadata constant but expose the localized generated
+        # comment before applying the canonical-language wrapper. Rebuild avoids caches.
+        Run dotnet (@('build', "$projectRoot/Probe.csproj", '-c', 'Release', '-t:Rebuild') + $buildProperties)
+        $unfixedLocaleHashes += (Get-FileHash "$projectRoot/bin/Release/$tfm/MyFhirSdk.CodeGen.dll").Hash
+        $referenceHash = (Get-FileHash "$projectRoot/obj/Release/$tfm/ref/MyFhirSdk.CodeGen.dll").Hash
+        Invoke-KernelDotNet -Arguments (@('build', "$projectRoot/Probe.csproj", '-c', 'Release', '-t:Rebuild') + $buildProperties)
+        Assert ([Environment]::GetEnvironmentVariable('DOTNET_CLI_UI_LANGUAGE') -ceq $callerLanguage) 'Canonical build leaked its locale into the caller.'
+        $implementationHashes += (Get-FileHash "$projectRoot/bin/Release/$tfm/MyFhirSdk.CodeGen.dll").Hash
+        Assert ((Get-FileHash "$projectRoot/obj/Release/$tfm/ref/MyFhirSdk.CodeGen.dll").Hash -ceq $referenceHash) 'Language normalization changed the reference contract.'
+        Invoke-KernelDotNet -Arguments (@('pack', "$projectRoot/Probe.csproj", '-c', 'Release', '--no-build', '--no-restore', '-o', "$hostRoot/fixed") + $buildProperties)
+        ExpectFailure { Invoke-KernelDotNet -Arguments @('build', "$hostRoot/missing.csproj") } 'dotnet failed*'
+        Assert ([Environment]::GetEnvironmentVariable('DOTNET_CLI_UI_LANGUAGE') -ceq $callerLanguage) 'Failed build did not restore the caller locale.'
+    }
+    finally { [Environment]::SetEnvironmentVariable('DOTNET_CLI_UI_LANGUAGE', $previousLanguage) }
     $package = @(Get-ChildItem "$hostRoot/fixed" -Filter *.nupkg)
     Assert-KernelPackageProvenance $package[0].FullName $pin.sourceRevision
     $assemblyInfo = Get-Content "$projectRoot/obj/Release/$tfm/Probe.AssemblyInfo.cs" -Raw
@@ -130,8 +151,30 @@ foreach ($hostName in @('host-a', 'host-b')) {
 }
 Assert ($hostRevisions[0] -cne $hostRevisions[1]) 'Test hosts must have different HEADs.'
 Assert ($nuspecHashes[0] -ceq $nuspecHashes[1]) 'Package metadata depends on host HEAD/branch.'
+Assert ($unfixedLocaleHashes[0] -cne $unfixedLocaleHashes[1]) 'Locale probe did not reproduce the original DLL hash mismatch.'
+Assert ($implementationHashes[0] -ceq $implementationHashes[1]) 'Canonical DLL bytes depend on caller language or host path.'
+
+# A real assembly hash failure must expose both sides in the persisted failure evidence.
+$probeAssembly = "$projectRoot/bin/Release/$tfm/MyFhirSdk.CodeGen.dll"
+$badPin = [pscustomobject]@{
+    sdkAssemblyIdentity = [Reflection.AssemblyName]::GetAssemblyName($probeAssembly).FullName
+    sdkImplementationSha256 = '0' * 64
+}
+$hashFailure = New-KernelEvidence -RunRegressionAndSmoke
+ExpectFailure {
+    Invoke-KernelEvidenceRun $hashFailure "$output/hash-failure-evidence.json" {
+        param($state)
+        Start-KernelGate $state 'baselineBuild'
+        Assert-KernelSdkBaseline $probeAssembly $badPin $state
+    }
+} 'Pinned SDK implementation SHA-256 mismatch. Expected:*actual:*'
+$saved = Get-Content "$output/hash-failure-evidence.json" -Raw | ConvertFrom-Json
+Assert ($saved.status -eq 'failed' -and $saved.sdkBaselineComparison.actualSha256 -ceq $implementationHashes[1].ToLowerInvariant()) 'Failure evidence lost the actual DLL hash.'
+$badPin.sdkAssemblyIdentity = 'Wrong, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'
+ExpectFailure { Assert-KernelSdkBaseline $probeAssembly $badPin ([ordered]@{}) } 'Pinned SDK assembly identity mismatch. Expected:*actual:*'
 Write-KernelJson "$output/summary.json" ([ordered]@{
     status = 'passed'; independentHostMetadata = $true; frozenFixtureTamperRejected = $true
     liveFixtureIsIndependent = $true; failedEvidencePreserved = $true; partialAndPassedStatesVerified = $true
+    independentCallerLanguageAndPath = $true; languageRestoredOnFailure = $true; actualHashInFailureEvidence = $true
 })
 Write-Output 'K0 harness regression tests passed.'
