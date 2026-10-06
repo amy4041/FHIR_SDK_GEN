@@ -29,7 +29,7 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
         Assert.Equal("MyFhirSdk.CodeGen.Tool", provenance.ToolPackageId);
         Assert.Equal("1.1.0", provenance.ToolVersion);
         Assert.Equal("1.1.0", provenance.CodeGenVersion);
-        Assert.Equal("phase-a-v1+c4-primitives-v1", provenance.RuntimeDescriptorVersion);
+        Assert.Equal("runtime-kernel-accessor-v1", provenance.RuntimeDescriptorVersion);
         Assert.Equal(CodeGenTestRuntime.RuntimeContract.DescriptorSha256, provenance.RuntimeDescriptorSha256);
         Assert.Equal(CodeGenTestRuntime.RuntimeReferences.ReferenceSha256,
             provenance.CompilerReferenceSha256);

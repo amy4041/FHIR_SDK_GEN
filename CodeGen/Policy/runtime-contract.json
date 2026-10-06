@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "phase-a-v1+c4-primitives-v1",
+  "contractVersion": "runtime-kernel-accessor-v1",
   "targetFramework": "net9.0",
   "runtimeAssembly": {
     "name": "MyFhirSdk",
@@ -19,7 +19,7 @@
     },
     "primitivePolicy": {
       "version": "1.1.0",
-      "sha256": "4cf90cda592b468e080fdfe49ace27b7c1fc858ab933a08355f02cd80ccf6419"
+      "sha256": "47fb82123bc97fff108230876d33447208f8e6c2e6b0643bdf3a0a0dce05b253"
     },
     "modelPolicies": [
       {
@@ -215,6 +215,6 @@
       "version": "1.0.0.0",
       "publicKeyToken": "null"
     },
-    "sha256": "7c945def6e2414e7944367d0df0ac33aa6386e4cdbedce0d05922ae5023176c9"
+    "sha256": "9bedf2420e4290afdc0df144d04b77cb8e243bb2380d2ea181a952d5689afa01"
   }
 }

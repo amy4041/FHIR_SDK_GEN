@@ -10,7 +10,6 @@ public sealed class RuntimeContractAccessibilityTests
     private static readonly string[] ForbiddenExportedTypeNames =
     [
         "IFhirValidatablePrimitive",
-        "IPrimitiveValueAccessor",
         "IPrimitiveDefinition",
         "IPrimitiveCodec",
         "IPrimitiveValidator",

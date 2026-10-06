@@ -28,6 +28,11 @@ The ADR remains Proposed, and its acceptance gates still apply before K1.
 
 ## Reproduce
 
+After the public accessor contract migration, current-source regression builds the
+current SDK compiler reference. The historical K0 reference remains reserved for
+the frozen consumer and baseline tool. This separates current contract validation
+from reconstruction of the immutable K0 baseline.
+
 From the repository root with the pinned .NET SDK 9.0.317, PowerShell 7.2 or newer,
 Git, tar, and NuGet access:
 

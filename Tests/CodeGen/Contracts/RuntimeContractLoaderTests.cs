@@ -29,14 +29,14 @@ public sealed class RuntimeContractLoaderTests : IDisposable
         var view = Assert.IsType<RuntimeContractView>(first.Value);
         var secondView = Assert.IsType<RuntimeContractView>(second.Value);
         Assert.Equal(1, view.SchemaVersion);
-        Assert.Equal("phase-a-v1+c4-primitives-v1", view.ContractVersion);
+        Assert.Equal("runtime-kernel-accessor-v1", view.ContractVersion);
         Assert.Equal(GenerationCompatibilityMatrix.TargetFramework, view.TargetFramework);
         Assert.Equal(13, view.Symbols.Count);
         Assert.Equal(3, view.DeclaredSlots.Count);
         Assert.Equal(1, view.Compatibility.SchemaVersion);
         Assert.Equal("exact", view.Compatibility.VersionPolicy);
         Assert.Equal(
-            "128ba716806fa276186586ec735bb30525a8d0ddfaf00f9525f48b68fd8cad5a",
+            "643dc74c30ab0265c9f3c9c9ec30518c40050a2fbeae5d0c478a63d1c146392e",
             view.DescriptorSha256);
         Assert.Equal(
             Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(path))).ToLowerInvariant(),

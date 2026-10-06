@@ -133,7 +133,12 @@ Superseded。
 
 ### 3.5 Cross-assembly primitive seam
 
-目前 `PrimitiveType<T>` 以 internal `IPrimitiveValueAccessor` 向 Serializer/Validator 提供
+2026-10-06 使用者已確認並要求先行公開 IPrimitiveValueAccessor，保留三個成員與既有
+value cast 行為，第三方僅實作介面不自動取得 FHIR registry／serialization 支援。
+詳細範圍見 [accessor 單項決策](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md#3-primitive-accessor-決策)。
+以下描述原始問題與設計限制；此單項實作授權不代表本 ADR 整體 Accepted。
+
+拆分前 `PrimitiveType<T>` 以 internal `IPrimitiveValueAccessor` 向 Serializer/Validator 提供
 untyped value access。搬移 `PrimitiveType<T>` 後，這個 same-assembly seam 不再成立。
 
 實作前必須建立一個最小、不可變且有 API snapshot 的 Runtime integration contract。它只能

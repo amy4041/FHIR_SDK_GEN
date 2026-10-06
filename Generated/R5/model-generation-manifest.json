@@ -8,10 +8,10 @@
   },
   "primitivePolicy": {
     "version": "1.1.0",
-    "sha256": "4cf90cda592b468e080fdfe49ace27b7c1fc858ab933a08355f02cd80ccf6419"
+    "sha256": "47fb82123bc97fff108230876d33447208f8e6c2e6b0643bdf3a0a0dce05b253"
   },
   "codeGenVersion": "1.1.0",
-  "runtimeContractVersion": "phase-a-v1\u002Bc4-primitives-v1",
+  "runtimeContractVersion": "runtime-kernel-accessor-v1",
   "compatibility": {
     "schemaVersion": 1,
     "versionPolicy": "exact",
@@ -22,12 +22,12 @@
     "codeGenVersion": "1.1.0",
     "runtimeDescriptor": {
       "schemaVersion": 1,
-      "version": "phase-a-v1\u002Bc4-primitives-v1",
-      "sha256": "128ba716806fa276186586ec735bb30525a8d0ddfaf00f9525f48b68fd8cad5a"
+      "version": "runtime-kernel-accessor-v1",
+      "sha256": "643dc74c30ab0265c9f3c9c9ec30518c40050a2fbeae5d0c478a63d1c146392e"
     },
     "compilerReference": {
       "logicalIdentity": "MyFhirSdk, Version=1.0.0.0, PublicKeyToken=null, TargetFramework=net9.0",
-      "sha256": "7c945def6e2414e7944367d0df0ac33aa6386e4cdbedce0d05922ae5023176c9"
+      "sha256": "9bedf2420e4290afdc0df144d04b77cb8e243bb2380d2ea181a952d5689afa01"
     },
     "targetFramework": "net9.0"
   },

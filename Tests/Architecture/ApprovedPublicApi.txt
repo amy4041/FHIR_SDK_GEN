@@ -22,6 +22,10 @@ TYPE class MyFhirSdk.Core.FhirSdkException | Base=System.Exception | Interfaces=
   CONSTRUCTOR Void .ctor(System.String)
   CONSTRUCTOR Void .ctor(System.String, System.Exception)
 TYPE interface MyFhirSdk.Core.IFhirExtensionValue | Base=- | Interfaces=-
+TYPE interface MyFhirSdk.Core.IPrimitiveValueAccessor | Base=- | Interfaces=-
+  METHOD Void SetUntypedValue(System.Object)
+  PROPERTY System.Object UntypedValue
+  PROPERTY System.Type ValueType
 TYPE sealed class MyFhirSdk.Core.Meta | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
   CONSTRUCTOR Void .ctor()
   PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.DataType] Security
@@ -34,7 +38,7 @@ TYPE sealed class MyFhirSdk.Core.Narrative | Base=MyFhirSdk.Core.DataType | Inte
   CONSTRUCTOR Void .ctor()
   PROPERTY System.String Div
   PROPERTY System.String Status
-TYPE abstract class MyFhirSdk.Core.PrimitiveType`1 | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE abstract class MyFhirSdk.Core.PrimitiveType`1 | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   METHOD System.String ToString()
   PROPERTY Boolean HasValue
   PROPERTY T Value
@@ -44,26 +48,26 @@ TYPE abstract class MyFhirSdk.Core.Resource | Base=MyFhirSdk.Core.Base | Interfa
   PROPERTY System.String ImplicitRules
   PROPERTY System.String Language
   PROPERTY System.String ResourceType
-TYPE sealed class MyFhirSdk.Primitives.FhirBase64Binary | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirBase64Binary | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
-TYPE sealed class MyFhirSdk.Primitives.FhirBoolean | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Boolean>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirBoolean | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Boolean>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.Nullable`1[System.Boolean])
   METHOD System.String ToString()
-TYPE sealed class MyFhirSdk.Primitives.FhirCanonical | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirCanonical | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
-TYPE sealed class MyFhirSdk.Primitives.FhirCode | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirCode | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
-TYPE sealed class MyFhirSdk.Primitives.FhirDate | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirDate | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
-TYPE sealed class MyFhirSdk.Primitives.FhirDateTime | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirDateTime | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
-TYPE sealed class MyFhirSdk.Primitives.FhirDecimal | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Decimal>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirDecimal | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Decimal>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.Nullable`1[System.Decimal])
   CONSTRUCTOR Void .ctor(System.String)
@@ -72,51 +76,51 @@ TYPE sealed class MyFhirSdk.Primitives.FhirDecimal | Base=MyFhirSdk.Core.Primiti
   FIELD Int32 MaxIntegerDigits
   METHOD System.String ToString()
   PROPERTY System.String Literal
-TYPE sealed class MyFhirSdk.Primitives.FhirId | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirId | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
-TYPE sealed class MyFhirSdk.Primitives.FhirInstant | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirInstant | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
-TYPE sealed class MyFhirSdk.Primitives.FhirInteger | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Int32>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirInteger | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Int32>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.Nullable`1[System.Int32])
   METHOD System.String ToString()
-TYPE sealed class MyFhirSdk.Primitives.FhirInteger64 | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Int64>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirInteger64 | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Int64>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.Nullable`1[System.Int64])
   CONSTRUCTOR Void .ctor(System.String)
   METHOD System.String ToString()
   PROPERTY System.String Literal
-TYPE sealed class MyFhirSdk.Primitives.FhirMarkdown | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirMarkdown | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
   FIELD Int32 MaxLength
-TYPE sealed class MyFhirSdk.Primitives.FhirOid | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirOid | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
-TYPE sealed class MyFhirSdk.Primitives.FhirPositiveInt | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Int32>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirPositiveInt | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Int32>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.Nullable`1[System.Int32])
   METHOD System.String ToString()
-TYPE sealed class MyFhirSdk.Primitives.FhirString | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirString | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
   FIELD Int32 MaxLength
-TYPE sealed class MyFhirSdk.Primitives.FhirTime | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirTime | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
-TYPE sealed class MyFhirSdk.Primitives.FhirUnsignedInt | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Int32>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirUnsignedInt | Base=MyFhirSdk.Core.PrimitiveType<System.Nullable<System.Int32>> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.Nullable`1[System.Int32])
   METHOD System.String ToString()
-TYPE sealed class MyFhirSdk.Primitives.FhirUri | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirUri | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
-TYPE sealed class MyFhirSdk.Primitives.FhirUrl | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirUrl | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
-TYPE sealed class MyFhirSdk.Primitives.FhirUuid | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE sealed class MyFhirSdk.Primitives.FhirUuid | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
 TYPE interface MyFhirSdk.Serialization.IFhirParser | Base=- | Interfaces=-

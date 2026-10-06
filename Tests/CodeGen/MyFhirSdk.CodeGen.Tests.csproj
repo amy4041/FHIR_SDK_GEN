@@ -77,6 +77,10 @@
       <Link>Baselines\PrimitiveTgzInput\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\docs\gen\baselines\kernel-accessor\*.txt;..\..\docs\gen\baselines\kernel-accessor\*.json">
+      <Link>Baselines\KernelAccessor\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Generated\R5\Primitives\*">
       <Link>CommittedGenerated\R5\Primitives\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

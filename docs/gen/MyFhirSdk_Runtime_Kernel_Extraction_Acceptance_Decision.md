@@ -2,7 +2,7 @@
 
 Version 0.1
 
-- 狀態：Draft，所有決策待 owner review；不是 ADR Accepted 紀錄。
+- 狀態：Draft；第 3 節 accessor 方案已由使用者確認並要求先行實作，其餘決策待 owner review；不是 ADR Accepted 紀錄。
 - 日期：2026-10-06。
 - 對應文件：[ADR v0.2](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v0.3](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
 - 範圍：收斂進入 K1 前的設計決策與驗收方法，不執行 K1、不搬移 production declarations。
@@ -55,6 +55,19 @@ FhirSdkException 留在 SDK：目前 parser／primitive codecs 使用它，擬�
 這將收斂 ADR §3.2 原先保留的選項，與 K0 ownership review input 一致。
 
 ## 3. Primitive accessor 決策
+
+2026-10-06 使用者明確確認：accessor 改為 public，保留以下三個成員；null、錯誤型別及
+第三方實作支援範圍採本節方案，並要求先行實作。此為 accessor 的單項授權，不代表 registry、
+CodeGen、release 或整體 ADR 已核准，也不授權 physical extraction。
+實作保留 PrimitiveType<T> 原有轉型邏輯，新增 XML docs、跨 assembly 行為測試，並更新
+目前的 ApprovedPublicApi snapshot；K0 frozen inventories、fixture 與 source pin 維持歷史基準。
+
+交付連動：使用者另選擇一併遷移 descriptor/reference 與生成證據，讓 pipeline 使用最新 SDK。
+目前 contractVersion 為 `runtime-kernel-accessor-v1`，assembly identity 仍為 MyFhirSdk；
+新 hashes 與重建方式見 [accessor contract evidence](baselines/kernel-accessor/README.md)。
+這項授權允許更新 primitive policy 的 contract selection 與兩份 manifest 的 provenance，
+不變更 primitive decisions、831 model sources、21 primitive sources 或 K0 歷史基準。
+這是單一 SDK assembly 內的 accessor contract 遷移，不是 K4 的 Runtime assembly extraction。
 
 建議將現有 MyFhirSdk.Core.IPrimitiveValueAccessor 提升為 public integration interface，保留名稱
 與三個成員，由 PrimitiveType<T> 繼續 explicit implementation：
@@ -200,10 +213,10 @@ SDK 執行輸出必須同時部署 MyFhirSdk.dll 與 MyFhirSdk.Runtime.dll；Too
 | --- | --- | --- | --- | --- |
 | K0 baseline／inventory | 第 1 節、PR #40、K0 pin／inventories | Runtime + Architecture | 待指派 | Pending |
 | 唯一 ownership | 第 2 節 | Runtime + Architecture | 待指派 | Pending |
-| Accessor／registry seams | 第 3、4 節 | Runtime + CodeGen + Compatibility | 待指派 | Pending |
+| Accessor／registry seams | 第 3、4 節 | Runtime + CodeGen + Compatibility | 使用者已確認 accessor；其餘角色待指派 | Partial：2026-10-06 對話確認 accessor；registry Pending |
 | Facade／forwarding policy | 第 6 節 | Compatibility + Runtime | 待指派 | Pending |
 | Old binary fixture／驗證方法 | 第 1、6 節 | Runtime + Compatibility | 待指派 | Pending |
-| Descriptor/reference migration／rollback | 第 5、7 節 | CodeGen + Runtime | 待指派 | Pending |
+| Descriptor/reference migration／rollback | 第 5、7 節 | CodeGen + Runtime | 使用者已授權 accessor reference 遷移；其餘待指派 | Partial：accessor 遷移；Runtime extraction／rollback review Pending |
 | Package／release boundary | 第 7 節 | Package/release owner | 待指派 | Pending |
 | ADR 整體核准 | 全部 gates、第 8 節文件已同步 | Architecture + Runtime maintainers | 待指派 | Pending |
 

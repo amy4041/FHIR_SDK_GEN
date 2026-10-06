@@ -125,7 +125,16 @@ Narrative
 
 ### 5.1 Primitive value accessor
 
-現況：`PrimitiveType<T>` 實作 internal `IPrimitiveValueAccessor`，Serializer/Validator 直接消費
+2026-10-06 使用者已單項確認並要求先行實作 public IPrimitiveValueAccessor，保留三個成員、
+既有 null／型別轉型語義與第三方支援邊界；見 [accessor 決策](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md#3-primitive-accessor-決策)。
+此授權僅涵蓋 accessor、文件、snapshot 與驗證，不代表整體 ADR 已 Accepted 或其餘 K1 工作已核准。
+
+使用者另授權同步遷移 CodeGen descriptor/reference 至 `runtime-kernel-accessor-v1`，
+使用最新單一 SDK compiler reference；允許 policy contract selection 與 manifest provenance 更新。
+此為下述 K1 manifest byte-for-byte 規則的單項例外，所有 generated source bytes 仍保持不變。
+新舊基準分開保存，見 [accessor evidence](baselines/kernel-accessor/README.md)。
+
+原始問題：`PrimitiveType<T>` 實作 internal `IPrimitiveValueAccessor`，Serializer/Validator 直接消費
 該 interface。兩者分到不同 assemblies 後無法沿用相同 internal boundary。
 
 K1 必須設計最小 Runtime integration contract，並符合：

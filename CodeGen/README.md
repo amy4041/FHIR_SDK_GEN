@@ -11,7 +11,7 @@ deterministic C# source 的 repository-local .NET tool。命令為 `myfhir-codeg
 | .NET target framework | `net9.0` |
 | FHIR package | `hl7.fhir.r5.core#5.0.0` |
 | FHIR version | `5.0.0` |
-| Runtime contract | `phase-a-v1+c4-primitives-v1` |
+| Runtime contract | `runtime-kernel-accessor-v1` |
 | Primitive policy | `1.1.0` |
 | Compatibility policy | exact ordinal match |
 | Model/primitive manifest schema | `2` |
@@ -56,6 +56,10 @@ dotnet myfhir-codegen `
 
 省略 `--canonical` 代表完整 scope；重複傳入 `--canonical <url>` 可產生 selected closure。
 完整 model batch 包含 831 個 model source artifacts，加上一份 manifest。
+
+目前的 accessor contract 遷移更新 SDK compiler reference 與 provenance，尚未拆出 Runtime assembly，
+也未授權公開 package release。Hashes 與歷史基準界線見
+[accessor contract evidence](../docs/gen/baselines/kernel-accessor/README.md)。
 
 ## 產生 primitives
 
