@@ -164,6 +164,13 @@ K0 harness、固定 inventory 與本機驗證記錄見
 執行入口為 `eng/Test-KernelMigrationBaseline.ps1 -RunRegressionAndSmoke`；
 branch CI 與提交後的 clean-checkout 驗證仍是出口條件，不因新增 harness 自動視為已通過。
 
+交付狀態（2026-10-06）：K0 已透過 PR #40 合併至 `main`，Git history 確認 merge commit
+為 `ead6fd7d5f78e876f6d1c6fa9aca359a97bd50a5`。使用者已於合併前確認 branch CI 通過，
+並於 2026-10-06 確認合併後 main CI 通過；據此記錄 K0 已交付。CI 結果來源為使用者確認，
+未另取得 run URL 或 CI artifacts 進行獨立核驗。開發期間的 code review、P1/P2 修正與
+後續 CI 修正見 [K0 交付紀錄](baselines/kernel-k0/README.md#k0-delivery-status-2026-10-06)。
+此紀錄不代表 GitHub reviewer approval 或 ADR acceptance；K1 仍須完成 ADR 第 6 節核准。
+
 交付：
 
 1. 記錄 baseline commit/tag、assembly identity、TFM、public key token 與 deterministic Release

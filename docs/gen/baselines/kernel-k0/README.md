@@ -5,6 +5,27 @@ The SDK source revision is `1a28f01d8a4c3aeea46c63da875d01594aeee086`;
 the machine-readable pin is `eng/kernel-migration-baseline.json`. ADR acceptance
 remains pending. These fixtures do not authorize K1 or change production ownership.
 
+## K0 delivery status (2026-10-06)
+
+K0 was merged into `main` through PR #40 from
+`chore/runtime-kernel-k0-baseline`. The local Git history confirms merge commit
+`ead6fd7d5f78e876f6d1c6fa9aca359a97bd50a5`.
+The user confirmed branch CI passed before the merge and confirmed the merged
+`main` CI passed on 2026-10-06. This records user-confirmed CI evidence; no Actions
+run URL or downloaded CI artifact was supplied for independent verification.
+K0 is recorded as delivered based on the merge and these CI confirmations.
+
+The development review and its P1/P2 corrections are documented below. Subsequent
+CI fixes cover build language, expected-failure exit codes, and archive line endings.
+This records the review work performed in this development session; it does not
+assert a GitHub reviewer approval or Architecture/Runtime ADR acceptance.
+
+`local-validation.json` remains the historical local-run evidence. Its
+`branchCiValidated: false` describes that run's evidence scope, not the current
+delivery status. The pinned pre-extraction SDK revision remains
+`1a28f01d8a4c3aeea46c63da875d01594aeee086`; the K0 merge commit does not replace it.
+The ADR remains Proposed, and its acceptance gates still apply before K1.
+
 ## Reproduce
 
 From the repository root with the pinned .NET SDK 9.0.317, PowerShell 7.2 or newer,
@@ -175,5 +196,5 @@ The frozen fixture's source is identical to the original K0 consumer; only its
 provenance/build isolation is now fixed. Evidence includes explicit per-gate and
 overall states, including failures after successful regression tests.
 
-Branch CI and clean-checkout verification of the committed fixture remain required
-before declaring the K0 exit gate accepted. No K1 work is included.
+Branch CI and post-merge main CI are now user-confirmed as passed; see the delivery
+status above for the evidence source and merge revision. No K1 work is included.

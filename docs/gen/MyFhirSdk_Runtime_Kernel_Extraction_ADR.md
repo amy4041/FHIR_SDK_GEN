@@ -23,6 +23,13 @@ harness，供本ADR審查使用；不授權新增production Runtime assembly、�
 forwarders、改public API／production behavior或升版descriptor。K1仍須先完成第6節核准。
 Primitive input Decision的正式owner acceptance另行記錄，不能以CI通過代替。
 
+K0 已由 PR #40 合併至 main，merge commit 為
+`ead6fd7d5f78e876f6d1c6fa9aca359a97bd50a5`。使用者已確認 branch CI 通過，並於
+2026-10-06 確認合併後 main CI 通過；證據來源與 review 修正記錄見
+[K0 交付紀錄](baselines/kernel-k0/README.md#k0-delivery-status-2026-10-06)。
+拆分前 source pin 維持 `1a28f01d8a4c3aeea46c63da875d01594aeee086`。
+K0 交付不取代第 6 節的 owner review 與核准，本 ADR 仍為 Proposed。
+
 Phase D 已將 production CodeGen 與完整 SDK project/implementation 解耦，但 Runtime
 foundation、generated R5 Models、Serializer/Parser/Validator、Client 與 TW Core
 Implementation Guide 仍由 `MyFhirSdk.csproj` 編譯進單一 `MyFhirSdk.dll`。
