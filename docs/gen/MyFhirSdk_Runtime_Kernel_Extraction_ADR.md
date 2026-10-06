@@ -236,6 +236,9 @@ seam 後，再由後續 ADR 決定是否移動 engines。
 
 ## 6. Acceptance gates
 
+逐項決策提案與待核准紀錄見 [Acceptance decision 草案](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md)。
+草案尚未核准，不覆寫本 ADR；核准時須同步草案第 8 節列出的修訂。
+
 ADR 只有在下列項目有 owner 並通過 review 後才能標為 Accepted：
 
 - K0 baseline 與 assembly-aware public API inventory 已提交；

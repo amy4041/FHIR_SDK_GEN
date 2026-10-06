@@ -120,6 +120,9 @@ Narrative
 
 ## 5. 必須先解決的 seams
 
+具體方案見 [Acceptance decision 草案](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md)。
+以下為現行要求；草案的 SPI 與 registry 範圍調整須完成 owner review 後同步修訂，尚不授權 K1。
+
 ### 5.1 Primitive value accessor
 
 現況：`PrimitiveType<T>` 實作 internal `IPrimitiveValueAccessor`，Serializer/Validator 直接消費
