@@ -165,6 +165,18 @@ K2 再以實際 Runtime project／PE 驗證依賴方向。本階段不新增 pub
 
 ### 3.7 CodeGen Runtime contract/reference
 
+2026-10-07 使用者確認採單一 canonical Runtime compiler reference，加上 .NET platform references，
+不新增 CodeGen production ProjectReference 或隱含 reference fallback。三層驗證責任為：
+
+1. Generated models／wrappers：以 sources、platform references 與 Runtime reference 做 Roslyn compilation。
+2. Generated registry composition：以驗證用 declarations 做局部結構檢查，不替代真實 SDK 整合。
+3. 真正 SDK build／runtime regression：以實際 registry、composition、wrappers、codecs／validators
+   驗證編譯與執行行為，不用 stub 掩蓋依賴。
+
+此為設計與驗收方式的確認；K1 檢查 reference surface 與整合測試責任，K2 建立實際 Runtime
+assembly／reference 並驗證依賴方向，K4 切換 descriptor／packaging 後執行完整 gates。
+尚未宣稱 Runtime-only reference 已驗證，也不代表整體 ADR Accepted。
+
 CodeGen production assembly 仍不得 `ProjectReference` Runtime 或 SDK。完成 K1 composition
 seam 與 K2 physical extraction 後：
 
@@ -177,7 +189,7 @@ seam 與 K2 physical extraction 後：
 - compiler reference 只作 Roslyn metadata，不載入、不掃描 inventory。
 
 若 full-batch compilation 在 K1 後仍需要 `MyFhirSdk.dll` 的 SDK composition surface，必須先
-另行核准 descriptor/compiler-reference schema 的多 reference 設計；不得暗中加入第二個
+提出 ADR amendment，核准 descriptor/compiler-reference schema 的多 reference 設計後才實作；不得暗中加入第二個
 reference 或回復 `bin/obj` 搜尋。
 
 ### 3.8 Package與版本策略

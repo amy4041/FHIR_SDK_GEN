@@ -240,7 +240,9 @@ Exit gate：baseline 可在 clean checkout 重現，且未改 production behavio
 2. 保留 SDK-owned registry、generated composition 與 wrappers 的 partial/internal composition；
    以測試保證 Runtime 不依賴它們，只解除跨越 Runtime／SDK 邊界的 same-assembly 依賴。
 3. 對 metadata/provider/default composition 增加 dependency direction tests。
-4. 確認 full-batch CodeGen Roslyn compilation 所需 reference surface。
+4. 確認 full-batch CodeGen Roslyn compilation 所需 reference surface；按 2026-10-07 確認的三層方案，
+   區分 models／wrappers compilation、registry composition 局部驗證、真實 SDK build／runtime regression。
+   補足真實 contract drift 的整合測試，不以 validation declarations 取代 production 整合。
 5. 新增負面測試，禁止 Runtime 引用 `MyFhirSdk.Resources`、`MyFhirSdk.Types`、generated R5
    metadata、Client、IG 或 CodeGen。
 
@@ -248,6 +250,9 @@ Exit gate：仍在單一 `MyFhirSdk.dll` 時所有 behavior tests 通過，831 s
 byte-for-byte 不變；新 seam 已可在不使用 friend/reflection fallback 下跨 assembly。
 
 ### K2：建立 Runtime project 與 physical ownership
+
+本工作包建立真正 Runtime assembly 與 canonical reference 產出能力，提供第 5 節方案的
+physical ownership／依賴方向證據；descriptor／package reference 切換仍於 K4 驗收。
 
 交付：
 
@@ -277,6 +282,12 @@ Exit gate：無 `TypeLoadException`、`FileNotFoundException`、`MissingMethodEx
 `MyFhirSdk.Runtime.dll` 時測試必須以清楚的 dependency failure 失敗，不能靜默 fallback。
 
 ### K4：遷移 versioned Runtime contract
+
+2026-10-07 已確認以單一 canonical MyFhirSdk.Runtime.dll compiler reference 加上 platform
+references 為目標，CodeGen production 不新增 Runtime／SDK ProjectReference，不使用隱含 fallback。
+三層驗證責任見 [acceptance decision 第 5 節](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md#5-codegen-reference-與驗證責任決策)。
+若 reference 不足，先提出並核准 ADR amendment，不自行追加 SDK reference。
+設計已確認與本工作包執行通過為不同狀態；實際 hashes 與 gates 結果須於 K4 記錄。
 
 交付：
 

@@ -2,15 +2,15 @@
 
 Version 0.1
 
-- 狀態：Draft；第 3 節 accessor 與第 4 節 registry composition 方案已由使用者確認，其餘決策待 owner review；不是 ADR Accepted 紀錄。
+- 狀態：Draft；第 3 節 accessor、第 4 節 registry composition 與第 5 節 reference／三層驗證方案已由使用者確認，其餘決策待 owner review；不是 ADR Accepted 紀錄。
 - 日期：2026-10-06。
-- 更新日期：2026-10-07，記錄 registry composition 單項確認。
+- 更新日期：2026-10-07，記錄 registry composition 與第 5 節 reference／三層驗證方案確認。
 - 對應文件：[ADR v0.2](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v0.3](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
 - 範圍：收斂進入 K1 前的設計決策與驗收方法，不執行 K1、不搬移 production declarations。
 
 已確認採最小 public primitive accessor，並保留 SDK-owned registry 的 internal partial composition。
-單一 Runtime compiler reference 的 extraction 方案與其他 ownership、compatibility、release 邊界
-仍須核准。已確認的 registry 決策同步於 ADR §3.6 與 Guide §5.2／K1；
+單一 Runtime compiler reference 與三層驗證方案亦已確認；其他 ownership、compatibility、release 邊界
+仍須核准。已確認的 registry／reference 決策同步於 ADR §3.6／§3.7 與 Guide；
 第 8 節列出其餘需同步的文字，整體 ADR 狀態保持 Proposed。
 
 ## 1. Baseline 與證據
@@ -129,8 +129,11 @@ K1 驗收包括：
 
 ## 5. CodeGen reference 與驗證責任決策
 
-建議維持一個非 platform 的 canonical Runtime compiler reference。
-CodeGen production project 不新增 Runtime／SDK ProjectReference；compiler reference 僅供 metadata 使用。
+2026-10-07 使用者確認本節採用單一 Runtime compiler reference 與三層驗證方案。
+拆分後使用一份 canonical MyFhirSdk.Runtime.dll reference assembly，加上 .NET platform references。
+CodeGen production project 不新增 Runtime／SDK ProjectReference；compiler reference 僅供 metadata 使用，
+不使用隱含 reference fallback。若 Runtime reference 不足，須先提出 ADR amendment 並核准。
+此次確認設計與驗收方式，實作證據於 K1、K2、K4 分別完成，不代表已完成 Runtime-only 驗證。
 
 | 驗證層 | 輸入及責任 | 不代表的保證 |
 | --- | --- | --- |
@@ -139,7 +142,8 @@ CodeGen production project 不新增 Runtime／SDK ProjectReference；compiler r
 | 真正 SDK build 與 runtime regression | 手寫 registry、generated composition、真實 wrappers、codecs／validators 與 Runtime dependency | 不允許拿 validation declarations 取代 production sources |
 
 K1 必須檢查 generated sources 的實際 reference surface，並用測試證明 SDK-internal contract drift
-能由真實 build／integration tests 捕捉。K4 才以實際拆出的 Runtime reference 執行完整 gates。
+能由真實 build／integration tests 捕捉。K2 建立實際 Runtime project 與 canonical reference 產出能力，
+驗證 assembly 依賴方向；K4 才切換 descriptor／packaging，以實際 Runtime reference 執行完整 gates。
 目前單一 assembly reference 包含較多 SDK 型別，不能以 K0 compilation 成功當成 Runtime-only 已驗證。
 
 若 K1 的檢查證明仍需要 SDK metadata reference，應停止該遷移路徑並提出 ADR amendment，核准
@@ -201,7 +205,7 @@ SDK 執行輸出必須同時部署 MyFhirSdk.dll 與 MyFhirSdk.Runtime.dll；Too
 | ADR §3.2、Guide §4 | 固定 FhirSdkException 留 SDK，加入 accessor 與 internal seams ownership |
 | ADR §3.5、Guide §5.1 | 採第 3 節 SPI shape／behavior，釐清穩定契約與可寫 instance value |
 | ADR §3.6、Guide §5.2／K1 | 已於 2026-10-07 同步：保留 SDK partial composition；K1 驗證隔離邊界，不要求消除內部 partial |
-| ADR §3.7、Guide K4 | 明列三層驗證、單 reference 決策及不足時的 amendment 流程 |
+| ADR §3.7、Guide K1／K2／K4 | 已於 2026-10-07 同步：三層驗證、單 reference 決策及不足時的 amendment 流程；執行證據待各工作包完成 |
 | Guide §8、K3 | 新增 SPI 的 public API 例外、K0／K1 consumers 與 moved-public-type forwarder 集合 |
 | ADR §3.8／§7 | 同步 release boundary 與可 review 的 source rollback |
 
@@ -220,7 +224,7 @@ SDK 執行輸出必須同時部署 MyFhirSdk.dll 與 MyFhirSdk.Runtime.dll；Too
 | Accessor／registry seams | 第 3、4 節 | Runtime + CodeGen + Compatibility | 使用者（本對話）；角色歸屬待記錄 | 方案已確認：accessor 2026-10-06、registry 2026-10-07；實作 gates 另驗收，整體 ADR 未核准 |
 | Facade／forwarding policy | 第 6 節 | Compatibility + Runtime | 待指派 | Pending |
 | Old binary fixture／驗證方法 | 第 1、6 節 | Runtime + Compatibility | 待指派 | Pending |
-| Descriptor/reference migration／rollback | 第 5、7 節 | CodeGen + Runtime | 使用者已授權 accessor reference 遷移；其餘待指派 | Partial：accessor 遷移；Runtime extraction／rollback review Pending |
+| Descriptor/reference migration／rollback | 第 5、7 節 | CodeGen + Runtime | 使用者（本對話）；角色歸屬待記錄 | Partial：2026-10-07 確認第 5 節單 reference／三層驗證設計；K1／K2／K4 實作證據未完成，第 7 節 rollback Pending |
 | Package／release boundary | 第 7 節 | Package/release owner | 待指派 | Pending |
 | ADR 整體核准 | 全部 gates、第 8 節文件已同步 | Architecture + Runtime maintainers | 待指派 | Pending |
 
