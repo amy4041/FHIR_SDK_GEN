@@ -29,7 +29,9 @@ public sealed class ModelGenerationPipeline
     private readonly GenerationScopeSelector _scopeSelector = new();
     private readonly ModelIrGenerationPolicyLoader _modelPolicyLoader = new();
     private readonly ModelIrBuilder _irBuilder = new();
-    private readonly ModelMetadataGenerationPipeline _renderPipeline;
+    private readonly RuntimeContractView _runtimeContract;
+    private readonly RoslynCompilationValidator _compilationValidator;
+    private readonly PrimitiveGenerationPipeline _primitivePipeline;
     private readonly ModelGenerationManifestRenderer _manifestRenderer = new();
     private readonly GeneratedFileWriter _writer;
     private readonly GenerationCompatibilityService _compatibilityService;
@@ -45,9 +47,9 @@ public sealed class ModelGenerationPipeline
         _compatibilityService = new GenerationCompatibilityService(
             runtimeContract,
             compilationValidator.ReferenceSet);
-        _renderPipeline = new ModelMetadataGenerationPipeline(
-            runtimeContract,
-            compilationValidator);
+        _runtimeContract = runtimeContract;
+        _compilationValidator = compilationValidator;
+        _primitivePipeline = new(outputSafetyContext, runtimeContract, compilationValidator);
     }
 
     public async Task<GenerationResult<ModelGenerationBatch?>> BuildAsync(
@@ -119,7 +121,21 @@ public sealed class ModelGenerationPipeline
         if (!modelPolicyResult.IsSuccess || modelPolicyResult.Value is null) return Failure(modelPolicyResult.Diagnostics);
         var irResult = _irBuilder.Build(graphResult.Value, scopeResult.Value, mappings, modelPolicyResult.Value);
         if (!irResult.IsSuccess || irResult.Value is null) return Failure(irResult.Diagnostics);
-        var renderResult = _renderPipeline.Generate(irResult.Value);
+        // Compile against wrappers rendered from the same package/policy, never
+        // whichever wrappers happen to exist in the SDK metadata reference.
+        var primitiveResult = await _primitivePipeline.BuildAsync(new(
+            options.PackagePath, options.PrimitivePolicyPath, options.OutputPath,
+            options.FhirVersion, options.PackageId, options.PackageVersion, options.CodeGenVersion), cancellationToken);
+        if (!primitiveResult.IsSuccess || primitiveResult.Value is null) return Failure(primitiveResult.Diagnostics);
+        var auxiliary = primitiveResult.Value.Sources
+            .Where(source => !source.FileName.EndsWith("PrimitiveRegistry.Composition.g.cs", StringComparison.Ordinal))
+            .ToList();
+        if (irResult.Value.Declarations.Any(declaration => declaration.Members.Any(member =>
+                member.TypeAlternatives.Any(type => type.ClrType == "MyFhirSdk.Types.SimpleQuantity"))))
+            auxiliary.Add(MyFhirSdk.CodeGen.Assets.ModelCompilerSourceAsset.Read());
+        var renderPipeline = new ModelMetadataGenerationPipeline(_runtimeContract,
+            _compilationValidator.WithAdditionalSources(auxiliary));
+        var renderResult = renderPipeline.Generate(irResult.Value);
         if (!renderResult.IsSuccess || renderResult.Value is null) return Failure(renderResult.Diagnostics);
 
         var sources = renderResult.Value.CompilationSources

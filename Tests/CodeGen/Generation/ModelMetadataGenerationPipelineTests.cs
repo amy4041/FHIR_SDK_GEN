@@ -11,7 +11,7 @@ namespace MyFhirSdk.CodeGen.Tests.Generation;
 public sealed class ModelMetadataGenerationPipelineTests
 {
     [Fact]
-    public async Task Generate_OfficialSelectedPatientScope_CompilesScopedMetadata()
+    public async Task Generate_OfficialSelectedPatientScope_CompilesModelsAndChecksMetadataStructure()
     {
         var (_, modelIr) = await ComplexDatatypeTestContext.BuildOfficialIrAsync("Patient");
         Assert.DoesNotContain(modelIr.Declarations, declaration => declaration.FhirName == "Age");
@@ -35,7 +35,7 @@ public sealed class ModelMetadataGenerationPipelineTests
     }
 
     [Fact]
-    public async Task Generate_OfficialFullScope_CompilesModelsMetadataFactoriesAndRulesTogether()
+    public async Task Generate_OfficialFullScope_CompilesModelsAndRendersSdkCompositionForIntegration()
     {
         var modelIr = await ModelMetadataTestContext.BuildFullModelIrAsync();
 

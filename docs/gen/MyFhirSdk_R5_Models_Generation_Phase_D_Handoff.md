@@ -144,6 +144,9 @@ Runtime kernel extraction 的已核准決策與工作分解位於（K1–K7 實�
 
 ADR 及 K1 validation amendment 已於 2026-10-07 核准；目前 production 仍維持 D0-002 的
 單一 assembly baseline，physical extraction 與 canonical assets 依 K2–K4 gates 另行完成。
+K1 本機開發與驗證已完成，CLI models 編譯／composition 結構檢查及 fresh generated SDK integration
+已接入；部署 SDK 已移除 generator friend。compiler-only 歷史 reference 暫時保持 bytes，
+由條件 build 重建且不部署該 implementation，於 K4 一併移除。執行證據見上述 Guide。
 
 Runtime extraction前的primitive package-input決策與實作紀錄位於：
 

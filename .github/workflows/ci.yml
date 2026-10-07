@@ -71,6 +71,10 @@ jobs:
       - name: Build compiler reference asset
         run: dotnet build eng/MyFhirSdk.CodeGen.Build.proj --configuration Release --no-restore
 
+      - name: Verify compiler contract preserves normal SDK build outputs
+        shell: pwsh
+        run: ./eng/Test-CompilerReferenceIsolation.ps1 -OutputPath artifacts/toolchain/compiler-isolation-summary.json
+
       - name: Stage compiler reference asset
         shell: pwsh
         run: |

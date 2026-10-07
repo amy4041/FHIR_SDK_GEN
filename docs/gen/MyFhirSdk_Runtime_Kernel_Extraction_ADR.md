@@ -1,6 +1,6 @@
 # ADR：MyFhirSdk Runtime kernel physical extraction
 
-Version 0.4
+Version 0.5
 
 - 狀態：Accepted（2026-10-07）；允許開始 K1，實體搬移仍依 K2/K3 gates 執行
 - 核准人：本專案使用者（本對話），兼任 Architecture、Runtime、CodeGen、Compatibility、Package／Release
@@ -374,8 +374,12 @@ CLI 成功只保證 models／wrappers 語意編譯與 composition 局部／結�
 K1 完成驗證責任拆分、移除 production friend access、真實 metadata／validation drift tests，
 並固定 `SimpleQuantity` auxiliary source 契約；K2 建立實際 Runtime assembly；K4 完成 canonical
 reference 與 auxiliary asset 的 packaging、hash、missing／mismatch、clean install、deterministic
-及跨平台 gates。這些實作證據仍待完成，不把既有 842 passed 當成 amendment 已實作的結果。
+及跨平台 gates。K1 本機實作與驗證已完成，見 Guide 的 K1 證據；K2／K4／K6 實作證據仍待完成。
 
 未採整套 SDK sources 封裝進 CodeGen，也未採多 metadata references；不新增 public metadata
 SPI、不擴大 Runtime ownership。若此方案後續仍不足，另提 amendment，不能暗中增加 reference、
-production friend access 或 source fallback。本次修改文件，production pipeline 尚未切換。
+production friend access 或 source fallback。Production pipeline 已依本節切換；K1 為固定 manifests，
+暫時重建歷史 compiler-only reference bytes，該資產仍保留舊 friend metadata，部署的 SDK 則已移除。
+CodeGen 使用新的 compilation assembly name，無須該 friend；過渡 build 與歷史屬性於 K4 移除。
+K1 review 後已將過渡 build 的 intermediate／output 隔離；logical path mapping 維持既有 hash，
+並以 CI regression gate 確認不修改或刪除正常 SDK 的 `obj`／`bin`。

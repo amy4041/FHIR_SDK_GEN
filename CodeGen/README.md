@@ -61,6 +61,13 @@ dotnet myfhir-codegen `
 也未授權公開 package release。Hashes 與歷史基準界線見
 [accessor contract evidence](../docs/gen/baselines/kernel-accessor/README.md)。
 
+K1 已將驗證責任拆分：CLI 以同一 input／policy 新生成的 primitive wrappers 與 embedded 真實
+`SimpleQuantity.cs` 編譯 models；metadata／validation composition 做 IR、mapping 與結構檢查。
+CLI 成功的完整整合保證須再由 SDK build／CI 編譯此次全部生成結果，並執行 runtime tests。
+K1 compiler-only reference 暫時維持既有 hash／manifest；部署的 SDK 已移除 generator friend，
+Runtime assembly／reference／auxiliary provenance 遷移仍在 K2–K4。詳見
+[K1 實作與證據](../docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md#k1-實作進度與-reference-surface-證據2026-10-07)。
+
 ## 產生 primitives
 
 primitive mode 建議直接讀取本機FHIR `.tgz`，並保留 required explicit `--policy`：

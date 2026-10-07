@@ -1,6 +1,6 @@
 # Runtime kernel ADR acceptance decision 核准紀錄
 
-Version 0.3
+Version 0.4
 
 - 狀態：Accepted（2026-10-07）；設計 gates 已核准，允許開始 K1；實作 gates 另行驗收。
 - 日期：2026-10-06。
@@ -12,7 +12,7 @@ Version 0.3
 單一 Runtime compiler reference、三層驗證、ownership、compatibility、release／rollback 方案
 亦已確認並同步於 ADR 與 Guide。第 8 節記錄同步範圍，第 9 節記錄責任角色與最終核准，
 ADR 狀態為 Accepted。K1 reference surface 發現後的較小修訂已依本對話授權核准，見第 5、10 節。
-未執行的 K1–K7 gates 不因設計確認而標為通過。
+未執行的 gates 不因設計確認而標為通過；K1 的本機執行證據另記錄於第 10 節及 Guide。
 
 ## 1. Baseline 與證據
 
@@ -227,7 +227,7 @@ SDK 執行輸出必須同時部署 MyFhirSdk.dll 與 MyFhirSdk.Runtime.dll；Too
 | ADR §3.2、Guide §4 | 已於 2026-10-07 同步：FhirSdkException 留 SDK，加入 accessor 與完整 seam ownership 依據 |
 | ADR §3.5、Guide §5.1 | 已同步第 3 節 SPI shape／behavior，釐清穩定契約與可寫 instance value |
 | ADR §3.6、Guide §5.2／K1 | 已於 2026-10-07 同步：保留 SDK partial composition；K1 驗證隔離邊界，不要求消除內部 partial |
-| ADR §3.7／§8、Guide K1／K2／K4／K6 | 已於 2026-10-07 同步：單 reference、SimpleQuantity auxiliary source、CLI／SDK build 驗證責任及移除 production friend access；amendment 核准見第 10 節，執行證據待完成 |
+| ADR §3.7／§8、Guide K1／K2／K4／K6 | 已於 2026-10-07 同步：單 reference、SimpleQuantity auxiliary source、CLI／SDK build 驗證責任及移除 production friend access；K1 本機證據見第 10 節及 Guide，K2／K4／K6 待完成 |
 | ADR §3.4、Guide §8／K3 | 已於 2026-10-07 同步：SPI public API 例外、K0／K1 consumers 與 moved-public-type forwarder 集合 |
 | ADR §3.8／§7 | 已於 2026-10-07 同步：release boundary 與可 review 的 source rollback |
 
@@ -277,3 +277,10 @@ K1–K7 的實作測試留在各工作包驗收，不回填成已在 acceptance 
 CLI success 的保證限於 models／wrappers 語意編譯及 composition 局部／結構檢查；
 完整生成成功的驗收保證來自此次全部生成產物的真實 SDK build／CI 與 runtime regression。
 此授權不擴大 ownership／public API／公開 release 範圍，不替代後續各工作包的執行證據。
+
+2026-10-07 K1 實作紀錄：production pipeline、embedded 真實 auxiliary source、fresh generated
+SDK integration 與真實 metadata／validation／registry drift tests 已完成；本機 solution
+857 passed、1 external-service test skipped、0 failed。詳見 [Guide K1 證據](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md#k1-實作進度與-reference-surface-證據2026-10-07)。
+部署 SDK 已移除 generator friend。為固定 K1 manifest／reference bytes，歷史 compiler-only 資產
+仍保留舊 friend metadata，由條件 build 產出且不部署 implementation；CodeGen 已不用該 friend name。
+此過渡機制及 auxiliary descriptor／provenance 於 K4 原子遷移；不宣稱 K2／K4／跨平台驗收已完成。
