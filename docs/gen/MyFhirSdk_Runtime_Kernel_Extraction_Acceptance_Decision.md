@@ -2,15 +2,16 @@
 
 Version 0.1
 
-- 狀態：Draft；第 3 節 accessor 方案已由使用者確認並要求先行實作，其餘決策待 owner review；不是 ADR Accepted 紀錄。
+- 狀態：Draft；第 3 節 accessor 與第 4 節 registry composition 方案已由使用者確認，其餘決策待 owner review；不是 ADR Accepted 紀錄。
 - 日期：2026-10-06。
+- 更新日期：2026-10-07，記錄 registry composition 單項確認。
 - 對應文件：[ADR v0.2](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v0.3](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
 - 範圍：收斂進入 K1 前的設計決策與驗收方法，不執行 K1、不搬移 production declarations。
 
-建議採最小 public primitive accessor，保留 SDK-owned registry 的 internal partial composition，
-並以單一 Runtime compiler reference 驗證 generated model／wrapper contract。
-這些方案須連同下列 ownership、compatibility、release 邊界一起核准。
-草案不覆寫現行 ADR；第 8 節列出核准時必須同步修訂的文字。
+已確認採最小 public primitive accessor，並保留 SDK-owned registry 的 internal partial composition。
+單一 Runtime compiler reference 的 extraction 方案與其他 ownership、compatibility、release 邊界
+仍須核准。已確認的 registry 決策同步於 ADR §3.6 與 Guide §5.2／K1；
+第 8 節列出其餘需同步的文字，整體 ADR 狀態保持 Proposed。
 
 ## 1. Baseline 與證據
 
@@ -104,8 +105,11 @@ K1 應新增 API snapshot、XML docs、nullable/reference/value-type 行為測�
 
 ## 4. Registry 與 default composition 決策
 
-建議保留手寫 PrimitiveRegistry 與 generated PrimitiveRegistry.Composition.g.cs 的 SDK-internal
-partial composition。兩者都不跨 assembly，因此本階段不新增 public registry provider／builder SPI。
+2026-10-07 使用者確認：registry、generated composition、wrappers 全部留在 SDK。
+保留手寫 PrimitiveRegistry 與 generated PrimitiveRegistry.Composition.g.cs 的 SDK-internal
+partial composition。K1 必須解除跨越 Runtime／SDK 邊界的 same-assembly 依賴；
+留在 SDK 內部的 partial/internal composition 可以保留，並以測試保證 Runtime 不依賴它。
+因此本階段不新增 public registry provider／builder SPI。
 不改 renderer 或 generated registry source 來配合不需要的實體拆分。
 
 跨 assembly 邊界只有 Runtime primitive base／accessor 與 SDK 消費端；Runtime 不呼叫 registry，
@@ -196,7 +200,7 @@ SDK 執行輸出必須同時部署 MyFhirSdk.dll 與 MyFhirSdk.Runtime.dll；Too
 | --- | --- |
 | ADR §3.2、Guide §4 | 固定 FhirSdkException 留 SDK，加入 accessor 與 internal seams ownership |
 | ADR §3.5、Guide §5.1 | 採第 3 節 SPI shape／behavior，釐清穩定契約與可寫 instance value |
-| ADR §3.6、Guide §5.2／K1 | 明訂保留 SDK partial composition；K1 驗證隔離邊界，不要求消除內部 partial |
+| ADR §3.6、Guide §5.2／K1 | 已於 2026-10-07 同步：保留 SDK partial composition；K1 驗證隔離邊界，不要求消除內部 partial |
 | ADR §3.7、Guide K4 | 明列三層驗證、單 reference 決策及不足時的 amendment 流程 |
 | Guide §8、K3 | 新增 SPI 的 public API 例外、K0／K1 consumers 與 moved-public-type forwarder 集合 |
 | ADR §3.8／§7 | 同步 release boundary 與可 review 的 source rollback |
@@ -206,14 +210,14 @@ SDK 執行輸出必須同時部署 MyFhirSdk.dll 與 MyFhirSdk.Runtime.dll；Too
 
 ## 9. Acceptance gate 核准紀錄
 
-證據已具備與 owner 已核准是不同狀態。下列結果刻意保持 Pending，由實際負責人填寫。
+證據已具備與 owner 已核准是不同狀態。下列記錄區分使用者已確認的單項方案與仍 Pending 的 gates。
 一人可兼任多個角色，但應明列各角色所核准的範圍。
 
 | Gate | 決策與證據 | 必要 review role | 具名核准人 | 結果／日期／review link |
 | --- | --- | --- | --- | --- |
 | K0 baseline／inventory | 第 1 節、PR #40、K0 pin／inventories | Runtime + Architecture | 待指派 | Pending |
 | 唯一 ownership | 第 2 節 | Runtime + Architecture | 待指派 | Pending |
-| Accessor／registry seams | 第 3、4 節 | Runtime + CodeGen + Compatibility | 使用者已確認 accessor；其餘角色待指派 | Partial：2026-10-06 對話確認 accessor；registry Pending |
+| Accessor／registry seams | 第 3、4 節 | Runtime + CodeGen + Compatibility | 使用者（本對話）；角色歸屬待記錄 | 方案已確認：accessor 2026-10-06、registry 2026-10-07；實作 gates 另驗收，整體 ADR 未核准 |
 | Facade／forwarding policy | 第 6 節 | Compatibility + Runtime | 待指派 | Pending |
 | Old binary fixture／驗證方法 | 第 1、6 節 | Runtime + Compatibility | 待指派 | Pending |
 | Descriptor/reference migration／rollback | 第 5、7 節 | CodeGen + Runtime | 使用者已授權 accessor reference 遷移；其餘待指派 | Partial：accessor 遷移；Runtime extraction／rollback review Pending |

@@ -155,9 +155,13 @@ untyped value access。搬移 `PrimitiveType<T>` 後，這個 same-assembly seam
 - `IModelMetadataProvider` implementation 與 generated R5 metadata；
 - Serializer/Parser/Validator default R5 composition。
 
-目前 generated primitive composition 與手寫 registry 使用同 assembly 的
-`partial/internal` seam。K1 必須把它改為明確的 SDK-owned composition boundary，使 Runtime
-kernel 不引用 generated wrappers，且不為了拆分將 codec/validator 全部改成 public。
+2026-10-07 使用者確認：registry、generated composition 與 wrappers 全部留在
+`MyFhirSdk.dll`，保留 SDK 內部的 `partial/internal` composition。
+K1 必須解除跨越 Runtime／SDK 邊界的 same-assembly 依賴，不要求消除 SDK 內部的 partial。
+以 ownership 與 dependency tests 保證 Runtime 不依賴 registry、generated composition 或 wrappers；
+K2 再以實際 Runtime project／PE 驗證依賴方向。本階段不新增 public registry provider/builder SPI，
+也不為了拆分將 codec/validator 改為 public。此為 registry composition 單項決策，
+不代表整體 ADR 已 Accepted。
 
 ### 3.7 CodeGen Runtime contract/reference
 

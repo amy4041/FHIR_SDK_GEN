@@ -121,7 +121,8 @@ Narrative
 ## 5. 必須先解決的 seams
 
 具體方案見 [Acceptance decision 草案](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md)。
-以下為現行要求；草案的 SPI 與 registry 範圍調整須完成 owner review 後同步修訂，尚不授權 K1。
+Accessor 與 registry composition 的使用者確認範圍已同步於下文；其他 acceptance gates
+仍待完成，不能據此視為整體 K1 已獲授權。
 
 ### 5.1 Primitive value accessor
 
@@ -150,9 +151,13 @@ K1 必須設計最小 Runtime integration contract，並符合：
 現況：手寫 `PrimitiveRegistry` 和 generated `PrimitiveRegistry.Composition.g.cs` 依靠
 same-assembly `partial/internal` composition。
 
+2026-10-07 使用者確認保留此 SDK 內部關係；registry、generated composition、wrappers
+全部留在 `MyFhirSdk.dll`。K1 僅解除跨越 Runtime／SDK 邊界的 same-assembly 依賴，
+不為此新增 public registry provider/builder SPI。
+
 K1 必須使 composition owner 仍在 `MyFhirSdk.dll`，並讓：
 
-- Runtime kernel 不引用 generated wrapper types；
+- 以 ownership／dependency tests 保證 Runtime kernel 不引用 registry、generated composition 或 wrappers；
 - CodeGen full-batch compilation 只依核准 compiler contract；
 - codecs/validators 不因方便而全部成為 public API；
 - generated output 保持 deterministic，registry 行為與目前一致。
@@ -232,7 +237,8 @@ Exit gate：baseline 可在 clean checkout 重現，且未改 production behavio
 交付：
 
 1. 取代 internal primitive accessor 的 same-assembly 假設。
-2. 取代 generated primitive registry 的 partial/same-assembly 假設。
+2. 保留 SDK-owned registry、generated composition 與 wrappers 的 partial/internal composition；
+   以測試保證 Runtime 不依賴它們，只解除跨越 Runtime／SDK 邊界的 same-assembly 依賴。
 3. 對 metadata/provider/default composition 增加 dependency direction tests。
 4. 確認 full-batch CodeGen Roslyn compilation 所需 reference surface。
 5. 新增負面測試，禁止 Runtime 引用 `MyFhirSdk.Resources`、`MyFhirSdk.Types`、generated R5
