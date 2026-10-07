@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime kernel extraction 實作指引
 
-Version 0.4
+Version 0.5
 
-- 狀態：Ready for K1；ADR 於 2026-10-07 Accepted，允許開始 K1；public declarations 搬移仍在 K2/K3 驗收
+- 狀態：K1 in progress；ADR 及 validation amendment 於 2026-10-07 Accepted，允許依修訂繼續 K1；實作 gates 待完成，public declarations 搬移仍在 K2/K3 驗收
 - 適用範圍：第一階段 Runtime kernel physical extraction
 - Baseline：post-D Tool/CodeGen `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 決策文件：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
@@ -163,7 +163,8 @@ same-assembly `partial/internal` composition。
 K1 必須使 composition owner 仍在 `MyFhirSdk.dll`，並讓：
 
 - 以 ownership／dependency tests 保證 Runtime kernel 不引用 registry、generated composition 或 wrappers；
-- CodeGen full-batch compilation 只依核准 compiler contract；
+- CodeGen models／wrappers compilation 只依核准 Runtime reference 與來源契約；SDK composition
+  完整語意編譯由此次生成產物的真實 SDK build／CI 負責；
 - codecs/validators 不因方便而全部成為 public API；
 - generated output 保持 deterministic，registry 行為與目前一致。
 
@@ -191,7 +192,8 @@ branch CI 與提交後的 clean-checkout 驗證仍是出口條件，不因新增
 並於 2026-10-06 確認合併後 main CI 通過；據此記錄 K0 已交付。CI 結果來源為使用者確認，
 未另取得 run URL 或 CI artifacts 進行獨立核驗。開發期間的 code review、P1/P2 修正與
 後續 CI 修正見 [K0 交付紀錄](baselines/kernel-k0/README.md#k0-delivery-status-2026-10-06)。
-此紀錄不代表 GitHub reviewer approval 或 ADR acceptance；K1 仍須完成 ADR 第 6 節核准。
+此 K0 紀錄不代表 GitHub reviewer approval 或 ADR acceptance；K1 entry 核准已依 ADR 第 6 節
+完成，validation amendment 的同日核准另見 ADR 第 8 節。
 
 交付：
 
@@ -245,14 +247,73 @@ Exit gate：baseline 可在 clean checkout 重現，且未改 production behavio
 2. 保留 SDK-owned registry、generated composition 與 wrappers 的 partial/internal composition；
    以測試保證 Runtime 不依賴它們，只解除跨越 Runtime／SDK 邊界的 same-assembly 依賴。
 3. 對 metadata/provider/default composition 增加 dependency direction tests。
-4. 確認 full-batch CodeGen Roslyn compilation 所需 reference surface；按 2026-10-07 確認的三層方案，
-   區分 models／wrappers compilation、registry composition 局部驗證、真實 SDK build／runtime regression。
-   補足真實 contract drift 的整合測試，不以 validation declarations 取代 production 整合。
+4. 依 ADR §8 的已核准修訂拆分驗證責任：models／wrappers 使用此次生成 sources 與真實
+   `SimpleQuantity.cs`，只對 platform references 與核准 compiler reference 做 Roslyn compilation；
+   registry 保留局部檢查，metadata／validation composition 保留 IR、mapping 與生成結構檢查。
+   真實 SDK build／CI 必須編譯此次全部生成產物，與實際 providers、rules、registry、codecs／validators
+   做整合驗證。補足 metadata／validation 與 registry contract drift 負面測試，不以 stub 取代實作。
 5. 新增負面測試，禁止 Runtime 引用 `MyFhirSdk.Resources`、`MyFhirSdk.Types`、generated R5
    metadata、Client、IG 或 CodeGen。
+6. 移除 validation assembly 的 production `InternalsVisibleTo`，調整依賴它的 generated-runtime
+   tests；保留允許的窄範圍 test friend access。固定真實 `SimpleQuantity.cs` auxiliary source 契約，
+   不封裝整套 SDK sources；wrappers 使用此次 input／policy 生成結果。
 
 Exit gate：仍在單一 `MyFhirSdk.dll` 時所有 behavior tests 通過，831 sources 與 manifest
-byte-for-byte 不變；新 seam 已可在不使用 friend/reflection fallback 下跨 assembly。
+byte-for-byte 不變；新 seam 已可在不使用 production friend/reflection fallback 下跨 assembly。
+CLI 的 models／wrappers compilation 與 composition 局部／結構檢查通過，且此次完整輸出的
+真實 SDK build／integration gates 通過，才能宣稱完整生成驗收成功。K1 不宣稱已完成 K4
+Runtime-only canonical reference／auxiliary asset packaging。
+
+#### K1 實作進度與 reference surface 證據（2026-10-07）
+
+狀態：已開始實作；**K1 exit gate 尚未完成**。Accessor、kernel／SDK seam 的獨立驗證已建立。
+最初因實際 SDK 依賴暫停 reference 遷移；使用者已依本對話核准 ADR §8 的較小修訂，
+設計阻礙已解除，剩餘 pipeline／tests 仍待按修訂實作。
+
+新增 `KernelIntegrationSeamTests` 與 `KernelPrimitiveRegistrationTests`，驗證：
+
+- 13 個 kernel declarations 加 accessor 的真實來源可只用 .NET platform references 編譯；
+  加入 Resources、Types、wrappers、R5 metadata、Client、IG 或 CodeGen 依賴的負面案例都失敗。
+  測試排除 testhost TPA 中的 SDK／CodeGen／test assemblies，避免意外補足 reference。
+- 829 個 generated models 與 20 個 wrappers 在 kernel reference 下，只缺 SDK-owned
+  `SimpleQuantity`；加入真正 `Types/SimpleQuantity.cs` 可成功編譯。
+  這是來源層面的可行性證據；真實 SimpleQuantity auxiliary source 的設計現已核准，
+  production pipeline 的來源接入與資產契約仍待實作。
+- 加入兩個 generated metadata／validation sources 後，仍缺 SDK-owned declarations。
+  此測試預期失敗，用以記錄目前依賴，不能當成修訂後 models compilation／SDK integration gate 通過。
+- 全部真實 SDK 功能來源可對隔離 kernel reference 編譯／emit，保留 SDK-internal composition，
+  不加入 production friend attributes 或 validation stubs。Regex implementations 使用專案實際解析的
+  framework source generator；不以手寫替代 validator。
+- 將真實手寫 registry 的 `Define` 改名，generated composition 編譯即失敗，證明真實 drift
+  可被捕捉；現有 runtime tests 另固定 missing／duplicate registration 行為。
+- Public default engines 使用同一 SDK-owned R5 provider 與 primitive registry；僅實作 accessor
+  不可註冊成 FHIR primitive，衍生 primitive 必須符合 declared value type，且不自動註冊。
+- Accessor assignments 與原本直接轉型逐案比較，固定 reference／nullable／non-nullable value type
+  的成功值、例外型別及失敗後保留原值／metadata 的行為。
+
+現有 `ModelMetadataGenerationPipeline` 把 models 和兩個 composition sources 合併交給
+`RoslynCompilationValidator`；`AssemblyInfo.cs` 授予 validation assembly production friend access。
+因此目前完整生成成功仍依賴 SDK reference，不能當成修訂後單一 kernel reference gates 通過。
+實作未修改該 pipeline、friend declaration、descriptor／hash、generated sources 或 manifests；
+未建立 production Runtime project 或 forwarders。
+
+後續依 [ADR §8 已核准修訂](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md#8-k1-reference-surface-amendment2026-10-07)
+與 Acceptance decision §5／§10 實作，不再等待同一項設計的核准。修訂取消 CLI 對兩個 SDK
+composition sources 的語意編譯保證，完整保證改由真實 SDK build／CI 提供。
+
+本機驗證（Windows、.NET SDK 9.0.317）：Architecture **158 passed**；完整 solution
+**842 passed、1 external-service test skipped、0 failed**，包含 full generation、API snapshots、
+primitive equivalence 與 package tests。這是本機結果，不宣稱 CI／Ubuntu 已通過。
+既有 generated sources、manifests、policy 與 frozen baselines 無修改。此結果來自 amendment
+實作前的 seam 工作，不作為新 validation pipeline 已完成的證據。
+
+```powershell
+dotnet test Tests/Architecture/MyFhirSdk.Architecture.Tests.csproj -c Release --no-restore
+dotnet test MyFhirSdk.sln -c Release --no-restore --logger trx --results-directory artifacts/kernel-k1/test-results/regression
+```
+
+測試編譯的 `K1.Kernel`／`K1.Sdk` 只存在記憶體，不是 K2 production assembly 或 K4 canonical
+compiler reference。TRX 證據留在 ignored `artifacts/kernel-k1/test-results`。
 
 ### K2：建立 Runtime project 與 physical ownership
 
@@ -310,9 +371,14 @@ references 為目標，CodeGen production 不新增 Runtime／SDK ProjectReferen
 5. 更新 SHA-256、compatibility matrix、manifest provenance 與 package inventory。
 6. asset path 由單一 TFM property 推導；禁止 literal `net9.0` staging path。
 7. Runtime reference 仍不得載入 default load context或作 inventory/model mapping。
+8. 明確封裝真實 `SimpleQuantity.cs` auxiliary source，固定 source inventory、asset identity／hash、
+   override precedence、compatibility／manifest provenance 與 package inventory；不從 repository／bin／obj
+   查找。Wrappers 必須由此次生成取得，不封裝過時的 committed wrappers。
+   Descriptor 結構因來源契約改變時審查 schema 升版；K1 的 source／manifest bytes 不在此提前修改。
 
-Exit gate：descriptor strict loader/validator、PE identity/hash、full-batch Roslyn、clean package
-install 與負面 mismatch tests 全部通過。
+Exit gate：descriptor strict loader/validator、PE identity/hash、auxiliary source identity/hash、
+models／wrappers Roslyn、composition 局部／結構檢查、此次完整生成產物的真實 SDK build／runtime
+integration、clean package install 與負面 missing／mismatch tests 全部通過。
 
 ### K5：Runtime/SDK behavior migration
 
@@ -335,12 +401,15 @@ fixtures沒有未核准 drift。
 交付：
 
 1. CodeGen tool `.nupkg` 攜帶 canonical `MyFhirSdk.Runtime.dll` compiler-only reference。
-2. package content snapshot驗證 Runtime asset logical identity/hash與無 machine path。
+2. package content snapshot 驗證 Runtime reference 與 SimpleQuantity auxiliary source 的 logical
+   identity/hash、exact inventory 及無 machine path。
 3. Windows/Ubuntu 各自 build/test/tool smoke；artifact compare 使用同一 canonical reference
    staging，不能比較平台各自建出的不同 DLL bytes。
 4. clean environment 不依賴 repository、current directory、SDK `bin/obj` 或 NuGet cache。
 5. 連續兩次生成與 Windows/Linux normalized output hashes 一致。
 6. build/test output 同時含 `MyFhirSdk.dll` 與 `MyFhirSdk.Runtime.dll`。
+7. Windows/Ubuntu CI 必須將此次 clean tool 生成的完整 SDK 產物明確接入真實 SDK build／runtime
+   regression；models CLI success 與 SDK composition 語意編譯結果分別記錄，不只驗證 committed sources。
 
 Exit gate：Phase D D7/D8 gates 在新 topology 下保持綠燈。
 
@@ -375,7 +444,8 @@ Exit gate：沒有只留在 PR 描述中的新 debt；文件命令可由 clean e
 | New source | consumer restore/build/run 成功 |
 | Reflection | defining assembly/AQN 差異符合核准 baseline |
 | Runtime contract | descriptor shape、identity、TFM、hash exact match |
-| CodeGen | 831-source full generation/Roslyn/runtime gates |
+| CodeGen | 831-source full generation；models／wrappers Roslyn、composition 局部／結構檢查及此次完整輸出的 SDK build／runtime gates |
+| Auxiliary source | 真實 SimpleQuantity 的 source inventory／identity／hash、clean install、missing／mismatch 與無 fallback |
 | Serialization | 全部 JSON fixtures 與 primitive alignment |
 | Validation | generic rules、primitive rules、R5 generated rules |
 | Client/IG | integration smoke與 TW Core behavior |
@@ -438,8 +508,10 @@ commit/測試結構中保留兩個可辨識步驟。
 - `MyFhirSdk.dll` 保留其餘 SDK功能並提供完整 forwarders。
 - Runtime 無 SDK/Models/CodeGen 反向 dependency。
 - 舊 binary與新 source consumers都通過，但 reflection identity差異有明確文件。
-- CodeGen只依 versioned descriptor/canonical compiler reference，不依 Runtime project。
-- 831 generated sources、JSON、metadata、validation、Client與IG regression通過。
+- CodeGen 只依 versioned descriptor、canonical compiler reference 與明確封裝的 SimpleQuantity source，
+  不依 Runtime／SDK production project，不攜帶整套 SDK sources。
+- 831 generated sources、JSON、metadata、validation、Client與IG regression通過；metadata／validation
+  composition 必須由此次完整輸出的真實 SDK build／CI 做語意編譯，CLI success 不代替此 gate。
 - Windows/Ubuntu build/test/pack/smoke全部通過。
 - 沒有 DLL binary 被提交到 Git，沒有 repository/bin/obj fallback。
 - handoff 明確說明本階段只完成 kernel extraction，未完成完整 Models/package split。
