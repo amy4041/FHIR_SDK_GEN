@@ -1,9 +1,8 @@
 # MyFhirSdk Runtime kernel extraction 實作指引
 
-Version 0.3
+Version 0.4
 
-- 狀態：Planning；K0 可在 ADR Proposed 時建立，ADR Accepted 後才可進入 K1 並搬移
-  public declarations
+- 狀態：Ready for K1；ADR 於 2026-10-07 Accepted，允許開始 K1；public declarations 搬移仍在 K2/K3 驗收
 - 適用範圍：第一階段 Runtime kernel physical extraction
 - Baseline：post-D Tool/CodeGen `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 決策文件：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
@@ -46,6 +45,10 @@ assembly 改為 `MyFhirSdk.Runtime`。相容性由 type forwarding、old-binary 
 - 不同時升級 FHIR package、TFM、tool major version 或公開發布 SDK package。
 
 ## 3. Entry criteria
+
+2026-10-07 使用者以 Architecture、Runtime、CodeGen、Compatibility、Package／Release
+兼任角色核准 ADR 與 acceptance decisions。ADR acceptance 的 K1 entry gate 已完成；
+本指引尚未將 K1–K7 的實作或測試標為完成。
 
 - Phase D D0-D8 已合併且完整 CI 綠燈。
 - 工作分枝只包含本 migration 的變更；任何既有未提交變更已盤點。
@@ -123,15 +126,14 @@ Narrative
 
 ## 5. 必須先解決的 seams
 
-具體方案見 [Acceptance decision 草案](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md)。
-Accessor 與 registry composition 的使用者確認範圍已同步於下文；其他 acceptance gates
-仍待完成，不能據此視為整體 K1 已獲授權。
+具體方案見 [Acceptance decision 核准紀錄](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md)。
+全部設計 acceptance gates 已於 2026-10-07 核准；K1 依下列範圍實作並提供驗收證據。
 
 ### 5.1 Primitive value accessor
 
 2026-10-06 使用者已單項確認並要求先行實作 public IPrimitiveValueAccessor，保留三個成員、
 既有 null／型別轉型語義與第三方支援邊界；見 [accessor 決策](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md#3-primitive-accessor-決策)。
-此授權僅涵蓋 accessor、文件、snapshot 與驗證，不代表整體 ADR 已 Accepted 或其餘 K1 工作已核准。
+當時的單項授權涵蓋 accessor、文件、snapshot 與驗證；2026-10-07 的整體核准已允許繼續 K1。
 
 使用者另授權同步遷移 CodeGen descriptor/reference 至 `runtime-kernel-accessor-v1`，
 使用最新單一 SDK compiler reference；允許 policy contract selection 與 manifest provenance 更新。

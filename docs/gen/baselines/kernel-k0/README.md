@@ -2,8 +2,9 @@
 
 K0 fixes the post-D Tool/CodeGen 1.1.0 baseline before any assembly extraction.
 The SDK source revision is `1a28f01d8a4c3aeea46c63da875d01594aeee086`;
-the machine-readable pin is `eng/kernel-migration-baseline.json`. ADR acceptance
-remains pending. These fixtures do not authorize K1 or change production ownership.
+the machine-readable pin is `eng/kernel-migration-baseline.json`. The ADR was accepted
+on 2026-10-07; authorization for K1 comes from that separate owner decision, not from
+these fixtures. Historical baseline bytes and evidence remain unchanged.
 
 ## K0 delivery status (2026-10-06)
 
@@ -24,7 +25,9 @@ assert a GitHub reviewer approval or Architecture/Runtime ADR acceptance.
 `branchCiValidated: false` describes that run's evidence scope, not the current
 delivery status. The pinned pre-extraction SDK revision remains
 `1a28f01d8a4c3aeea46c63da875d01594aeee086`; the K0 merge commit does not replace it.
-The ADR remains Proposed, and its acceptance gates still apply before K1.
+The ADR was subsequently accepted on 2026-10-07. See the
+[acceptance record](../../MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md#9-acceptance-gate-核准紀錄)
+for the owner authorization to begin K1; implementation gates remain outstanding.
 
 ## Reproduce
 

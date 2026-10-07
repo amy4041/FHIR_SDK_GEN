@@ -1,8 +1,10 @@
 # ADR：MyFhirSdk Runtime kernel physical extraction
 
-Version 0.2
+Version 0.3
 
-- 狀態：Proposed；核准前不得搬移 public type declaration
+- 狀態：Accepted（2026-10-07）；允許開始 K1，實體搬移仍依 K2/K3 gates 執行
+- 核准人：本專案使用者（本對話），兼任 Architecture、Runtime、CodeGen、Compatibility、Package／Release
+- 核准基準：`5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR 與 acceptance decisions；本版記錄最終核准
 - 決策 owner：Architecture + Runtime maintainers
 - 適用基準：post-D primitive package input `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 實作指引：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md`
@@ -18,9 +20,9 @@ Primitive `.tgz` P0–P7已交付；P6/P7於PR #39合併至main，合併commit�
 primitive policy為`1.1.0`，manifest維持schema v2；`.tgz`與directory都要求explicit policy。
 本ADR的拆分前基準應使用此post-D狀態，不回用Tool `1.0.0`的descriptor或manifest。
 
-本ADR維持Proposed。K0可先建立唯讀baseline、assembly-aware inventory與consumer test
-harness，供本ADR審查使用；不授權新增production Runtime assembly、搬移types、加入
-forwarders、改public API／production behavior或升版descriptor。K1仍須先完成第6節核准。
+本 ADR 在 Proposed 階段允許 K0 建立唯讀 baseline、assembly-aware inventory 與 consumer test
+harness。2026-10-07 已完成第 6 節最終核准並允許 K1；後續 production assembly、type ownership、
+forwarders 與 descriptor 變更仍依核准範圍及各工作包 gates 執行。
 Primitive input Decision的正式owner acceptance另行記錄，不能以CI通過代替。
 
 K0 已由 PR #40 合併至 main，merge commit 為
@@ -28,7 +30,7 @@ K0 已由 PR #40 合併至 main，merge commit 為
 2026-10-06 確認合併後 main CI 通過；證據來源與 review 修正記錄見
 [K0 交付紀錄](baselines/kernel-k0/README.md#k0-delivery-status-2026-10-06)。
 拆分前 source pin 維持 `1a28f01d8a4c3aeea46c63da875d01594aeee086`。
-K0 交付不取代第 6 節的 owner review 與核准，本 ADR 仍為 Proposed。
+K0 交付與 ADR acceptance 分別記錄；本 ADR 的 owner 最終核准見第 6 節。
 
 Phase D 已將 production CodeGen 與完整 SDK project/implementation 解耦，但 Runtime
 foundation、generated R5 Models、Serializer/Parser/Validator、Client 與 TW Core
@@ -146,7 +148,7 @@ Superseded。
 2026-10-06 使用者已確認並要求先行公開 IPrimitiveValueAccessor，保留三個成員與既有
 value cast 行為，第三方僅實作介面不自動取得 FHIR registry／serialization 支援。
 詳細範圍見 [accessor 單項決策](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md#3-primitive-accessor-決策)。
-以下描述原始問題與設計限制；此單項實作授權不代表本 ADR 整體 Accepted。
+以下描述原始問題與設計限制；單項授權之後的整體核准見第 6 節。
 
 拆分前 `PrimitiveType<T>` 以 internal `IPrimitiveValueAccessor` 向 Serializer/Validator 提供
 untyped value access。搬移 `PrimitiveType<T>` 後，這個 same-assembly seam 不再成立。
@@ -172,7 +174,7 @@ K1 必須解除跨越 Runtime／SDK 邊界的 same-assembly 依賴，不要求�
 以 ownership 與 dependency tests 保證 Runtime 不依賴 registry、generated composition 或 wrappers；
 K2 再以實際 Runtime project／PE 驗證依賴方向。本階段不新增 public registry provider/builder SPI，
 也不為了拆分將 codec/validator 改為 public。此為 registry composition 單項決策，
-不代表整體 ADR 已 Accepted。
+整體 ADR 最終核准另見第 6 節。
 
 ### 3.7 CodeGen Runtime contract/reference
 
@@ -186,7 +188,7 @@ K2 再以實際 Runtime project／PE 驗證依賴方向。本階段不新增 pub
 
 此為設計與驗收方式的確認；K1 檢查 reference surface 與整合測試責任，K2 建立實際 Runtime
 assembly／reference 並驗證依賴方向，K4 切換 descriptor／packaging 後執行完整 gates。
-尚未宣稱 Runtime-only reference 已驗證，也不代表整體 ADR Accepted。
+尚未宣稱 Runtime-only reference 已驗證；整體 ADR 最終核准另見第 6 節。
 
 CodeGen production assembly 仍不得 `ProjectReference` Runtime 或 SDK。完成 K1 composition
 seam 與 K2 physical extraction 後：
@@ -271,8 +273,11 @@ seam 後，再由後續 ADR 決定是否移動 engines。
 
 ## 6. Acceptance gates
 
-逐項決策提案與待核准紀錄見 [Acceptance decision 草案](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md)。
-草案尚未核准，不覆寫本 ADR；核准時須同步草案第 8 節列出的修訂。
+2026-10-07，本專案使用者明確確認兼任 Architecture、Runtime、CodeGen、Compatibility、
+Package／Release，核准目前 ADR 與全部已確認 acceptance decisions，允許開始 K1。
+審查基準為 commit `5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR v0.2、
+acceptance decision v0.1 及 Guide v0.3；本次僅同步核准狀態與責任紀錄，不新增設計範圍。
+逐項證據、角色及原文見 [Acceptance decision 核准紀錄](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md#9-acceptance-gate-核准紀錄)。
 
 ADR 只有在下列項目有 owner 並通過 review 後才能標為 Accepted：
 

@@ -1,17 +1,17 @@
-# Runtime kernel ADR acceptance decision 草案
+# Runtime kernel ADR acceptance decision 核准紀錄
 
-Version 0.1
+Version 0.2
 
-- 狀態：Draft；第 2–7 節設計方案均已由使用者確認，待責任角色與整體 ADR 最終核准紀錄；不是 ADR Accepted 紀錄。
+- 狀態：Accepted（2026-10-07）；設計 gates 已核准，允許開始 K1；實作 gates 另行驗收。
 - 日期：2026-10-06。
-- 更新日期：2026-10-07，補齊第 2 節 ownership、第 6 節 compatibility 與第 7 節 release／rollback 的確認。
-- 對應文件：[ADR v0.2](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v0.3](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
+- 更新日期：2026-10-07，記錄全部責任角色與最終核准。
+- 對應文件：[ADR v0.3](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v0.4](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
 - 範圍：收斂進入 K1 前的設計決策與驗收方法，不執行 K1、不搬移 production declarations。
 
 已確認採最小 public primitive accessor，並保留 SDK-owned registry 的 internal partial composition。
 單一 Runtime compiler reference、三層驗證、ownership、compatibility、release／rollback 方案
-亦已確認並同步於 ADR 與 Guide。第 8 節記錄同步範圍；尚須記錄責任角色與整體最終核准，
-ADR 狀態保持 Proposed。未執行的 K1–K7 gates 不因設計確認而標為通過。
+亦已確認並同步於 ADR 與 Guide。第 8 節記錄同步範圍，第 9 節記錄責任角色與最終核准，
+ADR 狀態為 Accepted。未執行的 K1–K7 gates 不因設計確認而標為通過。
 
 ## 1. Baseline 與證據
 
@@ -30,7 +30,7 @@ K0 merge revision 是交付位置，不替換 SDK source pin。
 2026-10-07 使用者依建議確認本節完整 ownership matrix；表外型別不得自行擴大搬移。
 
 以下是目標 compile owner；K1 仍編譯於單一 MyFhirSdk.dll，K2 才搬移 Runtime-owned declarations。
-表中的責任角色是待指派的 review role，不代表已取得具名核准。
+表中的責任角色由本專案使用者兼任，已於 2026-10-07 明確確認；詳見第 9 節。
 
 | Declaration 或 seam | 拆分後 owner | Review role |
 | --- | --- | --- |
@@ -38,7 +38,7 @@ K0 merge revision 是交付位置，不替換 SDK source pin。
 | BackboneElement、BackboneType、Resource、DomainResource | Runtime | Runtime + Architecture |
 | PrimitiveType<T>、IFhirExtensionValue | Runtime | Runtime + Architecture |
 | Extension、Meta、Narrative bootstrap declarations | Runtime | Runtime + Architecture |
-| 本草案的 IPrimitiveValueAccessor | Runtime | Runtime + Compatibility |
+| IPrimitiveValueAccessor | Runtime | Runtime + Compatibility |
 | FhirSdkException、SimpleQuantity | SDK | Runtime + Compatibility |
 | PrimitiveRegistry、IPrimitiveDefinition、PrimitiveDefinition、PrimitiveValueAccess | SDK | Runtime |
 | IPrimitiveCodec、IPrimitiveValidator、codecs、validators | SDK | Runtime |
@@ -150,7 +150,7 @@ K1 必須檢查 generated sources 的實際 reference surface，並用測試證�
 
 若 K1 的檢查證明仍需要 SDK metadata reference，應停止該遷移路徑並提出 ADR amendment，核准
 多 reference schema／RuntimeReferenceSet／packaging／negative tests 後再實作。
-本草案不授權第二個 reference，也不授權以 stub 擴充來掩蓋真實依賴。
+本決策不授權第二個 reference，也不授權以 stub 擴充來掩蓋真實依賴。
 
 K4 migration 應原子更新 descriptor contractVersion、runtimeAssembly／compilerReference identity、
 canonical reference hash、compatibility matrix、package inventory 與 manifest provenance。
@@ -189,7 +189,7 @@ K0 frozen fixture 保持 content pin，不修改它來迎合拆分後 API。K3 �
 ## 7. Release 與 rollback 決策
 
 2026-10-07 使用者依建議確認本節 release 邊界及 rollback 方案；不授權公開發布。
-此紀錄不宣稱已演練 rollback，K7 仍須提供演練證據；release 責任角色於第 9 節補記。
+此紀錄不宣稱已演練 rollback，K7 仍須提供演練證據；release 責任角色見第 9 節。
 
 本階段只允許 repository build/test、local pack/install 與 CI artifacts，不授權公開 NuGet release。
 SDK 執行輸出必須同時部署 MyFhirSdk.dll 與 MyFhirSdk.Runtime.dll；Tool 內的 compiler-only asset
@@ -217,26 +217,30 @@ SDK 執行輸出必須同時部署 MyFhirSdk.dll 與 MyFhirSdk.Runtime.dll；Too
 | ADR §3.4、Guide §8／K3 | 已於 2026-10-07 同步：SPI public API 例外、K0／K1 consumers 與 moved-public-type forwarder 集合 |
 | ADR §3.8／§7 | 已於 2026-10-07 同步：release boundary 與可 review 的 source rollback |
 
-上述變更與 owner 核准應在同一 acceptance PR 收斂。
-未完成前 ADR 維持 Proposed；單純合併草案不代表核准。
+上述設計修訂已同步；最終核准來自第 9 節使用者明確授權，不是從文件合併或 CI 通過推定。
 
 ## 9. Acceptance gate 核准紀錄
 
-證據已具備與 owner 已核准是不同狀態。下列記錄區分使用者已確認的單項方案與仍 Pending 的 gates。
-一人可兼任多個角色，但應明列各角色所核准的範圍。
+核准人為本專案使用者（本對話），兼任 Architecture、Runtime、CodeGen、Compatibility、
+Package／Release；日期為 2026-10-07。核准來源為本對話的明確聲明，不另推定姓名或 GitHub approval。
+SDK maintainers 的 ownership 責任在本階段由同一位使用者以 Runtime 角色承接。
+審查基準為 commit `5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR v0.2、
+本文件 v0.1 與 Guide v0.3。本次 v0.2 僅收錄核准與同步狀態，不增加設計範圍。
+
+核准原文：
+
+> 本專案的 Architecture、Runtime、CodeGen、Compatibility 與 Package／Release 角色均由我負責。我核准目前 ADR 及已確認的 acceptance decisions，同意將 ADR 標為 Accepted，允許開始 K1；後續實作仍依各工作包 gates 驗收
 
 | Gate | 決策與證據 | 必要 review role | 具名核准人 | 結果／日期／review link |
 | --- | --- | --- | --- | --- |
-| K0 baseline／inventory | 第 1 節、PR #40、K0 pin／inventories | Runtime + Architecture | 使用者已確認交付；角色歸屬待記錄 | 交付證據具備；最終 acceptance 紀錄待完成 |
-| 唯一 ownership | 第 2 節 | Runtime + Architecture | 使用者（本對話）；角色歸屬待記錄 | 2026-10-07 方案已確認；K2 compile／PE 驗收待完成 |
-| Accessor／registry seams | 第 3、4 節 | Runtime + CodeGen + Compatibility | 使用者（本對話）；角色歸屬待記錄 | 方案已確認：accessor 2026-10-06、registry 2026-10-07；實作 gates 另驗收，整體 ADR 未核准 |
-| Facade／forwarding policy | 第 6 節 | Compatibility + Runtime | 使用者（本對話）；角色歸屬待記錄 | 2026-10-07 方案已確認；K3 驗收待完成 |
-| Old binary fixture／驗證方法 | 第 1、6 節 | Runtime + Compatibility | 使用者（本對話）；角色歸屬待記錄 | 2026-10-07 方案已確認；K3 驗收待完成 |
-| Descriptor/reference migration／rollback | 第 5、7 節 | CodeGen + Runtime | 使用者（本對話）；角色歸屬待記錄 | 2026-10-07 第 5、7 節方案已確認；K1／K2／K4／K7 實作證據待完成 |
-| Package／release boundary | 第 7 節 | Package/release owner | 使用者（本對話）；角色歸屬待記錄 | 2026-10-07 方案已確認；公開發布未授權 |
-| ADR 整體核准 | 全部 gates、第 8 節文件已同步 | Architecture + Runtime maintainers | 待指派 | Pending |
+| K0 baseline／inventory | 第 1 節、PR #40、K0 pin／inventories | Runtime + Architecture | 使用者（兼任左列角色） | Accepted，2026-10-07，本節核准聲明；CI 證據範圍依第 1 節 |
+| 唯一 ownership | 第 2 節 | Runtime + Architecture | 使用者（兼任左列角色） | Accepted，2026-10-07；K2 compile／PE 驗收待完成 |
+| Accessor／registry seams | 第 3、4 節 | Runtime + CodeGen + Compatibility | 使用者（兼任左列角色） | Accepted，2026-10-07；剩餘 K1 實作 gates 另驗收 |
+| Facade／forwarding policy | 第 6 節 | Compatibility + Runtime | 使用者（兼任左列角色） | Accepted，2026-10-07；K3 驗收待完成 |
+| Old binary fixture／驗證方法 | 第 1、6 節 | Runtime + Compatibility | 使用者（兼任左列角色） | Accepted，2026-10-07；K3 驗收待完成 |
+| Descriptor/reference migration／rollback | 第 5、7 節 | CodeGen + Runtime | 使用者（兼任左列角色） | Accepted，2026-10-07；K1／K2／K4／K7 實作證據待完成 |
+| Package／release boundary | 第 7 節 | Package/release owner | 使用者（兼任左列角色） | Accepted，2026-10-07；公開發布未授權 |
+| ADR 整體核准 | 全部 gates、第 8 節文件已同步 | Architecture + Runtime maintainers | 使用者（兼任左列角色） | Accepted，2026-10-07；允許開始 K1 |
 
-核准紀錄必須指向實際 review 的文件 revision／commit；草案 v0.1 的欄位不是授權。
-有條件核准若仍留下 entry-blocking 決策，ADR 不得標 Accepted。
-全部 gates 完成後更新 ADR status、核准日期／人員與 evidence links，並同步 Guide entry criteria。
+本次已同步 ADR status、核准日期／責任人與 Guide entry criteria；沒有尚待選定的 K1 entry 設計決策。
 K1–K7 的實作測試留在各工作包驗收，不回填成已在 acceptance review 執行。
