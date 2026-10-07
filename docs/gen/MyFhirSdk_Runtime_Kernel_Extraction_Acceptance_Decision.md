@@ -2,16 +2,16 @@
 
 Version 0.1
 
-- 狀態：Draft；第 3 節 accessor、第 4 節 registry composition 與第 5 節 reference／三層驗證方案已由使用者確認，其餘決策待 owner review；不是 ADR Accepted 紀錄。
+- 狀態：Draft；第 2–7 節設計方案均已由使用者確認，待責任角色與整體 ADR 最終核准紀錄；不是 ADR Accepted 紀錄。
 - 日期：2026-10-06。
-- 更新日期：2026-10-07，記錄 registry composition 與第 5 節 reference／三層驗證方案確認。
+- 更新日期：2026-10-07，補齊第 2 節 ownership、第 6 節 compatibility 與第 7 節 release／rollback 的確認。
 - 對應文件：[ADR v0.2](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v0.3](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
 - 範圍：收斂進入 K1 前的設計決策與驗收方法，不執行 K1、不搬移 production declarations。
 
 已確認採最小 public primitive accessor，並保留 SDK-owned registry 的 internal partial composition。
-單一 Runtime compiler reference 與三層驗證方案亦已確認；其他 ownership、compatibility、release 邊界
-仍須核准。已確認的 registry／reference 決策同步於 ADR §3.6／§3.7 與 Guide；
-第 8 節列出其餘需同步的文字，整體 ADR 狀態保持 Proposed。
+單一 Runtime compiler reference、三層驗證、ownership、compatibility、release／rollback 方案
+亦已確認並同步於 ADR 與 Guide。第 8 節記錄同步範圍；尚須記錄責任角色與整體最終核准，
+ADR 狀態保持 Proposed。未執行的 K1–K7 gates 不因設計確認而標為通過。
 
 ## 1. Baseline 與證據
 
@@ -26,6 +26,8 @@ fixture content revision、SDK／descriptor／compiler reference hashes 以
 K0 merge revision 是交付位置，不替換 SDK source pin。
 
 ## 2. Declaration 與 seam ownership 決策
+
+2026-10-07 使用者依建議確認本節完整 ownership matrix；表外型別不得自行擴大搬移。
 
 以下是目標 compile owner；K1 仍編譯於單一 MyFhirSdk.dll，K2 才搬移 Runtime-owned declarations。
 表中的責任角色是待指派的 review role，不代表已取得具名核准。
@@ -53,7 +55,7 @@ K2 以 explicit compile items 和 PE dependency tests 固定 owner。
 若發現 kernel 尚依賴表外型別，先補 ownership review，不自動擴大搬移範圍。
 
 FhirSdkException 留在 SDK：目前 parser／primitive codecs 使用它，擬搬移的 kernel 不需要它。
-這將收斂 ADR §3.2 原先保留的選項，與 K0 ownership review input 一致。
+此結論已同步至 ADR §3.2，與 K0 ownership review input 一致。
 
 ## 3. Primitive accessor 決策
 
@@ -70,7 +72,7 @@ CodeGen、release 或整體 ADR 已核准，也不授權 physical extraction。
 不變更 primitive decisions、831 model sources、21 primitive sources 或 K0 歷史基準。
 這是單一 SDK assembly 內的 accessor contract 遷移，不是 K4 的 Runtime assembly extraction。
 
-建議將現有 MyFhirSdk.Core.IPrimitiveValueAccessor 提升為 public integration interface，保留名稱
+已確認將 MyFhirSdk.Core.IPrimitiveValueAccessor 提升為 public integration interface，保留名稱
 與三個成員，由 PrimitiveType<T> 繼續 explicit implementation：
 
 ```csharp
@@ -160,6 +162,9 @@ canonical reference hash、compatibility matrix、package inventory 與 manifest
 
 ## 6. Compatibility 與舊 binary 決策
 
+2026-10-07 使用者依建議確認本節相容性承諾、forwarder 範圍及舊 binary 驗證方法。
+這是設計確認；K3 的執行證據仍須另行完成。
+
 保留 SDK assembly simple name、namespace、既有 member shape 與 JSON behavior。
 允許第 3 節的新增 SPI，以及已核准 Runtime declarations 的 defining assembly 改變。
 對 typeof(T).Assembly、AssemblyQualifiedName 與依 assembly 掃描的 consumer 不承諾零差異。
@@ -183,6 +188,9 @@ K0 frozen fixture 保持 content pin，不修改它來迎合拆分後 API。K3 �
 
 ## 7. Release 與 rollback 決策
 
+2026-10-07 使用者依建議確認本節 release 邊界及 rollback 方案；不授權公開發布。
+此紀錄不宣稱已演練 rollback，K7 仍須提供演練證據；release 責任角色於第 9 節補記。
+
 本階段只允許 repository build/test、local pack/install 與 CI artifacts，不授權公開 NuGet release。
 SDK 執行輸出必須同時部署 MyFhirSdk.dll 與 MyFhirSdk.Runtime.dll；Tool 內的 compiler-only asset
 不代替 SDK runtime deployment。Release owner 應 review workflow／pack／publish 路徑，
@@ -202,12 +210,12 @@ SDK 執行輸出必須同時部署 MyFhirSdk.dll 與 MyFhirSdk.Runtime.dll；Too
 
 | 文件位置 | 建議修訂 |
 | --- | --- |
-| ADR §3.2、Guide §4 | 固定 FhirSdkException 留 SDK，加入 accessor 與 internal seams ownership |
-| ADR §3.5、Guide §5.1 | 採第 3 節 SPI shape／behavior，釐清穩定契約與可寫 instance value |
+| ADR §3.2、Guide §4 | 已於 2026-10-07 同步：FhirSdkException 留 SDK，加入 accessor 與完整 seam ownership 依據 |
+| ADR §3.5、Guide §5.1 | 已同步第 3 節 SPI shape／behavior，釐清穩定契約與可寫 instance value |
 | ADR §3.6、Guide §5.2／K1 | 已於 2026-10-07 同步：保留 SDK partial composition；K1 驗證隔離邊界，不要求消除內部 partial |
 | ADR §3.7、Guide K1／K2／K4 | 已於 2026-10-07 同步：三層驗證、單 reference 決策及不足時的 amendment 流程；執行證據待各工作包完成 |
-| Guide §8、K3 | 新增 SPI 的 public API 例外、K0／K1 consumers 與 moved-public-type forwarder 集合 |
-| ADR §3.8／§7 | 同步 release boundary 與可 review 的 source rollback |
+| ADR §3.4、Guide §8／K3 | 已於 2026-10-07 同步：SPI public API 例外、K0／K1 consumers 與 moved-public-type forwarder 集合 |
+| ADR §3.8／§7 | 已於 2026-10-07 同步：release boundary 與可 review 的 source rollback |
 
 上述變更與 owner 核准應在同一 acceptance PR 收斂。
 未完成前 ADR 維持 Proposed；單純合併草案不代表核准。
@@ -219,13 +227,13 @@ SDK 執行輸出必須同時部署 MyFhirSdk.dll 與 MyFhirSdk.Runtime.dll；Too
 
 | Gate | 決策與證據 | 必要 review role | 具名核准人 | 結果／日期／review link |
 | --- | --- | --- | --- | --- |
-| K0 baseline／inventory | 第 1 節、PR #40、K0 pin／inventories | Runtime + Architecture | 待指派 | Pending |
-| 唯一 ownership | 第 2 節 | Runtime + Architecture | 待指派 | Pending |
+| K0 baseline／inventory | 第 1 節、PR #40、K0 pin／inventories | Runtime + Architecture | 使用者已確認交付；角色歸屬待記錄 | 交付證據具備；最終 acceptance 紀錄待完成 |
+| 唯一 ownership | 第 2 節 | Runtime + Architecture | 使用者（本對話）；角色歸屬待記錄 | 2026-10-07 方案已確認；K2 compile／PE 驗收待完成 |
 | Accessor／registry seams | 第 3、4 節 | Runtime + CodeGen + Compatibility | 使用者（本對話）；角色歸屬待記錄 | 方案已確認：accessor 2026-10-06、registry 2026-10-07；實作 gates 另驗收，整體 ADR 未核准 |
-| Facade／forwarding policy | 第 6 節 | Compatibility + Runtime | 待指派 | Pending |
-| Old binary fixture／驗證方法 | 第 1、6 節 | Runtime + Compatibility | 待指派 | Pending |
-| Descriptor/reference migration／rollback | 第 5、7 節 | CodeGen + Runtime | 使用者（本對話）；角色歸屬待記錄 | Partial：2026-10-07 確認第 5 節單 reference／三層驗證設計；K1／K2／K4 實作證據未完成，第 7 節 rollback Pending |
-| Package／release boundary | 第 7 節 | Package/release owner | 待指派 | Pending |
+| Facade／forwarding policy | 第 6 節 | Compatibility + Runtime | 使用者（本對話）；角色歸屬待記錄 | 2026-10-07 方案已確認；K3 驗收待完成 |
+| Old binary fixture／驗證方法 | 第 1、6 節 | Runtime + Compatibility | 使用者（本對話）；角色歸屬待記錄 | 2026-10-07 方案已確認；K3 驗收待完成 |
+| Descriptor/reference migration／rollback | 第 5、7 節 | CodeGen + Runtime | 使用者（本對話）；角色歸屬待記錄 | 2026-10-07 第 5、7 節方案已確認；K1／K2／K4／K7 實作證據待完成 |
+| Package／release boundary | 第 7 節 | Package/release owner | 使用者（本對話）；角色歸屬待記錄 | 2026-10-07 方案已確認；公開發布未授權 |
 | ADR 整體核准 | 全部 gates、第 8 節文件已同步 | Architecture + Runtime maintainers | 待指派 | Pending |
 
 核准紀錄必須指向實際 review 的文件 revision／commit；草案 v0.1 的欄位不是授權。

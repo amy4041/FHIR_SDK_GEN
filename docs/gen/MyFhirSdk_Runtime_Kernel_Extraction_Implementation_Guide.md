@@ -115,8 +115,11 @@ Narrative
 - Client；
 - ImplementationGuides/TwCore。
 
-`FhirSdkException`、其他 `core/` public/internal types 由 K0 inventory 決定；未列入表格的檔案
-預設不搬移。
+2026-10-07 使用者確認 `FhirSdkException` 留 SDK，public `IPrimitiveValueAccessor` 隨
+`PrimitiveType<T>` 歸 Runtime；descriptor mapping 仍為 13 symbols。
+完整 ownership 依 [acceptance decision 第 2 節](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md#2-declaration-與-seam-ownership-決策)。
+其餘 metadata provider abstractions／implementations、internal seams 與 composition 留 SDK；
+表外既有 declarations 預設不搬移，額外依賴須先 review。
 
 ## 5. 必須先解決的 seams
 
@@ -270,6 +273,12 @@ CodeGen 或 R5-specific assembly；沒有 duplicate public declarations。
 
 ### K3：建立 compatibility facade/type forwarders
 
+2026-10-07 使用者已確認 acceptance decision 第 6 節的設計與驗收方式。
+Forwarder 集合涵蓋 K0 的 13 個 public kernel symbols 與後來公開的 accessor，須與實際搬移清單 exact match。
+K0 consumer 不重新編譯、不改寫 IL；獨立部署目錄內置換 implementation dependencies，記錄必要的
+deps/runtimeconfig 調整，執行前後核對 consumer hash。另以 accessor consumer 補足 SPI coverage，
+缺少 Runtime DLL 時不得從 repository／cache 補載。這些執行證據仍屬 K3 exit gate。
+
 交付：
 
 1. `MyFhirSdk.dll` 為所有搬移的 public Runtime types加入明確 `TypeForwardedTo`。
@@ -383,6 +392,8 @@ Exit gate：沒有只留在 PR 描述中的新 debt；文件命令可由 clean e
 - CodeGen tool command、asset override precedence與 repository-independent host。
 
 以下項目是本 migration 唯一預先允許的差異：
+
+- 已確認的 public accessor SPI 與 `PrimitiveType<T>` 可見 interface graph 增加；保留既有 cast 行為；
 
 - approved Runtime types 的 defining assembly 改為 `MyFhirSdk.Runtime`；
 - `MyFhirSdk.dll` 增加 matching type forwarders；

@@ -97,8 +97,12 @@ public member shape 不變：
 | `IFhirExtensionValue` | Runtime | extension open-type marker contract |
 | `Extension`, `Meta`, `Narrative` | Runtime bootstrap | 避免 base hierarchy 形成 Runtime→Models cycle |
 
-`FhirSdkException` 是否移入 Runtime 必須在 K0 public API inventory 中以實際 consumer
-dependency 決定；它不是 initial descriptor symbol，不得只因位於 `core/` 就自動搬移。
+2026-10-07 使用者確認完整 ownership matrix：`FhirSdkException` 留在 SDK，因為 parser／primitive
+codecs 使用它，擬搬移的 kernel 不需要它。它不是 initial descriptor symbol。
+Public `IPrimitiveValueAccessor` 隨 `PrimitiveType<T>` 歸 Runtime，但不增加 descriptor mapping symbol。
+其餘 internal seams、metadata provider abstractions／implementations 與 composition 的 owner
+依 [acceptance decision 第 2 節](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md#2-declaration-與-seam-ownership-決策)；
+表外既有 declarations 預設留 SDK，額外搬移須先 review。
 `SimpleQuantity` 保留在 `MyFhirSdk.dll`，因為它是 R5 constraint Profile，並依賴 generated
 `Quantity`。
 
@@ -112,6 +116,12 @@ FHIR property shape 與 R5 有關，立即放入 Models 會使 `Element`、`Reso
 `DomainResource` 反向引用 Models。重新設計 version-specific base models 不在本階段範圍。
 
 ### 3.4 Public identity compatibility
+
+2026-10-07 使用者確認本節相容性邊界與 acceptance decision 第 6 節驗證方法。
+Forwarders 必須涵蓋所有已公開且搬移的型別：K0 的 13 個 kernel symbols，加上已公開的 accessor；
+此集合不同於 descriptor 的 13-symbol mapping。K3 保留 K0 consumer IL／hash，僅置換部署依賴，
+並記錄必要的 deps/runtimeconfig 調整；另以 accessor consumer 驗證該 SPI，及缺少 Runtime DLL
+時明確失敗的負面測試。此為設計確認，尚未完成 split binary 驗收。
 
 移動 type declaration 會把 defining assembly 從 `MyFhirSdk` 改為 `MyFhirSdk.Runtime`；這是
 有意且受控的 identity migration，不得描述為 identity 完全不變。
@@ -141,9 +151,10 @@ value cast 行為，第三方僅實作介面不自動取得 FHIR registry／seri
 拆分前 `PrimitiveType<T>` 以 internal `IPrimitiveValueAccessor` 向 Serializer/Validator 提供
 untyped value access。搬移 `PrimitiveType<T>` 後，這個 same-assembly seam 不再成立。
 
-實作前必須建立一個最小、不可變且有 API snapshot 的 Runtime integration contract。它只能
+已選定最小、穩定且有 API snapshot 的 Runtime integration contract；primitive instance value 仍可寫。
+它只能
 暴露 primitive value read/write 所需能力，不得暴露 codec、validator 或 mutable registry。
-具體命名由 K1 API review 決定；不得以 reflection、`dynamic` 或廣泛
+介面為 `IPrimitiveValueAccessor`，保留 `UntypedValue`、`ValueType`、`SetUntypedValue` 與既有 cast 行為；不得以 reflection、`dynamic` 或廣泛
 `InternalsVisibleTo` 取代正式 contract。
 
 ### 3.6 Primitive registry 與 model metadata composition
@@ -193,6 +204,9 @@ seam 與 K2 physical extraction 後：
 reference 或回復 `bin/obj` 搜尋。
 
 ### 3.8 Package與版本策略
+
+2026-10-07 使用者確認本節及 acceptance decision 第 7 節的 release 邊界。
+允許 repository build/test、local pack/install、CI artifacts；release 責任角色與整體核准另行記錄。
 
 本階段不授權公開 NuGet release。repository build/test output 必須同時提供：
 
@@ -276,12 +290,18 @@ metadata、Runtime behavior、831-source generation 與 Windows/Linux tool smoke
 
 ## 7. Rollback
 
+2026-10-07 使用者確認以下發布前 rollback 方案，以可 review 的 revert commits 執行，
+不改寫 main 歷史、不改動使用者資料。K7 須另提供演練證據。
+
 拆分應以可回復工作包進行。在正式 release 前若 compatibility 或 composition gate 失敗：
 
-1. 將 compile ownership 回復到原 `MyFhirSdk.csproj`；
-2. 移除尚未發布的 Runtime project/output；
+1. 將 compile ownership 與 seams 回復到 K0 單一 `MyFhirSdk.csproj` 狀態；
+2. 移除尚未發布的 Runtime project/output、forwarders 與新增 deployment 設定；
 3. 回復K0固定的post-D `1.1.0` descriptor、reference identity/hash與tool package inventory；
 4. 重新執行Phase D與primitive `.tgz`完整gates，確認兩種input及generated output無drift。
+
+以 K0 delivery revision 取得 harness／inventories，由原 source pin 重建 baseline，並重跑完整 K0、
+installed-tool smoke。比對 pinned identities/hashes 與 normalized inventories，不要求 NuGet zip bytes 相同。
 
 已發布後不得以刪除 `MyFhirSdk.Runtime.dll` 回復；必須依 package rollback/promotion policy 發布
 修正版並繼續提供 compatibility facade。
