@@ -127,7 +127,7 @@ package、重新產生 staging output 並比較。不得用修改目前 source �
 | Deferred validation capabilities | Validation + CodeGen maintainers | terminology、FHIRPath invariant、fixed/pattern、targetProfile 尚需 Runtime support | 各 capability 有 versioned policy、Runtime executor、positive/negative generation/runtime tests |
 | 新 FHIR patch/minor 版本 | CodeGen compatibility owner | 目前只核准 R5 `5.0.0` exact matrix | 新 package lock/hash、policy review、descriptor/matrix 更新及 831-equivalent full regression |
 | 新 .NET/TFM | Build + Runtime contract owner | 目前 central TFM 為 `net9.0` | 更新單一 TFM/SDK 設定，重建 Runtime reference/hash，Windows/Linux build/pack/smoke/TPA CI 通過 |
-| Contract-only Runtime reference | Packaging + Runtime owner | 目前使用完整 `MyFhirSdk.dll` 作 compiler-only asset | reference assembly 覆蓋 required surface、identity/hash 更新並通過 full-batch Roslyn/runtime gates |
+| Contract-only Runtime reference | Packaging + Runtime + CodeGen owners | 目前使用完整 `MyFhirSdk.dll` 作 compiler-only asset；kernel ADR §8 已核准調整 CLI／SDK 驗證責任 | 單一 Runtime reference 與真實 SimpleQuantity auxiliary asset 的 identity/hash／packaging 通過；models／wrappers Roslyn、composition 局部／結構檢查及此次完整生成輸出的真實 SDK build／runtime gates 通過 |
 | Primitive `.tgz` input acceptance／handoff | CodeGen + Compatibility maintainers | P0–P7已交付；PR #39已合併main，分支及merge commit的CI均由使用者確認通過，正式owner acceptance尚未記錄 | 補記Decision正式acceptance；K0以post-D `1.1.0`合併commit重建baseline |
 
 沒有 owner、理由與退出條件的新 debt 不得只留在 PR 描述。
@@ -137,13 +137,16 @@ Owner為CodeGen + Compatibility maintainers；延後理由是固定Runtime拆分
 基準。退出條件為K0–K7完成，且另案核准directory migration／版本策略與packaged policy
 解析、override及相容性測試；目前directory支援與required `--policy`不變。
 
-Runtime kernel extraction 的 proposed decision 與工作分解位於：
+Runtime kernel extraction 的已核准決策與工作分解位於（K1–K7 實作仍依各 gates 驗收）：
 
 - `docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
 - `docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md`
 
-ADR 核准前，上述文件只代表 migration proposal，不取代 D0-002 的已接受單一 assembly
-baseline。
+ADR 及 K1 validation amendment 已於 2026-10-07 核准；目前 production 仍維持 D0-002 的
+單一 assembly baseline，physical extraction 與 canonical assets 依 K2–K4 gates 另行完成。
+K1 本機開發與驗證已完成，CLI models 編譯／composition 結構檢查及 fresh generated SDK integration
+已接入；部署 SDK 已移除 generator friend。compiler-only 歷史 reference 暫時保持 bytes，
+由條件 build 重建且不部署該 implementation，於 K4 一併移除。執行證據見上述 Guide。
 
 Runtime extraction前的primitive package-input決策與實作紀錄位於：
 

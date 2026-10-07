@@ -14,7 +14,7 @@ public sealed class ModelMetadataGenerationPipeline
     private readonly ModelMetadataIrBuilder _metadataBuilder;
     private readonly ModelMetadataRenderer _metadataRenderer;
     private readonly ValidationCompositionRenderer _validationRenderer;
-    private readonly RoslynCompilationValidator _compilationValidator;
+    private readonly CompositionStructureValidator _structureValidator = new();
 
     public ModelMetadataGenerationPipeline(
         RuntimeContractView runtimeContract,
@@ -47,7 +47,6 @@ public sealed class ModelMetadataGenerationPipeline
         _metadataBuilder = metadataBuilder;
         _metadataRenderer = metadataRenderer;
         _validationRenderer = validationRenderer;
-        _compilationValidator = compilationValidator;
     }
 
     public GenerationResult<ModelMetadataGenerationBatch?> Generate(ModelIrBatch modelIr)
@@ -91,10 +90,12 @@ public sealed class ModelMetadataGenerationPipeline
             .Concat(metadataSources)
             .OrderBy(source => source.FileName, StringComparer.Ordinal)
             .ToArray();
-        var compilation = _compilationValidator.Validate(compilationSources);
-        if (!compilation.IsSuccess)
+        // Models were compiled by _modelPipeline. SDK-owned composition semantic
+        // compatibility is checked by a real SDK build with this generated output.
+        var structure = _structureValidator.Validate(metadataSources);
+        if (!structure.IsSuccess)
         {
-            return Failure(compilation.Diagnostics);
+            return Failure(structure.Diagnostics);
         }
 
         return new GenerationResult<ModelMetadataGenerationBatch?>(

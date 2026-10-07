@@ -14,15 +14,11 @@ public sealed class ModelMetadataGeneratedRuntimeTests
     [Fact]
     public async Task GeneratedComposition_DrivesFactoryOpenTypeRoundTripAndValidation()
     {
-        var modelIr = await ModelMetadataTestContext.BuildFullModelIrAsync();
-        var result = CodeGenTestRuntime.CreateModelMetadataPipeline().Generate(modelIr);
-        Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));
-        var batch = Assert.IsType<ModelMetadataGenerationBatch>(result.Value);
-        var assembly = GeneratedModelTestCompiler.Compile(
-            batch.CompilationSources.Append(new GeneratedSource(
+        var generated = await RealSdkSourceCompiler.GeneratedSourcesAsync();
+        var assembly = RealSdkSourceCompiler.Compile(
+            generated.Append(new GeneratedSource(
                 "C6RuntimeFacade.cs",
-                RuntimeFacadeSource)).ToArray(),
-            "MyFhirSdk.Generated.CompilationValidation");
+                RuntimeFacadeSource)).ToArray());
         var facade = assembly.GetType(
             "MyFhirSdk.C6RuntimeFixtures.RuntimeFacade",
             throwOnError: true)!;

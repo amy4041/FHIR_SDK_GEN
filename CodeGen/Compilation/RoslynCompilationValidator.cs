@@ -9,9 +9,10 @@ namespace MyFhirSdk.CodeGen.Compilation;
 public sealed class RoslynCompilationValidator
 {
     private const string ValidationAssemblyName =
-        "MyFhirSdk.Generated.CompilationValidation";
+        "MyFhirSdk.Generated.ModelCompilation";
 
     private readonly RuntimeReferenceSet _referenceSet;
+    private readonly IReadOnlyList<GeneratedSource> _additionalSources = [];
 
     public RoslynCompilationValidator(RuntimeReferenceSet referenceSet)
     {
@@ -21,16 +22,27 @@ public sealed class RoslynCompilationValidator
 
     public RuntimeReferenceSet ReferenceSet => _referenceSet;
 
+    private RoslynCompilationValidator(RuntimeReferenceSet referenceSet, IReadOnlyList<GeneratedSource> sources)
+        : this(referenceSet) => _additionalSources = sources.ToArray();
+
+    /// <summary>Adds real auxiliary sources to compilation without adding output artifacts.</summary>
+    public RoslynCompilationValidator WithAdditionalSources(IReadOnlyList<GeneratedSource> sources)
+    {
+        ArgumentNullException.ThrowIfNull(sources);
+        return new(_referenceSet, _additionalSources.Concat(sources).ToArray());
+    }
+
     public GenerationResult<IReadOnlyList<GeneratedSource>> Validate(
         IReadOnlyList<GeneratedSource> generatedSources)
     {
         ArgumentNullException.ThrowIfNull(generatedSources);
 
         var sources = generatedSources.ToArray();
-        ValidateSources(sources);
+        var compilationSources = sources.Concat(_additionalSources).ToArray();
+        ValidateSources(compilationSources);
 
         var parseOptions = new CSharpParseOptions(LanguageVersion.CSharp13);
-        var syntaxTrees = sources
+        var syntaxTrees = compilationSources
             .Select(source => CSharpSyntaxTree.ParseText(
                 source.Source,
                 parseOptions,

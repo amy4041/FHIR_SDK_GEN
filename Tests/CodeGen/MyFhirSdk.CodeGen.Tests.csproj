@@ -139,4 +139,11 @@
              Targets="Pack"
              Properties="Configuration=$(CodeGenToolPackageConfiguration);RuntimeReferenceAssetPath=$(TestRuntimeReferenceAssetPath);PackageOutputPath=$(CodeGenToolPackageSecond)" />
   </Target>
+  <Target Name="StageK1RegexGenerator" AfterTargets="ResolveReferences" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <K1RegexGenerator Include="@(Analyzer)" Condition="'%(Filename)' == 'System.Text.RegularExpressions.Generator'" />
+    </ItemGroup>
+    <Error Condition="'@(K1RegexGenerator)' == ''" Text="SDK integration requires the framework Regex generator." />
+    <Copy SourceFiles="@(K1RegexGenerator)" DestinationFolder="$(OutDir)K1Analyzers" />
+  </Target>
 </Project>

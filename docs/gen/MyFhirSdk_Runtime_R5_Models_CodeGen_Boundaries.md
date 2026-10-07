@@ -315,6 +315,14 @@ Local tool package 攜帶 compiler-only Runtime reference、versioned descriptor
 依賴；目前 Runtime 與 R5 Models 仍編譯於同一 `MyFhirSdk` assembly。未來 physical package
 split 必須另立 ADR 與 migration，不是 Phase D 的隱含結果。
 
+2026-10-07 kernel extraction ADR §8 已核准較小的 validation amendment：未來 tool 使用單一
+canonical Runtime reference 與封裝的真實 `SimpleQuantity.cs`，wrappers 由此次 input／policy 生成。
+CLI 保證 models／wrappers compilation 及 composition 局部／結構檢查；SDK-owned metadata／validation
+composition 的語意編譯由此次完整生成輸出的真實 SDK build／CI 驗證。移除 validation assembly 的
+production friend access，不封裝整套 SDK sources。詳見
+[Runtime kernel ADR §8](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md#8-k1-reference-surface-amendment2026-10-07)；
+這是已核准的目標驗證責任，production pipeline 尚未切換，不將 kernel extraction 標為完成。
+
 CodeGen tool、Runtime 與 generated R5 Models 必須定義相容版本。至少應在 generated
 source 或 manifest 記錄：
 

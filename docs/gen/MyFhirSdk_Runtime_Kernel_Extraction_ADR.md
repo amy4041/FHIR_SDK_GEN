@@ -1,10 +1,10 @@
 # ADR：MyFhirSdk Runtime kernel physical extraction
 
-Version 0.3
+Version 0.5
 
 - 狀態：Accepted（2026-10-07）；允許開始 K1，實體搬移仍依 K2/K3 gates 執行
 - 核准人：本專案使用者（本對話），兼任 Architecture、Runtime、CodeGen、Compatibility、Package／Release
-- 核准基準：`5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR 與 acceptance decisions；本版記錄最終核准
+- 核准基準：`5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR 與 acceptance decisions；原始核准見 §6，K1 validation amendment 的本對話核准見 §8
 - 決策 owner：Architecture + Runtime maintainers
 - 適用基準：post-D primitive package input `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 實作指引：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md`
@@ -179,12 +179,21 @@ K2 再以實際 Runtime project／PE 驗證依賴方向。本階段不新增 pub
 ### 3.7 CodeGen Runtime contract/reference
 
 2026-10-07 使用者確認採單一 canonical Runtime compiler reference，加上 .NET platform references，
-不新增 CodeGen production ProjectReference 或隱含 reference fallback。三層驗證責任為：
+不新增 CodeGen production ProjectReference 或隱含 reference fallback。使用者於同日要求依 K1
+發現採用 §8 的較小修訂；三層驗證責任更新為：
 
-1. Generated models／wrappers：以 sources、platform references 與 Runtime reference 做 Roslyn compilation。
-2. Generated registry composition：以驗證用 declarations 做局部結構檢查，不替代真實 SDK 整合。
-3. 真正 SDK build／runtime regression：以實際 registry、composition、wrappers、codecs／validators
-   驗證編譯與執行行為，不用 stub 掩蓋依賴。
+1. Generated models／wrappers：以此次 input／policy 生成的 sources、真實且明確封裝的
+   `SimpleQuantity.cs`、platform references 與單一 Runtime reference 做 Roslyn compilation。
+2. CLI composition 檢查：generated registry 保留既有 validation declarations 的局部檢查；
+   SDK-owned metadata／validation composition 保留 IR、mapping 與生成結構檢查，
+   不再對 Runtime reference 宣稱完成這兩個 sources 的語意編譯。
+3. 真正 SDK build／runtime regression：以此次全部生成產物、實際手寫 providers、rules、registry、
+   codecs／validators 與 Runtime dependency 完成語意編譯及行為驗證，不用 stub 替代 SDK 實作。
+   必須編譯此次生成結果，不能只編譯既有 committed sources。
+
+CLI 生成成功代表第 1、2 層通過；完整生成驗收還必須通過第 3 層 SDK build／CI。
+移除 `MyFhirSdk.Generated.CompilationValidation` 的 production friend access，
+並改寫依賴它的 generated-runtime tests；窄範圍 test friend access 依既有政策保留。
 
 此為設計與驗收方式的確認；K1 檢查 reference surface 與整合測試責任，K2 建立實際 Runtime
 assembly／reference 並驗證依賴方向，K4 切換 descriptor／packaging 後執行完整 gates。
@@ -201,9 +210,9 @@ seam 與 K2 physical extraction 後：
 - Windows/Linux tool package 使用同一份 canonical bytes；
 - compiler reference 只作 Roslyn metadata，不載入、不掃描 inventory。
 
-若 full-batch compilation 在 K1 後仍需要 `MyFhirSdk.dll` 的 SDK composition surface，必須先
-提出 ADR amendment，核准 descriptor/compiler-reference schema 的多 reference 設計後才實作；不得暗中加入第二個
-reference 或回復 `bin/obj` 搜尋。
+K1 發現的 SDK composition surface 依賴按 §8 已核准的驗證責任處理，維持單一 Runtime
+metadata reference。若此方案實作後仍需額外 metadata reference，必須另提 ADR amendment，
+核准 schema／packaging／negative tests 後才實作；不得暗中加入第二個 reference 或回復 `bin/obj` 搜尋。
 
 ### 3.8 Package與版本策略
 
@@ -276,7 +285,8 @@ seam 後，再由後續 ADR 決定是否移動 engines。
 2026-10-07，本專案使用者明確確認兼任 Architecture、Runtime、CodeGen、Compatibility、
 Package／Release，核准目前 ADR 與全部已確認 acceptance decisions，允許開始 K1。
 審查基準為 commit `5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR v0.2、
-acceptance decision v0.1 及 Guide v0.3；本次僅同步核准狀態與責任紀錄，不新增設計範圍。
+acceptance decision v0.1 及 Guide v0.3；此段保留原始核准紀錄。v0.4 新增的 validation
+amendment 核准另見 §8，不回填成原始 review 已涵蓋。
 逐項證據、角色及原文見 [Acceptance decision 核准紀錄](MyFhirSdk_Runtime_Kernel_Extraction_Acceptance_Decision.md#9-acceptance-gate-核准紀錄)。
 
 ADR 只有在下列項目有 owner 並通過 review 後才能標為 Accepted：
@@ -310,3 +320,66 @@ installed-tool smoke。比對 pinned identities/hashes 與 normalized inventorie
 
 已發布後不得以刪除 `MyFhirSdk.Runtime.dll` 回復；必須依 package rollback/promotion policy 發布
 修正版並繼續提供 compatibility facade。
+
+## 8. K1 reference surface amendment（2026-10-07）
+
+**狀態：Accepted，設計已核准，實作 gates 待完成。** 核准來源為使用者在本對話要求
+「請依照上述建議修改」，對應前一則建議：保留單一 Runtime reference、封裝真實
+`SimpleQuantity.cs`、將 SDK composition 語意編譯交給真實 SDK build／CI、移除 production friend access。
+此修訂解除原先等待 amendment 核准的設計阻礙，允許依本節繼續 K1；不代表實作驗收通過。
+可重現的既有 K1 測試與結果見
+[Guide K1 實作進度](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md#k1-實作進度與-reference-surface-證據2026-10-07)。
+
+### 8.1 實際依賴
+
+目前 model full-batch 包含 829 個 models 及 2 個 SDK-owned composition sources。
+Models 使用 SDK-owned `SimpleQuantity` 與 generated primitive wrappers；metadata 使用
+`ImmutableModelMetadataProvider` 等 SDK-internal declarations；validation 使用
+`ResourceRuleRegistry` 及 SDK-internal rules。現有 SDK compiler reference 提供這些型別，
+`MyFhirSdk.Generated.CompilationValidation` 的 production friend access 提供 internal accessibility。
+核准 kernel 的 14 個 declarations 沒有這些型別；單純替換 compiler reference 不足。
+
+K1 隔離測試使用真正 wrappers／SimpleQuantity sources，證明 model declarations 可只依 kernel；
+但現有完整 generation pipeline 並未納入這些來源，且 metadata／validation 還有額外 SDK 依賴。
+不能把這項局部成功當成完整 pipeline 的 Runtime-only 驗收。
+
+### 8.2 核准的驗證責任
+
+採範圍較小的修訂，保留單一 canonical Runtime metadata reference 與原 ownership matrix。
+CodeGen production 不新增 Runtime／SDK ProjectReference，metadata/provider/rules 留在 SDK。
+
+1. Models／wrappers 維持 CLI 寫出 artifacts 前的 Roslyn compilation。輸入包含此次 FHIR
+   package／policy 生成的 primitive wrappers、models，以及實際 `Types/SimpleQuantity.cs`。
+   使用 .NET platform references 與單一 Runtime reference；不以舊 SDK metadata 補足 wrapper 型別。
+2. `SimpleQuantity.cs` 作為明確封裝、版本管理且固定 hash 的 auxiliary source，仍屬 SDK
+   production owner。建立 exact source inventory、asset identity／SHA-256、package inventory、
+   override precedence 與 provenance；clean installed tool 不依賴 repository／bin／obj 查找。
+   Wrappers 由此次生成取得，不封裝一份可能過時的 committed wrapper sources。
+3. SDK-owned metadata／validation composition 的語意編譯移至真實 SDK build／CI。
+   CLI 保留 IR、mapping 及生成結構檢查，檢查失敗仍阻止 artifacts 寫出；registry 保留既有
+   局部 validation declarations 檢查，不擴充 stub 掩蓋 metadata 依賴。
+   完整生成驗收必須以此次全部生成產物取代 SDK 的相應 compile items，與真實手寫
+   providers、rules、registry、codecs／validators 編譯並執行整合測試；不得只 build 舊 committed 產物。
+4. 移除 `MyFhirSdk.Generated.CompilationValidation` 的 production friend access，將依賴它的
+   generated-runtime tests 改為真實 SDK 整合驗證；窄範圍 test friend access 依既有政策保留。
+   補上 metadata／validation 及 registry 的真實 contract drift 負面測試。
+
+CLI 成功只保證 models／wrappers 語意編譯與 composition 局部／結構檢查通過，
+**不保證兩個 SDK composition sources 已完成語意編譯**。完整保證由真實 SDK build／CI 提供。
+生成 artifact 數量與 source bytes 保持既有規則；K1 manifests 保持不變，新增 auxiliary asset
+的 descriptor／compatibility／provenance／package 連動於 K4 原子遷移，不在文件中捏造 hash 或版本值。
+
+### 8.3 實作 gates 與未採方案
+
+K1 完成驗證責任拆分、移除 production friend access、真實 metadata／validation drift tests，
+並固定 `SimpleQuantity` auxiliary source 契約；K2 建立實際 Runtime assembly；K4 完成 canonical
+reference 與 auxiliary asset 的 packaging、hash、missing／mismatch、clean install、deterministic
+及跨平台 gates。K1 本機實作與驗證已完成，見 Guide 的 K1 證據；K2／K4／K6 實作證據仍待完成。
+
+未採整套 SDK sources 封裝進 CodeGen，也未採多 metadata references；不新增 public metadata
+SPI、不擴大 Runtime ownership。若此方案後續仍不足，另提 amendment，不能暗中增加 reference、
+production friend access 或 source fallback。Production pipeline 已依本節切換；K1 為固定 manifests，
+暫時重建歷史 compiler-only reference bytes，該資產仍保留舊 friend metadata，部署的 SDK 則已移除。
+CodeGen 使用新的 compilation assembly name，無須該 friend；過渡 build 與歷史屬性於 K4 移除。
+K1 review 後已將過渡 build 的 intermediate／output 隔離；logical path mapping 維持既有 hash，
+並以 CI regression gate 確認不修改或刪除正常 SDK 的 `obj`／`bin`。

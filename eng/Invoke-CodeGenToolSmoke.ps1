@@ -629,6 +629,12 @@ try {
 }
 finally {
     if (Test-Path -LiteralPath $workRoot) {
+        $resolvedWorkRoot = [System.IO.Path]::GetFullPath($workRoot)
+        $resolvedTempRoot = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\', '/')
+        if ([System.IO.Path]::GetDirectoryName($resolvedWorkRoot) -ine $resolvedTempRoot -or
+            [System.IO.Path]::GetFileName($resolvedWorkRoot) -notlike 'MyFhirSdk-D7-Smoke-*') {
+            throw "Refusing to remove an unexpected smoke workspace: $resolvedWorkRoot"
+        }
         Remove-Item -LiteralPath $workRoot -Recurse -Force
     }
 }

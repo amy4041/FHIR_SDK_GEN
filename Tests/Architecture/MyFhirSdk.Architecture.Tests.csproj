@@ -29,4 +29,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <!-- Run the same framework Regex generator when compiling real SDK sources in K1 tests. -->
+  <Target Name="StageK1RegexGenerator" AfterTargets="ResolveReferences" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <K1RegexGenerator Include="@(Analyzer)" Condition="'%(Filename)' == 'System.Text.RegularExpressions.Generator'" />
+    </ItemGroup>
+    <Error Condition="'@(K1RegexGenerator)' == ''" Text="K1 tests require the framework Regex source generator." />
+    <Copy SourceFiles="@(K1RegexGenerator)" DestinationFolder="$(OutDir)K1Analyzers" />
+  </Target>
 </Project>

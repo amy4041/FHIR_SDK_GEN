@@ -26,6 +26,8 @@
     <RuntimeReferenceTargetPath>Assets\RuntimeReferences\$(TargetFramework)\MyFhirSdk.dll</RuntimeReferenceTargetPath>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\Types\SimpleQuantity.cs"
+                      LogicalName="MyFhirSdk.CodeGen.CompilerSources.SimpleQuantity.cs" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
     <InternalsVisibleTo Include="MyFhirSdk.CodeGen.Tests" />
     <!-- Must be enabled before the first compression stream initializes. -->
