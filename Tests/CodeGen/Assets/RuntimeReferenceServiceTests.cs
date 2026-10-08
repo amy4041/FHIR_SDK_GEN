@@ -19,6 +19,22 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
         Guid.NewGuid().ToString("N"));
 
     [Fact]
+    public void Resolve_DeployedRuntimeAndSdkInHostTpaCannotSupplementCompilerContract()
+    {
+        var paths = RuntimeReferenceService.GetTrustedPlatformAssemblyPaths()
+            .Append(typeof(MyFhirSdk.Core.FhirObject).Assembly.Location)
+            .Append(typeof(MyFhirSdk.Primitives.FhirString).Assembly.Location).Distinct();
+        var result = new RuntimeReferenceService().Resolve(CodeGenTestRuntime.RuntimeContract,
+            [GetPackageAssetPath()], paths);
+        Assert.True(result.IsSuccess, Describe(result.Diagnostics));
+        Assert.DoesNotContain(result.Value!.TrustedPlatformReferences,
+            reference => reference.Assembly.Name is "MyFhirSdk" or "MyFhirSdk.Runtime");
+        Assert.Single(result.Value.RuntimeContractReferences);
+        var missing = new RuntimeReferenceService().Resolve(CodeGenTestRuntime.RuntimeContract, [], paths);
+        AssertFailure(missing, GeneratorDiagnosticCodes.RuntimeReferenceMissing);
+    }
+
+    [Fact]
     public void Resolve_ValidPackageAssetCreatesDeterministicCompilationSet()
     {
         var result = ResolvePackageOwned();

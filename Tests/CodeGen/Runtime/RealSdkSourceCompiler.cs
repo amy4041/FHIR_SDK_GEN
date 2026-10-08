@@ -40,11 +40,15 @@ internal static class RealSdkSourceCompiler
     internal static CSharpCompilation Create(IReadOnlyList<GeneratedSource> generated)
     {
         var root = RepositoryRoot();
+        var kernelFiles = typeof(MyFhirSdk.Core.FhirObject).Assembly.GetExportedTypes()
+            .Select(type => "core/" + type.Name.Replace("`1", "", StringComparison.Ordinal) + ".cs")
+            .ToHashSet(StringComparer.Ordinal);
         var handwritten = new[] { "core", "Types", "Primitives", "ModelMetadata", "Serialization",
                 "Validation", "Client", "ImplementationGuides" }
             .SelectMany(directory => Directory.EnumerateFiles(Path.Combine(root, directory), "*.cs", SearchOption.AllDirectories))
             .Where(path => !path.Split(Path.DirectorySeparatorChar).Any(part => part is "bin" or "obj"))
             .Select(path => new GeneratedSource(Path.GetRelativePath(root, path).Replace('\\', '/'), File.ReadAllText(path)));
+        handwritten = handwritten.Where(source => !kernelFiles.Contains(source.FileName));
         var sources = handwritten.Concat(generated).Append(new("ImplicitUsings.g.cs", """
             global using System;
             global using System.Collections.Generic;
@@ -63,6 +67,7 @@ internal static class RealSdkSourceCompiler
             sources.Select(source => CSharpSyntaxTree.ParseText(source.Source, parse, source.FileName)),
             RuntimeReferenceService.GetTrustedPlatformAssemblyPaths()
                 .Where(path => Path.GetDirectoryName(path) == frameworkDirectory)
+                .Append(typeof(MyFhirSdk.Core.FhirObject).Assembly.Location)
                 .Select(path => MetadataReference.CreateFromFile(path)),
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
                 nullableContextOptions: NullableContextOptions.Enable, deterministic: true));

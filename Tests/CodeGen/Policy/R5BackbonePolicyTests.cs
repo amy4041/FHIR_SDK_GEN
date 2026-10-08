@@ -160,7 +160,7 @@ public sealed class R5BackbonePolicyTests
         var approvedNames = GetBackboneNodes()
             .Select(node => GetBackboneName(node.ElementId, renames))
             .ToHashSet(StringComparer.Ordinal);
-        var currentBackbones = typeof(FhirObject).Assembly
+        var currentBackbones = typeof(MyFhirSdk.Resources.Patient).Assembly
             .GetExportedTypes()
             .Where(type =>
                 type.Namespace == "MyFhirSdk.Resources" &&

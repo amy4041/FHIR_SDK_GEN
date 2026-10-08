@@ -30,7 +30,7 @@ public sealed class RuntimeModelDependencyTests
     [Fact]
     public void RuntimeEnginesDoNotReferenceConcreteR5Models()
     {
-        var runtimeAssembly = typeof(FhirObject).Assembly;
+        var runtimeAssembly = typeof(FhirString).Assembly;
         var violations = runtimeAssembly
             .GetTypes()
             .Where(IsRuntimeEngineType)
@@ -65,7 +65,7 @@ public sealed class RuntimeModelDependencyTests
     [Fact]
     public void RuntimeEnginesDoNotReferenceConcretePrimitiveWrappers()
     {
-        var runtimeAssembly = typeof(FhirObject).Assembly;
+        var runtimeAssembly = typeof(FhirString).Assembly;
         var primitiveWrappers = runtimeAssembly
             .GetExportedTypes()
             .Where(IsConcretePrimitiveWrapper)

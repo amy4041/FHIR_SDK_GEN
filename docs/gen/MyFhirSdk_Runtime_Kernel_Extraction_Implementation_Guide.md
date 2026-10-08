@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime kernel extraction 實作指引
 
-Version 0.6
+Version 0.9
 
-- 狀態：K1 本機實作與 exit gates 完成（2026-10-07）；public declarations 搬移仍在 K2/K3 驗收，CI／Ubuntu 證據於 K6 補齊
+- 狀態：K2 commit／push 與 CI 已由使用者確認（2026-10-08）；K3 重編／部署本機 gates 已完成，Windows／Ubuntu CI 證據待完成；K4 assets 遷移與 K6 仍待驗收
 - 適用範圍：第一階段 Runtime kernel physical extraction
 - Baseline：post-D Tool/CodeGen `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 決策文件：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
@@ -18,7 +18,7 @@ MyFhirSdk.Runtime.dll
 
 MyFhirSdk.dll
   R5 Models + Serializer/Parser/Validator + Client + IG support
-  並提供舊 Runtime type 的 compatibility forwarders
+  consumers 與相依 DLL 必須以 split assemblies 全面重編
 ```
 
 完成後 dependency 必須是：
@@ -30,8 +30,8 @@ CodeGen ──contract/reference metadata──► Runtime
 ```
 
 本階段保留既有 namespace 與 public member shape，但有意將指定 Runtime types 的 defining
-assembly 改為 `MyFhirSdk.Runtime`。相容性由 type forwarding、old-binary fixture 與 migration
-文件驗證，不宣稱 `AssemblyQualifiedName` 不變。
+assembly 改為 `MyFhirSdk.Runtime`。遷移由所有 consumers／相依 DLL 全面重編、獨立部署與
+migration 文件驗證；不提供 forwarders 或舊 binary binding，不宣稱 `AssemblyQualifiedName` 不變。
 
 ## 2. 非目標
 
@@ -48,7 +48,7 @@ assembly 改為 `MyFhirSdk.Runtime`。相容性由 type forwarding、old-binary 
 
 2026-10-07 使用者以 Architecture、Runtime、CodeGen、Compatibility、Package／Release
 兼任角色核准 ADR 與 acceptance decisions。ADR acceptance 的 K1 entry gate 已完成；
-K1 本機實作與驗證紀錄見下文；K2–K7 尚未完成。
+K1／K2／K3 本機實作與驗證紀錄見下文；K3 CI／跨平台執行與 K4–K7 尚未完成。
 
 - Phase D D0-D8 已合併且完整 CI 綠燈。
 - 工作分枝只包含本 migration 的變更；任何既有未提交變更已盤點。
@@ -207,8 +207,8 @@ branch CI 與提交後的 clean-checkout 驗證仍是出口條件，不因新增
 3. 保存 `ApprovedPublicApi.txt`、`ApprovedR5ModelApi.txt`、831 generated artifacts、model
    manifests 與 tool package inventory/hash。
 4. 建立以拆分前 Release output 編譯的 consumer fixture。CI 必須從 pinned baseline
-   commit/tag 在隔離 staging 建立舊 consumer binary，再以 split 後 assemblies 執行；驗證階段
-   不得重新編譯該 consumer，也不得將 DLL 提交 Git。
+   commit/tag 在隔離 staging 建立舊 consumer binary，僅對歷史 SDK 執行；不將 DLL 提交 Git。
+   2026-10-08 amendment 取消後續以 split assemblies 執行未重編 binary 的要求。
 5. 建立 current source consumer fixture，供 split 後重新編譯驗證。
 
 Exit gate：baseline 可在 clean checkout 重現，且未改 production behavior/generated output。
@@ -227,10 +227,10 @@ Exit gate：baseline 可在 clean checkout 重現，且未改 production behavio
   schema v2 manifests的inventory/hash，重跑22個primitive產物的雙input equivalence。
 - Old consumer fixture source由K0提交，明確固定fixture revision與SDK baseline revision，
   不要求歷史SDK commit已含fixture。以隔離checkout產生的舊Release SDK編譯fixture，
-  保存consumer DLL hash與編譯reference identity；後續驗證只置換SDK依賴，不重新編譯consumer。
+  保存consumer DLL hash與編譯reference identity；僅驗證歷史基線，不置換split依賴。
 - K0時尚無split assemblies：old binary先對拆分前SDK執行成功，current source fixture
-  對目前單一SDK重新編譯／執行成功。拆分後old-binary與type-forwarding驗證屬K3，
-  不列為K0已通過。兩種fixture至少觸及primitive value、model/base assignment與
+  對當時單一SDK重新編譯／執行成功。2026-10-08起K3改驗全面重編／獨立部署，
+  不列為K0已通過；current fixture現已參考split SDK／Runtime。兩種fixture至少觸及primitive value、model/base assignment與
   public parser/serializer round-trip，避免只有assembly載入而沒有實際API使用。
 - 測試harness可增加獨立test projects、scripts及CI gate；不得新增production Runtime
   project、改Compile ownership／public declarations、加入forwarders、修改production seams、
@@ -268,7 +268,7 @@ Runtime-only canonical reference／auxiliary asset packaging。
 
 狀態：**K1 本機實作與 exit gates 完成**。依 ADR §8 已核准的 amendment，production
 pipeline 已拆分 models 語意編譯與 SDK composition 結構檢查；全部 declarations 仍由單一 SDK
-production assembly 編譯。未建立 K2 Runtime project、K3 forwarders 或 K4 canonical Runtime assets。
+production assembly 編譯。當時未建立 K2 Runtime project 或 K4 canonical Runtime assets；K3 原 forwarders 設計已由全面重編取代。
 
 新增 `KernelIntegrationSeamTests` 與 `KernelPrimitiveRegistrationTests`，驗證：
 
@@ -371,24 +371,135 @@ physical ownership／依賴方向證據；descriptor／package reference 切換�
 Exit gate：兩個 assemblies clean build；Runtime PE assembly references 不含 `MyFhirSdk`、
 CodeGen 或 R5-specific assembly；沒有 duplicate public declarations。
 
-### K3：建立 compatibility facade/type forwarders
+#### K2 實作與驗證證據（2026-10-07）
 
-2026-10-07 使用者已確認 acceptance decision 第 6 節的設計與驗收方式。
-Forwarder 集合涵蓋 K0 的 13 個 public kernel symbols 與後來公開的 accessor，須與實際搬移清單 exact match。
-K0 consumer 不重新編譯、不改寫 IL；獨立部署目錄內置換 implementation dependencies，記錄必要的
-deps/runtimeconfig 調整，執行前後核對 consumer hash。另以 accessor consumer 補足 SPI coverage，
-缺少 Runtime DLL 時不得從 repository／cache 補載。這些執行證據仍屬 K3 exit gate。
+Production compile ownership 已切換為 `MyFhirSdk.dll -> MyFhirSdk.Runtime.dll`。
+`Runtime/KernelCompileItems.props` 明列 13 個核准 kernel declarations 與 public accessor，共 14 個
+來源；Runtime project 關閉 default compile glob 並 link 原 `core/*.cs`，不複製來源、不改 namespace。
+SDK 以同一 inventory 排除這些來源並單向 ProjectReference Runtime。
+`FhirSdkException`、generated wrappers、registry、metadata、engines、Client 與 IG 仍由 SDK 定義。
+Assembly name／version、TFM 與 deterministic／path mapping 設定由 shared props 推導。
+
+Solution、正常 SDK build／clean 及 `eng/MyFhirSdk.CodeGen.Build.proj` 的 Clean 已納入 Runtime。
+Runtime project 提供 Release `GetCompilerReferenceAsset`，eng build 的
+`GetRuntimeCompilerReferenceAsset` 提供單獨產出能力；CodeGen package 仍選歷史 SDK reference，
+descriptor、policy、generated sources、manifests 與 frozen baselines 未切換。
+
+K1 的 legacy compiler-contract 條件 build 是非部署用的歷史單一 assembly 重建，保留 kernel
+sources 並不 reference Runtime；其獨立 intermediate／output 與既有 hash 維持不變。
+這不是第二個 production compile owner；K4 移除整個過渡機制。
+`RuntimeReferenceService` 排除 host TPA 中的部署 SDK／Runtime，避免歷史 contract 與已載入的
+Runtime 形成重複型別，也防止缺失 explicit asset 時由 host 補足。
+
+`RuntimePhysicalOwnershipTests` 驗證 evaluated MSBuild Compile／ProjectReference items、compiled
+PE dependencies、14 個 public type definitions 與 absence of duplicate SDK definitions。
+既有 API／R5 snapshots 改為從兩個真實 owners 合併檢查，approved snapshots 不變；SDK engines
+dependency tests 明確檢查 SDK，避免搬移後只掃空 Runtime 而失去保護。
+Fresh generated SDK integration 現在 reference 真正 Runtime，不再將 kernel sources 併入 SDK。
+
+本機 Windows 驗證：eng Clean 後完整 solution build／test **860 passed、1 external-service test
+skipped、0 failed**。結果保留於 `artifacts/kernel-k2/clean-regression`；compiler isolation regression
+同時檢查 SDK 與 Runtime 的 `obj`／`bin`。Runtime canonical reference 的 PE identity 為
+`MyFhirSdk.Runtime, Version=1.0.0.0`，尚未替換 package reference。
+Toolchain contract 與 compiler isolation checks 通過（36 個正常輸出檔的 inventory／hash 不變）；
+乾淨 tool install／uninstall／reinstall smoke 通過，831 model sources 與全部 manifests／primitive
+artifacts byte-for-byte 相同。Smoke 證據留在 `artifacts/kernel-k2/installed-tool-smoke`。
+
+```powershell
+dotnet msbuild eng/MyFhirSdk.CodeGen.Build.proj /t:Clean /p:Configuration=Release
+dotnet test MyFhirSdk.sln -c Release --no-restore --logger trx --results-directory artifacts/kernel-k2/clean-regression
+dotnet msbuild eng/MyFhirSdk.CodeGen.Build.proj /t:GetRuntimeCompilerReferenceAsset /p:Configuration=Release
+pwsh -File eng/Test-CompilerReferenceIsolation.ps1 -OutputPath artifacts/kernel-k2/compiler-isolation-summary.json
+```
+
+2026-10-08 使用者確認 K2 已 commit／push 且 CI 通過；current consumer 已明確參考 SDK
+輸出目錄的 Runtime DLL，完整 K0 runner 本機 9 gates 通過（860 passed、1 skipped、0 failed）。
+依同日全面重編 amendment，K2 不再因缺少 forwarders 而被阻擋合併；仍須符合一般 PR／CI policy。
+這不代表 K3 的完整 consumer／相依 DLL／獨立部署驗收已完成；K2／K3 保留可辨識的 commits／gates。
+
+### K3：全面重編 consumers 與相依 DLL、驗證部署
+
+2026-10-08 使用者核准以全面重編取代原 forwarders 與舊 binary 不重編驗收，詳見 ADR §3.4／§9
+及 acceptance decision §6／§11。K3 不新增 `TypeForwardedTo`，不要求 K0 舊 consumer 搭配 split SDK 執行。
 
 交付：
 
-1. `MyFhirSdk.dll` 為所有搬移的 public Runtime types加入明確 `TypeForwardedTo`。
-2. forwarder inventory 必須與 approved moved-type inventory exact match；多或少都失敗。
-3. source consumer 重新編譯通過。
-4. K0 舊 consumer binary 不重新編譯即可載入並執行。
-5. 記錄 `typeof(T).Assembly`、`AssemblyQualifiedName` 與 reflection scan 的預期差異。
+1. 建立 consumer／相依 DLL inventory，記錄 source、reference 方式、重編命令與部署依賴。
+   至少包含七個 SDK test projects、current migration consumer、動態／fresh generated SDK
+   consumers，以及依 DLL 載入的 inventory tool。Runtime／SDK／CodeGen 的 production graph
+   一併檢查；CodeGen 仍不新增 SDK／Runtime ProjectReference，compiler asset 遷移留 K4。
+2. 從 clean output restore/build 所有 current consumers 與相依 DLL，避免沿用拆分前產物；
+   額外驗證一個使用搬移型別的 library → application 相依鏈，兩端皆重編，PE references 指向
+   新 Runtime identity，SDK 不重複定義 14 個 kernel declarations，也沒有這些型別的 forwarders。
+3. 執行 primitive value access、model/base assignment、public parser/serializer JSON round-trip
+   與 K1 public accessor read/write、ValueType、既有 cast 行為。K0 fixture 不涵蓋 accessor，
+   以 current fixture／獨立 SPI consumer 補足，不修改 frozen fixture。
+4. 將建置產出的 consumer、重編相依 DLL、SDK／Runtime implementation assemblies 與
+   deps/runtimeconfig 放入獨立部署目錄；以新 process 執行並核對載入路徑，不依 repository、
+   baseline 目錄或 cache 補載 MyFhirSdk assemblies，不以 compiler-only reference 代替執行 DLL。
+5. 記錄及測試 `typeof(T).Assembly`、`AssemblyQualifiedName`、reflection scan 的已核准差異；
+   assembly-name-based scan／設定須指向新 defining assembly，不能假設重編會自動修正字串設定。
+6. 在同一獨立部署情境移除 Runtime DLL，執行必須以明確 dependency failure 失敗，不能 fallback。
+7. 保留 K0 pinned source／fixture／hash／inventories；舊 consumer 僅對歷史 SDK 執行。
+   新增 K3 evidence 與 CI gate，不覆寫 K0 或把 baseline 重建通過等同 K3 部署驗收完成。
 
-Exit gate：無 `TypeLoadException`、`FileNotFoundException`、`MissingMethodException`；缺少
-`MyFhirSdk.Runtime.dll` 時測試必須以清楚的 dependency failure 失敗，不能靜默 fallback。
+Exit gate：inventory 中所有 current consumers／相依 DLL 的 clean build/run 通過，獨立部署
+正面測試無 `TypeLoadException`、`FileNotFoundException`、`MissingMethodException`，缺少 Runtime
+的負面測試按預期失敗；14 個 declarations ownership／無 forwarders、reflection identity 與
+public SPI 行為符合核准範圍，K0 baseline 無 drift。
+
+#### K3 本機實作與驗證證據（2026-10-08）
+
+新增 `eng/Test-KernelConsumerRebuild.ps1`，以 fresh artifact directory 執行七個 gates：
+consumer inventory、clean regression、rebuilt consumers、isolated deployment、missing Runtime、
+split API inventory、historical baseline。盤點 15 個 projects，包括三個 production projects、
+七個 SDK test consumers、current／historical fixtures、inventory tool 及新增的 library／application。
+盤點掃描整個 repository 的 source projects，剪除 artifacts／bin／obj 與工具 metadata 目錄，
+`Tests` 外的未知 projects 也會失敗，須先補分類與重編計畫。
+動態 model compilation 與 fresh generated SDK tests 由完整 regression 覆蓋。
+Regression 逐一核對七個 assembly identities，各需唯一報告與實際 passed tests；缺少／重複／
+不相關 reports、未知 skip／失敗 outcomes、counters 不符都會失敗。唯一允許的 skip 是未設定
+`MYFHIRSDK_INTEGRATION_BASE_URL` 時既有 Client smoke test 的明確缺少設定原因；
+每專案 counters 另寫入 `evidence.regressionProjects`，不只核對全 solution 的加總。
+
+`Tests/KernelMigration/RebuiltLibrary` 對 application 暴露 `Base`／`PrimitiveType<T>`，
+以真實 SDK 做 JSON round-trip、nullable／non-nullable accessor casts、ValueType 與 failed-write
+state preservation；`RebuiltConsumer` 檢查兩個重編 PE 的 moved-type references，14 declarations
+的 defining assembly、SDK 無對應 forwarders、AQN／reflection resolution 及全部四個 DLL 的載入路徑。
+current consumer 也從 fresh source 重建、執行；沒有改寫 frozen K0 fixture。
+
+隔離部署使用真實 implementation DLL 與建置生成的 deps/runtimeconfig。移除該目錄的 Runtime
+後，新 process 以 `FileNotFoundException`／`MyFhirSdk.Runtime` dependency failure 失敗，
+不從 repository、baseline 或 cache 補載；測試後還原部署 DLL，runner 成功時明確 `exit 0`。
+Inventory tool 保留原單 DLL 模式，新增顯式 SDK＋Runtime 輸入，combined inventory 重跑 hash 一致，
+908 個 exported types 中有 14 個 Runtime declarations；K0 單 DLL inventory 的 bytes 不變。
+
+新增 `eng/Test-KernelConsumerRebuildHarness.ps1`，以合成 source trees 與 TRX 驗證上述拒絕條件，
+包括整個 CodeGen suite 被跳過、以其他 assembly report 取代必要專案、以及 `Tests` 外新增 consumer。
+14 個 harness checks 本機通過，證據位於 `artifacts/kernel-k3-review-harness/summary.json`；
+CI matrix 也會執行並上傳 summary。
+
+本機完整 clean solution regression：**860 passed、1 external-service test skipped、0 failed**；
+K3 七個 gates 全部通過，code review 修正後最終證據位於
+`artifacts/kernel-k3-review-fixed/evidence.json`，包含七個測試專案各自的執行 counters。
+最終執行另使用明確 canonical compiler reference 與 Actions shell wrapper，成功 exit code 為 0；
+這驗證 CI 呼叫模式與 expected negative-test exit handling，不代表遠端 CI 已執行。
+另重跑 K0 baseline runner（未指定 `-RunRegressionAndSmoke`），歷史 SDK hash、old/current
+consumers、API/source/package inventories 全部通過；該次 regression／primitive／tool smoke
+明確標為 skipped，整體狀態為 partial，不宣稱完整 K0 smoke 已重跑。
+歷史驗證證據位於 `artifacts/kernel-k3-k0-verified/evidence.json`。
+
+```powershell
+pwsh -File eng/Test-KernelConsumerRebuild.ps1 -OutputDirectory artifacts/kernel-k3
+pwsh -File eng/Test-KernelConsumerRebuildHarness.ps1 -OutputDirectory artifacts/kernel-k3-harness
+pwsh -File eng/Test-KernelMigrationBaseline.ps1 -OutputDirectory artifacts/kernel-k3-k0-check
+```
+
+CI 的 Windows／Ubuntu build/test/tool-smoke matrix 已接入 K3 runner，沿用下載的 canonical
+compiler reference 供 CodeGen metadata build，仍不改 K4 descriptor／reference／package。
+兩平台分別上傳 `kernel-k3-windows`／`kernel-k3-linux` evidence；此為 workflow 實作，
+**尚未宣稱遠端 CI／Ubuntu 已通過**。Fixture 與部署操作見
+[migration consumers README](../../Tests/KernelMigration/README.md)。
 
 ### K4：遷移 versioned Runtime contract
 
@@ -475,10 +586,11 @@ Exit gate：沒有只留在 PR 描述中的新 debt；文件命令可由 clean e
 | Gate | 必須驗證 |
 | --- | --- |
 | Project graph | 只有 `MyFhirSdk → Runtime`；Runtime 無反向 reference |
-| PE/type ownership | 13 symbols 定義於 Runtime；MyFhirSdk 有 exact forwarders |
+| PE/type ownership | 14 declarations（13 descriptor symbols＋accessor）定義於 Runtime；SDK 無重複定義或對應 forwarders |
 | Existing API | public type/member snapshot無未核准變更 |
-| Old binary | 拆分前編譯 fixture 不重編譯即可執行 |
-| New source | consumer restore/build/run 成功 |
+| Historical baseline | K0 frozen fixture 僅對歷史 SDK 執行；pin／hash／inventories 不變 |
+| Rebuilt consumers | 所有 current consumers／相依 DLL clean restore/build/run；library → application 相依鏈與 PE identity 通過 |
+| Deployment | 新 process 從獨立目錄載入 SDK／Runtime／重編相依 DLL；缺少 Runtime 明確失敗，無 fallback |
 | Reflection | defining assembly/AQN 差異符合核准 baseline |
 | Runtime contract | descriptor shape、identity、TFM、hash exact match |
 | CodeGen | 831-source full generation；models／wrappers Roslyn、composition 局部／結構檢查及此次完整輸出的 SDK build／runtime gates |
@@ -505,7 +617,7 @@ Exit gate：沒有只留在 PR 描述中的新 debt；文件命令可由 clean e
 - 已確認的 public accessor SPI 與 `PrimitiveType<T>` 可見 interface graph 增加；保留既有 cast 行為；
 
 - approved Runtime types 的 defining assembly 改為 `MyFhirSdk.Runtime`；
-- `MyFhirSdk.dll` 增加 matching type forwarders；
+- consumers 與相依 DLL 全面重編並共同部署；不提供 type forwarders 或舊 binary binding；
 - descriptor/reference/manifest/package inventory 中相應 identity與 hash更新；
 - SDK deployment 多一個必要 Runtime assembly。
 
@@ -528,23 +640,24 @@ Exit gate：沒有只留在 PR 描述中的新 debt；文件命令可由 clean e
 | --- | --- | --- |
 | K0 | baseline、inventory、old/new consumer fixtures | 否 |
 | K1 | primitive accessor/registry/composition seams | 否 |
-| K2 | Runtime project、compile ownership、dependency tests | 是，需與K3在受控migration branch協調 |
-| K3 | forwarders與binary/source compatibility | 是，完成相容bridge |
+| K2 | Runtime project、compile ownership、dependency tests | 是，依全面重編決策與一般 PR／CI policy |
+| K3 | 全面重編 consumers／相依 DLL、SPI／reflection／獨立部署 | 驗證 K2 已核准 identity 遷移，不新增 forwarders |
 | K4 | descriptor、reference、packaging、manifest | 只改核准identity/hash |
 | K5 | behavior與integration補強 | 否 |
 | K6 | Windows/Linux CI、clean package smoke | 否 |
 | K7 | operations、migration與handoff文件 | 否 |
 
-若 repository policy不允許 K2在缺少K3時進入main，可將K2+K3合併為一個原子PR；仍須在
-commit/測試結構中保留兩個可辨識步驟。
+K2 不再因缺少 K3 forwarders 而被阻擋合併。K3 獨立 PR 完成全面重編／部署驗收；
+K2 CI 通過不代表 K3–K7 已完成，仍須保留可辨識的工作包與證據。
 
 ## 11. Final definition of done
 
 - ADR 狀態為 Accepted，實作與核准 decision一致。
 - `MyFhirSdk.Runtime.dll` 實際定義 approved kernel types。
-- `MyFhirSdk.dll` 保留其餘 SDK功能並提供完整 forwarders。
+- `MyFhirSdk.dll` 保留其餘 SDK功能，無搬移型別的 forwarders。
 - Runtime 無 SDK/Models/CodeGen 反向 dependency。
-- 舊 binary與新 source consumers都通過，但 reflection identity差異有明確文件。
+- 所有 current consumers／相依 DLL 全面重編與獨立部署通過；reflection identity 差異有明確文件。
+- K0 舊 consumer 只對歷史 SDK 驗證，pin／fixture／inventories 保持不變。
 - CodeGen 只依 versioned descriptor、canonical compiler reference 與明確封裝的 SimpleQuantity source，
   不依 Runtime／SDK production project，不攜帶整套 SDK sources。
 - 831 generated sources、JSON、metadata、validation、Client與IG regression通過；metadata／validation

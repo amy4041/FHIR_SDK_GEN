@@ -9,7 +9,7 @@ public sealed class GeneratedModelIntegrationTests
     [Fact]
     public void SdkAssemblyContainsGeneratedOwnersAndNoHandwrittenEntryOwners()
     {
-        var assembly = typeof(FhirObject).Assembly;
+        var assembly = typeof(Account).Assembly;
 
         Assert.NotNull(assembly.GetType(
             "MyFhirSdk.ModelMetadata.R5.GeneratedR5ModelMetadata"));

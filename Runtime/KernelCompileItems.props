@@ -1,0 +1,18 @@
+<Project>
+  <ItemGroup>
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\FhirObject.cs" />
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\IFhirExtensionValue.cs" />
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\Base.cs" />
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\Element.cs" />
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\BackboneElement.cs" />
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\BackboneType.cs" />
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\DataType.cs" />
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\PrimitiveType.cs" />
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\Resource.cs" />
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\DomainResource.cs" />
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\Extension.cs" />
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\Meta.cs" />
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\Narrative.cs" />
+    <RuntimeKernelSource Include="$(MSBuildThisFileDirectory)..\core\IPrimitiveValueAccessor.cs" />
+  </ItemGroup>
+</Project>

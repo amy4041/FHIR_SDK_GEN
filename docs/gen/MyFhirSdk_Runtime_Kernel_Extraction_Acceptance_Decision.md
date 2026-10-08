@@ -1,17 +1,18 @@
 # Runtime kernel ADR acceptance decision 核准紀錄
 
-Version 0.4
+Version 0.6
 
 - 狀態：Accepted（2026-10-07）；設計 gates 已核准，允許開始 K1；實作 gates 另行驗收。
 - 日期：2026-10-06。
-- 更新日期：2026-10-07，記錄原始核准及 K1 validation amendment 核准。
-- 對應文件：[ADR v0.4](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v0.5](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
-- 範圍：設計決策、驗收方法及 K1 validation amendment，不在本文件執行 K1 或搬移 production declarations。
+- 更新日期：2026-10-08，新增全面重編／不提供 forwarders 的 superseding amendment（第 11 節）。
+- 對應文件：[ADR v0.7](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v0.9](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
+- 範圍：設計決策、驗收方法、K1 validation 與 K3 全面重編 amendments，不在本文件執行 K1 或搬移 production declarations。
 
 已確認採最小 public primitive accessor，並保留 SDK-owned registry 的 internal partial composition。
 單一 Runtime compiler reference、三層驗證、ownership、compatibility、release／rollback 方案
 亦已確認並同步於 ADR 與 Guide。第 8 節記錄同步範圍，第 9 節記錄責任角色與最終核准，
-ADR 狀態為 Accepted。K1 reference surface 發現後的較小修訂已依本對話授權核准，見第 5、10 節。
+ADR 狀態為 Accepted。K1 reference surface 修訂見第 5、10 節；全面重編／不提供 forwarders
+的後續核准見第 6、11 節。
 未執行的 gates 不因設計確認而標為通過；K1 的本機執行證據另記錄於第 10 節及 Guide。
 
 ## 1. Baseline 與證據
@@ -49,7 +50,7 @@ K0 merge revision 是交付位置，不替換 SDK source pin。
 | Parser／Serializer／Validator 與 default R5 composition | SDK | Runtime |
 | Client、ImplementationGuides/TwCore | SDK | SDK maintainers |
 | Descriptor loader、reference resolver、Roslyn validators、renderer | CodeGen | CodeGen |
-| Compatibility type forwarders | SDK | Compatibility + Runtime |
+| Consumer 全面重編／部署遷移（不提供 forwarders） | Consumer harness／CI | Compatibility + Runtime |
 
 其他未列出的現有 declarations 預設留在 SDK，不因目錄名稱含 Runtime 而搬移。
 K2 以 explicit compile items 和 PE dependency tests 固定 owner。
@@ -174,31 +175,31 @@ package inventory 與 manifest provenance。K1 generated sources／manifests 仍
 13 個 model-generation symbols 保留；新增 accessor 是 compiler reference 的公開 SPI，
 不因出現在 PE 就自動成為第 14 個 generator mapping symbol。
 
-## 6. Compatibility 與舊 binary 決策
+## 6. 全面重編與 consumer migration 決策
 
-2026-10-07 使用者依建議確認本節相容性承諾、forwarder 範圍及舊 binary 驗證方法。
-這是設計確認；K3 的執行證據仍須另行完成。
+2026-10-08 使用者確認所有 consumers 與相依 DLL 都能一起重編，核准全面重編，
+取代 2026-10-07 的 forwarder 與舊 binary 不重編承諾；原始核准歷史保留於第 9 節，
+本次 superseding amendment 的明確授權見第 11 節。K3 本機執行證據見同節，CI／Ubuntu 證據待完成。
 
-保留 SDK assembly simple name、namespace、既有 member shape 與 JSON behavior。
-允許第 3 節的新增 SPI，以及已核准 Runtime declarations 的 defining assembly 改變。
-對 typeof(T).Assembly、AssemblyQualifiedName 與依 assembly 掃描的 consumer 不承諾零差異。
+保留 SDK assembly simple name、namespace、既有 member shape 與 JSON behavior，允許既有
+SPI 例外及 Runtime defining assembly 改變。不產生 `TypeForwardedTo`，不承諾舊 binary
+直接置換依賴可執行；所有引用舊 type identity 的 consumers 與相依 DLL 必須一起重編部署。
+typeof(T).Assembly、AssemblyQualifiedName、reflection scan／設定字串差異須記錄、遷移及測試。
 
-K3 的 forwarder inventory 以「拆分前已在 SDK 公開、且實際搬移的型別」為準，要求 exact match。
-K0 的 13 個 public kernel symbols 必須涵蓋；accessor 在 K1 成為 public、K2 搬移，因此也應有
-forwarder。Forwarders 數量與 descriptor 的 13-symbol mapping 數量是不同驗收集合。
+K3 應依 Guide K3 完成：
 
-K0 frozen fixture 保持 content pin，不修改它來迎合拆分後 API。K3 應：
+1. 盤點所有 current consumers 與相依 DLL，clean restore/build/run，包含 library → application
+   相依鏈；CodeGen 維持 compiler metadata-only 邊界，canonical reference 遷移留 K4。
+2. 驗證 14 個搬移 declarations 唯一定義於 Runtime，SDK 無對應 forwarders，重編的 DLL
+   references 指向新 identity；namespace／member shape snapshots 不出現未核准差異。
+3. primitive、model/base、JSON round-trip 與 public accessor SPI 行為通過。
+4. 以獨立目錄／新 process 執行完整新部署及建置產出的 deps/runtimeconfig，檢查 MyFhirSdk
+   assemblies 載入路徑；移除 Runtime DLL 時明確失敗，不從 repository／baseline／cache 補載。
+5. K0 pinned source、frozen fixture、hash、inventories 保持；old consumer 只在歷史 SDK 執行。
+   K3 evidence 獨立保存，K0 runner 通過不替代 K3 部署驗收。
 
-1. 從固定 SDK source 與 fixture 重建舊 consumer 一次，記錄 Consumer.dll hash。
-2. 將該輸出複製到獨立執行目錄，以 split SDK／Runtime implementation assemblies 置換依賴。
-   不重新編譯 consumer，不用 reference assembly 執行，不從 baseline 目錄補載舊 SDK。
-3. 明確處理 .deps.json／runtimeconfig 與 Runtime dependency probing；若需要調整部署 metadata，
-   記錄差異，不改寫 consumer IL，執行前後核對 Consumer.dll hash。
-4. 執行既有 primitive、model/base、JSON round-trip 行為，另測 exact forwarders 與 reflection identity。
-5. 移除測試目錄內 Runtime dependency 的負面測試必須失敗，不得從 repository／cache 意外補載。
-6. 另用 K1 public SPI consumer 驗證 accessor 的 forwarding；不能把 K0 fixture 當成已涵蓋當時尚未公開的 SPI。
-
-跨 assembly 載入、forwarding 與 deployment 的執行證據屬 K3 exit gate，不宣稱已由 K0 完成。
+K2 不再因缺少 forwarders 而被阻擋合併；K3 clean rebuild／deployment gates 仍須完成，
+不因這次設計 amendment 或 K2 CI 通過而宣稱已驗收。
 
 ## 7. Release 與 rollback 決策
 
@@ -212,7 +213,7 @@ SDK 執行輸出必須同時部署 MyFhirSdk.dll 與 MyFhirSdk.Runtime.dll；Too
 
 尚未公開 release 時，以可 review 的 revert commits 回復 migration 工作包，不改寫 main 歷史：
 
-1. 回復 K1 前單一 SDK compile ownership／seams，撤除新增 Runtime project、forwarders 與 deployment 設定。
+1. 回復 K1 前單一 SDK compile ownership／seams，撤除新增 Runtime project 與 deployment 設定。
 2. 由 K0 delivery revision 取得 harness／inventories，由固定 source pin 重建 canonical baseline。
 3. 回復 Tool/CodeGen 1.1.0 的 descriptor、reference identity/hash、compatibility 與 package inventory。
 4. 重跑完整 K0、Phase D、primitive tgz/directory equivalence 與 installed-tool smoke。
@@ -228,10 +229,10 @@ SDK 執行輸出必須同時部署 MyFhirSdk.dll 與 MyFhirSdk.Runtime.dll；Too
 | ADR §3.5、Guide §5.1 | 已同步第 3 節 SPI shape／behavior，釐清穩定契約與可寫 instance value |
 | ADR §3.6、Guide §5.2／K1 | 已於 2026-10-07 同步：保留 SDK partial composition；K1 驗證隔離邊界，不要求消除內部 partial |
 | ADR §3.7／§8、Guide K1／K2／K4／K6 | 已於 2026-10-07 同步：單 reference、SimpleQuantity auxiliary source、CLI／SDK build 驗證責任及移除 production friend access；K1 本機證據見第 10 節及 Guide，K2／K4／K6 待完成 |
-| ADR §3.4、Guide §8／K3 | 已於 2026-10-07 同步：SPI public API 例外、K0／K1 consumers 與 moved-public-type forwarder 集合 |
+| ADR §3.4、Guide §8／K3 | 2026-10-08 已依第 11 節 supersede forwarders／old binary 承諾：全面重編、保留歷史基線與獨立部署 gates |
 | ADR §3.8／§7 | 已於 2026-10-07 同步：release boundary 與可 review 的 source rollback |
 
-上述設計修訂已同步；原始核准來自第 9 節，新增 amendment 核准來自第 10 節的使用者明確授權，
+上述設計修訂已同步；原始核准來自第 9 節，新增 amendments 核准來自第 10、11 節的使用者明確授權，
 不是從文件合併或 CI 通過推定。
 
 ## 9. Acceptance gate 核准紀錄
@@ -252,8 +253,8 @@ SDK maintainers 的 ownership 責任在本階段由同一位使用者以 Runtime
 | K0 baseline／inventory | 第 1 節、PR #40、K0 pin／inventories | Runtime + Architecture | 使用者（兼任左列角色） | Accepted，2026-10-07，本節核准聲明；CI 證據範圍依第 1 節 |
 | 唯一 ownership | 第 2 節 | Runtime + Architecture | 使用者（兼任左列角色） | Accepted，2026-10-07；K2 compile／PE 驗收待完成 |
 | Accessor／registry seams | 第 3、4 節 | Runtime + CodeGen + Compatibility | 使用者（兼任左列角色） | Accepted，2026-10-07；剩餘 K1 實作 gates 另驗收 |
-| Facade／forwarding policy | 第 6 節 | Compatibility + Runtime | 使用者（兼任左列角色） | Accepted，2026-10-07；K3 驗收待完成 |
-| Old binary fixture／驗證方法 | 第 1、6 節 | Runtime + Compatibility | 使用者（兼任左列角色） | Accepted，2026-10-07；K3 驗收待完成 |
+| Facade／forwarding policy | 第 6 節 | Compatibility + Runtime | 使用者（兼任左列角色） | 原始 Accepted，2026-10-07；2026-10-08 由第 11 節取代 split binary／forwarders 要求 |
+| Old binary fixture／驗證方法 | 第 1、6 節 | Runtime + Compatibility | 使用者（兼任左列角色） | 原始 Accepted，2026-10-07；2026-10-08 由第 11 節取代 split binary／forwarders 要求 |
 | Descriptor/reference migration／rollback | 第 5、7 節 | CodeGen + Runtime | 使用者（兼任左列角色） | Accepted，2026-10-07；K1／K2／K4／K7 實作證據待完成 |
 | Package／release boundary | 第 7 節 | Package/release owner | 使用者（兼任左列角色） | Accepted，2026-10-07；公開發布未授權 |
 | ADR 整體核准 | 全部 gates、第 8 節文件已同步 | Architecture + Runtime maintainers | 使用者（兼任左列角色） | Accepted，2026-10-07；允許開始 K1 |
@@ -284,3 +285,42 @@ SDK integration 與真實 metadata／validation／registry drift tests 已完成
 部署 SDK 已移除 generator friend。為固定 K1 manifest／reference bytes，歷史 compiler-only 資產
 仍保留舊 friend metadata，由條件 build 產出且不部署 implementation；CodeGen 已不用該 friend name。
 此過渡機制及 auxiliary descriptor／provenance 於 K4 原子遷移；不宣稱 K2／K4／跨平台驗收已完成。
+
+2026-10-07 K2 實作紀錄：production kernel 的 14 個 declarations 已由 `MyFhirSdk.Runtime`
+獨占編譯，SDK 單向依賴 Runtime；evaluated MSBuild items、compiled PE 與未修改的 public
+snapshots 驗證通過。Clean 後 solution 860 passed、1 skipped、0 failed；詳見 Guide K2。
+歷史 compiler-only reference／descriptor／manifest 保持不變，host TPA 不補足部署 SDK／Runtime。
+2026-10-08 使用者確認 K2 已 commit／push 且 CI 通過。第 11 節修訂 K3 為全面重編／部署
+驗收，取消因缺少 forwarders 而阻擋 K2 合併的要求；K3 執行 gates 仍待完成。
+
+## 11. 全面重編／不提供 forwarders amendment 核准紀錄
+
+- 日期：2026-10-08。
+- 核准人：本專案使用者，依第 9 節既有 Architecture、Runtime、CodeGen、Compatibility、
+  Package／Release 角色紀錄。
+- 核准來源：本對話明確要求修改 ADR 和 K3 驗收條件，原文：
+  「因為所有consumers 與相依 DLL 都能一起重編，所以改成全面重編，也就是不需要forwarders的方法」。
+- 前提：使用者確認 SDK 未對外發布、所有 consumers 與相依 DLL 可一起重編。
+  Repository 盤點有三個 production projects、七個 SDK test projects、current／historical migration
+  fixtures 與 DLL inventory tool；沒有找到不能重編的業務 consumer。盤點不宣稱能掃描其他 repositories。
+- 結果：Accepted（設計）；supersede 第 9 節原 facade／forwarding policy 及 old binary
+  fixture 在 split assemblies 不重編執行的承諾。K0 source pin／fixture／hash／inventories 保留，
+  old consumer 僅對歷史 SDK 執行；第 9 節保留原始核准紀錄，不回填成當時已採全面重編。
+- 同步：ADR v0.6 §3.4／§4.3／§6／§9、Guide v0.8 K3、required test matrix、compatibility policy、
+  PR sequence 與 final definition of done、本文件 §2／§6／§8。
+- K3 核准交付：所有 current consumers／相依 DLL clean rebuild/run、library → application
+  相依鏈、14 declarations ownership／無 forwarders、SPI／reflection identity、
+  獨立部署與缺少 Runtime 的負面測試；新 evidence 不覆寫 K0 baseline。
+- K2 commit／push 與 CI 通過由使用者同日確認；移除原 K2 需等待 forwarders 的合併限制。
+  此設計核准不宣稱 K3 已完成，不擴大 K4 或公開 release 授權。
+
+2026-10-08 K3 本機實作紀錄：新增 consumer inventory 與 clean rebuild runner、library／application
+相依鏈、隔離部署／missing Runtime、SPI／reflection／PE 無 forwarders 與 combined SDK／Runtime
+inventory 驗證，七個 gates 全部通過；860 passed、1 external-service test skipped、0 failed。
+K0 歷史 runner 的 hash／consumer／inventories 驗證通過（未重跑其 regression／smoke，狀態 partial）。
+CI matrix 已加入 K3 runner 與 Windows／Ubuntu evidence 上傳；尚未取得遠端／Ubuntu 通過證據。
+執行方法與詳細 gate evidence 見 Guide K3 及 `Tests/KernelMigration/README.md`。
+
+K3 code review 修正紀錄：repository-wide project discovery 與逐專案 TRX execution／skip
+驗證已補齊；14 個拒絕／接受條件 harness checks、本機完整 K3 七個 gates 全部通過。
+860 passed、1 已核准外部服務 skip、0 failed；遠端／Ubuntu 證據仍待確認。

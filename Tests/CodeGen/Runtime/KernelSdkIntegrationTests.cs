@@ -19,7 +19,7 @@ public sealed class KernelSdkIntegrationTests
     [Fact]
     public void DeployedSdkDoesNotGrantProductionGeneratorFriendAccess()
     {
-        var friends = typeof(FhirObject).Assembly.GetCustomAttributes(typeof(InternalsVisibleToAttribute), false)
+        var friends = typeof(MyFhirSdk.Primitives.FhirString).Assembly.GetCustomAttributes(typeof(InternalsVisibleToAttribute), false)
             .Cast<InternalsVisibleToAttribute>().Select(attribute => attribute.AssemblyName).ToArray();
         Assert.Equal(["MyFhirSdk.Architecture.Tests"], friends);
     }
@@ -49,7 +49,8 @@ public sealed class KernelSdkIntegrationTests
         Assert.Equal(852, (await RealSdkSourceCompiler.GeneratedSourcesAsync()).Count);
         var compilation = await Sdk.Value;
         Assert.Empty(Errors(compilation));
-        Assert.DoesNotContain(compilation.ReferencedAssemblyNames, identity => identity.Name.StartsWith("MyFhirSdk"));
+        Assert.Equal(["MyFhirSdk.Runtime"], compilation.ReferencedAssemblyNames
+            .Where(identity => identity.Name.StartsWith("MyFhirSdk")).Select(identity => identity.Name));
     }
 
     [Fact]
