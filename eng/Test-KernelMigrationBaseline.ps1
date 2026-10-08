@@ -70,7 +70,10 @@ Invoke-KernelEvidenceRun -Evidence $result -OutputPath "$output/evidence.json" -
 
     Run dotnet @('build', "$root/MyFhirSdk.csproj", '-c', 'Release')
     $currentSdk = "$root/bin/Release/$tfm/MyFhirSdk.dll"
-    Run dotnet @('build', "$currentFixture/Consumer.csproj", '-c', 'Release', "-p:MyFhirSdkTargetFramework=$tfm", "-p:SdkAssemblyPath=$currentSdk", '-o', "$output/current-consumer")
+    # Explicit DLL references do not propagate the SDK's Runtime project dependency.
+    $currentRuntime = "$root/bin/Release/$tfm/MyFhirSdk.Runtime.dll"
+    if (-not (Test-Path -LiteralPath $currentRuntime)) { throw 'Current SDK deployment is missing MyFhirSdk.Runtime.dll.' }
+    Run dotnet @('build', "$currentFixture/Consumer.csproj", '-c', 'Release', "-p:MyFhirSdkTargetFramework=$tfm", "-p:SdkAssemblyPath=$currentSdk", "-p:RuntimeAssemblyPath=$currentRuntime", '-o', "$output/current-consumer")
     Run dotnet @("$output/current-consumer/Consumer.dll")
     if ((Hash "$output/old-consumer/Consumer.dll") -cne $consumerHash) { throw 'Old consumer binary was modified.' }
 
