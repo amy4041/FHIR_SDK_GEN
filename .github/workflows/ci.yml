@@ -233,14 +233,23 @@ jobs:
           "tfm=$tfm" >> $env:GITHUB_OUTPUT
           "runtime-reference=$($assets[0].FullName)" >> $env:GITHUB_OUTPUT
 
-      - name: Restore
-        run: dotnet restore "${{ env.SOLUTION_PATH }}"
+      - name: Rebuild consumers and verify isolated kernel deployment
+        shell: pwsh
+        run: ./eng/Test-KernelConsumerRebuild.ps1 -RuntimeReferenceAssetPath "${{ steps.contract.outputs.runtime-reference }}"
 
-      - name: Build
-        run: dotnet build "${{ env.SOLUTION_PATH }}" --configuration Release --no-restore -p:RuntimeReferenceAssetPath="${{ steps.contract.outputs.runtime-reference }}"
+      - name: Verify K3 consumer discovery and regression rejection cases
+        shell: pwsh
+        run: ./eng/Test-KernelConsumerRebuildHarness.ps1
 
-      - name: Test
-        run: dotnet test "${{ env.SOLUTION_PATH }}" --configuration Release --no-build --verbosity normal
+      - name: Upload K3 rebuild and deployment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-k3-${{ matrix.id }}
+          path: |
+            artifacts/kernel-k3
+            artifacts/kernel-k3-harness
+          if-no-files-found: warn
 
       - name: Pack local tool
         run: dotnet pack CodeGen/MyFhirSdk.CodeGen.csproj --configuration Release --no-build --no-restore -p:RuntimeReferenceAssetPath="${{ steps.contract.outputs.runtime-reference }}" --output artifacts/d7/package

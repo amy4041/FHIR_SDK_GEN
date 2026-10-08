@@ -1,11 +1,11 @@
 # Runtime kernel ADR acceptance decision 核准紀錄
 
-Version 0.5
+Version 0.6
 
 - 狀態：Accepted（2026-10-07）；設計 gates 已核准，允許開始 K1；實作 gates 另行驗收。
 - 日期：2026-10-06。
 - 更新日期：2026-10-08，新增全面重編／不提供 forwarders 的 superseding amendment（第 11 節）。
-- 對應文件：[ADR v0.6](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v0.8](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
+- 對應文件：[ADR v0.7](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v0.9](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
 - 範圍：設計決策、驗收方法、K1 validation 與 K3 全面重編 amendments，不在本文件執行 K1 或搬移 production declarations。
 
 已確認採最小 public primitive accessor，並保留 SDK-owned registry 的 internal partial composition。
@@ -179,7 +179,7 @@ package inventory 與 manifest provenance。K1 generated sources／manifests 仍
 
 2026-10-08 使用者確認所有 consumers 與相依 DLL 都能一起重編，核准全面重編，
 取代 2026-10-07 的 forwarder 與舊 binary 不重編承諾；原始核准歷史保留於第 9 節，
-本次 superseding amendment 的明確授權見第 11 節。K3 執行證據仍待完成。
+本次 superseding amendment 的明確授權見第 11 節。K3 本機執行證據見同節，CI／Ubuntu 證據待完成。
 
 保留 SDK assembly simple name、namespace、既有 member shape 與 JSON behavior，允許既有
 SPI 例外及 Runtime defining assembly 改變。不產生 `TypeForwardedTo`，不承諾舊 binary
@@ -308,8 +308,19 @@ snapshots 驗證通過。Clean 後 solution 860 passed、1 skipped、0 failed；
   old consumer 僅對歷史 SDK 執行；第 9 節保留原始核准紀錄，不回填成當時已採全面重編。
 - 同步：ADR v0.6 §3.4／§4.3／§6／§9、Guide v0.8 K3、required test matrix、compatibility policy、
   PR sequence 與 final definition of done、本文件 §2／§6／§8。
-- K3 待交付：所有 current consumers／相依 DLL clean rebuild/run、library → application
+- K3 核准交付：所有 current consumers／相依 DLL clean rebuild/run、library → application
   相依鏈、14 declarations ownership／無 forwarders、SPI／reflection identity、
   獨立部署與缺少 Runtime 的負面測試；新 evidence 不覆寫 K0 baseline。
 - K2 commit／push 與 CI 通過由使用者同日確認；移除原 K2 需等待 forwarders 的合併限制。
   此設計核准不宣稱 K3 已完成，不擴大 K4 或公開 release 授權。
+
+2026-10-08 K3 本機實作紀錄：新增 consumer inventory 與 clean rebuild runner、library／application
+相依鏈、隔離部署／missing Runtime、SPI／reflection／PE 無 forwarders 與 combined SDK／Runtime
+inventory 驗證，七個 gates 全部通過；860 passed、1 external-service test skipped、0 failed。
+K0 歷史 runner 的 hash／consumer／inventories 驗證通過（未重跑其 regression／smoke，狀態 partial）。
+CI matrix 已加入 K3 runner 與 Windows／Ubuntu evidence 上傳；尚未取得遠端／Ubuntu 通過證據。
+執行方法與詳細 gate evidence 見 Guide K3 及 `Tests/KernelMigration/README.md`。
+
+K3 code review 修正紀錄：repository-wide project discovery 與逐專案 TRX execution／skip
+驗證已補齊；14 個拒絕／接受條件 harness checks、本機完整 K3 七個 gates 全部通過。
+860 passed、1 已核准外部服務 skip、0 failed；遠端／Ubuntu 證據仍待確認。

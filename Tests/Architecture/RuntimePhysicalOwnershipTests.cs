@@ -43,6 +43,8 @@ public sealed class RuntimePhysicalOwnershipTests
             return sdkMetadata.GetString(type.Namespace) == "MyFhirSdk.Core"
                 && KernelNames.Contains(sdkMetadata.GetString(type.Name));
         });
+        Assert.DoesNotContain(sdk.GetForwardedTypes(), type =>
+            type.Namespace == "MyFhirSdk.Core" && KernelNames.Contains(type.Name));
         Assert.Same(sdk, typeof(FhirSdkException).Assembly);
         Assert.DoesNotContain(typeof(MyFhirSdk.CodeGen.Cli.GeneratorCli).Assembly.GetReferencedAssemblies(),
             identity => identity.Name is "MyFhirSdk.Runtime" or "MyFhirSdk");

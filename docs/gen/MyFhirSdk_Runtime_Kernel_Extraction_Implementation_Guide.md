@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime kernel extraction 實作指引
 
-Version 0.8
+Version 0.9
 
-- 狀態：K2 commit／push 與 CI 已由使用者確認（2026-10-08）；全面重編 amendment 已核准；K3 重編／部署、K4 assets 遷移及 K6 CI／Ubuntu 證據尚待完成
+- 狀態：K2 commit／push 與 CI 已由使用者確認（2026-10-08）；K3 重編／部署本機 gates 已完成，Windows／Ubuntu CI 證據待完成；K4 assets 遷移與 K6 仍待驗收
 - 適用範圍：第一階段 Runtime kernel physical extraction
 - Baseline：post-D Tool/CodeGen `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 決策文件：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
@@ -48,7 +48,7 @@ migration 文件驗證；不提供 forwarders 或舊 binary binding，不宣稱 
 
 2026-10-07 使用者以 Architecture、Runtime、CodeGen、Compatibility、Package／Release
 兼任角色核准 ADR 與 acceptance decisions。ADR acceptance 的 K1 entry gate 已完成；
-K1／K2 本機實作與驗證紀錄見下文；K3–K7 尚未完成。
+K1／K2／K3 本機實作與驗證紀錄見下文；K3 CI／跨平台執行與 K4–K7 尚未完成。
 
 - Phase D D0-D8 已合併且完整 CI 綠燈。
 - 工作分枝只包含本 migration 的變更；任何既有未提交變更已盤點。
@@ -446,7 +446,60 @@ pwsh -File eng/Test-CompilerReferenceIsolation.ps1 -OutputPath artifacts/kernel-
 Exit gate：inventory 中所有 current consumers／相依 DLL 的 clean build/run 通過，獨立部署
 正面測試無 `TypeLoadException`、`FileNotFoundException`、`MissingMethodException`，缺少 Runtime
 的負面測試按預期失敗；14 個 declarations ownership／無 forwarders、reflection identity 與
-public SPI 行為符合核准範圍，K0 baseline 無 drift。驗收執行證據尚待 K3 實作提供。
+public SPI 行為符合核准範圍，K0 baseline 無 drift。
+
+#### K3 本機實作與驗證證據（2026-10-08）
+
+新增 `eng/Test-KernelConsumerRebuild.ps1`，以 fresh artifact directory 執行七個 gates：
+consumer inventory、clean regression、rebuilt consumers、isolated deployment、missing Runtime、
+split API inventory、historical baseline。盤點 15 個 projects，包括三個 production projects、
+七個 SDK test consumers、current／historical fixtures、inventory tool 及新增的 library／application。
+盤點掃描整個 repository 的 source projects，剪除 artifacts／bin／obj 與工具 metadata 目錄，
+`Tests` 外的未知 projects 也會失敗，須先補分類與重編計畫。
+動態 model compilation 與 fresh generated SDK tests 由完整 regression 覆蓋。
+Regression 逐一核對七個 assembly identities，各需唯一報告與實際 passed tests；缺少／重複／
+不相關 reports、未知 skip／失敗 outcomes、counters 不符都會失敗。唯一允許的 skip 是未設定
+`MYFHIRSDK_INTEGRATION_BASE_URL` 時既有 Client smoke test 的明確缺少設定原因；
+每專案 counters 另寫入 `evidence.regressionProjects`，不只核對全 solution 的加總。
+
+`Tests/KernelMigration/RebuiltLibrary` 對 application 暴露 `Base`／`PrimitiveType<T>`，
+以真實 SDK 做 JSON round-trip、nullable／non-nullable accessor casts、ValueType 與 failed-write
+state preservation；`RebuiltConsumer` 檢查兩個重編 PE 的 moved-type references，14 declarations
+的 defining assembly、SDK 無對應 forwarders、AQN／reflection resolution 及全部四個 DLL 的載入路徑。
+current consumer 也從 fresh source 重建、執行；沒有改寫 frozen K0 fixture。
+
+隔離部署使用真實 implementation DLL 與建置生成的 deps/runtimeconfig。移除該目錄的 Runtime
+後，新 process 以 `FileNotFoundException`／`MyFhirSdk.Runtime` dependency failure 失敗，
+不從 repository、baseline 或 cache 補載；測試後還原部署 DLL，runner 成功時明確 `exit 0`。
+Inventory tool 保留原單 DLL 模式，新增顯式 SDK＋Runtime 輸入，combined inventory 重跑 hash 一致，
+908 個 exported types 中有 14 個 Runtime declarations；K0 單 DLL inventory 的 bytes 不變。
+
+新增 `eng/Test-KernelConsumerRebuildHarness.ps1`，以合成 source trees 與 TRX 驗證上述拒絕條件，
+包括整個 CodeGen suite 被跳過、以其他 assembly report 取代必要專案、以及 `Tests` 外新增 consumer。
+14 個 harness checks 本機通過，證據位於 `artifacts/kernel-k3-review-harness/summary.json`；
+CI matrix 也會執行並上傳 summary。
+
+本機完整 clean solution regression：**860 passed、1 external-service test skipped、0 failed**；
+K3 七個 gates 全部通過，code review 修正後最終證據位於
+`artifacts/kernel-k3-review-fixed/evidence.json`，包含七個測試專案各自的執行 counters。
+最終執行另使用明確 canonical compiler reference 與 Actions shell wrapper，成功 exit code 為 0；
+這驗證 CI 呼叫模式與 expected negative-test exit handling，不代表遠端 CI 已執行。
+另重跑 K0 baseline runner（未指定 `-RunRegressionAndSmoke`），歷史 SDK hash、old/current
+consumers、API/source/package inventories 全部通過；該次 regression／primitive／tool smoke
+明確標為 skipped，整體狀態為 partial，不宣稱完整 K0 smoke 已重跑。
+歷史驗證證據位於 `artifacts/kernel-k3-k0-verified/evidence.json`。
+
+```powershell
+pwsh -File eng/Test-KernelConsumerRebuild.ps1 -OutputDirectory artifacts/kernel-k3
+pwsh -File eng/Test-KernelConsumerRebuildHarness.ps1 -OutputDirectory artifacts/kernel-k3-harness
+pwsh -File eng/Test-KernelMigrationBaseline.ps1 -OutputDirectory artifacts/kernel-k3-k0-check
+```
+
+CI 的 Windows／Ubuntu build/test/tool-smoke matrix 已接入 K3 runner，沿用下載的 canonical
+compiler reference 供 CodeGen metadata build，仍不改 K4 descriptor／reference／package。
+兩平台分別上傳 `kernel-k3-windows`／`kernel-k3-linux` evidence；此為 workflow 實作，
+**尚未宣稱遠端 CI／Ubuntu 已通過**。Fixture 與部署操作見
+[migration consumers README](../../Tests/KernelMigration/README.md)。
 
 ### K4：遷移 versioned Runtime contract
 

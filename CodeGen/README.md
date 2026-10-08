@@ -62,6 +62,11 @@ K2 已拆出 production Runtime assembly；CodeGen package 保留歷史 SDK comp
 K4 才切換 canonical reference／descriptor／provenance。Hashes 與歷史基準界線見
 [accessor contract evidence](../docs/gen/baselines/kernel-accessor/README.md)。
 
+SDK migration 採所有 consumers／相依 DLL 全面重編，不提供 type forwarders。K3 runner
+`eng/Test-KernelConsumerRebuild.ps1` 驗證 clean solution regression、重編相依 DLL 鏈、獨立部署
+與缺少 Runtime 的失敗；不改 CodeGen metadata-only 邊界或 K4 compiler asset 遷移。
+操作見 [migration consumers](../Tests/KernelMigration/README.md)。
+
 K1 已將驗證責任拆分：CLI 以同一 input／policy 新生成的 primitive wrappers 與 embedded 真實
 `SimpleQuantity.cs` 編譯 models；metadata／validation composition 做 IR、mapping 與結構檢查。
 CLI 成功的完整整合保證須再由 SDK build／CI 編譯此次全部生成結果，並執行 runtime tests。

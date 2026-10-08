@@ -122,7 +122,7 @@ package、重新產生 staging output 並比較。不得用修改目前 source �
 | 項目 | Owner | 目前理由 | Exit criterion / gate |
 | --- | --- | --- | --- |
 | 公開 NuGet license/release | Release + legal maintainers | Phase D 未核准 license、公開 feed 或 promotion policy | 核准 license 與 package metadata；signing、SBOM、provenance、credentials、rollback/promotion CI 全部通過 |
-| Runtime/Models physical split | Architecture + Runtime maintainers | 現有單一 assembly 保護 public type assembly identity 並避免 bootstrap cycle | 先依 `MyFhirSdk_Runtime_Kernel_Extraction_ADR.md` 與 implementation guide 核准/完成 Runtime kernel extraction；consumer recompilation、舊 binary、API/JSON/runtime compatibility gates 通過 |
+| Runtime/Models physical split | Architecture + Runtime maintainers | 最小 kernel 已於 K2 拆出，完整 Models split 仍未實作 | 依 kernel ADR 全面重編 consumers／相依 DLL，API/JSON/runtime 與獨立部署 gates 通過；不要求舊 binary binding／forwarders |
 | Profile generation / `SimpleQuantity` | future Profile CodeGen owner | constraint Profiles 不在 R5 specialization scope | 定義 Profile ownership/policy，生成 migration 通過 public API 與 behavior baseline |
 | Deferred validation capabilities | Validation + CodeGen maintainers | terminology、FHIRPath invariant、fixed/pattern、targetProfile 尚需 Runtime support | 各 capability 有 versioned policy、Runtime executor、positive/negative generation/runtime tests |
 | 新 FHIR patch/minor 版本 | CodeGen compatibility owner | 目前只核准 R5 `5.0.0` exact matrix | 新 package lock/hash、policy review、descriptor/matrix 更新及 831-equivalent full regression |
@@ -143,7 +143,8 @@ Runtime kernel extraction 的已核准決策與工作分解位於（K1–K7 實�
 - `docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md`
 
 ADR 及 K1 validation amendment 已於 2026-10-07 核准。K2 已將 production kernel 搬至 Runtime
-assembly；歷史 compiler-only baseline 仍保留，K3 compatibility 與 K4 canonical assets 待驗收。
+assembly；歷史 compiler-only baseline 仍保留，K4 canonical assets 待驗收。2026-10-08 核准全面
+重編、不提供 forwarders；K3 clean rebuild／隔離部署七個本機 gates 通過，CI／Ubuntu 證據待完成。
 K1 本機開發與驗證已完成，CLI models 編譯／composition 結構檢查及 fresh generated SDK integration
 已接入；部署 SDK 已移除 generator friend。compiler-only 歷史 reference 暫時保持 bytes，
 由條件 build 重建且不部署該 implementation，於 K4 一併移除。執行證據見上述 Guide。

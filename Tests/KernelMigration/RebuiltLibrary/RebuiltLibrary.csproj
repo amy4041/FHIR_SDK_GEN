@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(MyFhirSdkTargetFramework)</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="MigrationProbe.cs" />
+    <Reference Include="MyFhirSdk"><HintPath>$(SdkAssemblyPath)</HintPath></Reference>
+    <Reference Include="MyFhirSdk.Runtime"><HintPath>$(RuntimeAssemblyPath)</HintPath></Reference>
+  </ItemGroup>
+  <Target Name="RequireImplementationAssemblies" BeforeTargets="ResolveReferences">
+    <Error Condition="!Exists('$(SdkAssemblyPath)') or !Exists('$(RuntimeAssemblyPath)')" Text="Explicit SDK and Runtime implementation assemblies are required." />
+  </Target>
+</Project>

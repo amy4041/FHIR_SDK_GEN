@@ -1,8 +1,8 @@
 # ADR：MyFhirSdk Runtime kernel physical extraction
 
-Version 0.6
+Version 0.7
 
-- 狀態：Accepted（2026-10-07）；2026-10-08 全面重編 amendment 已核准；K2 CI 通過，K3 重編／部署與 K4 reference 遷移仍待驗收
+- 狀態：Accepted（2026-10-07）；2026-10-08 全面重編 amendment 已核准；K2 CI 通過、K3 本機重編／部署 gates 通過，K3 CI／Ubuntu 與 K4 reference 遷移仍待驗收
 - 核准人：本專案使用者（本對話），兼任 Architecture、Runtime、CodeGen、Compatibility、Package／Release
 - 核准基準：`5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR 與 acceptance decisions；原始核准見 §6，K1 validation amendment 見 §8，全面重編 amendment 見 §9
 - 決策 owner：Architecture + Runtime maintainers
@@ -380,7 +380,8 @@ CLI 成功只保證 models／wrappers 語意編譯與 composition 局部／結�
 K1 完成驗證責任拆分、移除 production friend access、真實 metadata／validation drift tests，
 並固定 `SimpleQuantity` auxiliary source 契約；K2 建立實際 Runtime assembly；K4 完成 canonical
 reference 與 auxiliary asset 的 packaging、hash、missing／mismatch、clean install、deterministic
-及跨平台 gates。K1／K2 本機實作與驗證已完成，見 Guide 的實作證據；K3／K4／K6 證據仍待完成。
+及跨平台 gates。K1／K2 本機實作與驗證已完成；K3 本機證據見 §9 與 Guide，K3 CI／Ubuntu
+及 K4／K6 證據仍待完成。
 
 未採整套 SDK sources 封裝進 CodeGen，也未採多 metadata references；不新增 public metadata
 SPI、不擴大 Runtime ownership。若此方案後續仍不足，另提 amendment，不能暗中增加 reference、
@@ -392,11 +393,11 @@ K1 review 後已將過渡 build 的 intermediate／output 隔離；logical path 
 
 K2 production ownership 已切換為 SDK 單向依賴 Runtime，14 個 kernel declarations 由 Runtime
 獨占編譯，source／public API shape 未變；實作證據見 Guide K2。歷史 compiler-only 契約仍由
-隔離的非部署 build 重建，K4 才切換 descriptor／package；K3 全面重編與獨立部署 gates 待完成（§9）。
+隔離的非部署 build 重建，K4 才切換 descriptor／package；K3 本機 gates 已完成，CI／Ubuntu 證據待完成（§9）。
 
 ## 9. 全面重編 migration amendment（2026-10-08）
 
-**狀態：Accepted（設計）；K3 實作與執行證據待完成。**
+**狀態：Accepted（設計）；K3 本機實作與 gates 已完成，CI／Ubuntu 證據待完成。**
 使用者明確授權：「因為所有consumers 與相依 DLL 都能一起重編，所以改成全面重編，
 也就是不需要forwarders的方法」。SDK 尚未公開發布由使用者先前確認；本次不授權公開 release。
 
@@ -408,3 +409,13 @@ reflection identity、獨立載入及缺少 Runtime 的負面測試。K0 基線�
 2026-10-08 使用者另確認 K2 已 commit／push 且 CI 通過，不推定未提供的 commit／run identity。
 K2 不因無 forwarders 而被阻擋合併；K2 CI 與設計核准均不替代 K3 執行證據。
 同步文件：ADR v0.6、Acceptance Decision v0.5 §6／§11、Guide v0.8 K3／test matrix／definition of done。
+
+2026-10-08 K3 實作證據：clean regression 860 passed／1 external-service skipped／0 failed，
+consumer inventory、重編 library → application、PE ownership／無 forwarders、SPI／reflection、
+隔離部署、missing Runtime 與 split inventory 共七個 gates 本機通過。K0 baseline runner
+的歷史 hash／inventories 重建通過，未重跑該 runner 的 regression／tool smoke。
+Windows／Ubuntu CI matrix 已接入；遠端與 Ubuntu 通過證據仍待提供，詳見 Guide K3。
+
+K3 code review 的兩個 P2 驗收缺口已修正：盤點掃描整個 repository，未知 source projects
+不得略過；regression 逐 assembly 核對唯一 TRX、實際執行與 skip policy，不接受整個專案跳過。
+14 個 failure-mode harness checks 與修正後完整 K3 本機 gates 通過；遷移決策本身未改變。
