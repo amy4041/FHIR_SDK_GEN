@@ -2,7 +2,7 @@
 
 Version 0.5
 
-- 狀態：Accepted（2026-10-07）；允許開始 K1，實體搬移仍依 K2/K3 gates 執行
+- 狀態：Accepted（2026-10-07）；K1／K2 本機 gates 已完成，K3 compatibility 與 K4 reference 遷移仍待驗收
 - 核准人：本專案使用者（本對話），兼任 Architecture、Runtime、CodeGen、Compatibility、Package／Release
 - 核准基準：`5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR 與 acceptance decisions；原始核准見 §6，K1 validation amendment 的本對話核准見 §8
 - 決策 owner：Architecture + Runtime maintainers
@@ -374,7 +374,7 @@ CLI 成功只保證 models／wrappers 語意編譯與 composition 局部／結�
 K1 完成驗證責任拆分、移除 production friend access、真實 metadata／validation drift tests，
 並固定 `SimpleQuantity` auxiliary source 契約；K2 建立實際 Runtime assembly；K4 完成 canonical
 reference 與 auxiliary asset 的 packaging、hash、missing／mismatch、clean install、deterministic
-及跨平台 gates。K1 本機實作與驗證已完成，見 Guide 的 K1 證據；K2／K4／K6 實作證據仍待完成。
+及跨平台 gates。K1／K2 本機實作與驗證已完成，見 Guide 的實作證據；K3／K4／K6 證據仍待完成。
 
 未採整套 SDK sources 封裝進 CodeGen，也未採多 metadata references；不新增 public metadata
 SPI、不擴大 Runtime ownership。若此方案後續仍不足，另提 amendment，不能暗中增加 reference、
@@ -383,3 +383,7 @@ production friend access 或 source fallback。Production pipeline 已依本節�
 CodeGen 使用新的 compilation assembly name，無須該 friend；過渡 build 與歷史屬性於 K4 移除。
 K1 review 後已將過渡 build 的 intermediate／output 隔離；logical path mapping 維持既有 hash，
 並以 CI regression gate 確認不修改或刪除正常 SDK 的 `obj`／`bin`。
+
+K2 production ownership 已切換為 SDK 單向依賴 Runtime，14 個 kernel declarations 由 Runtime
+獨占編譯，source／public API shape 未變；實作證據見 Guide K2。歷史 compiler-only 契約仍由
+隔離的非部署 build 重建，K4 才切換 descriptor／package；K3 forwarders 與舊 binary gates 待完成。

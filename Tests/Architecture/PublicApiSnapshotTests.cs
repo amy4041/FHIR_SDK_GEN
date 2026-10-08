@@ -12,7 +12,7 @@ public sealed class PublicApiSnapshotTests
             AppContext.BaseDirectory,
             "ApprovedPublicApi.txt");
         var approved = NormalizeNewlines(File.ReadAllText(approvedPath)).TrimEnd();
-        var actual = CreateSnapshot(typeof(FhirObject).Assembly);
+        var actual = CreateSnapshot(typeof(MyFhirSdk.Primitives.FhirString).Assembly);
 
         if (string.Equals(approved, "PENDING", StringComparison.Ordinal))
         {
@@ -26,7 +26,7 @@ public sealed class PublicApiSnapshotTests
     [Fact]
     public void PrimitiveValidationImplementationIsNotPublicApi()
     {
-        var assembly = typeof(FhirObject).Assembly;
+        var assembly = typeof(MyFhirSdk.Primitives.FhirString).Assembly;
         var exportedPrimitiveTypes = assembly
             .GetExportedTypes()
             .Where(type => type.Namespace == "MyFhirSdk.Primitives")
@@ -50,6 +50,7 @@ public sealed class PublicApiSnapshotTests
 
         foreach (var type in assembly
                      .GetExportedTypes()
+                     .Concat(typeof(FhirObject).Assembly.GetExportedTypes())
                      .Where(IsRuntimeSurface)
                      .OrderBy(type => type.FullName, StringComparer.Ordinal))
         {

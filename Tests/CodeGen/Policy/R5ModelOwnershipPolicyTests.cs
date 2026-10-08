@@ -58,7 +58,7 @@ public sealed class R5ModelOwnershipPolicyTests
                 typeof(FhirObject).Assembly.GetType(
                     item.GetProperty("clrType").GetString()!)));
 
-        var sdkAssembly = typeof(FhirObject).Assembly;
+        var sdkAssembly = typeof(Patient).Assembly;
         Assert.Equal("MyFhirSdk", sdkAssembly.GetName().Name);
         Assert.Equal(
             "MyFhirSdk.CodeGen",

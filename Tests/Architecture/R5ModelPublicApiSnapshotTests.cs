@@ -12,7 +12,7 @@ public sealed class R5ModelPublicApiSnapshotTests
             "ApprovedR5ModelApi.txt");
         var approved = NormalizeNewlines(File.ReadAllText(approvedPath)).TrimEnd();
         var actual = R5ModelPublicApiSnapshot.Create(
-            R5ModelPublicApiSnapshot.GetSurfaceTypes(typeof(FhirObject).Assembly));
+            R5ModelPublicApiSnapshot.GetSurfaceTypes(typeof(MyFhirSdk.Resources.Patient).Assembly));
 
         if (string.Equals(
                 Environment.GetEnvironmentVariable("UPDATE_APPROVED_R5_MODEL_API"),
@@ -36,7 +36,7 @@ public sealed class R5ModelPublicApiSnapshotTests
     public void R5ModelSurfaceIsCompleteAndExplicit()
     {
         var types = R5ModelPublicApiSnapshot.GetSurfaceTypes(
-            typeof(FhirObject).Assembly);
+            typeof(MyFhirSdk.Resources.Patient).Assembly);
 
         Assert.Equal(842, types.Count);
         Assert.Equal(
@@ -54,7 +54,7 @@ public sealed class R5ModelPublicApiSnapshotTests
     public void R5ModelSnapshotIsIndependentOfInputOrder()
     {
         var types = R5ModelPublicApiSnapshot.GetSurfaceTypes(
-            typeof(FhirObject).Assembly);
+            typeof(MyFhirSdk.Resources.Patient).Assembly);
         var original = R5ModelPublicApiSnapshot.Create(types);
         var reversed = R5ModelPublicApiSnapshot.Create(types.Reverse());
 
@@ -65,7 +65,7 @@ public sealed class R5ModelPublicApiSnapshotTests
     public void R5ModelSnapshotCapturesCompatibilityCriticalShape()
     {
         var snapshot = R5ModelPublicApiSnapshot.Create(
-            R5ModelPublicApiSnapshot.GetSurfaceTypes(typeof(FhirObject).Assembly));
+            R5ModelPublicApiSnapshot.GetSurfaceTypes(typeof(MyFhirSdk.Resources.Patient).Assembly));
 
         Assert.Contains(
             "PROPERTY MyFhirSdk.Core.IFhirExtensionValue? Value | " +

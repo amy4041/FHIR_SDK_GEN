@@ -188,12 +188,14 @@ public sealed class RuntimeReferenceService
                     path,
                     RuntimeReferenceKind.TrustedPlatform,
                     includeSha256: false);
-                // The explicit contract reference always wins over an assembly already present
-                // in the host TPA list, so a loaded SDK can never become an implicit fallback.
+                // TPA includes host application dependencies. Neither deployed SDK assembly
+                // may supplement the explicit compiler contract (K2 keeps the old contract
+                // until K4, so including the loaded Runtime would duplicate kernel types).
                 if (!string.Equals(
                         resolved.Assembly.Name,
                         contract.CompilerReference.Assembly.Name,
-                        StringComparison.Ordinal))
+                        StringComparison.Ordinal)
+                    && resolved.Assembly.Name is not ("MyFhirSdk" or "MyFhirSdk.Runtime"))
                 {
                     results.Add(resolved);
                 }

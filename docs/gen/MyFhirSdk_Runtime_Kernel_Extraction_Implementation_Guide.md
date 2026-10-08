@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime kernel extraction 實作指引
 
-Version 0.6
+Version 0.7
 
-- 狀態：K1 本機實作與 exit gates 完成（2026-10-07）；public declarations 搬移仍在 K2/K3 驗收，CI／Ubuntu 證據於 K6 補齊
+- 狀態：K1／K2 本機實作與 exit gates 完成（2026-10-07）；K3 binary compatibility、K4 assets 遷移及 K6 CI／Ubuntu 證據尚待完成
 - 適用範圍：第一階段 Runtime kernel physical extraction
 - Baseline：post-D Tool/CodeGen `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 決策文件：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
@@ -48,7 +48,7 @@ assembly 改為 `MyFhirSdk.Runtime`。相容性由 type forwarding、old-binary 
 
 2026-10-07 使用者以 Architecture、Runtime、CodeGen、Compatibility、Package／Release
 兼任角色核准 ADR 與 acceptance decisions。ADR acceptance 的 K1 entry gate 已完成；
-K1 本機實作與驗證紀錄見下文；K2–K7 尚未完成。
+K1／K2 本機實作與驗證紀錄見下文；K3–K7 尚未完成。
 
 - Phase D D0-D8 已合併且完整 CI 綠燈。
 - 工作分枝只包含本 migration 的變更；任何既有未提交變更已盤點。
@@ -370,6 +370,50 @@ physical ownership／依賴方向證據；descriptor／package reference 切換�
 
 Exit gate：兩個 assemblies clean build；Runtime PE assembly references 不含 `MyFhirSdk`、
 CodeGen 或 R5-specific assembly；沒有 duplicate public declarations。
+
+#### K2 實作與驗證證據（2026-10-07）
+
+Production compile ownership 已切換為 `MyFhirSdk.dll -> MyFhirSdk.Runtime.dll`。
+`Runtime/KernelCompileItems.props` 明列 13 個核准 kernel declarations 與 public accessor，共 14 個
+來源；Runtime project 關閉 default compile glob 並 link 原 `core/*.cs`，不複製來源、不改 namespace。
+SDK 以同一 inventory 排除這些來源並單向 ProjectReference Runtime。
+`FhirSdkException`、generated wrappers、registry、metadata、engines、Client 與 IG 仍由 SDK 定義。
+Assembly name／version、TFM 與 deterministic／path mapping 設定由 shared props 推導。
+
+Solution、正常 SDK build／clean 及 `eng/MyFhirSdk.CodeGen.Build.proj` 的 Clean 已納入 Runtime。
+Runtime project 提供 Release `GetCompilerReferenceAsset`，eng build 的
+`GetRuntimeCompilerReferenceAsset` 提供單獨產出能力；CodeGen package 仍選歷史 SDK reference，
+descriptor、policy、generated sources、manifests 與 frozen baselines 未切換。
+
+K1 的 legacy compiler-contract 條件 build 是非部署用的歷史單一 assembly 重建，保留 kernel
+sources 並不 reference Runtime；其獨立 intermediate／output 與既有 hash 維持不變。
+這不是第二個 production compile owner；K4 移除整個過渡機制。
+`RuntimeReferenceService` 排除 host TPA 中的部署 SDK／Runtime，避免歷史 contract 與已載入的
+Runtime 形成重複型別，也防止缺失 explicit asset 時由 host 補足。
+
+`RuntimePhysicalOwnershipTests` 驗證 evaluated MSBuild Compile／ProjectReference items、compiled
+PE dependencies、14 個 public type definitions 與 absence of duplicate SDK definitions。
+既有 API／R5 snapshots 改為從兩個真實 owners 合併檢查，approved snapshots 不變；SDK engines
+dependency tests 明確檢查 SDK，避免搬移後只掃空 Runtime 而失去保護。
+Fresh generated SDK integration 現在 reference 真正 Runtime，不再將 kernel sources 併入 SDK。
+
+本機 Windows 驗證：eng Clean 後完整 solution build／test **860 passed、1 external-service test
+skipped、0 failed**。結果保留於 `artifacts/kernel-k2/clean-regression`；compiler isolation regression
+同時檢查 SDK 與 Runtime 的 `obj`／`bin`。Runtime canonical reference 的 PE identity 為
+`MyFhirSdk.Runtime, Version=1.0.0.0`，尚未替換 package reference。
+Toolchain contract 與 compiler isolation checks 通過（36 個正常輸出檔的 inventory／hash 不變）；
+乾淨 tool install／uninstall／reinstall smoke 通過，831 model sources 與全部 manifests／primitive
+artifacts byte-for-byte 相同。Smoke 證據留在 `artifacts/kernel-k2/installed-tool-smoke`。
+
+```powershell
+dotnet msbuild eng/MyFhirSdk.CodeGen.Build.proj /t:Clean /p:Configuration=Release
+dotnet test MyFhirSdk.sln -c Release --no-restore --logger trx --results-directory artifacts/kernel-k2/clean-regression
+dotnet msbuild eng/MyFhirSdk.CodeGen.Build.proj /t:GetRuntimeCompilerReferenceAsset /p:Configuration=Release
+pwsh -File eng/Test-CompilerReferenceIsolation.ps1 -OutputPath artifacts/kernel-k2/compiler-isolation-summary.json
+```
+
+K2 尚未加入 K3 forwarders，不能宣稱舊 binary consumers 已相容；在 K3 驗收前不應將這個
+缺少 compatibility facade 的中間狀態單獨合併 main。K2／K3 保留可辨識的 commits／gates。
 
 ### K3：建立 compatibility facade/type forwarders
 

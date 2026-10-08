@@ -28,6 +28,8 @@ internal static class R5ModelPublicApiSnapshot
 
         return assembly
             .GetExportedTypes()
+            .Concat(typeof(MyFhirSdk.Core.FhirObject).Assembly.GetExportedTypes())
+            .Distinct()
             .Where(IsR5ModelSurface)
             .OrderBy(type => type.FullName, StringComparer.Ordinal)
             .ToArray();

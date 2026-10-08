@@ -142,8 +142,8 @@ Runtime kernel extraction 的已核准決策與工作分解位於（K1–K7 實�
 - `docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
 - `docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md`
 
-ADR 及 K1 validation amendment 已於 2026-10-07 核准；目前 production 仍維持 D0-002 的
-單一 assembly baseline，physical extraction 與 canonical assets 依 K2–K4 gates 另行完成。
+ADR 及 K1 validation amendment 已於 2026-10-07 核准。K2 已將 production kernel 搬至 Runtime
+assembly；歷史 compiler-only baseline 仍保留，K3 compatibility 與 K4 canonical assets 待驗收。
 K1 本機開發與驗證已完成，CLI models 編譯／composition 結構檢查及 fresh generated SDK integration
 已接入；部署 SDK 已移除 generator friend。compiler-only 歷史 reference 暫時保持 bytes，
 由條件 build 重建且不部署該 implementation，於 K4 一併移除。執行證據見上述 Guide。

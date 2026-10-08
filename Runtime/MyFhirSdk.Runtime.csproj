@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(MyFhirSdkTargetFramework)</TargetFramework>
+    <AssemblyName>$(MyFhirSdkRuntimeAssemblyName)</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <Import Project="KernelCompileItems.props" />
+  <ItemGroup>
+    <Compile Include="@(RuntimeKernelSource)" Link="core\%(Filename)%(Extension)" />
+  </ItemGroup>
+  <Target Name="GetCompilerReferenceAsset" DependsOnTargets="Build" Returns="@(CompilerReferenceAsset)">
+    <Error Condition="'$(Configuration)' != 'Release'" Text="The Runtime compiler reference requires Configuration=Release." />
+    <Error Condition="!Exists('$(TargetRefPath)')" Text="The Runtime compiler reference was not produced." />
+    <ItemGroup>
+      <CompilerReferenceAsset Include="$(TargetRefPath)" />
+    </ItemGroup>
+  </Target>
+</Project>

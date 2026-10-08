@@ -35,7 +35,8 @@ public sealed class RuntimeContractAccessibilityTests
     [Fact]
     public void RuntimeImplementationTypesAreNotExported()
     {
-        var exportedTypes = typeof(FhirObject).Assembly.GetExportedTypes();
+        var exportedTypes = typeof(FhirObject).Assembly.GetExportedTypes()
+            .Concat(typeof(FhirValidator).Assembly.GetExportedTypes());
 
         Assert.All(
             ForbiddenExportedTypeNames,

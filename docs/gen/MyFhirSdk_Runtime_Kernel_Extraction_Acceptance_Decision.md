@@ -284,3 +284,9 @@ SDK integration 與真實 metadata／validation／registry drift tests 已完成
 部署 SDK 已移除 generator friend。為固定 K1 manifest／reference bytes，歷史 compiler-only 資產
 仍保留舊 friend metadata，由條件 build 產出且不部署 implementation；CodeGen 已不用該 friend name。
 此過渡機制及 auxiliary descriptor／provenance 於 K4 原子遷移；不宣稱 K2／K4／跨平台驗收已完成。
+
+2026-10-07 K2 實作紀錄：production kernel 的 14 個 declarations 已由 `MyFhirSdk.Runtime`
+獨占編譯，SDK 單向依賴 Runtime；evaluated MSBuild items、compiled PE 與未修改的 public
+snapshots 驗證通過。Clean 後 solution 860 passed、1 skipped、0 failed；詳見 Guide K2。
+歷史 compiler-only reference／descriptor／manifest 保持不變，host TPA 不補足部署 SDK／Runtime。
+K3 forwarders 與舊 binary 驗收尚未完成；K2／K3 必須在相容性 gates 完成後再合併 main。

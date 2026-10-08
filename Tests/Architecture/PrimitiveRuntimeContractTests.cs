@@ -309,7 +309,7 @@ public sealed class PrimitiveRuntimeContractTests
 
     private static object GetDefaultRegistry()
     {
-        var registryType = typeof(FhirObject).Assembly.GetType(
+        var registryType = typeof(FhirString).Assembly.GetType(
             "MyFhirSdk.Primitives.PrimitiveRegistry",
             throwOnError: true)!;
 
@@ -324,7 +324,7 @@ public sealed class PrimitiveRuntimeContractTests
 
     private static Array CreateDefinitionArray(params object[] definitions)
     {
-        var definitionInterface = typeof(FhirObject).Assembly.GetType(
+        var definitionInterface = typeof(FhirString).Assembly.GetType(
             "MyFhirSdk.Primitives.IPrimitiveDefinition",
             throwOnError: true)!;
         var array = Array.CreateInstance(definitionInterface, definitions.Length);
@@ -344,7 +344,7 @@ public sealed class PrimitiveRuntimeContractTests
         object codec,
         object validator)
     {
-        var definitionType = typeof(FhirObject).Assembly.GetType(
+        var definitionType = typeof(FhirString).Assembly.GetType(
             "MyFhirSdk.Primitives.PrimitiveDefinition",
             throwOnError: true)!;
         var constructor = definitionType.GetConstructors(

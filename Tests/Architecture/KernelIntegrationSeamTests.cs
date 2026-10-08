@@ -150,7 +150,7 @@ public sealed class KernelIntegrationSeamTests
             var provider = Assert.Single(fields, field => field.Name is "_metadataProvider" or "_ruleProvider");
             Assert.Same(R5ModelMetadataProvider.Default, provider.GetValue(engine));
         }
-        Assert.Equal(typeof(FhirObject).Assembly, typeof(PrimitiveRegistry).Assembly);
+        Assert.NotEqual(typeof(FhirObject).Assembly, typeof(PrimitiveRegistry).Assembly);
         Assert.Equal(typeof(PrimitiveRegistry).Assembly, typeof(FhirString).Assembly);
     }
 

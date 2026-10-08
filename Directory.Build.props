@@ -1,5 +1,11 @@
 <Project>
   <PropertyGroup>
     <MyFhirSdkTargetFramework>net9.0</MyFhirSdkTargetFramework>
+    <MyFhirSdkRuntimeAssemblyName>MyFhirSdk.Runtime</MyFhirSdkRuntimeAssemblyName>
+    <MyFhirSdkAssemblyVersion>1.0.0.0</MyFhirSdkAssemblyVersion>
+    <AssemblyVersion Condition="'$(MSBuildProjectName)' == 'MyFhirSdk' or '$(MSBuildProjectName)' == 'MyFhirSdk.Runtime'">$(MyFhirSdkAssemblyVersion)</AssemblyVersion>
+    <Deterministic Condition="'$(MSBuildProjectName)' == 'MyFhirSdk' or '$(MSBuildProjectName)' == 'MyFhirSdk.Runtime'">true</Deterministic>
+    <IncludeSourceRevisionInInformationalVersion Condition="'$(MSBuildProjectName)' == 'MyFhirSdk' or '$(MSBuildProjectName)' == 'MyFhirSdk.Runtime'">false</IncludeSourceRevisionInInformationalVersion>
+    <PathMap Condition="'$(MSBuildProjectName)' == 'MyFhirSdk' or '$(MSBuildProjectName)' == 'MyFhirSdk.Runtime'">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory).'))=/_/</PathMap>
   </PropertyGroup>
 </Project>

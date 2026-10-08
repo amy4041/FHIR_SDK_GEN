@@ -18,7 +18,7 @@ function Invoke-DotNet([string[]] $Arguments) {
 
 function Get-Snapshot {
     $hashes = [Collections.Generic.Dictionary[string, string]]::new([StringComparer]::Ordinal)
-    foreach ($directory in @("obj/Release/$tfm", "bin/Release/$tfm")) {
+    foreach ($directory in @("obj/Release/$tfm", "bin/Release/$tfm", "Runtime/obj/Release/$tfm", "Runtime/bin/Release/$tfm")) {
         foreach ($file in Get-ChildItem (Join-Path $root $directory) -Recurse -File) {
             $relative = [IO.Path]::GetRelativePath($root, $file.FullName).Replace('\', '/')
             $hashes.Add($relative, (Get-FileHash $file.FullName -Algorithm SHA256).Hash)
