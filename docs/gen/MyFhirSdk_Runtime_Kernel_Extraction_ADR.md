@@ -1,10 +1,10 @@
 # ADR：MyFhirSdk Runtime kernel physical extraction
 
-Version 0.5
+Version 0.6
 
-- 狀態：Accepted（2026-10-07）；K1／K2 本機 gates 已完成，K3 compatibility 與 K4 reference 遷移仍待驗收
+- 狀態：Accepted（2026-10-07）；2026-10-08 全面重編 amendment 已核准；K2 CI 通過，K3 重編／部署與 K4 reference 遷移仍待驗收
 - 核准人：本專案使用者（本對話），兼任 Architecture、Runtime、CodeGen、Compatibility、Package／Release
-- 核准基準：`5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR 與 acceptance decisions；原始核准見 §6，K1 validation amendment 的本對話核准見 §8
+- 核准基準：`5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR 與 acceptance decisions；原始核准見 §6，K1 validation amendment 見 §8，全面重編 amendment 見 §9
 - 決策 owner：Architecture + Runtime maintainers
 - 適用基準：post-D primitive package input `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 實作指引：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md`
@@ -22,7 +22,7 @@ primitive policy為`1.1.0`，manifest維持schema v2；`.tgz`與directory都要�
 
 本 ADR 在 Proposed 階段允許 K0 建立唯讀 baseline、assembly-aware inventory 與 consumer test
 harness。2026-10-07 已完成第 6 節最終核准並允許 K1；後續 production assembly、type ownership、
-forwarders 與 descriptor 變更仍依核准範圍及各工作包 gates 執行。
+consumer migration 與 descriptor 變更仍依核准範圍及各工作包 gates 執行；forwarders 決策已由 §9 修訂。
 Primitive input Decision的正式owner acceptance另行記錄，不能以CI通過代替。
 
 K0 已由 PR #40 合併至 main，merge commit 為
@@ -80,8 +80,8 @@ MyFhirSdk.dll ───────────────► MyFhirSdk.Runtime
 MyFhirSdk.Runtime.dll ──X────► MyFhirSdk.dll
 ```
 
-`MyFhirSdk.dll` 保持既有 assembly simple name，並在本階段同時扮演完整 SDK assembly 與舊
-consumer compatibility facade。`MyFhirSdk.Runtime.dll` 是 kernel/contracts assembly；本階段
+`MyFhirSdk.dll` 保持既有 assembly simple name，提供其餘 SDK 功能與既有 source API，
+不提供舊 binary compatibility facade。`MyFhirSdk.Runtime.dll` 是 kernel/contracts assembly；本階段
 不宣稱已包含完整 Serializer/Parser/Validator engine。
 
 ### 3.2 Runtime kernel declaration ownership
@@ -117,31 +117,36 @@ Public `IPrimitiveValueAccessor` 隨 `PrimitiveType<T>` 歸 Runtime，但不增�
 FHIR property shape 與 R5 有關，立即放入 Models 會使 `Element`、`Resource`、
 `DomainResource` 反向引用 Models。重新設計 version-specific base models 不在本階段範圍。
 
-### 3.4 Public identity compatibility
+### 3.4 全面重編與 public identity migration
 
-2026-10-07 使用者確認本節相容性邊界與 acceptance decision 第 6 節驗證方法。
-Forwarders 必須涵蓋所有已公開且搬移的型別：K0 的 13 個 kernel symbols，加上已公開的 accessor；
-此集合不同於 descriptor 的 13-symbol mapping。K3 保留 K0 consumer IL／hash，僅置換部署依賴，
-並記錄必要的 deps/runtimeconfig 調整；另以 accessor consumer 驗證該 SPI，及缺少 Runtime DLL
-時明確失敗的負面測試。此為設計確認，尚未完成 split binary 驗收。
+2026-10-08 使用者確認 SDK 尚未對外發布，所有 consumers 與相依 DLL 均能一起重編，
+核准以全面重編取代 2026-10-07 的 forwarders／舊 binary binding 承諾。
+本階段不產生 `TypeForwardedTo`，不支援拆分前 consumer binary 直接置換 split assemblies。
+未來若出現不能重編的外部 consumer，須另行修訂 ADR，不隱含恢復舊 binary 相容承諾。
 
 移動 type declaration 會把 defining assembly 從 `MyFhirSdk` 改為 `MyFhirSdk.Runtime`；這是
 有意且受控的 identity migration，不得描述為 identity 完全不變。
+所有直接或間接使用搬移型別的 consumer 與相依 DLL 必須由 source 以 split SDK／Runtime
+重新編譯，一起部署新產物，不混用引用舊 SDK type identity 的 DLL。
+既有 namespace、member shape、base/interface graph（K1 已核准 SPI 例外除外）及 JSON behavior 保持。
 
-為保留舊 binary binding，`MyFhirSdk.dll` 必須為每個已搬移的 public type 提供明確
-`TypeForwardedTo`。舊版 consumer fixture 必須在 split 後不重新編譯即成功執行。
+K3 必須盤點並 clean restore/build/run 所有 current consumers，驗證 library → application
+的相依鏈也已重編；以獨立部署目錄測試 SDK／Runtime implementation DLL、重編相依 DLL
+與建置產出的 deps/runtimeconfig，不使用 compiler reference 執行或從 repository／cache 補載。
+另涵蓋 public accessor SPI 與移除 Runtime DLL 的 dependency failure 負面測試。
+K0 pinned source、fixture、hash 與 inventories 保持不變；舊 consumer 只對歷史 SDK 執行，
+作為歷史基線，不要求其搭配 split assemblies 執行。K3 新證據獨立存放，不覆寫 K0 baseline。
 
-以下差異視為已知後果，必須記錄及測試：
+以下差異必須記錄及測試：
 
 - `typeof(T).Assembly` 指向 `MyFhirSdk.Runtime`；
 - `AssemblyQualifiedName` 的 defining assembly 改變；
-- 依 assembly name 進行 reflection scan、DI registration 或設定檔解析的 consumer 可能需要
-  migration；
-- source consumer 重新編譯後直接參考 `MyFhirSdk.Runtime`。
+- 依 assembly name 進行 reflection scan、DI registration 或設定檔解析的 consumer 必須遷移；
+- 重編不會自動修正 assembly-name-based 設定字串，須另外檢查；
+- 使用搬移型別的 source consumer 與相依 DLL 重新編譯後直接參考 Runtime。
 
 本 ADR 不承諾 reflection identity 零變更。若產品要求 `AssemblyQualifiedName` 完全不變，
-則不得搬移 public declarations，只能拆 internal implementation；此 ADR 必須改為 Rejected 或
-Superseded。
+則不得搬移 public declarations，只能拆 internal implementation，須另行修訂 ADR。
 
 ### 3.5 Cross-assembly primitive seam
 
@@ -226,8 +231,8 @@ MyFhirSdk.dll
 MyFhirSdk.Runtime.dll
 ```
 
-未來 SDK package 必須確保 `MyFhirSdk.Runtime` 是必要 dependency 或 package content，不能讓
-consumer 只取得 facade。正式 package ID、independent version range、signing、license 與
+未來 SDK package 必須確保 `MyFhirSdk.Runtime` 是必要 dependency 或 package content，讓
+consumer 取得完整 SDK 與 Runtime 依賴。正式 package ID、independent version range、signing、license 與
 promotion 仍屬 release ADR/gate。
 
 初始 Runtime assembly version 與相容 SDK baseline 對齊；Runtime contract version 必須在
@@ -245,10 +250,11 @@ topology 與 consumer migration，難以隔離失敗原因。
 Not selected。只拆 internal implementation 能避免 identity migration，但無法讓 generated
 models 直接依賴獨立 Runtime contract assembly，也無法達成本階段目的。
 
-### 4.3 不提供 compatibility facade/type forwarders
+### 4.3 全面重編、不提供 type forwarders
 
-Rejected。這等同立即 breaking migration；除非另立 major-version release ADR 並明確要求所有
-consumer 重新編譯。
+Selected（2026-10-08 amendment）。SDK 尚未公開發布，使用者確認所有 consumers 與相依
+DLL 都能重編；以 coordinated rebuild/deployment 接受 assembly identity breaking migration。
+取代原先 Rejected 決策；不因此授權公開發布或擴大 kernel ownership、public API 與 K4 範圍。
 
 ### 4.4 使用 `InternalsVisibleTo` 保留所有既有 internal seams
 
@@ -273,8 +279,8 @@ seam 後，再由後續 ADR 決定是否移動 engines。
 
 ### 5.2 Cost and risk
 
-- 搬移的 public types defining assembly 改變，type forwarding 不能保證所有 reflection-based
-  consumer 零變更。
+- 搬移的 public types defining assembly 改變，全面重編仍須檢查 reflection-based
+  consumer 的掃描與設定；不承諾 identity 零變更。
 - 需要新增正式 primitive integration/composition contract。
 - CodeGen descriptor、reference hash、package inventory、manifest provenance 與 CI golden 都會
   有受控更新。
@@ -294,13 +300,13 @@ ADR 只有在下列項目有 owner 並通過 review 後才能標為 Accepted：
 - K0 baseline 與 assembly-aware public API inventory 已提交；
 - Runtime ownership matrix 對每個 public/internal seam 有唯一 owner；
 - primitive accessor 與 registry composition seam 已選定，不使用隱含 fallback；
-- compatibility facade/type-forwarding policy 已核准；
-- old-binary-without-recompile fixture 的來源版本與驗證方式已固定；
+- 全面重編、不提供 type forwarders 的 consumer migration policy 已核准（§9）；
+- K0 歷史 fixture 保持固定；K3 clean rebuild／相依 DLL／獨立部署驗證方式已固定；
 - CodeGen descriptor/reference migration 與 rollback 已定義；
 - package/release owner確認本階段不會意外公開不完整 package；
 - Architecture + Runtime maintainers 核准本 ADR。
 
-實作完成還必須滿足 implementation guide 的 K0-K7 gates，特別是 API、舊 binary、JSON、
+實作完成還必須滿足 implementation guide 的 K0-K7 gates，特別是 API、全面重編、獨立部署、JSON、
 metadata、Runtime behavior、831-source generation 與 Windows/Linux tool smoke。
 
 ## 7. Rollback
@@ -311,7 +317,7 @@ metadata、Runtime behavior、831-source generation 與 Windows/Linux tool smoke
 拆分應以可回復工作包進行。在正式 release 前若 compatibility 或 composition gate 失敗：
 
 1. 將 compile ownership 與 seams 回復到 K0 單一 `MyFhirSdk.csproj` 狀態；
-2. 移除尚未發布的 Runtime project/output、forwarders 與新增 deployment 設定；
+2. 移除尚未發布的 Runtime project/output 與新增 deployment 設定；
 3. 回復K0固定的post-D `1.1.0` descriptor、reference identity/hash與tool package inventory；
 4. 重新執行Phase D與primitive `.tgz`完整gates，確認兩種input及generated output無drift。
 
@@ -319,7 +325,7 @@ metadata、Runtime behavior、831-source generation 與 Windows/Linux tool smoke
 installed-tool smoke。比對 pinned identities/hashes 與 normalized inventories，不要求 NuGet zip bytes 相同。
 
 已發布後不得以刪除 `MyFhirSdk.Runtime.dll` 回復；必須依 package rollback/promotion policy 發布
-修正版並繼續提供 compatibility facade。
+修正版，並依已核准的重編／部署遷移要求處理 consumers；不承諾舊 binary facade。
 
 ## 8. K1 reference surface amendment（2026-10-07）
 
@@ -386,4 +392,19 @@ K1 review 後已將過渡 build 的 intermediate／output 隔離；logical path 
 
 K2 production ownership 已切換為 SDK 單向依賴 Runtime，14 個 kernel declarations 由 Runtime
 獨占編譯，source／public API shape 未變；實作證據見 Guide K2。歷史 compiler-only 契約仍由
-隔離的非部署 build 重建，K4 才切換 descriptor／package；K3 forwarders 與舊 binary gates 待完成。
+隔離的非部署 build 重建，K4 才切換 descriptor／package；K3 全面重編與獨立部署 gates 待完成（§9）。
+
+## 9. 全面重編 migration amendment（2026-10-08）
+
+**狀態：Accepted（設計）；K3 實作與執行證據待完成。**
+使用者明確授權：「因為所有consumers 與相依 DLL 都能一起重編，所以改成全面重編，
+也就是不需要forwarders的方法」。SDK 尚未公開發布由使用者先前確認；本次不授權公開 release。
+
+本 amendment 取代原 §3.4、§4.3、§6 的 forwarders 與 old-binary-without-recompile 要求；
+其餘 ownership、SPI、單一 compiler reference、K4 原子資產遷移與 release boundary 不變。
+所有 consumers／相依 DLL 必須重編共同部署，K3 驗證 clean build/run、相依鏈、public SPI、
+reflection identity、獨立載入及缺少 Runtime 的負面測試。K0 基線保持固定，僅證明歷史行為。
+
+2026-10-08 使用者另確認 K2 已 commit／push 且 CI 通過，不推定未提供的 commit／run identity。
+K2 不因無 forwarders 而被阻擋合併；K2 CI 與設計核准均不替代 K3 執行證據。
+同步文件：ADR v0.6、Acceptance Decision v0.5 §6／§11、Guide v0.8 K3／test matrix／definition of done。
