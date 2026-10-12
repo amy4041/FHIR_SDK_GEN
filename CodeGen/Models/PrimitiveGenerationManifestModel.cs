@@ -4,7 +4,7 @@ namespace MyFhirSdk.CodeGen.Models;
 
 public sealed class PrimitiveGenerationManifestModel
 {
-    public const int CurrentSchemaVersion = 2;
+    public const int CurrentSchemaVersion = 3;
 
     public PrimitiveGenerationManifestModel(
         string fhirSpecification,

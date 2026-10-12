@@ -1,5 +1,6 @@
 using System.Text.Json;
 using MyFhirSdk.CodeGen.Compatibility;
+using MyFhirSdk.CodeGen.Diagnostics;
 using MyFhirSdk.CodeGen.Generation;
 using MyFhirSdk.CodeGen.Models;
 using MyFhirSdk.CodeGen.Policy;
@@ -9,6 +10,31 @@ namespace MyFhirSdk.CodeGen.Tests.Generation;
 
 public sealed class ModelGenerationPipelineTests : IDisposable
 {
+    [Theory]
+    [InlineData("missing", GeneratorDiagnosticCodes.PackagedAssetMissing)]
+    [InlineData("hash", GeneratorDiagnosticCodes.PackagedAssetCorrupt)]
+    [InlineData("utf8", GeneratorDiagnosticCodes.PackagedAssetCorrupt)]
+    [InlineData("bom", GeneratorDiagnosticCodes.PackagedAssetCorrupt)]
+    public async Task GenerateAsync_InvalidExplicitCompilerSource_PreservesOutput(string fault, string code)
+    {
+        Directory.CreateDirectory(_root);
+        var path = Path.Combine(_root, "SimpleQuantity.cs");
+        if (fault == "hash") await File.WriteAllTextAsync(path, "public class SimpleQuantity {}");
+        if (fault == "utf8") await File.WriteAllBytesAsync(path, [0xff]);
+        if (fault == "bom") await File.WriteAllBytesAsync(path, [0xef, 0xbb, 0xbf, 0x61]);
+        var options = Options(["http://hl7.org/fhir/StructureDefinition/Patient"]);
+        Directory.CreateDirectory(options.OutputPath);
+        var sentinel = Path.Combine(options.OutputPath, "keep.txt");
+        await File.WriteAllTextAsync(sentinel, "keep");
+        var pipeline = new ModelGenerationPipeline(new MyFhirSdk.CodeGen.Writing.OutputSafetyContext(AppContext.BaseDirectory),
+            CodeGenTestRuntime.RuntimeContract, CodeGenTestRuntime.CreateCompilationValidator(), path);
+        var result = await pipeline.GenerateAsync(options);
+        Assert.False(result.IsSuccess);
+        Assert.Equal(code, Assert.Single(result.Diagnostics).Code);
+        Assert.Equal("keep", await File.ReadAllTextAsync(sentinel));
+        Assert.Equal([sentinel], Directory.EnumerateFiles(options.OutputPath, "*", SearchOption.AllDirectories));
+    }
+
     private readonly string _root = Path.Combine(Path.GetTempPath(), "MyFhirSdk-C7", Guid.NewGuid().ToString("N"));
 
     [Fact]
@@ -88,7 +114,7 @@ public sealed class ModelGenerationPipelineTests : IDisposable
         Assert.True(File.Exists(manifestPath));
         using var manifest = JsonDocument.Parse(await File.ReadAllTextAsync(manifestPath));
         var manifestText = await File.ReadAllTextAsync(manifestPath);
-        Assert.Equal(2, manifest.RootElement.GetProperty("schemaVersion").GetInt32());
+        Assert.Equal(3, manifest.RootElement.GetProperty("schemaVersion").GetInt32());
         Assert.Equal("selected", manifest.RootElement.GetProperty("generationScope").GetProperty("mode").GetString());
         var compatibility = manifest.RootElement.GetProperty("compatibility");
         Assert.Equal(1, compatibility.GetProperty("schemaVersion").GetInt32());

@@ -71,11 +71,11 @@ public sealed class PrimitiveGenerationPipelineTests : IDisposable
         using var manifest = JsonDocument.Parse(await File.ReadAllTextAsync(manifestPath));
         var manifestText = await File.ReadAllTextAsync(manifestPath);
         var root = manifest.RootElement;
-        Assert.Equal(2, root.GetProperty("schemaVersion").GetInt32());
+        Assert.Equal(3, root.GetProperty("schemaVersion").GetInt32());
         Assert.Equal("hl7.fhir.r5.core", root.GetProperty("fhirPackageId").GetString());
         Assert.Equal("5.0.0", root.GetProperty("fhirPackageVersion").GetString());
         Assert.Equal("1.1.0", root.GetProperty("policyVersion").GetString());
-        Assert.Equal("runtime-kernel-accessor-v1", root.GetProperty("runtimeContractVersion").GetString());
+        Assert.Equal("runtime-kernel-v2", root.GetProperty("runtimeContractVersion").GetString());
         AssertManifestCompatibility(root.GetProperty("compatibility"));
         Assert.DoesNotContain(AppContext.BaseDirectory, manifestText, StringComparison.OrdinalIgnoreCase);
         Assert.Equal("MyFhirSdk.Primitives", root.GetProperty("primitiveNamespace").GetString());
@@ -227,13 +227,13 @@ public sealed class PrimitiveGenerationPipelineTests : IDisposable
         Assert.Equal("exact", compatibility.GetProperty("versionPolicy").GetString());
         Assert.Equal("MyFhirSdk.CodeGen.Tool",
             compatibility.GetProperty("tool").GetProperty("packageId").GetString());
-        Assert.Equal("1.1.0",
+        Assert.Equal("1.2.0",
             compatibility.GetProperty("tool").GetProperty("version").GetString());
-        Assert.Equal("runtime-kernel-accessor-v1",
+        Assert.Equal("runtime-kernel-v2",
             compatibility.GetProperty("runtimeDescriptor").GetProperty("version").GetString());
         Assert.Equal(64,
             compatibility.GetProperty("runtimeDescriptor").GetProperty("sha256").GetString()!.Length);
-        Assert.Contains("MyFhirSdk, Version=1.0.0.0",
+        Assert.Contains("MyFhirSdk.Runtime, Version=1.0.0.0",
             compatibility.GetProperty("compilerReference").GetProperty("logicalIdentity").GetString(),
             StringComparison.Ordinal);
         Assert.Equal(

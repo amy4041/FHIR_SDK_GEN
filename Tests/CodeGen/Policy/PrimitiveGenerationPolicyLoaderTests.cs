@@ -29,7 +29,7 @@ public sealed class PrimitiveGenerationPolicyLoaderTests : IDisposable
         Assert.Equal(1, policy.SchemaVersion);
         Assert.Equal("1.1.0", policy.PolicyVersion);
         Assert.Equal("5.0.0", policy.FhirVersion);
-        Assert.Equal("runtime-kernel-accessor-v1", policy.RuntimeContractVersion);
+        Assert.Equal("runtime-kernel-v2", policy.RuntimeContractVersion);
         Assert.Equal("MyFhirSdk.Primitives", policy.PrimitiveNamespace);
         Assert.Equal(21, policy.Primitives?.Count);
     }

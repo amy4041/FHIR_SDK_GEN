@@ -19,11 +19,9 @@ public sealed class RuntimeContractDescriptorArchitectureTests
             result.Diagnostics.Select(diagnostic => $"[{diagnostic.Code}] {diagnostic.Message}")));
         var contract = Assert.IsType<RuntimeContractView>(result.Value);
         var runtimeAssembly = typeof(FhirObject).Assembly;
-        // K2 moves production ownership; the historical compiler descriptor switches in K4.
-        var sdkAssembly = typeof(MyFhirSdk.Primitives.FhirString).Assembly;
-        AssertAssemblyIdentity(contract.RuntimeAssembly, sdkAssembly.GetName());
+        AssertAssemblyIdentity(contract.RuntimeAssembly, runtimeAssembly.GetName());
         Assert.Equal(contract.TargetFramework, contract.CompilerReference.TargetFramework);
-        AssertAssemblyIdentity(contract.CompilerReference.Assembly, sdkAssembly.GetName());
+        AssertAssemblyIdentity(contract.CompilerReference.Assembly, runtimeAssembly.GetName());
 
         foreach (var symbol in contract.Symbols)
         {

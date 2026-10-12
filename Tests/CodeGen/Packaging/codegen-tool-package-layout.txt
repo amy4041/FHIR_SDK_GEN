@@ -3,7 +3,8 @@ README.md
 [Content_Types].xml
 _rels/.rels
 package/services/metadata/core-properties/<generated>.psmdcp
-tools/<tfm>/any/Assets/RuntimeReferences/<tfm>/MyFhirSdk.dll
+tools/<tfm>/any/Assets/CompilerSources/SimpleQuantity.cs
+tools/<tfm>/any/Assets/RuntimeReferences/<tfm>/MyFhirSdk.Runtime.dll
 tools/<tfm>/any/Contracts/runtime-contract.json
 tools/<tfm>/any/DotnetToolSettings.xml
 tools/<tfm>/any/Microsoft.CodeAnalysis.CSharp.dll

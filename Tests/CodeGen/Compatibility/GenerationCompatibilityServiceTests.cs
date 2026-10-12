@@ -1,4 +1,6 @@
 using System.Text.Json.Nodes;
+using System.Security.Cryptography;
+using MyFhirSdk.CodeGen.Assets;
 using MyFhirSdk.CodeGen.Compatibility;
 using MyFhirSdk.CodeGen.Contracts;
 using MyFhirSdk.CodeGen.Diagnostics;
@@ -27,9 +29,9 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
         Assert.Equal(1, provenance.CompatibilitySchemaVersion);
         Assert.Equal("exact", provenance.CompatibilityVersionPolicy);
         Assert.Equal("MyFhirSdk.CodeGen.Tool", provenance.ToolPackageId);
-        Assert.Equal("1.1.0", provenance.ToolVersion);
-        Assert.Equal("1.1.0", provenance.CodeGenVersion);
-        Assert.Equal("runtime-kernel-accessor-v1", provenance.RuntimeDescriptorVersion);
+        Assert.Equal("1.2.0", provenance.ToolVersion);
+        Assert.Equal("1.2.0", provenance.CodeGenVersion);
+        Assert.Equal("runtime-kernel-v2", provenance.RuntimeDescriptorVersion);
         Assert.Equal(CodeGenTestRuntime.RuntimeContract.DescriptorSha256, provenance.RuntimeDescriptorSha256);
         Assert.Equal(CodeGenTestRuntime.RuntimeReferences.ReferenceSha256,
             provenance.CompilerReferenceSha256);
@@ -45,6 +47,12 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
     [InlineData("targetFramework", "net10.0", GeneratorDiagnosticCodes.UnsupportedTargetFramework, "target-framework")]
     [InlineData("compatibilitySchemaVersion", "2", GeneratorDiagnosticCodes.IncompatibleCompatibilitySchema, "compatibility-schema-version")]
     [InlineData("versionPolicy", "range", GeneratorDiagnosticCodes.IncompatibleCompatibilitySchema, "compatibility-version-policy")]
+    [InlineData("compilerSourceVersion", "unsupported-v2", GeneratorDiagnosticCodes.PackagedAssetCorrupt, "compiler-source-version")]
+    [InlineData("compilerSourceSha256", "0000000000000000000000000000000000000000000000000000000000000000", GeneratorDiagnosticCodes.PackagedAssetCorrupt, "compiler-source-sha256")]
+    [InlineData("runtimeAssemblyName", "MyFhirSdk", GeneratorDiagnosticCodes.RuntimeReferenceIdentityMismatch, "runtime-assembly-name")]
+    [InlineData("runtimeAssemblyVersion", "2.0.0.0", GeneratorDiagnosticCodes.RuntimeReferenceIdentityMismatch, "runtime-assembly-version")]
+    [InlineData("runtimeAssemblyToken", "0123456789abcdef", GeneratorDiagnosticCodes.RuntimeReferenceIdentityMismatch, "runtime-assembly-public-key-token")]
+    [InlineData("referenceSha256", "0000000000000000000000000000000000000000000000000000000000000000", GeneratorDiagnosticCodes.RuntimeReferenceHashMismatch, "compiler-reference-sha256")]
     public async Task ValidateAsync_IncompatibleContractDimension_ReturnsDedicatedDiagnostic(
         string dimension,
         string value,
@@ -53,7 +61,22 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
     {
         var contract = await LoadModifiedContractAsync(root =>
         {
-            if (dimension is "toolVersion" or "codeGenVersion")
+            if (dimension is "runtimeAssemblyName" or "runtimeAssemblyVersion" or "runtimeAssemblyToken")
+            {
+                var field = dimension == "runtimeAssemblyName" ? "name" :
+                    dimension == "runtimeAssemblyVersion" ? "version" : "publicKeyToken";
+                root["runtimeAssembly"]![field] = value;
+                root["compilerReference"]!["assembly"]![field] = value;
+            }
+            else if (dimension == "referenceSha256")
+            {
+                root["compilerReference"]!["sha256"] = value;
+            }
+            else if (dimension is "compilerSourceVersion" or "compilerSourceSha256")
+            {
+                root["compilerSources"]![0]![dimension == "compilerSourceVersion" ? "version" : "sha256"] = value;
+            }
+            else if (dimension is "toolVersion" or "codeGenVersion")
             {
                 root["compatibility"]![dimension] = value;
             }
@@ -91,9 +114,34 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
     }
 
     [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ValidateAsync_SelfConsistentSdkDescriptorAndReference_AreRejected(bool primitive)
+    {
+        var sdk = typeof(MyFhirSdk.Primitives.FhirString).Assembly;
+        var hash = Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(sdk.Location))).ToLowerInvariant();
+        var contract = await LoadModifiedContractAsync(root =>
+        {
+            root["runtimeAssembly"]!["name"] = sdk.GetName().Name;
+            root["compilerReference"]!["assembly"]!["name"] = sdk.GetName().Name;
+            root["compilerReference"]!["logicalName"] = $"MyFhirSdk/{GenerationCompatibilityMatrix.TargetFramework}";
+            root["compilerReference"]!["sha256"] = hash;
+        });
+        var resolved = new RuntimeReferenceService().Resolve(contract, [sdk.Location],
+            RuntimeReferenceService.GetTrustedPlatformAssemblyPaths());
+        Assert.True(resolved.IsSuccess, Describe(resolved.Diagnostics));
+        var result = await new GenerationCompatibilityService(contract, resolved.Value!).ValidateAsync(Request(primitive));
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Value);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == GeneratorDiagnosticCodes.RuntimeReferenceIdentityMismatch);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == GeneratorDiagnosticCodes.RuntimeReferenceHashMismatch);
+        Assert.DoesNotContain(result.Diagnostics, diagnostic => diagnostic.Code == GeneratorDiagnosticCodes.RuntimeContractReferenceMismatch);
+    }
+
+    [Theory]
     [InlineData("CodeGenVersion", "1.0.0", GeneratorDiagnosticCodes.IncompatibleCodeGenVersion, "codegen-version")]
     [InlineData("CodeGenVersion", "1.1.1", GeneratorDiagnosticCodes.IncompatibleCodeGenVersion, "codegen-version")]
-    [InlineData("CodeGenVersion", "1.1.0-preview.1", GeneratorDiagnosticCodes.IncompatibleCodeGenVersion, "codegen-version")]
+    [InlineData("CodeGenVersion", "1.2.0-preview.1", GeneratorDiagnosticCodes.IncompatibleCodeGenVersion, "codegen-version")]
     [InlineData("FhirPackageId", "HL7.fhir.r5.core", GeneratorDiagnosticCodes.IncompatibleFhirPackage, "fhir-package-id")]
     [InlineData("FhirPackageVersion", "5.0.1", GeneratorDiagnosticCodes.IncompatibleFhirPackage, "fhir-package-version")]
     [InlineData("FhirVersion", "4.0.1", GeneratorDiagnosticCodes.IncompatibleFhirPackage, "fhir-version")]
@@ -343,13 +391,13 @@ public sealed class GenerationCompatibilityServiceTests : IDisposable
         new(contract, CodeGenTestRuntime.RuntimeReferences);
 
     private static GenerationCompatibilityRequest Request(bool primitive) => primitive
-        ? GenerationCompatibilityRequest.Primitive("1.1.0", "hl7.fhir.r5.core", "5.0.0", "5.0.0",
+        ? GenerationCompatibilityRequest.Primitive("1.2.0", "hl7.fhir.r5.core", "5.0.0", "5.0.0",
             Policy("primitive-generation-policy.json"))
         : ModelRequest();
 
     private static GenerationCompatibilityRequest ModelRequest() =>
         new(
-            "1.1.0",
+            "1.2.0",
             "hl7.fhir.r5.core",
             "5.0.0",
             "5.0.0",

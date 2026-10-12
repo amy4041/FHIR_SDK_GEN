@@ -1,6 +1,6 @@
 #Requires -Version 7.2
 [CmdletBinding()]
-param([string] $OutputPath = 'artifacts/kernel-k1/compiler-isolation-summary.json')
+param([string] $OutputPath = 'artifacts/kernel-k4/compiler-isolation-summary.json')
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -8,7 +8,7 @@ $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 [xml] $props = Get-Content (Join-Path $root 'Directory.Build.props') -Raw -Encoding utf8
 $tfm = [string] $props.Project.PropertyGroup.MyFhirSdkTargetFramework
 $descriptor = Get-Content (Join-Path $root 'CodeGen/Policy/runtime-contract.json') -Raw -Encoding utf8 | ConvertFrom-Json
-$reference = Join-Path $root "artifacts/compiler-contract/Release/$tfm/MyFhirSdk.dll"
+$reference = Join-Path $root "Runtime/obj/Release/$tfm/ref/MyFhirSdk.Runtime.dll"
 $consumer = 'Tests/Architecture/MyFhirSdk.Architecture.Tests.csproj'
 
 function Invoke-DotNet([string[]] $Arguments) {
@@ -18,7 +18,7 @@ function Invoke-DotNet([string[]] $Arguments) {
 
 function Get-Snapshot {
     $hashes = [Collections.Generic.Dictionary[string, string]]::new([StringComparer]::Ordinal)
-    foreach ($directory in @("obj/Release/$tfm", "bin/Release/$tfm", "Runtime/obj/Release/$tfm", "Runtime/bin/Release/$tfm")) {
+    foreach ($directory in @("obj/Release/$tfm", "bin/Release/$tfm")) {
         foreach ($file in Get-ChildItem (Join-Path $root $directory) -Recurse -File) {
             $relative = [IO.Path]::GetRelativePath($root, $file.FullName).Replace('\', '/')
             $hashes.Add($relative, (Get-FileHash $file.FullName -Algorithm SHA256).Hash)
@@ -39,20 +39,19 @@ function Assert-Unchanged($Before, $After) {
 Push-Location $root
 try {
     # Requires the solution restore, as in CI. Start with a real built consumer.
-    Invoke-DotNet @('msbuild', 'MyFhirSdk.csproj', '/t:GetCompilerReferenceAsset', '/p:Configuration=Release', '/v:quiet')
+    Invoke-DotNet @('msbuild', 'Runtime/MyFhirSdk.Runtime.csproj', '/t:GetCompilerReferenceAsset', '/p:Configuration=Release', '/v:quiet')
     Invoke-DotNet @('build', $consumer, '-c', 'Release', '--no-restore', '--verbosity', 'quiet', "-p:RuntimeReferenceAssetPath=$reference")
     $before = Get-Snapshot
     $normalReference = "obj/Release/$tfm/ref/MyFhirSdk.dll"
     if (-not $before.ContainsKey($normalReference)) { throw 'Normal SDK reference was not produced.' }
 
-    # Exercise both a fresh contract compile and an incremental contract build.
-    # Only the isolated contract cache is rebuilt; normal outputs must survive.
-    Invoke-DotNet @('msbuild', 'MyFhirSdk.csproj', '/t:Rebuild;GetLegacyCompilerReferenceAsset', '/p:Configuration=Release', '/p:MyFhirSdkCompilerContract=true', '/v:quiet')
+    # Rebuild and read the real Runtime reference; SDK intermediates must survive.
+    Invoke-DotNet @('msbuild', 'Runtime/MyFhirSdk.Runtime.csproj', '/t:Rebuild;GetCompilerReferenceAsset', '/p:Configuration=Release', '/v:quiet')
     Assert-Unchanged $before (Get-Snapshot)
-    Invoke-DotNet @('msbuild', 'MyFhirSdk.csproj', '/t:GetCompilerReferenceAsset', '/p:Configuration=Release', '/v:quiet')
+    Invoke-DotNet @('msbuild', 'Runtime/MyFhirSdk.Runtime.csproj', '/t:GetCompilerReferenceAsset', '/p:Configuration=Release', '/v:quiet')
     Assert-Unchanged $before (Get-Snapshot)
     $hash = (Get-FileHash $reference -Algorithm SHA256).Hash.ToLowerInvariant()
-    if ($hash -cne [string] $descriptor.compilerReference.sha256) { throw "Frozen compiler reference hash drifted: $hash" }
+    if ($hash -cne [string] $descriptor.compilerReference.sha256) { throw "Runtime compiler reference hash drifted: $hash" }
 
     Invoke-DotNet @('build', $consumer, '-c', 'Release', '--no-restore', '-p:BuildProjectReferences=false', '--verbosity', 'quiet')
     Assert-Unchanged $before (Get-Snapshot)

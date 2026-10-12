@@ -81,6 +81,10 @@
       <Link>Baselines\KernelAccessor\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\docs\gen\baselines\runtime-kernel-k4\*.txt;..\..\docs\gen\baselines\runtime-kernel-k4\*.json">
+      <Link>Baselines\RuntimeKernelK4\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\Generated\R5\Primitives\*">
       <Link>CommittedGenerated\R5\Primitives\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -105,7 +109,7 @@
     <ItemGroup Condition="'$(RuntimeReferenceAssetPath)' != ''">
       <TestRuntimeReferenceAsset Include="$(RuntimeReferenceAssetPath)" />
     </ItemGroup>
-    <MSBuild Projects="..\..\MyFhirSdk.csproj"
+    <MSBuild Projects="..\..\Runtime\MyFhirSdk.Runtime.csproj"
              Targets="GetCompilerReferenceAsset"
              Properties="Configuration=Release"
              Condition="'$(RuntimeReferenceAssetPath)' == ''">
@@ -117,7 +121,7 @@
            Text="The Runtime compiler reference asset for CodeGen tests does not exist." />
     <MakeDir Directories="$(TestRuntimeReferenceDirectory)" />
     <Copy SourceFiles="@(TestRuntimeReferenceAsset)"
-          DestinationFiles="$(TestRuntimeReferenceDirectory)\MyFhirSdk.dll" />
+          DestinationFiles="$(TestRuntimeReferenceDirectory)\MyFhirSdk.Runtime.dll" />
   </Target>
 
   <Target Name="StageCodeGenToolPackages"

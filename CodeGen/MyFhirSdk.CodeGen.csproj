@@ -8,7 +8,7 @@
     <Nullable>enable</Nullable>
     <ExpectedToolPackageId>MyFhirSdk.CodeGen.Tool</ExpectedToolPackageId>
     <ExpectedToolCommandName>myfhir-codegen</ExpectedToolCommandName>
-    <ExpectedToolPackageVersion>1.1.0</ExpectedToolPackageVersion>
+    <ExpectedToolPackageVersion>1.2.0</ExpectedToolPackageVersion>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>$(ExpectedToolCommandName)</ToolCommandName>
     <PackageId>$(ExpectedToolPackageId)</PackageId>
@@ -23,11 +23,10 @@
     <Deterministic>true</Deterministic>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <PathMap>$(MSBuildProjectDirectory)=/_/CodeGen</PathMap>
-    <RuntimeReferenceTargetPath>Assets\RuntimeReferences\$(TargetFramework)\MyFhirSdk.dll</RuntimeReferenceTargetPath>
+    <RuntimeReferenceTargetPath>Assets\RuntimeReferences\$(TargetFramework)\MyFhirSdk.Runtime.dll</RuntimeReferenceTargetPath>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\Types\SimpleQuantity.cs"
-                      LogicalName="MyFhirSdk.CodeGen.CompilerSources.SimpleQuantity.cs" />
+    <None Include="..\Types\SimpleQuantity.cs" Link="Assets\CompilerSources\SimpleQuantity.cs" CopyToOutputDirectory="PreserveNewest" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
     <InternalsVisibleTo Include="MyFhirSdk.CodeGen.Tests" />
     <!-- Must be enabled before the first compression stream initializes. -->

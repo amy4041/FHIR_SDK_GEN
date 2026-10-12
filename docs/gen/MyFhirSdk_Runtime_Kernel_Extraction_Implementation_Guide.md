@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime kernel extraction 實作指引
 
-Version 0.9
+Version 1.0
 
-- 狀態：K2 commit／push 與 CI 已由使用者確認（2026-10-08）；K3 重編／部署本機 gates 已完成，Windows／Ubuntu CI 證據待完成；K4 assets 遷移與 K6 仍待驗收
+- 狀態：K2／K3 已由使用者確認合併 main 並通過 CI；K4 reference／assets 遷移已實作，本機驗證結果見 K4 節；K4 PR／CI 與 K5–K7 待完成
 - 適用範圍：第一階段 Runtime kernel physical extraction
 - Baseline：post-D Tool/CodeGen `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 決策文件：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
@@ -48,7 +48,7 @@ migration 文件驗證；不提供 forwarders 或舊 binary binding，不宣稱 
 
 2026-10-07 使用者以 Architecture、Runtime、CodeGen、Compatibility、Package／Release
 兼任角色核准 ADR 與 acceptance decisions。ADR acceptance 的 K1 entry gate 已完成；
-K1／K2／K3 本機實作與驗證紀錄見下文；K3 CI／跨平台執行與 K4–K7 尚未完成。
+K1／K2／K3 實作與驗證紀錄見下文；使用者已確認 K2／K3 CI 通過並合併 main。K4 本機結果另行記錄，K4 CI 與 K5–K7 尚未完成。
 
 - Phase D D0-D8 已合併且完整 CI 綠燈。
 - 工作分枝只包含本 migration 的變更；任何既有未提交變更已盤點。
@@ -528,6 +528,97 @@ Exit gate：descriptor strict loader/validator、PE identity/hash、auxiliary so
 models／wrappers Roslyn、composition 局部／結構檢查、此次完整生成產物的真實 SDK build／runtime
 integration、clean package install 與負面 missing／mismatch tests 全部通過。
 
+#### K4 本機實作與驗證證據（2026-10-12）
+
+本次切換為真正 Runtime reference，刪除 SDK 的 compiler-contract property group、
+GetCompilerReferenceAsset／GetLegacyCompilerReferenceAsset targets、conditional friend symbol
+及 AssemblyInfo.cs。SDK 永遠移除 Runtime-owned sources 並引用 Runtime project；
+CodeGen production 沒有 SDK／Runtime ProjectReference。
+
+| 項目 | K4 固定值 |
+| --- | --- |
+| Tool / CodeGen | 1.2.0 |
+| Runtime contract | runtime-kernel-v2 |
+| Descriptor schema | 2（新增必要 compilerSources inventory） |
+| Model / primitive manifest schema | 3（新增 compilerSources provenance） |
+| Runtime assembly identity | MyFhirSdk.Runtime, Version=1.0.0.0, PublicKeyToken=null |
+| Compiler reference SHA-256 | 8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71 |
+| Auxiliary source | SimpleQuantity.cs / simple-quantity-source-v1 / MyFhirSdk.Types.SimpleQuantity |
+| Auxiliary source SHA-256 | 321d5cd03d6ec3f2e70a26e608f088563c1f4d7c3ad4e680488d47f0e0affde8 |
+
+Reference 由 Runtime Release 的 $(TargetRefPath) 產生，pipeline 明確注入 build/pack，
+package 路徑為 Assets/RuntimeReferences/<tfm>/MyFhirSdk.Runtime.dll。
+SimpleQuantity.cs 明確封裝至 Assets/CompilerSources；source hash 採 UTF-8 無 BOM、
+CRLF/CR → LF normalization。Model CLI 的 --compiler-source 明確覆寫優先於封裝檔，
+不使用 repository／current directory／bin/obj fallback。
+
+完整此次生成的 831 model/composition sources 與 21 primitive sources 與 committed C#
+內容一致；只更新兩份 manifest。K0、K1 baseline 與歷史 tool/consumer fixture 保持固定，
+新的 1.2.0 provenance/help/hash evidence 存於 docs/gen/baselines/runtime-kernel-k4/。
+
+驗證包括 strict descriptor/source inventory、PE identity/TFM/hash、reference 不載入 ALC、
+host SDK/Runtime 不補足 reference、fresh wrappers + 真實 SimpleQuantity model compilation、
+完整 fresh SDK composition/runtime integration、雙次 pack inventory/hash、clean local tool restore、
+封裝 source 遺失／損壞／override precedence、失敗保留 output，以及 solution consumer 重編／部署。
+本機結果：
+
+| Gate | 結果／證據 |
+| --- | --- |
+| Solution regression + K3 七個重編／部署 gates | passed；877 passed、0 failed、1 skipped；artifacts/kernel-k4/final-rebuild/evidence.json 與 test-results/*.trx |
+| K3 failure-mode harness | 14 checks passed；artifacts/kernel-k4/rebuild-harness/ |
+| Canonical pipeline pack + inventory | passed；artifacts/kernel-k4/package/ 與 package-inventory.txt |
+| Compiler reference isolation | passed；SDK 的 20 個中間／輸出檔案 hashes/inventory 不變；artifacts/kernel-k4/compiler-isolation-summary.json |
+| Toolchain contract | passed；artifacts/kernel-k4/toolchain-contract.json |
+| Clean tool lifecycle/full generation | passed；clean install → uninstall → reinstall、831 model/composition sources、22 primitive artifacts、tgz/directory bytes 相等；artifacts/kernel-k4/tool-smoke/smoke-summary.json |
+| K0 immutable baseline 重建 | build、old/current consumers、API/source inventories、inventory comparison passed；artifacts/kernel-k4/k0-rebuild/evidence.json |
+
+Solution 唯一 skipped 為 Client.IntegrationSmoke.PatientCrudSearchSmokeFlow：
+未設定 MYFHIRSDK_INTEGRATION_BASE_URL，未宣稱執行 external FHIR server smoke。
+K0 runner 此次未帶 -RunRegressionAndSmoke，歷史 regression/primitiveEquivalence/toolSmoke
+三項明確 skipped、整體 status=partial；本次新版 full regression/tool smoke 由上列 gates 執行。
+未執行 tool upgrade lifecycle；K4 Ubuntu／remote CI 與 K6 upgrade/cross-platform 證據待完成。
+
+重跑（repo root、PowerShell 7.2+；使用新的 artifacts output directory）：
+
+```powershell
+dotnet msbuild eng/MyFhirSdk.CodeGen.Build.proj /t:Restore
+dotnet msbuild eng/MyFhirSdk.CodeGen.Build.proj /t:Pack /p:Configuration=Release
+pwsh -File eng/Test-CodeGenToolchainContract.ps1 -OutputPath artifacts/k4-review/toolchain.json
+pwsh -File eng/Test-CompilerReferenceIsolation.ps1 -OutputPath artifacts/k4-review/isolation.json
+pwsh -File eng/Test-KernelConsumerRebuild.ps1 -OutputDirectory artifacts/k4-review/rebuild
+pwsh -File eng/Test-KernelConsumerRebuildHarness.ps1 -OutputDirectory artifacts/k4-review/harness
+```
+
+本機 evidence 位於 ignored artifacts，不提交 DLL、nupkg 或 TRX；
+提交新 provenance/help/hash snapshots 與 package layout/contract tests。
+
+
+#### K4 code review 修正與驗證（2026-10-12）
+
+- P1：compatibility matrix 固定 Runtime assembly name/version/public key token 與 canonical
+  reference SHA-256；外部 descriptor 即使與 SDK DLL identity/hash 自洽，也不能覆寫 K4 契約。
+  Models 與 primitives CLI 都拒絕這種組合，exit code 2，保留既有 output。
+- P2：compiler source inventory 直接讀取原始 bytes、嚴格 UTF-8 解碼並拒絕 UTF-8 BOM，
+  不自動辨識 UTF-16/UTF-32；LF/CRLF normalization 保留。歷史 schema 1 package 的
+  text hashing 不變，K0 package inventory 重跑後 SHA-256 與修正前完全一致。
+- P3：RuntimeContractLoader 的 schema mismatch 訊息使用 SupportedSchemaVersion，
+  現行顯示 schema v2，不再固定 v1。
+
+新增 13 個 case，涵蓋 identity/version/token/hash、descriptor/reference 自洽但不受支援、
+兩種 CLI modes 的 output preservation，以及實際 package inventory 的 LF、CRLF、
+UTF-8 BOM、UTF-16、損壞 UTF-8。Schema 訊息 assertion 加入既有 unknown-property test。
+
+修正後驗證：focused 73 passed；完整 solution 890 passed、0 failed、1 個既定 external
+Client smoke skipped；consumer 重編/部署七個 gates 全部 passed。
+證據：artifacts/kernel-k4/review-fixes/rebuild/evidence.json 與 test-results/*.trx。
+重新 Pack、package inventory、toolchain contract 及 clean-install/uninstall/reinstall
+full generation smoke 通過，證據位於 artifacts/kernel-k4/review-fixes/。
+版本、descriptor/source hashes、生成 C# 與兩份 manifest 不因 review 修正改變。
+
+Package inventory 測試需 PowerShell 7.2+ 的 pwsh（CI Windows/Ubuntu 已提供）。
+若使用 portable PowerShell，可在執行 dotnet test／重編 runner 前設定
+MYFHIRSDK_TEST_PWSH 為執行檔的絕對路徑。修正後 K4 remote CI 仍待 push 驗證。
+
 ### K5：Runtime/SDK behavior migration
 
 至少驗證：
@@ -642,7 +733,7 @@ Exit gate：沒有只留在 PR 描述中的新 debt；文件命令可由 clean e
 | K1 | primitive accessor/registry/composition seams | 否 |
 | K2 | Runtime project、compile ownership、dependency tests | 是，依全面重編決策與一般 PR／CI policy |
 | K3 | 全面重編 consumers／相依 DLL、SPI／reflection／獨立部署 | 驗證 K2 已核准 identity 遷移，不新增 forwarders |
-| K4 | descriptor、reference、packaging、manifest | 只改核准identity/hash |
+| K4 | descriptor、reference、auxiliary source、packaging、manifest | 核准 identity/hash 與來源契約 schema/provenance 遷移 |
 | K5 | behavior與integration補強 | 否 |
 | K6 | Windows/Linux CI、clean package smoke | 否 |
 | K7 | operations、migration與handoff文件 | 否 |

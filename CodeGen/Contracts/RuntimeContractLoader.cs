@@ -153,7 +153,7 @@ public sealed class RuntimeContractLoader
             return Failure(
                 GeneratorDiagnosticCodes.InvalidRuntimeContract,
                 fullPath,
-                "The Runtime contract descriptor does not match schema v1.");
+                $"The Runtime contract descriptor does not match schema v{RuntimeContractValidator.SupportedSchemaVersion}.");
         }
 
         if (document is null)

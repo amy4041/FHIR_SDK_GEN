@@ -47,6 +47,10 @@ public sealed class ToolAssetResolver
         ];
     }
 
+    public string ResolveCompilerSourcePath(ToolAssetOverrides overrides) =>
+        ResolveOverride(overrides.CompilerSourcePath,
+            Path.Combine(_toolRoot, "Assets", "CompilerSources", "SimpleQuantity.cs"));
+
     public ModelPolicyAssetPaths ResolveModelPolicies(
         ToolAssetOverrides overrides,
         string? primitivePolicyOverride)

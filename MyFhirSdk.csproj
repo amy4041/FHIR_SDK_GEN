@@ -4,17 +4,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(MyFhirSdkCompilerContract)' == 'true'">
-    <!-- The SDK appends TargetFramework later. Map the isolated directory back
-         to the historical logical path so generated file-local type identities
-         remain deterministic without sharing production build caches/files. -->
-    <IntermediateOutputPath>artifacts\compiler-contract\obj\$(Configuration)\</IntermediateOutputPath>
-    <OutputPath>$(MSBuildProjectDirectory)\artifacts\compiler-contract\$(Configuration)\</OutputPath>
-    <PathMap>$(MSBuildProjectDirectory)\$(IntermediateOutputPath)=/_/obj/$(Configuration)/,$(MSBuildProjectDirectory)=/_/</PathMap>
-    <DefineConstants>$(DefineConstants);MYFHIRSDK_LEGACY_COMPILER_CONTRACT</DefineConstants>
-    <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
-    <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
-  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Runtime\**\*.cs" />
     <Compile Remove="artifacts\**\*.cs" />
@@ -24,36 +13,9 @@
     <Compile Remove="Tests\**\*.cs" />
   </ItemGroup>
   <Import Project="Runtime\KernelCompileItems.props" />
-  <ItemGroup Condition="'$(MyFhirSdkCompilerContract)' != 'true'">
+  <ItemGroup>
     <Compile Remove="@(RuntimeKernelSource)" />
     <ProjectReference Include="Runtime\MyFhirSdk.Runtime.csproj" />
   </ItemGroup>
 
-  <Target Name="GetCompilerReferenceAsset"
-          DependsOnTargets="Build"
-          Returns="@(CompilerReferenceAsset)">
-    <!-- Preserve the approved compiler-only bytes during K1; K4 replaces this
-         transitional contract with the actual Runtime reference. Build products
-         remain in isolated intermediates; only the reference is staged,
-         never deployed. -->
-    <MSBuild Projects="$(MSBuildProjectFullPath)"
-             Targets="GetLegacyCompilerReferenceAsset"
-             Properties="Configuration=$(Configuration);MyFhirSdkCompilerContract=true;OutputPath=$(MSBuildProjectDirectory)\artifacts\compiler-contract\$(Configuration)\">
-      <Output TaskParameter="TargetOutputs" ItemName="CompilerReferenceAsset" />
-    </MSBuild>
-    <Error Condition="'@(CompilerReferenceAsset)' == ''" Text="The compiler-only contract build did not produce a reference asset." />
-  </Target>
-
-  <Target Name="GetLegacyCompilerReferenceAsset" DependsOnTargets="Build"
-          Returns="@(LegacyCompilerReferenceAsset)"
-          Condition="'$(MyFhirSdkCompilerContract)' == 'true'">
-    <PropertyGroup>
-      <FrozenCompilerReferencePath>$(MSBuildProjectDirectory)\artifacts\compiler-contract\$(Configuration)\$(TargetFramework)\$(TargetFileName)</FrozenCompilerReferencePath>
-    </PropertyGroup>
-    <Copy SourceFiles="$(IntermediateOutputPath)refint\$(TargetFileName)" DestinationFiles="$(FrozenCompilerReferencePath)" />
-    <ItemGroup>
-      <LegacyCompilerReferenceAsset Include="$(FrozenCompilerReferencePath)" />
-    </ItemGroup>
-    <Error Condition="!Exists('$(FrozenCompilerReferencePath)')" Text="The frozen compiler contract was not produced." />
-  </Target>
 </Project>

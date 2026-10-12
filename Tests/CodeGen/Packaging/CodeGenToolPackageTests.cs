@@ -17,6 +17,64 @@ public sealed class CodeGenToolPackageTests
     private static readonly string ToolRoot =
         $"tools/{GenerationCompatibilityMatrix.TargetFramework}/any/";
 
+    [Theory]
+    [InlineData("lf", true)]
+    [InlineData("crlf", true)]
+    [InlineData("utf8-bom", false)]
+    [InlineData("utf16", false)]
+    [InlineData("invalid-utf8", false)]
+    public async Task PackageInventory_CompilerSourceEncoding_MatchesRuntimeValidation(string encoding, bool accepted)
+    {
+        using var directory = new TestDirectory();
+        var changedPackage = Path.Combine(directory.Path, "source-encoding.nupkg");
+        using (var original = OpenPackage("first"))
+        using (var changed = ZipFile.Open(changedPackage, ZipArchiveMode.Create))
+        {
+            foreach (var entry in original.Entries)
+            {
+                var bytes = ReadBytes(entry);
+                if (entry.FullName == ToolRoot + "Assets/CompilerSources/SimpleQuantity.cs")
+                {
+                    var source = Encoding.UTF8.GetString(bytes).Replace("\r\n", "\n", StringComparison.Ordinal).Replace('\r', '\n');
+                    bytes = encoding switch
+                    {
+                        "lf" => Encoding.UTF8.GetBytes(source),
+                        "crlf" => Encoding.UTF8.GetBytes(source.Replace("\n", "\r\n", StringComparison.Ordinal)),
+                        "utf8-bom" => Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(source)).ToArray(),
+                        "utf16" => Encoding.Unicode.GetPreamble().Concat(Encoding.Unicode.GetBytes(source)).ToArray(),
+                        _ => [0xff]
+                    };
+                    var externalSource = Path.Combine(directory.Path, "SimpleQuantity.cs");
+                    File.WriteAllBytes(externalSource, bytes);
+                    if (accepted)
+                        MyFhirSdk.CodeGen.Assets.ModelCompilerSourceAsset.Read(externalSource, CodeGenTestRuntime.RuntimeContract);
+                    else
+                        Assert.ThrowsAny<Exception>(() => MyFhirSdk.CodeGen.Assets.ModelCompilerSourceAsset.Read(
+                            externalSource, CodeGenTestRuntime.RuntimeContract));
+                }
+                using var output = changed.CreateEntry(entry.FullName).Open();
+                output.Write(bytes);
+            }
+        }
+        var inventory = Path.Combine(directory.Path, "inventory.txt");
+        var result = await RunProcessAsync(Environment.GetEnvironmentVariable("MYFHIRSDK_TEST_PWSH") ?? "pwsh",
+            GetRepositoryRoot(), new Dictionary<string, string?>(), "-NoProfile", "-File",
+            Path.Combine(GetRepositoryRoot(), "eng", "Write-CodeGenToolPackageInventory.ps1"),
+            "-PackagePath", changedPackage, "-ExpectedTargetFramework", GenerationCompatibilityMatrix.TargetFramework,
+            "-OutputPath", inventory);
+        if (accepted)
+        {
+            AssertSuccess(result);
+            Assert.Contains("Assets/CompilerSources/SimpleQuantity.cs|" + MyFhirSdk.CodeGen.Assets.ModelCompilerSourceAsset.Sha256,
+                File.ReadAllText(inventory));
+        }
+        else
+        {
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.False(File.Exists(inventory));
+        }
+    }
+
     [Fact]
     public void PackageInventoryAndMetadataMatchAcceptedContract()
     {
@@ -38,7 +96,7 @@ public sealed class CodeGenToolPackageTests
             entry.FullName,
             ToolRoot + "Assets/RuntimeReferences/" +
             GenerationCompatibilityMatrix.TargetFramework +
-            "/MyFhirSdk.dll",
+            "/MyFhirSdk.Runtime.dll",
             StringComparison.Ordinal));
         AssertPackageDoesNotContainRepositoryPath(package);
 
@@ -113,7 +171,7 @@ public sealed class CodeGenToolPackageTests
             package,
             ToolRoot + "Assets/RuntimeReferences/" +
             GenerationCompatibilityMatrix.TargetFramework +
-            "/MyFhirSdk.dll");
+            "/MyFhirSdk.Runtime.dll");
         Assert.Equal(
             compatibility
                 .GetProperty("compilerReference")
@@ -122,6 +180,14 @@ public sealed class CodeGenToolPackageTests
             Sha256(referenceBytes));
 
         using var descriptor = JsonDocument.Parse(descriptorBytes);
+        var compilerSource = Assert.Single(descriptor.RootElement.GetProperty("compilerSources").EnumerateArray());
+        Assert.Equal("SimpleQuantity.cs", compilerSource.GetProperty("logicalName").GetString());
+        var sourceHash = NormalizedTextSha256(ReadBytes(package, ToolRoot + "Assets/CompilerSources/SimpleQuantity.cs"));
+        Assert.Equal(compilerSource.GetProperty("sha256").GetString(), sourceHash);
+        Assert.True(System.Text.Json.Nodes.JsonNode.DeepEquals(
+            System.Text.Json.Nodes.JsonNode.Parse(compilerSource.GetRawText()),
+            System.Text.Json.Nodes.JsonNode.Parse(
+                Assert.Single(compatibility.GetProperty("compilerSources").EnumerateArray()).GetRawText())));
         var descriptorCompatibility = descriptor.RootElement.GetProperty("compatibility");
         Assert.Equal(PackageVersion,
             descriptorCompatibility.GetProperty("toolVersion").GetString());
@@ -184,7 +250,7 @@ public sealed class CodeGenToolPackageTests
             "Assets",
             "RuntimeReferences",
             GenerationCompatibilityMatrix.TargetFramework,
-            "MyFhirSdk.dll");
+            "MyFhirSdk.Runtime.dll");
 
         var result = await RunDotNetAsync(
             GetRepositoryRoot(),
@@ -309,6 +375,39 @@ public sealed class CodeGenToolPackageTests
             "Generated",
             "R5",
             "model-generation-manifest.json")));
+
+        var installedSource = Assert.Single(Directory.EnumerateFiles(
+            environment["NUGET_PACKAGES"]!, "SimpleQuantity.cs", SearchOption.AllDirectories));
+        var externalSource = Path.Combine(directory.Path, "external", "SimpleQuantity.cs");
+        Directory.CreateDirectory(Path.GetDirectoryName(externalSource)!);
+        File.Copy(installedSource, externalSource);
+        var modelArgs = new[]
+        {
+            ToolCommand, "--mode", "model", "--input",
+            Path.Combine(AppContext.BaseDirectory, "Fixtures", "FhirPackages", "R5", "hl7.fhir.r5.core-5.0.0.tgz"),
+            "--output", modelOutput, "--fhir-version", "5.0.0", "--package-id", "hl7.fhir.r5.core",
+            "--package-version", "5.0.0", "--canonical", "http://hl7.org/fhir/StructureDefinition/Patient"
+        };
+        var before = Directory.EnumerateFiles(modelOutput, "*", SearchOption.AllDirectories)
+            .ToDictionary(path => path, path => Sha256(File.ReadAllBytes(path)));
+        File.Delete(installedSource);
+        var missing = await RunDotNetAsync(directory.Path, environment, modelArgs);
+        Assert.Equal(2, missing.ExitCode);
+        Assert.Contains("FSG0130", missing.StandardError);
+        AssertSuccess(await RunDotNetAsync(directory.Path, environment,
+            modelArgs.Concat(["--compiler-source", externalSource]).ToArray()));
+        await File.WriteAllTextAsync(installedSource, "// source drift");
+        var corrupt = await RunDotNetAsync(directory.Path, environment, modelArgs);
+        Assert.Equal(2, corrupt.ExitCode);
+        Assert.Contains("FSG0131", corrupt.StandardError);
+        AssertSuccess(await RunDotNetAsync(directory.Path, environment,
+            modelArgs.Concat(["--compiler-source", externalSource]).ToArray()));
+        var badOverride = await RunDotNetAsync(directory.Path, environment,
+            modelArgs.Concat(["--compiler-source", Path.Combine(directory.Path, "missing.cs")]).ToArray());
+        Assert.Equal(2, badOverride.ExitCode);
+        Assert.Contains("FSG0130", badOverride.StandardError);
+        Assert.Equal(before, Directory.EnumerateFiles(modelOutput, "*", SearchOption.AllDirectories)
+            .ToDictionary(path => path, path => Sha256(File.ReadAllBytes(path))));
     }
 
     private static bool IsForbiddenEntry(string path) =>
@@ -316,7 +415,8 @@ public sealed class CodeGenToolPackageTests
         path.Contains("Tests/", StringComparison.OrdinalIgnoreCase) ||
         path.Contains("/bin/", StringComparison.OrdinalIgnoreCase) ||
         path.Contains("/obj/", StringComparison.OrdinalIgnoreCase) ||
-        path.EndsWith(".cs", StringComparison.OrdinalIgnoreCase);
+        (path.EndsWith(".cs", StringComparison.OrdinalIgnoreCase) &&
+         path != ToolRoot + "Assets/CompilerSources/SimpleQuantity.cs");
 
     private static void AssertPackageDoesNotContainRepositoryPath(ZipArchive package)
     {
@@ -441,8 +541,15 @@ public sealed class CodeGenToolPackageTests
         string workingDirectory,
         IReadOnlyDictionary<string, string?> environment,
         params string[] arguments)
+        => await RunProcessAsync("dotnet", workingDirectory, environment, arguments);
+
+    private static async Task<ProcessResult> RunProcessAsync(
+        string executable,
+        string workingDirectory,
+        IReadOnlyDictionary<string, string?> environment,
+        params string[] arguments)
     {
-        var startInfo = new ProcessStartInfo("dotnet")
+        var startInfo = new ProcessStartInfo(executable)
         {
             WorkingDirectory = workingDirectory,
             RedirectStandardOutput = true,

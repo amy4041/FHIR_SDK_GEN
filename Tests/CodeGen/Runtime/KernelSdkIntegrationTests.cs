@@ -4,9 +4,6 @@ using MyFhirSdk.CodeGen.Assets;
 using MyFhirSdk.CodeGen.Compilation;
 using MyFhirSdk.Core;
 using System.Runtime.CompilerServices;
-using System.Collections.Immutable;
-using System.Security.Cryptography;
-using MyFhirSdk.CodeGen.Contracts;
 using Xunit;
 
 namespace MyFhirSdk.CodeGen.Tests.Runtime;
@@ -25,7 +22,7 @@ public sealed class KernelSdkIntegrationTests
     }
 
     [Fact]
-    public void EmbeddedAuxiliarySourceIsTheRealSdkSourceWithPinnedHash()
+    public void PackagedAuxiliarySourceIsTheRealSdkSourceWithPinnedHash()
     {
         var source = ModelCompilerSourceAsset.Read();
         var real = File.ReadAllText(Path.Combine(RealSdkSourceCompiler.RepositoryRoot(), "Types", "SimpleQuantity.cs"))
@@ -56,32 +53,8 @@ public sealed class KernelSdkIntegrationTests
     [Fact]
     public async Task ActualModelValidatorCompilesFreshModelsWithKernelAndRealAuxiliarySourcesOnly()
     {
-        // In-memory K1 feasibility fixture, not a K2/K4 canonical reference asset.
-        var root = RealSdkSourceCompiler.RepositoryRoot();
-        var kernelFiles = new[] { "FhirObject", "IFhirExtensionValue", "Base", "Element", "BackboneElement",
-            "BackboneType", "DataType", "PrimitiveType", "Resource", "DomainResource", "Extension", "Meta",
-            "Narrative", "IPrimitiveValueAccessor" };
-        var platform = CodeGenTestRuntime.RuntimeReferences.TrustedPlatformReferences.Where(reference =>
-            Path.GetDirectoryName(reference.Path) == Path.GetDirectoryName(typeof(object).Assembly.Location)).ToArray();
-        var trees = kernelFiles.Select(name => CSharpSyntaxTree.ParseText(
-            File.ReadAllText(Path.Combine(root, "core", name + ".cs")),
-            new CSharpParseOptions(LanguageVersion.CSharp13), "core/" + name + ".cs"))
-            .Append(CSharpSyntaxTree.ParseText("global using System;", new CSharpParseOptions(LanguageVersion.CSharp13)));
-        var kernel = CSharpCompilation.Create("K1.Kernel", trees,
-            platform.Select(reference => MetadataReference.CreateFromFile(reference.Path)),
-            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
-                nullableContextOptions: NullableContextOptions.Enable));
-        using var stream = new MemoryStream();
-        var emit = kernel.Emit(stream);
-        Assert.True(emit.Success, string.Join(Environment.NewLine, emit.Diagnostics));
-        var bytes = stream.ToArray();
-        var hash = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
-        var identity = new RuntimeAssemblyIdentity("K1.Kernel", "0.0.0.0", "null");
-        var tfm = CodeGenTestRuntime.RuntimeReferences.TargetFramework;
-        var reference = new ResolvedRuntimeReference("<K1-in-memory-kernel>", identity, tfm, hash,
-            RuntimeReferenceKind.RuntimeContract, ImmutableArray.CreateRange(bytes));
-        var references = new RuntimeReferenceSet(tfm, new(tfm, identity), "K1-feasibility-only", hash,
-            platform, [reference]);
+        var references = CodeGenTestRuntime.RuntimeReferences;
+        Assert.Equal("MyFhirSdk.Runtime", Assert.Single(references.RuntimeContractReferences).Assembly.Name);
         var generated = await RealSdkSourceCompiler.GeneratedSourcesAsync();
         var models = generated.Where(source => source.FileName.StartsWith("Generated/R5/Types/", StringComparison.Ordinal)
             || source.FileName.StartsWith("Generated/R5/Resources/", StringComparison.Ordinal)).ToArray();

@@ -1,25 +1,32 @@
 using System.Security.Cryptography;
 using System.Text;
 using MyFhirSdk.CodeGen.Compilation;
+using MyFhirSdk.CodeGen.Contracts;
 
 namespace MyFhirSdk.CodeGen.Assets;
 
 /// <summary>The real SDK-owned auxiliary declaration used by model compilation.</summary>
-/// <remarks>K1 embeds the source in the tool. External asset overrides and descriptor
-/// provenance are introduced atomically with the Runtime reference in K4.</remarks>
 public static class ModelCompilerSourceAsset
 {
-    public const string LogicalName = "MyFhirSdk.CodeGen.CompilerSources.SimpleQuantity.cs";
+    public const string LogicalName = "SimpleQuantity.cs";
     public const string Version = "simple-quantity-source-v1";
     // SHA-256 of UTF-8 source with LF line endings; platform-independent source bytes.
     public const string Sha256 = "321d5cd03d6ec3f2e70a26e608f088563c1f4d7c3ad4e680488d47f0e0affde8";
 
-    public static GeneratedSource Read()
+    public static GeneratedSource Read(string? path = null, RuntimeContractView? contract = null)
     {
-        using var stream = typeof(ModelCompilerSourceAsset).Assembly.GetManifestResourceStream(LogicalName)
-            ?? throw new InvalidOperationException($"Required compiler source '{LogicalName}' is missing.");
-        using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
-        return ValidateContent(reader.ReadToEnd());
+        path ??= Path.Combine(AppContext.BaseDirectory, "Assets", "CompilerSources", LogicalName);
+        if (contract is not null)
+        {
+            var identity = contract.CompilerSources.Single();
+            if (identity.Version != Version || identity.Sha256 != Sha256)
+                throw new InvalidOperationException($"Unsupported compiler source contract '{LogicalName}'.");
+        }
+        // Only the explicit path or the package-owned asset is used. No repository fallback.
+        var bytes = File.ReadAllBytes(path);
+        if (bytes.Length >= 3 && bytes[0] == 0xef && bytes[1] == 0xbb && bytes[2] == 0xbf)
+            throw new InvalidOperationException($"Compiler source '{LogicalName}' must use UTF-8 without BOM.");
+        return ValidateContent(new UTF8Encoding(false, true).GetString(bytes));
     }
 
     internal static GeneratedSource ValidateContent(string content)

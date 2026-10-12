@@ -109,6 +109,21 @@ public sealed class GenerationCompatibilityService
             GenerationCompatibilityMatrix.RuntimeContractVersion,
             GeneratorDiagnosticCodes.IncompatibleRuntimeContractVersion,
             diagnostics);
+        var compilerSource = _contract.CompilerSources.Single();
+        Compare("runtime-assembly-name", _contract.RuntimeAssembly.Name, GenerationCompatibilityMatrix.RuntimeAssemblyName,
+            GeneratorDiagnosticCodes.RuntimeReferenceIdentityMismatch, diagnostics);
+        Compare("runtime-assembly-version", _contract.RuntimeAssembly.Version, GenerationCompatibilityMatrix.RuntimeAssemblyVersion,
+            GeneratorDiagnosticCodes.RuntimeReferenceIdentityMismatch, diagnostics);
+        Compare("runtime-assembly-public-key-token", _contract.RuntimeAssembly.PublicKeyToken, GenerationCompatibilityMatrix.RuntimeAssemblyPublicKeyToken,
+            GeneratorDiagnosticCodes.RuntimeReferenceIdentityMismatch, diagnostics);
+        Compare("compiler-reference-sha256", _contract.CompilerReference.Sha256, GenerationCompatibilityMatrix.CompilerReferenceSha256,
+            GeneratorDiagnosticCodes.RuntimeReferenceHashMismatch, diagnostics);
+        Compare("resolved-compiler-reference-sha256", _references.ReferenceSha256, GenerationCompatibilityMatrix.CompilerReferenceSha256,
+            GeneratorDiagnosticCodes.RuntimeReferenceHashMismatch, diagnostics);
+        Compare("compiler-source-version", compilerSource.Version, ModelCompilerSourceAsset.Version,
+            GeneratorDiagnosticCodes.PackagedAssetCorrupt, diagnostics);
+        Compare("compiler-source-sha256", compilerSource.Sha256, ModelCompilerSourceAsset.Sha256,
+            GeneratorDiagnosticCodes.PackagedAssetCorrupt, diagnostics);
         Compare(
             "runtime-reference-contract-sha256",
             _references.ContractSha256,
@@ -243,7 +258,8 @@ public sealed class GenerationCompatibilityService
                 _contract.DescriptorSha256,
                 _references.LogicalAssemblyIdentity.ToString(),
                 _references.ReferenceSha256,
-                _references.TargetFramework),
+                _references.TargetFramework,
+                _contract.CompilerSources),
             Array.Empty<GeneratorDiagnostic>());
     }
 

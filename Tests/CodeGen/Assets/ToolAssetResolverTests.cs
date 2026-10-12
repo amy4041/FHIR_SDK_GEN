@@ -26,6 +26,8 @@ public sealed class ToolAssetResolverTests : IDisposable
 
             var contract = resolver.ResolveRuntimeContractPath(new ToolAssetOverrides());
             var policies = resolver.ResolveModelPolicies(new ToolAssetOverrides(), null);
+            Assert.Equal(Path.Combine(toolRoot, "Assets", "CompilerSources", "SimpleQuantity.cs"),
+                resolver.ResolveCompilerSourcePath(new ToolAssetOverrides()));
 
             Assert.Equal(
                 Path.Combine(toolRoot, "Contracts", "runtime-contract.json"),
@@ -53,11 +55,13 @@ public sealed class ToolAssetResolverTests : IDisposable
         var overrides = new ToolAssetOverrides(
             policyRoot,
             contractPath,
-            [referenceZ, referenceA]);
+            [referenceZ, referenceA],
+            Path.Combine(_root, "external", "SimpleQuantity.cs"));
         var contract = CreateContractView();
 
         var policies = resolver.ResolveModelPolicies(overrides, null);
         var references = resolver.ResolveRuntimeReferencePaths(contract, overrides);
+        Assert.Equal(overrides.CompilerSourcePath, resolver.ResolveCompilerSourcePath(overrides));
 
         Assert.Equal(Path.GetFullPath(contractPath),
             resolver.ResolveRuntimeContractPath(overrides));

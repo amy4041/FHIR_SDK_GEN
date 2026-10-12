@@ -8,6 +8,34 @@ namespace MyFhirSdk.CodeGen.Tests.Cli;
 
 public sealed class GeneratorCommandLineParserTests
 {
+    [Fact]
+    public void Parse_CompilerSourceOverride_IsExplicitAndCannotBeRepeated()
+    {
+        var result = _parser.Parse([
+            "--mode", "model", "--input", "package.tgz", "--output", "output",
+            "--fhir-version", "5.0.0", "--package-id", "hl7.fhir.r5.core", "--package-version", "5.0.0",
+            "--compiler-source", "external/SimpleQuantity.cs"]);
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.Equal("external/SimpleQuantity.cs", result.AssetOverrides!.CompilerSourcePath);
+        var duplicate = _parser.Parse([
+            "--mode", "model", "--compiler-source", "first.cs", "--compiler-source", "second.cs"]);
+        Assert.False(duplicate.IsSuccess);
+        Assert.Equal("Option '--compiler-source' may only be specified once.", duplicate.Error);
+        var primitive = _parser.Parse(["--mode", "primitive", "--compiler-source", "SimpleQuantity.cs"]);
+        Assert.False(primitive.IsSuccess);
+        Assert.Equal("Option '--compiler-source' is only valid in model mode.", primitive.Error);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void Parse_EmptyCompilerSourceOverride_IsRejected(string value)
+    {
+        var result = _parser.Parse(["--mode", "model", "--compiler-source", value]);
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Option '--compiler-source' requires a non-empty path.", result.Error);
+    }
+
     private readonly GeneratorCommandLineParser _parser = new(
         new ToolAssetResolver(AppContext.BaseDirectory));
 
@@ -79,7 +107,7 @@ public sealed class GeneratorCommandLineParserTests
         Assert.Equal("policy.json", options.PolicyPath);
         Assert.Equal("hl7.fhir.r5.core", options.FhirPackageId);
         Assert.Equal("5.0.0", options.FhirPackageVersion);
-        Assert.Equal("1.1.0", options.CodeGenVersion);
+        Assert.Equal("1.2.0", options.CodeGenVersion);
     }
 
     [Fact]

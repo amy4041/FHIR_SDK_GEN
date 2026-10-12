@@ -15,7 +15,7 @@ public sealed class ComplexDatatypeGenerationPipelineTests
     {
         var (_, ir) = await ComplexDatatypeTestContext.BuildOfficialIrAsync("Reference");
 
-        var result = CodeGenTestRuntime.CreateComplexDatatypePipeline().Generate(ir);
+        var result = CodeGenTestRuntime.CreateComplexDatatypePipeline(ir).Generate(ir);
 
         Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));
         var batch = Assert.IsType<ComplexDatatypeGenerationBatch>(result.Value);
@@ -32,7 +32,7 @@ public sealed class ComplexDatatypeGenerationPipelineTests
     public async Task Generate_Twice_ProducesByteIdenticalArtifacts()
     {
         var (_, ir) = await ComplexDatatypeTestContext.BuildOfficialIrAsync("Reference");
-        var pipeline = CodeGenTestRuntime.CreateComplexDatatypePipeline();
+        var pipeline = CodeGenTestRuntime.CreateComplexDatatypePipeline(ir);
 
         var first = pipeline.Generate(ir);
         var second = pipeline.Generate(ir);
@@ -54,7 +54,7 @@ public sealed class ComplexDatatypeGenerationPipelineTests
             "Identifier",
             "Period");
 
-        var result = CodeGenTestRuntime.CreateComplexDatatypePipeline().Generate(ir);
+        var result = CodeGenTestRuntime.CreateComplexDatatypePipeline(ir).Generate(ir);
 
         Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));
         var names = Assert.IsType<ComplexDatatypeGenerationBatch>(result.Value).Sources
@@ -79,7 +79,7 @@ public sealed class ComplexDatatypeGenerationPipelineTests
                 ir.ExternalMetadata
             ]));
 
-        var result = CodeGenTestRuntime.CreateComplexDatatypePipeline().Generate(durationOnly);
+        var result = CodeGenTestRuntime.CreateComplexDatatypePipeline(ir).Generate(durationOnly);
 
         Assert.False(result.IsSuccess);
         Assert.Null(result.Value);
@@ -106,7 +106,7 @@ public sealed class ComplexDatatypeGenerationPipelineTests
             .Order(StringComparer.Ordinal)
             .ToArray();
         var (_, ir) = await ComplexDatatypeTestContext.BuildOfficialIrAsync(typeNames);
-        var pipeline = CodeGenTestRuntime.CreateComplexDatatypePipeline();
+        var pipeline = CodeGenTestRuntime.CreateComplexDatatypePipeline(ir);
         var result = pipeline.Generate(ir);
         var repeated = pipeline.Generate(ir);
 

@@ -4,6 +4,8 @@ namespace MyFhirSdk.CodeGen.Contracts;
 
 public sealed class RuntimeContractDescriptorDocument
 {
+    [JsonPropertyName("compilerSources")]
+    public List<RuntimeCompilerSourceDocument>? CompilerSources { get; init; }
     [JsonPropertyName("schemaVersion")]
     public int? SchemaVersion { get; init; }
 
@@ -27,6 +29,20 @@ public sealed class RuntimeContractDescriptorDocument
 
     [JsonPropertyName("compilerReference")]
     public RuntimeCompilerReferenceDocument? CompilerReference { get; init; }
+}
+
+public sealed class RuntimeCompilerSourceDocument
+{
+    [JsonPropertyName("logicalName")]
+    public string? LogicalName { get; init; }
+    [JsonPropertyName("version")]
+    public string? Version { get; init; }
+    [JsonPropertyName("clrType")]
+    public string? ClrType { get; init; }
+    [JsonPropertyName("normalization")]
+    public string? Normalization { get; init; }
+    [JsonPropertyName("sha256")]
+    public string? Sha256 { get; init; }
 }
 
 public sealed class RuntimeAssemblyIdentityDocument

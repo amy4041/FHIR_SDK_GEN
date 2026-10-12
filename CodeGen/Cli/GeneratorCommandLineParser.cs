@@ -44,7 +44,7 @@ public sealed class GeneratorCommandLineParser
             [--policy <primitive-policy-file>] \
             [--policy-root <directory>] \
             [--runtime-contract <file>] \
-            [--runtime-reference <file> ...] \
+            [--compiler-source <SimpleQuantity.cs>] [--runtime-reference <file> ...] \
             [--canonical <structure-definition-canonical> ...]
         """;
 
@@ -108,6 +108,8 @@ public sealed class GeneratorCommandLineParser
         IReadOnlyList<string> args,
         ToolAssetOverrides assetOverrides)
     {
+        if (assetOverrides.CompilerSourcePath is not null)
+            return Invalid("Option '--compiler-source' is only valid in model mode.");
         string? inputPath = null;
         string? policyPath = null;
         string? outputPath = null;
@@ -240,6 +242,7 @@ public sealed class GeneratorCommandLineParser
     {
         string? policyRoot = null;
         string? runtimeContract = null;
+        string? compilerSource = null;
         var runtimeReferences = new List<string>();
         var remaining = new List<string>();
 
@@ -262,10 +265,15 @@ public sealed class GeneratorCommandLineParser
                 case "--runtime-contract" when runtimeContract is null:
                     runtimeContract = value;
                     break;
+                case "--compiler-source" when compilerSource is null:
+                    if (string.IsNullOrWhiteSpace(value))
+                        return new AssetExtraction("Option '--compiler-source' requires a non-empty path.", null, null);
+                    compilerSource = value;
+                    break;
                 case "--runtime-reference":
                     runtimeReferences.Add(value);
                     break;
-                case "--policy-root" or "--runtime-contract":
+                case "--policy-root" or "--runtime-contract" or "--compiler-source":
                     return new AssetExtraction(
                         $"Option '{option}' may only be specified once.", null, null);
                 default:
@@ -278,7 +286,7 @@ public sealed class GeneratorCommandLineParser
         return new AssetExtraction(
             null,
             remaining,
-            new ToolAssetOverrides(policyRoot, runtimeContract, runtimeReferences));
+            new ToolAssetOverrides(policyRoot, runtimeContract, runtimeReferences, compilerSource));
     }
 
     private sealed record AssetExtraction(

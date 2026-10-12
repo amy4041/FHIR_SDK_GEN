@@ -13,6 +13,30 @@ namespace MyFhirSdk.CodeGen.Tests.Assets;
 
 public sealed class RuntimeReferenceServiceTests : IDisposable
 {
+    [Fact]
+    public void CanonicalReferenceContainsOnlyPublicKernelTypesAndIsNeverLoaded()
+    {
+        var path = GetPackageAssetPath();
+        var before = System.Runtime.Loader.AssemblyLoadContext.Default.Assemblies
+            .Where(assembly => assembly.GetName().Name == "MyFhirSdk.Runtime").ToArray();
+        Assert.True(ResolvePackageOwned().IsSuccess);
+        Assert.Equal(before, System.Runtime.Loader.AssemblyLoadContext.Default.Assemblies
+            .Where(assembly => assembly.GetName().Name == "MyFhirSdk.Runtime"));
+        Assert.DoesNotContain(System.Runtime.Loader.AssemblyLoadContext.Default.Assemblies,
+            assembly => !assembly.IsDynamic && string.Equals(assembly.Location, path, StringComparison.OrdinalIgnoreCase));
+        using var stream = File.OpenRead(path);
+        using var reader = new PEReader(stream);
+        var metadata = reader.GetMetadataReader();
+        var publicTypes = metadata.TypeDefinitions.Select(metadata.GetTypeDefinition)
+            .Where(type => (type.Attributes & System.Reflection.TypeAttributes.VisibilityMask) ==
+                System.Reflection.TypeAttributes.Public).ToArray();
+        Assert.Equal(14, publicTypes.Length);
+        Assert.All(publicTypes, type => Assert.Equal("MyFhirSdk.Core", metadata.GetString(type.Namespace)));
+        Assert.Contains(publicTypes, type => metadata.GetString(type.Name) == "IPrimitiveValueAccessor");
+        Assert.All(metadata.AssemblyReferences, handle =>
+            Assert.StartsWith("System.", metadata.GetString(metadata.GetAssemblyReference(handle).Name)));
+    }
+
     private readonly string _directory = Path.Combine(
         Path.GetTempPath(),
         "MyFhirSdk-RuntimeReferenceTests",
@@ -43,7 +67,7 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
         var references = Assert.IsType<RuntimeReferenceSet>(result.Value);
         Assert.Equal(GenerationCompatibilityMatrix.TargetFramework, references.TargetFramework);
         Assert.Equal(
-            $"MyFhirSdk, Version=1.0.0.0, PublicKeyToken=null, TargetFramework={GenerationCompatibilityMatrix.TargetFramework}",
+            $"MyFhirSdk.Runtime, Version=1.0.0.0, PublicKeyToken=null, TargetFramework={GenerationCompatibilityMatrix.TargetFramework}",
             references.LogicalAssemblyIdentity.ToString());
         Assert.Equal(
             CodeGenTestRuntime.RuntimeContract.DescriptorSha256,
@@ -98,7 +122,7 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
     [Fact]
     public void Resolve_WrongAssemblyVersionReturnsStableDiagnostic()
     {
-        var path = Path.Combine(CreateDirectory(), "MyFhirSdk.dll");
+        var path = Path.Combine(CreateDirectory(), "MyFhirSdk.Runtime.dll");
         EmitRuntimeReference(path, ".NETCoreApp,Version=v9.0", "2.0.0.0");
 
         var result = ResolveExplicit(path);
@@ -110,7 +134,7 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
     [Fact]
     public void Resolve_WrongHashReturnsStableDiagnostic()
     {
-        var path = Path.Combine(CreateDirectory(), "MyFhirSdk.dll");
+        var path = Path.Combine(CreateDirectory(), "MyFhirSdk.Runtime.dll");
         // Write the corrupted fixture once; reopening a just-copied DLL for
         // exclusive append can race with Windows file scanning.
         var bytes = File.ReadAllBytes(GetPackageAssetPath());
@@ -125,7 +149,7 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
     [Fact]
     public void Resolve_WrongTargetFrameworkReturnsStableDiagnostic()
     {
-        var path = Path.Combine(CreateDirectory(), "MyFhirSdk.dll");
+        var path = Path.Combine(CreateDirectory(), "MyFhirSdk.Runtime.dll");
         EmitRuntimeReference(path, ".NETCoreApp,Version=v8.0");
 
         var result = ResolveExplicit(path);
@@ -218,7 +242,7 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
     [Fact]
     public void Validate_AfterRuntimeFileChanges_UsesPreviouslyValidatedImage()
     {
-        var path = Path.Combine(CreateDirectory(), "MyFhirSdk.dll");
+        var path = Path.Combine(CreateDirectory(), "MyFhirSdk.Runtime.dll");
         File.Copy(GetPackageAssetPath(), path);
         var resolved = ResolveExplicit(path);
         Assert.True(resolved.IsSuccess, Describe(resolved.Diagnostics));
@@ -261,7 +285,7 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
             "Assets",
             "RuntimeReferences",
             CodeGenTestRuntime.RuntimeContract.CompilerReference.TargetFramework,
-            "MyFhirSdk.dll");
+            "MyFhirSdk.Runtime.dll");
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         return path;
     }
@@ -277,7 +301,7 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
         "Assets",
         "RuntimeReferences",
         CodeGenTestRuntime.RuntimeContract.CompilerReference.TargetFramework,
-        "MyFhirSdk.dll");
+        "MyFhirSdk.Runtime.dll");
 
     private static void EmitRuntimeReference(
         string path,
@@ -293,7 +317,7 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
             public sealed class Marker { }
             """;
         var compilation = CSharpCompilation.Create(
-            "MyFhirSdk",
+            "MyFhirSdk.Runtime",
             [CSharpSyntaxTree.ParseText(source)],
             RuntimeReferenceService.GetTrustedPlatformAssemblyPaths()
                 .Select(path => MetadataReference.CreateFromFile(path)),
