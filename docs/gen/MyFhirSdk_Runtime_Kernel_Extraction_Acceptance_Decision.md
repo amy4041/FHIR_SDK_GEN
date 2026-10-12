@@ -5,7 +5,7 @@ Version 0.7
 - 狀態：Accepted（2026-10-07）；設計 gates 已核准，允許開始 K1；實作 gates 另行驗收。
 - 日期：2026-10-06。
 - 更新日期：2026-10-08，新增全面重編／不提供 forwarders 的 superseding amendment（第 11 節）。
-- 對應文件：[ADR v0.8](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v1.0](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
+- 對應文件：[ADR v0.8](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v1.1](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
 - 範圍：設計決策、驗收方法、K1 validation 與 K3 全面重編 amendments，不在本文件執行 K1 或搬移 production declarations。
 
 已確認採最小 public primitive accessor，並保留 SDK-owned registry 的 internal partial composition。
@@ -349,3 +349,16 @@ descriptor/reference 覆寫；package source 編碼驗證與 CLI 一致；schema
 新增正/負向 tests，完整本機 regression 890 passed、0 failed、1 個既定 Client external
 smoke skipped，consumer 重編/部署與 clean tool smoke 通過。證據見 Guide K4 review 小節；
 remote CI 尚待 push，不改既有 contract/schema/tool 版本或 K0 歷史 inventory。
+
+
+## 13. K5 本機 behavior 驗證紀錄（2026-10-12）
+
+使用者確認 K4 PR 已合併 main，K5 在 feature/runtime-kernel-k5 開發。
+新增 32 個跨 assembly cases，覆蓋 Guide K5 的 primitive/value/metadata、158 個 resource
+factory、bootstrap JSON/open type、default engines、受控 Client 與 TW Core。
+修正 primitive array parser 刪除 null/null slot 的資料遺失，維持 validator 的 null-item
+cardinality 規則、既有 public member shape 與 JSON fixtures。
+
+完整本機 regression 922 passed、0 failed、1 skipped，七個重編／部署 gates 通過；
+詳細測試對照與 evidence 見 Guide K5。未設定外部 FHIR server 的 Client smoke 明確 skipped，
+K5 PR／remote CI、外部 server smoke 與 K6–K7 尚待驗收，不宣稱跨平台 gate 已完成。

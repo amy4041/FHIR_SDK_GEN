@@ -47,10 +47,9 @@ public sealed partial class FhirJsonParser
             var metadataItem = index < metadataItems.Count ? metadataItems[index] : (JsonElement?)null;
             var primitive = ReadPrimitiveValue(primitiveType, rawItem, metadataItem);
 
-            if (primitive is not null)
-            {
-                list.Add(primitive);
-            }
+            // Preserve slots emitted by the serializer, including null/null pairs.
+            // Removing a slot shifts every later value and metadata index.
+            list.Add(primitive);
         }
     }
 
