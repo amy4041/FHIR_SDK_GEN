@@ -60,7 +60,7 @@ public sealed class PrimitiveTgzInputBaselineTests : IDisposable
 
         using var manifest = JsonDocument.Parse(directoryOutput[ManifestName]);
         var root = manifest.RootElement;
-        Assert.Equal(2, root.GetProperty("schemaVersion").GetInt32());
+        Assert.Equal(3, root.GetProperty("schemaVersion").GetInt32());
         var version = GenerationCompatibilityMatrix.CodeGenVersion;
         Assert.Equal(version, root.GetProperty("codeGenVersion").GetString());
         var decisions = root.GetProperty("primitives").EnumerateArray().ToArray();
@@ -104,18 +104,13 @@ public sealed class PrimitiveTgzInputBaselineTests : IDisposable
         }
 
         var baseline = Path.Combine(AppContext.BaseDirectory, "Baselines", "PrimitiveTgzInput");
-        // Historical 1.0.0 evidence remains immutable. Only tool/CodeGen and descriptor
-        // provenance may change. The accessor migration explicitly changes the Runtime
-        // reference contract; primitive decisions and all generated source hashes stay fixed.
+        // Preserve the historical source oracle; only K4 schema and provenance migrate.
         var historical = JsonNode.Parse(File.ReadAllBytes(Path.Combine(baseline, "directory-manifest-1.0.0.json")))!;
+        var current = JsonNode.Parse(directoryOutput[ManifestName])!;
+        historical["schemaVersion"] = current["schemaVersion"]!.DeepClone();
         historical["codeGenVersion"] = version;
-        historical["compatibility"]!["codeGenVersion"] = version;
-        historical["compatibility"]!["tool"]!["version"] = GenerationCompatibilityMatrix.ToolVersion;
-        historical["compatibility"]!["runtimeDescriptor"]!["sha256"] = CodeGenTestRuntime.RuntimeContract.DescriptorSha256;
-        historical["runtimeContractVersion"] = "runtime-kernel-accessor-v1";
-        historical["compatibility"]!["runtimeDescriptor"]!["version"] = "runtime-kernel-accessor-v1";
-        historical["compatibility"]!["compilerReference"]!["sha256"] =
-            "9bedf2420e4290afdc0df144d04b77cb8e243bb2380d2ea181a952d5689afa01";
+        historical["runtimeContractVersion"] = GenerationCompatibilityMatrix.RuntimeContractVersion;
+        historical["compatibility"] = current["compatibility"]!.DeepClone();
         Assert.True(JsonNode.DeepEquals(historical, JsonNode.Parse(directoryOutput[ManifestName])),
             "Only approved version/descriptor/reference provenance may differ from the P0 manifest.");
         foreach (var line in File.ReadAllLines(Path.Combine(baseline, "directory-artifact-hashes-1.0.0.txt")))
@@ -125,11 +120,7 @@ public sealed class PrimitiveTgzInputBaselineTests : IDisposable
         }
         foreach (var (name, bytes) in evidence)
         {
-            var provenanceChanged = name.StartsWith("directory-manifest-", StringComparison.Ordinal) ||
-                name.StartsWith("directory-artifact-hashes-", StringComparison.Ordinal);
-            var currentBaseline = provenanceChanged
-                ? Path.Combine(AppContext.BaseDirectory, "Baselines", "KernelAccessor", name)
-                : Path.Combine(baseline, name);
+            var currentBaseline = Path.Combine(AppContext.BaseDirectory, "Baselines", "RuntimeKernelK4", name);
             Assert.True(File.Exists(currentBaseline), $"Missing approved accessor baseline: {name}");
             Assert.Equal(File.ReadAllBytes(currentBaseline), bytes);
         }

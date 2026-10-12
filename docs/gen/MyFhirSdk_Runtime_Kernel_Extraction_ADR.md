@@ -1,8 +1,8 @@
 # ADR：MyFhirSdk Runtime kernel physical extraction
 
-Version 0.7
+Version 0.8
 
-- 狀態：Accepted（2026-10-07）；2026-10-08 全面重編 amendment 已核准；K2 CI 通過、K3 本機重編／部署 gates 通過，K3 CI／Ubuntu 與 K4 reference 遷移仍待驗收
+- 狀態：Accepted（2026-10-07）；2026-10-08 全面重編 amendment 已核准；K2／K3 已由使用者確認合併 main 並通過 CI；K4 reference 遷移已實作，本機證據見 Guide K4，K4 CI 待驗收
 - 核准人：本專案使用者（本對話），兼任 Architecture、Runtime、CodeGen、Compatibility、Package／Release
 - 核准基準：`5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR 與 acceptance decisions；原始核准見 §6，K1 validation amendment 見 §8，全面重編 amendment 見 §9
 - 決策 owner：Architecture + Runtime maintainers
@@ -419,3 +419,31 @@ Windows／Ubuntu CI matrix 已接入；遠端與 Ubuntu 通過證據仍待提供
 K3 code review 的兩個 P2 驗收缺口已修正：盤點掃描整個 repository，未知 source projects
 不得略過；regression 逐 assembly 核對唯一 TRX、實際執行與 skip policy，不接受整個專案跳過。
 14 個 failure-mode harness checks 與修正後完整 K3 本機 gates 通過；遷移決策本身未改變。
+
+
+## 10. K4 contract／auxiliary source 實作紀錄（2026-10-12）
+
+依 §3.7／§8 核准範圍，canonical compiler reference 切換為真正
+MyFhirSdk.Runtime, Version=1.0.0.0, PublicKeyToken=null；CodeGen production 不增加
+SDK／Runtime ProjectReference，也不提供 legacy compiler contract fallback。
+
+Tool/CodeGen 為 1.2.0，Runtime contract 為 runtime-kernel-v2。Descriptor 因新增必要
+compilerSources（logicalName/version/clrType/normalization/sha256）升為 schema 2；
+model/primitive manifest 因新增來源 provenance 升為 schema 3。這是來源契約結構變更，
+不是只換 identity/hash。Primitive policy 版本仍為 1.1.0，其 runtimeContractVersion
+與 descriptor 的 normalized policy hash 同步更新。
+
+SimpleQuantity 仍由 SDK 編譯，Tool 封裝真實 source，--compiler-source 提供明確覆寫；
+source 驗證採 UTF-8 無 BOM／LF normalization，來源 identity/version/hash 皆固定。
+Generated C# API 與 Runtime ownership 沒有額外變更。SDK 的過渡 monolithic contract build、
+conditional friend 與 compile-owner exception 已移除。K0/K1 歷史 evidence 保持固定。
+
+實際 reference/source hashes、manifest/package snapshots、驗證命令與本機結果見
+[Guide K4](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md#k4遷移-versioned-runtime-contract)。
+本紀錄不宣稱 K4 remote CI、K5 behavior 補強或 K6 cross-platform gates 已完成。
+
+K4 code review 修正（2026-10-12）：compatibility matrix 額外固定 Runtime assembly
+name/version/public key token 與 canonical reference SHA-256，拒絕自洽但改指向 SDK
+的外部 descriptor/reference 組合。Compiler source inventory 採嚴格 UTF-8 無 BOM
+解碼，與 CLI 一致；歷史 schema 1 package 的 text normalization 不變。
+這些修正落實既有 Runtime-only 契約，不改 contract/schema/tool 版本或生成 C#。

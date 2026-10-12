@@ -6,7 +6,7 @@ namespace MyFhirSdk.CodeGen.Contracts;
 
 public sealed partial class RuntimeContractValidator
 {
-    public const int SupportedSchemaVersion = 1;
+    public const int SupportedSchemaVersion = 2;
 
     public GenerationResult<RuntimeContractView?> Validate(
         RuntimeContractDescriptorDocument document,
@@ -33,6 +33,7 @@ public sealed partial class RuntimeContractValidator
         RequireSha256(descriptorSha256, "descriptor SHA-256", diagnostics, sourceFile);
 
         ValidateAssembly(document.RuntimeAssembly, "runtimeAssembly", diagnostics, sourceFile);
+        ValidateCompilerSources(document.CompilerSources, diagnostics, sourceFile);
         ValidateCompatibility(document.Compatibility, diagnostics, sourceFile);
         ValidateSymbols(document.Symbols, diagnostics, sourceFile);
         ValidateSlots(document.DeclaredSlots, document.Symbols, diagnostics, sourceFile);
@@ -95,10 +96,33 @@ public sealed partial class RuntimeContractValidator
                 document.CompilerReference.TargetFramework!,
                 CreateAssembly(document.CompilerReference.Assembly!),
                 document.CompilerReference.Sha256!),
-            descriptorSha256);
+            descriptorSha256,
+            document.CompilerSources!.Select(source => new RuntimeCompilerSource(
+                source.LogicalName!, source.Version!, source.ClrType!, source.Normalization!, source.Sha256!)));
         return new GenerationResult<RuntimeContractView?>(
             view,
             Array.Empty<GeneratorDiagnostic>());
+    }
+
+    private static void ValidateCompilerSources(
+        List<RuntimeCompilerSourceDocument>? sources,
+        ICollection<GeneratorDiagnostic> diagnostics,
+        string sourceFile)
+    {
+        if (sources is null || sources.Count != 1)
+        {
+            AddInvalid(diagnostics, sourceFile, "compilerSources must contain exactly one SimpleQuantity.cs asset.");
+            return;
+        }
+        var source = sources[0];
+        if (source is null || source.LogicalName != "SimpleQuantity.cs" ||
+            source.ClrType != "MyFhirSdk.Types.SimpleQuantity" || source.Normalization != "utf8-lf")
+        {
+            AddInvalid(diagnostics, sourceFile, "Invalid compiler source identity or normalization.");
+            return;
+        }
+        RequireText(source.Version, "compilerSources.version", diagnostics, sourceFile);
+        RequireSha256(source.Sha256, "compilerSources.sha256", diagnostics, sourceFile);
     }
 
     private static void ValidateCompatibility(

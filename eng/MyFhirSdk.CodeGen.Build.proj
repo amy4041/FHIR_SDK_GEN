@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <Target Name="Restore">
-    <MSBuild Projects="$(RepositoryRoot)MyFhirSdk.csproj"
+    <MSBuild Projects="$(RepositoryRoot)Runtime\MyFhirSdk.Runtime.csproj"
              Targets="Restore" />
     <MSBuild Projects="$(RepositoryRoot)CodeGen\MyFhirSdk.CodeGen.csproj"
              Targets="Restore" />
@@ -15,13 +15,13 @@
   <Target Name="Build">
     <Error Condition="'$(Configuration)' != 'Release'"
            Text="The CodeGen Runtime reference pipeline requires Configuration=Release." />
-    <MSBuild Projects="$(RepositoryRoot)MyFhirSdk.csproj"
+    <MSBuild Projects="$(RepositoryRoot)Runtime\MyFhirSdk.Runtime.csproj"
              Targets="GetCompilerReferenceAsset"
              Properties="Configuration=$(Configuration)">
       <Output TaskParameter="TargetOutputs" ItemName="RuntimeReferenceAsset" />
     </MSBuild>
     <Error Condition="'@(RuntimeReferenceAsset)' == ''"
-           Text="The SDK build did not produce a Runtime reference asset." />
+           Text="The Runtime build did not produce a Runtime reference asset." />
     <PropertyGroup>
       <RuntimeReferenceAssetPath>@(RuntimeReferenceAsset->'%(FullPath)')</RuntimeReferenceAssetPath>
     </PropertyGroup>
@@ -37,8 +37,6 @@
              Properties="Configuration=$(Configuration);NoBuild=true;RuntimeReferenceAssetPath=$(RuntimeReferenceAssetPath);PackageOutputPath=$(PackageOutputPath)" />
   </Target>
 
-  <!-- K2 produces the real Runtime reference; package/descriptor selection stays
-       on the frozen monolithic compiler contract until the K4 migration. -->
   <Target Name="GetRuntimeCompilerReferenceAsset" Returns="@(RuntimeKernelReferenceAsset)">
     <MSBuild Projects="$(RepositoryRoot)Runtime\MyFhirSdk.Runtime.csproj"
              Targets="GetCompilerReferenceAsset" Properties="Configuration=$(Configuration)">

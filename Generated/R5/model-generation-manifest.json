@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "package": {
     "id": "hl7.fhir.r5.core",
     "version": "5.0.0",
@@ -8,28 +8,37 @@
   },
   "primitivePolicy": {
     "version": "1.1.0",
-    "sha256": "47fb82123bc97fff108230876d33447208f8e6c2e6b0643bdf3a0a0dce05b253"
+    "sha256": "3f3739d24c9cbf149746ce066fedd556c5f076d9e48b9d04d6e28302e638856b"
   },
-  "codeGenVersion": "1.1.0",
-  "runtimeContractVersion": "runtime-kernel-accessor-v1",
+  "codeGenVersion": "1.2.0",
+  "runtimeContractVersion": "runtime-kernel-v2",
   "compatibility": {
     "schemaVersion": 1,
     "versionPolicy": "exact",
     "tool": {
       "packageId": "MyFhirSdk.CodeGen.Tool",
-      "version": "1.1.0"
+      "version": "1.2.0"
     },
-    "codeGenVersion": "1.1.0",
+    "codeGenVersion": "1.2.0",
     "runtimeDescriptor": {
-      "schemaVersion": 1,
-      "version": "runtime-kernel-accessor-v1",
-      "sha256": "643dc74c30ab0265c9f3c9c9ec30518c40050a2fbeae5d0c478a63d1c146392e"
+      "schemaVersion": 2,
+      "version": "runtime-kernel-v2",
+      "sha256": "75ce3d0aebb6c0e69ce18919b3b3bb6387faed1eee588e5838716d2abf365d99"
     },
     "compilerReference": {
-      "logicalIdentity": "MyFhirSdk, Version=1.0.0.0, PublicKeyToken=null, TargetFramework=net9.0",
-      "sha256": "9bedf2420e4290afdc0df144d04b77cb8e243bb2380d2ea181a952d5689afa01"
+      "logicalIdentity": "MyFhirSdk.Runtime, Version=1.0.0.0, PublicKeyToken=null, TargetFramework=net9.0",
+      "sha256": "8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71"
     },
-    "targetFramework": "net9.0"
+    "targetFramework": "net9.0",
+    "compilerSources": [
+      {
+        "logicalName": "SimpleQuantity.cs",
+        "version": "simple-quantity-source-v1",
+        "clrType": "MyFhirSdk.Types.SimpleQuantity",
+        "normalization": "utf8-lf",
+        "sha256": "321d5cd03d6ec3f2e70a26e608f088563c1f4d7c3ad4e680488d47f0e0affde8"
+      }
+    ]
   },
   "generationScope": {
     "mode": "full",

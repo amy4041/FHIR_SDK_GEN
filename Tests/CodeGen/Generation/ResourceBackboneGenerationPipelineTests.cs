@@ -15,7 +15,7 @@ public sealed class ResourceBackboneGenerationPipelineTests
     {
         var (_, ir) = await ComplexDatatypeTestContext.BuildOfficialIrAsync("Patient");
 
-        var result = CodeGenTestRuntime.CreateResourceBackbonePipeline().Generate(ir);
+        var result = CodeGenTestRuntime.CreateResourceBackbonePipeline(ir).Generate(ir);
 
         Assert.True(result.IsSuccess, ComplexDatatypeTestContext.Describe(result.Diagnostics));
         var batch = Assert.IsType<ResourceBackboneGenerationBatch>(result.Value);
@@ -42,7 +42,7 @@ public sealed class ResourceBackboneGenerationPipelineTests
                 ir.ExternalMetadata
             ]));
 
-        var result = CodeGenTestRuntime.CreateResourceBackbonePipeline().Generate(withoutPatient);
+        var result = CodeGenTestRuntime.CreateResourceBackbonePipeline(ir).Generate(withoutPatient);
 
         Assert.False(result.IsSuccess);
         Assert.Null(result.Value);
@@ -60,7 +60,7 @@ public sealed class ResourceBackboneGenerationPipelineTests
             .Select(node => node.FhirTypeName)
             .ToArray();
         var (_, ir) = await ComplexDatatypeTestContext.BuildOfficialIrAsync(allGeneratedNames);
-        var pipeline = CodeGenTestRuntime.CreateResourceBackbonePipeline();
+        var pipeline = CodeGenTestRuntime.CreateResourceBackbonePipeline(ir);
 
         var result = pipeline.Generate(ir);
         var constructor = Assert.Single(typeof(ModelIrBatch).GetConstructors(

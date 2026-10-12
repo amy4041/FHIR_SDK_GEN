@@ -13,8 +13,8 @@ public sealed class PhaseDCompatibilityManifestArchitectureTests
         Assert.Equal("exact", GenerationCompatibilityMatrix.VersionPolicy);
         Assert.Equal("MyFhirSdk.CodeGen.Tool",
             GenerationCompatibilityMatrix.ToolPackageId);
-        Assert.Equal(2, PrimitiveGenerationManifestModel.CurrentSchemaVersion);
-        Assert.Equal(2, ModelGenerationManifestModel.CurrentSchemaVersion);
+        Assert.Equal(3, PrimitiveGenerationManifestModel.CurrentSchemaVersion);
+        Assert.Equal(3, ModelGenerationManifestModel.CurrentSchemaVersion);
     }
 
     [Fact]
@@ -31,6 +31,7 @@ public sealed class PhaseDCompatibilityManifestArchitectureTests
             propertyNames);
         Assert.Contains(nameof(GenerationManifestProvenance.CompilerReferenceLogicalIdentity),
             propertyNames);
+        Assert.Contains(nameof(GenerationManifestProvenance.CompilerSources), propertyNames);
     }
 
     [Fact]

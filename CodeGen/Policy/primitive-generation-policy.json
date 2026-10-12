@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "policyVersion": "1.1.0",
   "fhirVersion": "5.0.0",
-  "runtimeContractVersion": "runtime-kernel-accessor-v1",
+  "runtimeContractVersion": "runtime-kernel-v2",
   "primitiveNamespace": "MyFhirSdk.Primitives",
   "primitives": [
     {

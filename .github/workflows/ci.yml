@@ -80,13 +80,13 @@ jobs:
         run: |
           [xml] $props = Get-Content -LiteralPath Directory.Build.props -Raw
           $tfm = [string] $props.Project.PropertyGroup.MyFhirSdkTargetFramework
-          $source = "CodeGen/bin/Release/$tfm/Assets/RuntimeReferences/$tfm/MyFhirSdk.dll"
+          $source = "CodeGen/bin/Release/$tfm/Assets/RuntimeReferences/$tfm/MyFhirSdk.Runtime.dll"
           if (-not (Test-Path -LiteralPath $source -PathType Leaf)) {
             throw "Compiler reference asset was not staged at $source."
           }
           $destination = "artifacts/compiler-reference/$tfm"
           New-Item -ItemType Directory -Path $destination -Force | Out-Null
-          Copy-Item -LiteralPath $source -Destination "$destination/MyFhirSdk.dll"
+          Copy-Item -LiteralPath $source -Destination "$destination/MyFhirSdk.Runtime.dll"
 
       - name: Upload compiler reference asset
         uses: actions/upload-artifact@v4
@@ -226,7 +226,7 @@ jobs:
         run: |
           [xml] $props = Get-Content -LiteralPath Directory.Build.props -Raw
           $tfm = [string] $props.Project.PropertyGroup.MyFhirSdkTargetFramework
-          $assets = @(Get-ChildItem -LiteralPath artifacts/compiler-reference-download -Filter MyFhirSdk.dll -Recurse -File)
+          $assets = @(Get-ChildItem -LiteralPath artifacts/compiler-reference-download -Filter MyFhirSdk.Runtime.dll -Recurse -File)
           if ($assets.Count -ne 1) {
             throw "Expected exactly one compiler reference asset; found $($assets.Count)."
           }

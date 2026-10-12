@@ -11,4 +11,5 @@ public sealed record GenerationManifestProvenance(
     string RuntimeDescriptorSha256,
     string CompilerReferenceLogicalIdentity,
     string CompilerReferenceSha256,
-    string TargetFramework);
+    string TargetFramework,
+    IReadOnlyList<MyFhirSdk.CodeGen.Contracts.RuntimeCompilerSource>? CompilerSources = null);

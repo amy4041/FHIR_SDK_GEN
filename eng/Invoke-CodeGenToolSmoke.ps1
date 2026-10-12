@@ -224,6 +224,9 @@ function Get-PackageGenerationContract {
             modelPolicies = $descriptor.compatibility.modelPolicies
             symbols = $descriptor.symbols
         }
+        if ($descriptor.schemaVersion -ge 2) {
+            $fingerprintContract.compilerSources = $descriptor.compilerSources
+        }
         $fingerprintBytes = [System.Text.Encoding]::UTF8.GetBytes(
             ($fingerprintContract | ConvertTo-Json -Depth 100 -Compress))
         $fingerprint = [System.Convert]::ToHexString(

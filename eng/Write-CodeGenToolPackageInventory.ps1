@@ -11,16 +11,35 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 function Get-NormalizedTextHash {
-    param([System.IO.Compression.ZipArchiveEntry] $Entry)
+    param([System.IO.Compression.ZipArchiveEntry] $Entry, [switch] $CompilerSource)
 
-    $reader = [System.IO.StreamReader]::new(
-        $Entry.Open(),
-        [System.Text.UTF8Encoding]::new($false, $true))
-    try {
-        $content = $reader.ReadToEnd()
+    if ($CompilerSource) {
+        $stream = $Entry.Open()
+        $buffer = [IO.MemoryStream]::new()
+        try {
+            $stream.CopyTo($buffer)
+            $bytes = $buffer.ToArray()
+        }
+        finally {
+            $stream.Dispose()
+            $buffer.Dispose()
+        }
+        if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xef -and $bytes[1] -eq 0xbb -and $bytes[2] -eq 0xbf) {
+            throw 'Compiler source must use UTF-8 without BOM.'
+        }
+        # Decode raw bytes strictly; do not auto-detect UTF-16/UTF-32 or remove BOM.
+        $content = [Text.UTF8Encoding]::new($false, $true).GetString($bytes)
     }
-    finally {
-        $reader.Dispose()
+    else {
+        $reader = [System.IO.StreamReader]::new(
+            $Entry.Open(),
+            [System.Text.UTF8Encoding]::new($false, $true))
+        try {
+            $content = $reader.ReadToEnd()
+        }
+        finally {
+            $reader.Dispose()
+        }
     }
     $normalizedBytes = [System.Text.UTF8Encoding]::new($false).GetBytes(
         $content.Replace("`r`n", "`n").Replace("`r", "`n"))
@@ -52,7 +71,7 @@ try {
         throw 'Package layout, descriptor targetFramework, and compilerReference targetFramework must match.'
     }
 
-    $referencePath = "tools/$ExpectedTargetFramework/any/Assets/RuntimeReferences/$ExpectedTargetFramework/MyFhirSdk.dll"
+    $referencePath = "tools/$ExpectedTargetFramework/any/Assets/RuntimeReferences/$ExpectedTargetFramework/$($descriptor.compilerReference.assembly.name).dll"
     $referenceEntry = $archive.GetEntry($referencePath)
     if ($null -eq $referenceEntry) {
         throw "Package is missing $referencePath."
@@ -67,6 +86,20 @@ try {
     }
     if ($referenceHash -cne [string] $descriptor.compilerReference.sha256) {
         throw "Packaged Runtime reference SHA-256 '$referenceHash' does not match descriptor '$($descriptor.compilerReference.sha256)'. Package: $package"
+    }
+
+    # Historical packages have schema 1 and no auxiliary source inventory.
+    if ($descriptor.schemaVersion -ge 2) {
+        if (@($descriptor.compilerSources).Count -ne 1) { throw 'Invalid compiler source inventory.' }
+        foreach ($source in $descriptor.compilerSources) {
+            if ($source.logicalName -cne 'SimpleQuantity.cs' -or $source.normalization -cne 'utf8-lf') {
+                throw 'Invalid compiler source identity or normalization.'
+            }
+            $sourcePath = "tools/$ExpectedTargetFramework/any/Assets/CompilerSources/$($source.logicalName)"
+            $sourceEntry = $archive.GetEntry($sourcePath)
+            if ($null -eq $sourceEntry) { throw "Package is missing $sourcePath." }
+            if ((Get-NormalizedTextHash $sourceEntry -CompilerSource) -cne $source.sha256) { throw 'Compiler source hash mismatch.' }
+        }
     }
 
     [System.Collections.Generic.List[string]] $lines = @()
@@ -96,6 +129,10 @@ try {
             # line endings follow the build host. The PE debug identity therefore
             # also differs even when the compiled program is semantically equal.
             $lines.Add("$normalizedPath|<platform-build-output>")
+            continue
+        }
+        if ($normalizedPath -ceq 'tools/<tfm>/any/Assets/CompilerSources/SimpleQuantity.cs') {
+            $lines.Add("$normalizedPath|$(Get-NormalizedTextHash $entry -CompilerSource)")
             continue
         }
         if ($normalizedPath -ceq 'MyFhirSdk.CodeGen.Tool.nuspec' -or

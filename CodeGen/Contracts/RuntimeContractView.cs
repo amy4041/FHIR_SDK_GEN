@@ -15,7 +15,8 @@ public sealed class RuntimeContractView
         IEnumerable<RuntimeSymbol> symbols,
         IEnumerable<RuntimeDeclaredSlot> declaredSlots,
         RuntimeCompilerReference compilerReference,
-        string descriptorSha256)
+        string descriptorSha256,
+        IEnumerable<RuntimeCompilerSource> compilerSources)
     {
         SchemaVersion = schemaVersion;
         ContractVersion = contractVersion;
@@ -26,6 +27,7 @@ public sealed class RuntimeContractView
         DeclaredSlots = new ReadOnlyCollection<RuntimeDeclaredSlot>(declaredSlots.ToArray());
         CompilerReference = compilerReference;
         DescriptorSha256 = descriptorSha256;
+        CompilerSources = new ReadOnlyCollection<RuntimeCompilerSource>(compilerSources.ToArray());
         _symbolsByClrType = new ReadOnlyDictionary<string, RuntimeSymbol>(
             Symbols.ToDictionary(symbol => symbol.ClrType, StringComparer.Ordinal));
     }
@@ -39,6 +41,7 @@ public sealed class RuntimeContractView
     public IReadOnlyList<RuntimeDeclaredSlot> DeclaredSlots { get; }
     public RuntimeCompilerReference CompilerReference { get; }
     public string DescriptorSha256 { get; }
+    public IReadOnlyList<RuntimeCompilerSource> CompilerSources { get; }
 
     public bool TryGetSymbol(string clrType, out RuntimeSymbol? symbol)
     {
@@ -124,3 +127,6 @@ public sealed record RuntimeCompilerReference(
     string TargetFramework,
     RuntimeAssemblyIdentity Assembly,
     string Sha256);
+
+public sealed record RuntimeCompilerSource(
+    string LogicalName, string Version, string ClrType, string Normalization, string Sha256);

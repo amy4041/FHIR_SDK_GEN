@@ -28,15 +28,15 @@ public sealed class RuntimeContractLoaderTests : IDisposable
         Assert.True(second.IsSuccess, Describe(second.Diagnostics));
         var view = Assert.IsType<RuntimeContractView>(first.Value);
         var secondView = Assert.IsType<RuntimeContractView>(second.Value);
-        Assert.Equal(1, view.SchemaVersion);
-        Assert.Equal("runtime-kernel-accessor-v1", view.ContractVersion);
+        Assert.Equal(2, view.SchemaVersion);
+        Assert.Equal("runtime-kernel-v2", view.ContractVersion);
         Assert.Equal(GenerationCompatibilityMatrix.TargetFramework, view.TargetFramework);
         Assert.Equal(13, view.Symbols.Count);
         Assert.Equal(3, view.DeclaredSlots.Count);
         Assert.Equal(1, view.Compatibility.SchemaVersion);
         Assert.Equal("exact", view.Compatibility.VersionPolicy);
         Assert.Equal(
-            "643dc74c30ab0265c9f3c9c9ec30518c40050a2fbeae5d0c478a63d1c146392e",
+            "75ce3d0aebb6c0e69ce18919b3b3bb6387faed1eee588e5838716d2abf365d99",
             view.DescriptorSha256);
         Assert.Equal(
             Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(path))).ToLowerInvariant(),
@@ -70,6 +70,32 @@ public sealed class RuntimeContractLoaderTests : IDisposable
         Assert.DoesNotContain(view.Symbols, symbol => symbol.ClrType.Contains("SimpleQuantity", StringComparison.Ordinal));
     }
 
+    [Theory]
+    [InlineData("logicalName", "../SimpleQuantity.cs")]
+    [InlineData("clrType", "MyFhirSdk.Core.SimpleQuantity")]
+    [InlineData("normalization", "raw")]
+    [InlineData("version", null)]
+    [InlineData("sha256", "invalid")]
+    public async Task LoadAsync_InvalidCompilerSourceInventory_Fails(string field, string? value)
+    {
+        var root = ReadDescriptor();
+        root["compilerSources"]![0]![field] = value;
+        AssertFailure(await LoadNodeAsync(root), GeneratorDiagnosticCodes.InvalidRuntimeContract);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task LoadAsync_MissingOrDuplicateCompilerSourceInventory_Fails(bool duplicate)
+    {
+        var root = ReadDescriptor();
+        if (duplicate)
+            root["compilerSources"]!.AsArray().Add(root["compilerSources"]![0]!.DeepClone());
+        else
+            root.Remove("compilerSources");
+        AssertFailure(await LoadNodeAsync(root), GeneratorDiagnosticCodes.InvalidRuntimeContract);
+    }
+
     [Fact]
     public async Task LoadAsync_MissingFile_ReturnsFsg0100()
     {
@@ -95,6 +121,8 @@ public sealed class RuntimeContractLoaderTests : IDisposable
         var result = await LoadNodeAsync(root);
 
         AssertFailure(result, GeneratorDiagnosticCodes.InvalidRuntimeContract);
+        Assert.Equal($"The Runtime contract descriptor does not match schema v{RuntimeContractValidator.SupportedSchemaVersion}.",
+            Assert.Single(result.Diagnostics).Message);
     }
 
     [Fact]
@@ -102,8 +130,8 @@ public sealed class RuntimeContractLoaderTests : IDisposable
     {
         var json = await File.ReadAllTextAsync(GetRepositoryDescriptorPath());
         json = json.Replace(
-            "{\n  \"schemaVersion\": 1,",
-            "{\n  \"schemaVersion\": 1,\n  \"schemaVersion\": 1,",
+            "{\n  \"schemaVersion\": 2,",
+            "{\n  \"schemaVersion\": 2,\n  \"schemaVersion\": 2,",
             StringComparison.Ordinal);
 
         var result = await LoadTextAsync(json);
@@ -116,7 +144,7 @@ public sealed class RuntimeContractLoaderTests : IDisposable
     public async Task LoadAsync_UnsupportedSchema_ReturnsFsg0102()
     {
         var root = ReadDescriptor();
-        root["schemaVersion"] = 2;
+        root["schemaVersion"] = 3;
 
         var result = await LoadNodeAsync(root);
 

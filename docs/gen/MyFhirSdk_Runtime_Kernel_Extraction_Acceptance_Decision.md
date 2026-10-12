@@ -1,11 +1,11 @@
 # Runtime kernel ADR acceptance decision 核准紀錄
 
-Version 0.6
+Version 0.7
 
 - 狀態：Accepted（2026-10-07）；設計 gates 已核准，允許開始 K1；實作 gates 另行驗收。
 - 日期：2026-10-06。
 - 更新日期：2026-10-08，新增全面重編／不提供 forwarders 的 superseding amendment（第 11 節）。
-- 對應文件：[ADR v0.7](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v0.9](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
+- 對應文件：[ADR v0.8](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v1.0](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
 - 範圍：設計決策、驗收方法、K1 validation 與 K3 全面重編 amendments，不在本文件執行 K1 或搬移 production declarations。
 
 已確認採最小 public primitive accessor，並保留 SDK-owned registry 的 internal partial composition。
@@ -68,7 +68,8 @@ CodeGen、release 或整體 ADR 已核准，也不授權 physical extraction。
 目前的 ApprovedPublicApi snapshot；K0 frozen inventories、fixture 與 source pin 維持歷史基準。
 
 交付連動：使用者另選擇一併遷移 descriptor/reference 與生成證據，讓 pipeline 使用最新 SDK。
-目前 contractVersion 為 `runtime-kernel-accessor-v1`，assembly identity 仍為 MyFhirSdk；
+K1 核准時 contractVersion 為 `runtime-kernel-accessor-v1`，assembly identity 為 MyFhirSdk；
+現行 K4 contract/reference 見第 12 節；
 新 hashes 與重建方式見 [accessor contract evidence](baselines/kernel-accessor/README.md)。
 這項授權允許更新 primitive policy 的 contract selection 與兩份 manifest 的 provenance，
 不變更 primitive decisions、831 model sources、21 primitive sources 或 K0 歷史基準。
@@ -324,3 +325,27 @@ CI matrix 已加入 K3 runner 與 Windows／Ubuntu evidence 上傳；尚未取�
 K3 code review 修正紀錄：repository-wide project discovery 與逐專案 TRX execution／skip
 驗證已補齊；14 個拒絕／接受條件 harness checks、本機完整 K3 七個 gates 全部通過。
 860 passed、1 已核准外部服務 skip、0 failed；遠端／Ubuntu 證據仍待確認。
+
+
+## 12. K4 實作與驗收紀錄（2026-10-12）
+
+使用者已確認 K2／K3 通過 CI 並合併 main；K4 在 feature/runtime-kernel-k4 開發。
+本次依已核准設計切換真正 Runtime compiler reference，移除 legacy contract build，
+封裝真實 SimpleQuantity source 並提供 --compiler-source override，維持 SDK ownership。
+
+固定 Tool/CodeGen 1.2.0、runtime-kernel-v2；新增 compilerSources 結構因此 descriptor
+schema 2、model/primitive manifest schema 3。實際 PE/source hashes 與本機驗證證據見
+[Guide K4](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md#k4遷移-versioned-runtime-contract)
+及 [ADR §10](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md#10-k4-contractauxiliary-source-實作紀錄2026-10-12)。
+
+Exit gate 仍要求 strict descriptor/source inventory、PE identity/hash、fresh models/wrappers
+Roslyn、composition 結構檢查、完整 fresh SDK build/runtime、clean package install 與
+missing/mismatch/override 負面測試全部通過。歷史 K0/K1 baseline 不改寫，新的 package /
+provenance snapshot 另存 runtime-kernel-k4。K4 PR／remote CI 與 K5–K7 尚待後續驗收。
+
+
+K4 review 修正後（2026-10-12）：matrix 固定 Runtime identity/hash，拒絕自洽但改指向 SDK 的
+descriptor/reference 覆寫；package source 編碼驗證與 CLI 一致；schema 訊息改用現行版本。
+新增正/負向 tests，完整本機 regression 890 passed、0 failed、1 個既定 Client external
+smoke skipped，consumer 重編/部署與 clean tool smoke 通過。證據見 Guide K4 review 小節；
+remote CI 尚待 push，不改既有 contract/schema/tool 版本或 K0 歷史 inventory。

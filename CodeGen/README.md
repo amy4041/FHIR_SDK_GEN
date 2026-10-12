@@ -7,14 +7,14 @@ deterministic C# source 的 repository-local .NET tool。命令為 `myfhir-codeg
 
 | 項目 | 支援值 |
 | --- | --- |
-| Tool / CodeGen | `1.1.0` |
+| Tool / CodeGen | `1.2.0` |
 | .NET target framework | `net9.0` |
 | FHIR package | `hl7.fhir.r5.core#5.0.0` |
 | FHIR version | `5.0.0` |
-| Runtime contract | `runtime-kernel-accessor-v1` |
+| Runtime contract | `runtime-kernel-v2` |
 | Primitive policy | `1.1.0` |
 | Compatibility policy | exact ordinal match |
-| Model/primitive manifest schema | `2` |
+| Model/primitive manifest schema | `3` |
 
 `CodeGen/Compatibility/GenerationCompatibilityMatrix.cs`、packaged
 `Contracts/runtime-contract.json` 與 manifest 中的 `compatibility` object 是可稽核的契約。
@@ -31,7 +31,7 @@ dotnet tool restore --add-source artifacts/packages --ignore-failed-sources
 dotnet myfhir-codegen --help
 ```
 
-packaging build 先建立 canonical compiler-only `MyFhirSdk.dll`，再明確注入 CodeGen package；
+packaging build 先建立 canonical compiler-only `MyFhirSdk.Runtime.dll`，再明確注入 CodeGen package；
 CodeGen project 本身沒有 SDK `ProjectReference`。已安裝的 tool 從 package installation root
 解析資產，不搜尋 solution、repository、目前工作目錄或 `bin/obj`。
 
@@ -99,7 +99,7 @@ Package identity必須符合命令中的package ID/version/FHIR version。
 
 ### 在 repository 外操作
 
-準備 .NET 9 SDK、一份已驗證的 `MyFhirSdk.CodeGen.Tool.1.1.0.nupkg`、
+準備 .NET 9 SDK、一份已驗證的 `MyFhirSdk.CodeGen.Tool.1.2.0.nupkg`、
 `hl7.fhir.r5.core-5.0.0.tgz`，以及同一版本 source 的
 [`primitive-generation-policy.json`](Policy/primitive-generation-policy.json)。
 交付時將 policy 原樣複製成獨立檔案；primitive mode 即使安裝包內有 policy，仍要求
@@ -110,7 +110,7 @@ Package identity必須符合命令中的package ID/version/FHIR version。
 ```text
 work/
   NuGet.Config
-  feed/MyFhirSdk.CodeGen.Tool.1.1.0.nupkg
+  feed/MyFhirSdk.CodeGen.Tool.1.2.0.nupkg
   inputs/hl7.fhir.r5.core-5.0.0.tgz
   inputs/primitive-generation-policy.json
 ```
@@ -135,7 +135,7 @@ work/
 ```powershell
 dotnet new tool-manifest
 $env:NUGET_PACKAGES = Join-Path (Get-Location).Path '.nuget/packages'
-dotnet tool install MyFhirSdk.CodeGen.Tool --local --version 1.1.0 --configfile ./NuGet.Config
+dotnet tool install MyFhirSdk.CodeGen.Tool --local --version 1.2.0 --configfile ./NuGet.Config
 dotnet myfhir-codegen --help
 dotnet myfhir-codegen `
   --mode primitive `
@@ -149,7 +149,7 @@ dotnet myfhir-codegen `
 
 預期產物為 20 個 wrappers、1 個 registry composition 與 1 份 manifest，共 22 個檔案；
 `xhtml` 維持 policy 明確列出的 unsupported primitive。再次執行應得到相同 bytes。
-已有 pin 為 `1.1.0` 的 manifest 時，省略建立 manifest 與 install，改用
+已有 pin 為 `1.2.0` 的 manifest 時，省略建立 manifest 與 install，改用
 `dotnet tool restore --configfile ./NuGet.Config`。若仍 pin 舊版，先依下方升級流程更新版本。
 
 ### 資產解析
@@ -158,7 +158,8 @@ package 內含：
 
 - model 與 primitive generation policies；
 - versioned Runtime contract descriptor；
-- compiler-only Runtime reference；
+- compiler-only Runtime reference（Release `$(TargetRefPath)`，只讀 PE metadata）；
+- 真實 SDK-owned `SimpleQuantity.cs` auxiliary source（`Assets/CompilerSources/SimpleQuantity.cs`）；
 - CodeGen executable、Roslyn dependencies 與 tool metadata。
 
 asset precedence 固定為「明確 CLI override > package-owned default」，沒有 environment、
@@ -167,9 +168,12 @@ repository 或 current-directory fallback：
 - `--policy-root <directory>`：整組 model policies；不可與 packaged model policies 混用；
 - `--policy <file>`：primitive mode 的 required policy，或 model mode 的 primitive policy override；
 - `--runtime-contract <file>`：Runtime descriptor；
-- `--runtime-reference <file>`：可重複的 compiler references。
+- `--runtime-reference <file>`：單一 Runtime compiler reference；重複 identity 會拒絕；
+- `--compiler-source <file>`：model compilation 的 `SimpleQuantity.cs` source override。
 
 override 仍必須符合 packaged compatibility matrix、assembly identity、TFM 與 SHA-256。
+K4 matrix 固定 MyFhirSdk.Runtime 的 name/version/public key token 與 canonical reference SHA-256；
+--runtime-contract 不能藉由一起改寫 descriptor identity/hash，重新接受舊 SDK DLL。
 
 ## Output 與 manifest
 
@@ -183,6 +187,7 @@ schema v2 manifest 記錄 package/policy hashes、artifact inventory，以及：
 - tool package ID/version 與 CodeGen version；
 - Runtime descriptor schema/version/SHA-256；
 - compiler reference logical identity/SHA-256；
+- compiler source logical name、version、CLR type、UTF-8/LF normalization 與 SHA-256；
 - target framework 與 exact compatibility policy。
 
 manifest 不記錄實體 repository、cache 或 temporary path。
@@ -191,6 +196,10 @@ primitive manifest 也不記錄 input mode 或 archive exact-bytes SHA-256；上
 tool/CodeGen version 與 Runtime descriptor hash 不同，不應要求整份 manifest 相同。
 
 ## 升級與 rollback
+
+`1.2.0` 將 compiler reference 切換為 Runtime，descriptor schema 升為 2，manifest schema 升為 3；
+公開生成 C# API 維持一致。Auxiliary source hash 採 UTF-8 無 BOM、換行正規化為 LF；
+檔案遺失、UTF-8 損壞或 hash 不符會以 FSG0130/FSG0131 失敗並保留既有 output。
 
 `1.1.0`新增primitive `.tgz` input。`1.0.0`是immutable upgrade baseline，仍使用directory input。
 升級測試由`eng/codegen-tool-upgrade-baseline.json`固定的source revision重建真實舊版package，
@@ -268,3 +277,8 @@ smoke、upgrade contract 與 cross-platform generated hash gate。
 此 package 僅供 repository-local development。公開發布前必須另外核准 license、package
 license metadata、signing、SBOM、artifact provenance、feed credentials 與 release promotion；
 任何缺項都必須阻擋公開 NuGet push。
+
+CodeGen packaging tests 會呼叫 PowerShell 7.2+ 執行真實 package inventory script，
+驗證 LF/CRLF source 可用，以及 UTF-8 BOM、UTF-16、損壞 UTF-8 會被拒絕。
+CI 使用 PATH 中的 pwsh；若本機使用 portable PowerShell，可設定
+MYFHIRSDK_TEST_PWSH 為 pwsh 執行檔的絕對路徑後再執行 dotnet test。

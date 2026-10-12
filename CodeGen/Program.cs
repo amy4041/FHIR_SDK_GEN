@@ -80,7 +80,7 @@ public static class Program
             inputPath,
             runtimeContractPath,
             runtimeReferencePaths,
-            policyPaths);
+            policyPaths.Append(assetResolver.ResolveCompilerSourcePath(assetOverrides)));
         var compilationValidator = new RoslynCompilationValidator(referenceResult.Value);
         var primitivePipeline = new PrimitiveGenerationPipeline(
             outputSafetyContext,
@@ -89,7 +89,8 @@ public static class Program
         var modelPipeline = new ModelGenerationPipeline(
             outputSafetyContext,
             contractResult.Value,
-            compilationValidator);
+            compilationValidator,
+            assetResolver.ResolveCompilerSourcePath(assetOverrides));
         var cli = new GeneratorCli(
             Console.Out,
             Console.Error,

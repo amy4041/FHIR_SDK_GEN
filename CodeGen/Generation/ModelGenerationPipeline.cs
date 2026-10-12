@@ -19,7 +19,7 @@ namespace MyFhirSdk.CodeGen.Generation;
 
 public sealed class ModelGenerationPipeline
 {
-    public const string DefaultCodeGenVersion = "1.1.0";
+    public const string DefaultCodeGenVersion = "1.2.0";
 
     private readonly DefinitionInventoryPipeline _inventoryPipeline = new();
     private readonly PrimitiveGenerationPolicyLoader _primitivePolicyLoader = new();
@@ -35,11 +35,13 @@ public sealed class ModelGenerationPipeline
     private readonly ModelGenerationManifestRenderer _manifestRenderer = new();
     private readonly GeneratedFileWriter _writer;
     private readonly GenerationCompatibilityService _compatibilityService;
+    private readonly string? _compilerSourcePath;
 
     public ModelGenerationPipeline(
         OutputSafetyContext outputSafetyContext,
         RuntimeContractView runtimeContract,
-        RoslynCompilationValidator compilationValidator)
+        RoslynCompilationValidator compilationValidator,
+        string? compilerSourcePath = null)
     {
         ArgumentNullException.ThrowIfNull(runtimeContract);
         ArgumentNullException.ThrowIfNull(compilationValidator);
@@ -48,6 +50,7 @@ public sealed class ModelGenerationPipeline
             runtimeContract,
             compilationValidator.ReferenceSet);
         _runtimeContract = runtimeContract;
+        _compilerSourcePath = compilerSourcePath;
         _compilationValidator = compilationValidator;
         _primitivePipeline = new(outputSafetyContext, runtimeContract, compilationValidator);
     }
@@ -58,6 +61,20 @@ public sealed class ModelGenerationPipeline
     {
         ArgumentNullException.ThrowIfNull(options);
         cancellationToken.ThrowIfCancellationRequested();
+
+        GeneratedSource compilerSource;
+        try
+        {
+            compilerSource = MyFhirSdk.CodeGen.Assets.ModelCompilerSourceAsset.Read(
+                _compilerSourcePath, _runtimeContract);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or
+            InvalidOperationException or DecoderFallbackException)
+        {
+            return Failure([Diagnostic(exception is FileNotFoundException or DirectoryNotFoundException
+                ? GeneratorDiagnosticCodes.PackagedAssetMissing : GeneratorDiagnosticCodes.PackagedAssetCorrupt,
+                $"Compiler source 'SimpleQuantity.cs': {exception.Message}", "<asset:SimpleQuantity.cs>")]);
+        }
 
         var compatibilityResult = await _compatibilityService.ValidateAsync(
             new GenerationCompatibilityRequest(
@@ -132,7 +149,7 @@ public sealed class ModelGenerationPipeline
             .ToList();
         if (irResult.Value.Declarations.Any(declaration => declaration.Members.Any(member =>
                 member.TypeAlternatives.Any(type => type.ClrType == "MyFhirSdk.Types.SimpleQuantity"))))
-            auxiliary.Add(MyFhirSdk.CodeGen.Assets.ModelCompilerSourceAsset.Read());
+            auxiliary.Add(compilerSource);
         var renderPipeline = new ModelMetadataGenerationPipeline(_runtimeContract,
             _compilationValidator.WithAdditionalSources(auxiliary));
         var renderResult = renderPipeline.Generate(irResult.Value);

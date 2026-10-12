@@ -27,6 +27,18 @@ internal static class GenerationManifestProvenanceRenderer
         writer.WriteString("sha256", provenance.CompilerReferenceSha256);
         writer.WriteEndObject();
         writer.WriteString("targetFramework", provenance.TargetFramework);
+        writer.WriteStartArray("compilerSources");
+        foreach (var source in provenance.CompilerSources ?? [])
+        {
+            writer.WriteStartObject();
+            writer.WriteString("logicalName", source.LogicalName);
+            writer.WriteString("version", source.Version);
+            writer.WriteString("clrType", source.ClrType);
+            writer.WriteString("normalization", source.Normalization);
+            writer.WriteString("sha256", source.Sha256);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
         writer.WriteEndObject();
     }
 }

@@ -1,17 +1,17 @@
 {
-  "schemaVersion": 1,
-  "contractVersion": "runtime-kernel-accessor-v1",
+  "schemaVersion": 2,
+  "contractVersion": "runtime-kernel-v2",
   "targetFramework": "net9.0",
   "runtimeAssembly": {
-    "name": "MyFhirSdk",
+    "name": "MyFhirSdk.Runtime",
     "version": "1.0.0.0",
     "publicKeyToken": "null"
   },
   "compatibility": {
     "schemaVersion": 1,
     "versionPolicy": "exact",
-    "toolVersion": "1.1.0",
-    "codeGenVersion": "1.1.0",
+    "toolVersion": "1.2.0",
+    "codeGenVersion": "1.2.0",
     "fhirPackage": {
       "id": "hl7.fhir.r5.core",
       "version": "5.0.0",
@@ -19,7 +19,7 @@
     },
     "primitivePolicy": {
       "version": "1.1.0",
-      "sha256": "47fb82123bc97fff108230876d33447208f8e6c2e6b0643bdf3a0a0dce05b253"
+      "sha256": "3f3739d24c9cbf149746ce066fedd556c5f076d9e48b9d04d6e28302e638856b"
     },
     "modelPolicies": [
       {
@@ -208,13 +208,22 @@
     }
   ],
   "compilerReference": {
-    "logicalName": "MyFhirSdk/net9.0",
+    "logicalName": "MyFhirSdk.Runtime/net9.0",
     "targetFramework": "net9.0",
     "assembly": {
-      "name": "MyFhirSdk",
+      "name": "MyFhirSdk.Runtime",
       "version": "1.0.0.0",
       "publicKeyToken": "null"
     },
-    "sha256": "9bedf2420e4290afdc0df144d04b77cb8e243bb2380d2ea181a952d5689afa01"
-  }
+    "sha256": "8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71"
+  },
+  "compilerSources": [
+    {
+      "logicalName": "SimpleQuantity.cs",
+      "version": "simple-quantity-source-v1",
+      "clrType": "MyFhirSdk.Types.SimpleQuantity",
+      "normalization": "utf8-lf",
+      "sha256": "321d5cd03d6ec3f2e70a26e608f088563c1f4d7c3ad4e680488d47f0e0affde8"
+    }
+  ]
 }

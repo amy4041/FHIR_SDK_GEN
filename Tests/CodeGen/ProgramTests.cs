@@ -9,6 +9,46 @@ namespace MyFhirSdk.CodeGen.Tests;
 [Collection(ProcessStateCollection.Name)]
 public sealed class ProgramTests
 {
+    [Theory]
+    [InlineData("model")]
+    [InlineData("primitive")]
+    public void Main_SdkReferenceOverride_IsRejectedAndPreservesOutput(string mode)
+    {
+        using var directory = new TestDirectory();
+        var sdk = typeof(MyFhirSdk.Primitives.FhirString).Assembly.Location;
+        var root = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(Path.Combine(
+            AppContext.BaseDirectory, "Policy", "runtime-contract.json")))!;
+        root["runtimeAssembly"]!["name"] = "MyFhirSdk";
+        root["compilerReference"]!["assembly"]!["name"] = "MyFhirSdk";
+        root["compilerReference"]!["logicalName"] = "MyFhirSdk/" + CodeGenTestRuntime.RuntimeContract.TargetFramework;
+        root["compilerReference"]!["sha256"] = Convert.ToHexString(
+            System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(sdk))).ToLowerInvariant();
+        var descriptor = Path.Combine(directory.Path, "legacy-descriptor.json");
+        File.WriteAllText(descriptor, root.ToJsonString());
+        var output = Path.Combine(directory.Path, "output");
+        Directory.CreateDirectory(output);
+        var sentinel = Path.Combine(output, "keep.txt");
+        File.WriteAllText(sentinel, "keep");
+        using var error = new StringWriter();
+        var originalError = Console.Error;
+        try
+        {
+            Console.SetError(error);
+            var exitCode = Program.Main([
+                "--mode", mode, "--input", Path.Combine(AppContext.BaseDirectory,
+                    "Fixtures", "FhirPackages", "R5", "hl7.fhir.r5.core-5.0.0.tgz"),
+                "--output", output, "--policy", GetPrimitivePolicyPath(),
+                "--fhir-version", "5.0.0", "--package-id", "hl7.fhir.r5.core", "--package-version", "5.0.0",
+                "--runtime-contract", descriptor, "--runtime-reference", sdk]);
+            Assert.Equal(2, exitCode);
+            Assert.Contains("runtime-assembly-name", error.ToString());
+            Assert.Contains("compiler-reference-sha256", error.ToString());
+            Assert.Equal("keep", File.ReadAllText(sentinel));
+            Assert.Equal([sentinel], Directory.EnumerateFiles(output, "*", SearchOption.AllDirectories));
+        }
+        finally { Console.SetError(originalError); }
+    }
+
     [Fact]
     public async Task RunAsync_ModelModeInvalidPackage_PrintsDiagnosticAndReturnsInputExitCode()
     {
