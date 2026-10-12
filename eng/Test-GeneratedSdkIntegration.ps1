@@ -50,11 +50,11 @@ try {
         $copied = [Collections.Generic.List[string]]::new()
         foreach ($relative in $sources) {
             $source = Join-Path $root $relative
-            if ((Get-Item -LiteralPath $source).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Source links are unsupported: $relative" }
+            if ((Get-Item -LiteralPath $source -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Source links are unsupported: $relative" }
             $destination = [IO.Path]::GetFullPath($relative, $stage)
             if (-not $destination.StartsWith($stage + [IO.Path]::DirectorySeparatorChar, $comparison)) { throw 'Source path escapes staging.' }
             New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($destination)) -Force | Out-Null
-            Copy-Item -LiteralPath $source -Destination $destination
+            Copy-Item -LiteralPath $source -Destination $destination -Force
             $copied.Add($relative)
         }
         if (Test-Path -LiteralPath "$stage/Generated/R5") { throw 'Committed generated sources leaked into staging.' }

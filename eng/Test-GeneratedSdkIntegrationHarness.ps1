@@ -53,6 +53,37 @@ try {
     } finally {
         if (Test-Path -LiteralPath $probe) { Remove-Item -LiteralPath $probe }
     }
+    $hiddenProbe = Join-Path $root ('Tests/Architecture/.K6HiddenProbe_' + [Guid]::NewGuid().ToString('N') + '.cs')
+    try {
+        [IO.File]::WriteAllText($hiddenProbe, '// Hidden source staging probe', [Text.UTF8Encoding]::new($false))
+        if ($IsWindows) { [IO.File]::SetAttributes($hiddenProbe, [IO.File]::GetAttributes($hiddenProbe) -bor [IO.FileAttributes]::Hidden) }
+        $relativeHidden = [IO.Path]::GetRelativePath($root, $hiddenProbe).Replace('\', '/')
+        $sourceFiles = @(Get-GeneratedSdkSourceFiles $root)
+        $sources = @('.gitattributes', '.config/dotnet-tools.json', $relativeHidden)
+        foreach ($relative in $sources) {
+            if ($sourceFiles -cnotcontains $relative) { throw "Hidden source was not selected: $relative" }
+        }
+        # Execute the production staging loop so removing -Force from metadata reads is caught on Windows too.
+        $tokens = $null; $errors = $null
+        $ast = [Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'Test-GeneratedSdkIntegration.ps1'), [ref]$tokens, [ref]$errors)
+        if ($errors.Count) { throw 'Cannot parse SDK staging script.' }
+        $copyLoop = $ast.Find({
+            param($node)
+            $node -is [Management.Automation.Language.ForEachStatementAst] -and
+            $node.Extent.Text.StartsWith('foreach ($relative in $sources)')
+        }, $true)
+        if ($null -eq $copyLoop) { throw 'Cannot locate production source staging loop.' }
+        $stage = Join-Path $output 'hidden-source-stage'
+        $copied = [Collections.Generic.List[string]]::new()
+        & ([scriptblock]::Create($copyLoop.Extent.Text))
+        foreach ($relative in $sources) {
+            if ((Get-FileHash -LiteralPath (Join-Path $root $relative)).Hash -cne
+                (Get-FileHash -LiteralPath (Join-Path $stage $relative)).Hash) { throw "Hidden source was not copied intact: $relative" }
+        }
+        $checks.Add('hidden-files-and-dot-directories-staged-intact')
+    } finally {
+        if (Test-Path -LiteralPath $hiddenProbe) { Remove-Item -LiteralPath $hiddenProbe -Force }
+    }
     $diagnostics = Join-Path $output 'diagnostic-fixture'
     $preserved = Join-Path $output 'preserved-diagnostics'
     New-Item -ItemType Directory -Path "$diagnostics/test-results", $preserved | Out-Null

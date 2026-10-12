@@ -739,7 +739,8 @@ Exit gate：Phase D D7/D8 gates 在新 topology 下保持綠燈。
 reinstall／重複 full generation、fresh SDK 全 solution 922 passed、0 failed、1 skipped，K3 七個
 重編／部署 gates 全部 passed。既定 external Client smoke 未設定
 MYFHIRSDK_INTEGRATION_BASE_URL，明確記錄 skipped。
-Input harness 共 15 個檢查：working-tree source selection／output exclusions、失敗時保留
+Input harness 共 16 個檢查：working-tree source selection／output exclusions、hidden files／dot
+directories staging、失敗時保留
 process diagnostics／partial TRX、尚未產生 rebuild reports 的早期失敗，以及完整輸入可用、
 拒絕缺檔、多檔、改檔、編碼變動、失敗的 CLI、
 不同 package、不同 canonical reference、primitive tool provenance、partial generation、
@@ -786,6 +787,12 @@ K6 code review 修正（2026-10-12）：source selection 改為 `git ls-files --
 `finally` 共用保存函式保留所有上述診斷後才清理暫存目錄。新增三個 harness cases，
 修正後驗證證據位於 `artifacts/kernel-k6/review-fixes/harness/evidence.json` 與
 `review-fixes/rebuild/evidence.json`、`test-results/*.trx` 及各部署診斷 JSON。
+
+K6 Ubuntu CI 隱藏檔修正：source metadata 的 `Get-Item` 與複製的 `Copy-Item` 加上 `-Force`，
+處理 `.gitattributes` 等 dotfiles。Harness 新增直接執行 production staging loop 的案例，驗證
+`.gitattributes`、`.config/dotnet-tools.json` 與 untracked hidden source 的內容 hashes；Windows
+fixture 明確設定 Hidden attribute，讓本機也能偵測漏加 `-Force`。本機證據位於
+`artifacts/kernel-k6/hidden-source-fix/harness/evidence.json`；Ubuntu 結果須重新 push 驗證。
 
 ### K7：文件、rollback 與 handoff
 
