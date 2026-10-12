@@ -2,7 +2,7 @@
 
 Version 0.8
 
-- 狀態：Accepted（2026-10-07）；2026-10-08 全面重編 amendment 已核准；K2／K3 已由使用者確認合併 main 並通過 CI；K4 reference 遷移已實作，本機證據見 Guide K4，K4 CI 待驗收
+- 狀態：Accepted（2026-10-07）；2026-10-08 全面重編 amendment 已核准；K2／K3 已由使用者確認合併 main 並通過 CI；K4 PR 已由使用者確認合併 main；K5 本機 behavior regression 通過，K5 PR／CI 與 K6–K7 待驗收
 - 核准人：本專案使用者（本對話），兼任 Architecture、Runtime、CodeGen、Compatibility、Package／Release
 - 核准基準：`5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR 與 acceptance decisions；原始核准見 §6，K1 validation amendment 見 §8，全面重編 amendment 見 §9
 - 決策 owner：Architecture + Runtime maintainers
@@ -447,3 +447,19 @@ name/version/public key token 與 canonical reference SHA-256，拒絕自洽但�
 的外部 descriptor/reference 組合。Compiler source inventory 採嚴格 UTF-8 無 BOM
 解碼，與 CLI 一致；歷史 schema 1 package 的 text normalization 不變。
 這些修正落實既有 Runtime-only 契約，不改 contract/schema/tool 版本或生成 C#。
+
+
+## 11. K5 behavior migration 實作紀錄（2026-10-12）
+
+新增 32 個跨 assembly 行為／整合 cases：20 種 primitive、158 個 concrete R5 resource
+factory、Runtime bootstrap 與 SDK datatype JSON、raw/metadata alignment、open type、
+明確 composition、真實 Client engines + 受控 HTTP handler，以及 TW Core profile/package。
+既有 codec/format/cast/choice tests 繼續驗證原契約；decimal/integer64 Literal 優先序不改變。
+
+新測試發現 primitive array 的 null/null 位置被 parser 略過，造成後續元素索引前移及
+validation 漏報。修正為保留 slot；validator null-item 規則不變，依原始索引回報 cardinality。
+既有 public API、FHIR JSON fixtures、generated sources、descriptor/manifests 與 ownership 不改變。
+
+完整本機 regression 922 passed、0 failed、1 skipped，consumer 重編／部署七個 gates 通過。
+外部 Client smoke 因未設定 MYFHIRSDK_INTEGRATION_BASE_URL 明確 skipped；不以受控 handler
+測試替代外部 server evidence。證據與測試對照見 Guide K5；K5 PR／CI 與 K6–K7 待完成。

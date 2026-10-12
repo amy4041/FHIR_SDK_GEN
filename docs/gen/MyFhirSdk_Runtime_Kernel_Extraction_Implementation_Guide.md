@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime kernel extraction 實作指引
 
-Version 1.0
+Version 1.1
 
-- 狀態：K2／K3 已由使用者確認合併 main 並通過 CI；K4 reference／assets 遷移已實作，本機驗證結果見 K4 節；K4 PR／CI 與 K5–K7 待完成
+- 狀態：K2／K3 已確認合併 main 並通過 CI；使用者已確認 K4 PR 合併 main；K5 本機實作／驗證已完成，K5 PR／CI 與 K6–K7 待完成
 - 適用範圍：第一階段 Runtime kernel physical extraction
 - Baseline：post-D Tool/CodeGen `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 決策文件：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
@@ -48,7 +48,7 @@ migration 文件驗證；不提供 forwarders 或舊 binary binding，不宣稱 
 
 2026-10-07 使用者以 Architecture、Runtime、CodeGen、Compatibility、Package／Release
 兼任角色核准 ADR 與 acceptance decisions。ADR acceptance 的 K1 entry gate 已完成；
-K1／K2／K3 實作與驗證紀錄見下文；使用者已確認 K2／K3 CI 通過並合併 main。K4 本機結果另行記錄，K4 CI 與 K5–K7 尚未完成。
+K1／K2／K3 實作與驗證紀錄見下文；使用者已確認 K2／K3 CI 通過並合併 main。K4 PR 已由使用者確認合併 main；K5 本機結果另行記錄，K5 PR／CI 與 K6–K7 尚未完成。
 
 - Phase D D0-D8 已合併且完整 CI 綠燈。
 - 工作分枝只包含本 migration 的變更；任何既有未提交變更已盤點。
@@ -634,6 +634,68 @@ MYFHIRSDK_TEST_PWSH 為執行檔的絕對路徑。修正後 K4 remote CI 仍待 
 
 Exit gate：現有 tests 加 migration-specific tests 全部通過，public member shape與FHIR JSON
 fixtures沒有未核准 drift。
+
+#### K5 本機實作與驗證證據（2026-10-12）
+
+K4 PR 已由使用者確認合併 main，K5 在 feature/runtime-kernel-k5 開發。
+本次新增 32 個 migration test cases（Architecture 29、Client 2、TW Core 1），
+沿用既有七個 test projects，不新增 project、Runtime ownership 或 public API。
+
+| K5 行為 | 測試／覆蓋 |
+| --- | --- |
+| Primitive construction/value/codec/format | KernelBehaviorMigrationTests：全部 20 種 primitive 經 SDK codec 建構、Runtime public accessor 讀寫／清空、metadata 與 extension JSON 往返；既有 PrimitiveRuntimeContractTests／PrimitiveAccessorIntegrationTests 覆蓋格式及 cast failures |
+| Literal semantics | decimal/integer64 原本 read-only Literal 的 codec 優先序維持不變；accessor 清空 typed value 不清除 Literal，metadata-only 用沒有 Literal 的 wrapper 驗證 |
+| Primitive raw/metadata alignment | KernelPrimitiveAlignmentMigrationTests：null/null 空洞、metadata-only 中間／尾端、長度不一致、修改後再次解析及原始索引的 validation path |
+| Resource factory | DefaultFactoryRoundTripsEveryConcreteR5ResourceAcrossKernelBase：158 個 SDK concrete R5 resources 經公開 default parser/serializer，繼承 Runtime Resource，resourceType/id 保持 |
+| Bootstrap / declared datatypes | Runtime Resource/DomainResource、Meta/Narrative/Extension 與 SDK Coding、contained resource、nested/modifier extensions 一起 round-trip；timestamp 沿用既有 O 格式 |
+| Open type / choice | Task.input 的 string/boolean/Quantity 與 default validation；既有 ChoiceElementRuleTests 覆蓋 Patient/Practitioner/Claim 的缺漏／衝突 |
+| Default engines / no discovery | 所有新整合路徑使用公開 default parser/serializer/validator；外部 resource 不會自動被 parser factory 註冊，外部有值 datatype 無 extension mapping 時拒絕；既有 composition/dependency gates 保留 |
+| Client | KernelClientMigrationTests：受控 HTTP handler + 真實 parser/serializer/default validator，read/create/update/search、Runtime accessor 修改及 before-send id/date validation；沒有使用 fake parser/serializer/validator |
+| TW Core | KernelTwCoreMigrationTests：序列化再解析後 profile/package/identifier rules 正常，清空 identifier value 回報原 path/rule/source/package/profile |
+
+**修正：primitive array 的 null/null slot 不再被 parser 刪除。**
+原本 ReadPrimitiveListValue 只加入非 null primitive，輸入
+given=["A",null,null,"D"] 與對應 metadata 時會丟失第三個位置、讓 D 前移。
+現在每個位置均加入 list，保留後续值與 metadata 的索引。
+Validator 的 null-item cardinality 規則維持原樣，能在 Patient.name[0].given[2]
+回報問題，不再因 parser 丟棄位置而漏報。非 primitive array 不在此修改範圍。
+
+本機結果：
+
+- Focused migration tests：Architecture 29、Client 2、TW Core 1 全部 passed。
+- 完整 solution regression：922 passed、0 failed、1 skipped。
+- consumer inventory、cleanRegression、rebuiltConsumers、deployment、missingRuntime、
+  splitInventory、historicalBaseline 七個 gates 全部 passed。
+- 證據：artifacts/kernel-k5/final-rebuild/evidence.json 與 test-results/*.trx；
+  focused results 位於 artifacts/kernel-k5/focused-*。
+- 既有 public API snapshots、FHIR JSON fixtures、生成 C#、兩份 manifests、
+  runtime-kernel-v2、Tool/CodeGen 1.2.0 與 canonical reference/source hashes 不變。
+- 唯一 skipped 為外部 Client.IntegrationSmoke.PatientCrudSearchSmokeFlow，未設定
+  MYFHIRSDK_INTEGRATION_BASE_URL。受控 HTTP handler 測試不是外部 FHIR server smoke。
+  K5 PR／remote CI、外部 server smoke 與 K6 cross-platform/package gates 尚待驗收。
+
+重跑（repo root、PowerShell 7.2+、fresh artifacts output directory）：
+
+```powershell
+pwsh -File eng/Test-KernelConsumerRebuild.ps1 -OutputDirectory artifacts/k5-review/rebuild
+```
+
+本機若使用 portable pwsh，沿用 K4 的 MYFHIRSDK_TEST_PWSH 設定，以執行 CodeGen package
+inventory tests。CI 既有 Windows/Ubuntu rebuild runner 會自動執行這些新增 cases；
+本次不新增 workflow 或公開 release 授權。
+
+K5 code review 補強（2026-10-12）：
+
+- 修正 Client smoke 的 P3 測試缺口：依 HTTP method 選出 POST/PUT，明確要求兩筆
+  write requests 的 body 非空，再驗證 value、metadata 與 media type；不再以 Body != null
+  過濾而跳過必要斷言。
+- 額外驗證 Create/Update 回傳 Active=true 與 active-id metadata。
+- Client suite 重跑：44 passed、0 failed、1 個既定 external smoke skipped；
+  證據 artifacts/kernel-k5/review-fixes/client/*.trx。
+- Artifact-only mutation 驗證：POST 或 PUT recorded body 為 null、PUT response 的值為
+  false、或 metadata id 錯誤，均被新增斷言拒絕。Mutation 未修改正式 SDK/tests。
+- 本次只有 Client test assertions 與此證據更新；上列 922-pass 完整 regression 為
+  補強前的 K5 證據，本次未重跑整個 solution，production parser/API/fixtures 沒有再修改。
 
 ### K6：package、CI 與 cross-platform gates
 
