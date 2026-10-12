@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime kernel extraction 實作指引
 
-Version 1.1
+Version 1.2
 
-- 狀態：K2／K3 已確認合併 main 並通過 CI；使用者已確認 K4 PR 合併 main；K5 本機實作／驗證已完成，K5 PR／CI 與 K6–K7 待完成
+- 狀態：K2–K5 已由使用者確認合併 main，K5 CI 通過；K6 本機實作／驗證見下方紀錄，K6 remote CI 與 K7 待完成
 - 適用範圍：第一階段 Runtime kernel physical extraction
 - Baseline：post-D Tool/CodeGen `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 決策文件：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
@@ -713,6 +713,86 @@ K5 code review 補強（2026-10-12）：
    regression；models CLI success 與 SDK composition 語意編譯結果分別記錄，不只驗證 committed sources。
 
 Exit gate：Phase D D7/D8 gates 在新 topology 下保持綠燈。
+
+#### K6 實作與本機證據（2026-10-12）
+
+使用者確認 K5 已合併 main 並通過 CI；K6 在 feature/runtime-kernel-k6 開發。
+
+- `Invoke-CodeGenToolSmoke.ps1 -ExportGeneratedSources` 匯出安裝後工具的完整生成結果，
+  再次核對 export 與已驗證的 model／primitive hashes。預設不 export，保留歷史 runner 行為。
+- `Test-GeneratedSdkIntegration.ps1` 驗證 smoke status、854 個 artifacts、852 個 C#、兩份
+  manifests 與 package／FHIR／canonical reference provenance。在 checkout 外的暫存 source
+  tree 複製 tracked 與未被忽略的 untracked SDK source，排除 committed Generated/R5、bin/obj、artifacts 與 Git metadata，
+  只加入 tool export。全新 CLI home、NuGet packages／HTTP／plugins／scratch cache 均位於
+  SDK source tree 外，避免 SDK compile glob 納入 cache 內容。SDK 子程序亦從 staged source
+  directory 執行，使用該目錄的 global.json，不沿用原 checkout 的 working directory。
+- 復用 K3 strict TRX 與七個 consumer/deployment gates，實際編譯 fresh SDK，重編相依 DLL、
+  執行隔離部署與 missing-Runtime 驗證；生成檔與 canonical reference 在 build 後仍須維持原 hash。
+  成功／失敗都保留 evidence、consumer inventory、consumer／deployment／missing-Runtime
+  執行的 stdout／stderr JSON、build log 與已產生的 TRX，清除前先核對暫存目錄絕對路徑。
+- CI Windows／Ubuntu 的 canonical smoke 均 export，接著執行 fresh SDK gate 與 input harness。
+  Cross-platform job 核對兩平台 models CLI／SDK composition 都 passed、相同 package/reference
+  provenance，以及 SDK 使用的 hashes 等於各自 smoke hashes，再比較兩平台生成結果。
+  三份 drift reports 與各平台 JSON／TRX 上傳為 artifacts；harness mutation copies 不上傳。
+
+本機 Windows 已完成 canonical tool pack／package inventory、clean install／upgrade／uninstall／
+reinstall／重複 full generation、fresh SDK 全 solution 922 passed、0 failed、1 skipped，K3 七個
+重編／部署 gates 全部 passed。既定 external Client smoke 未設定
+MYFHIRSDK_INTEGRATION_BASE_URL，明確記錄 skipped。
+Input harness 共 16 個檢查：working-tree source selection／output exclusions、hidden files／dot
+directories staging、失敗時保留
+process diagnostics／partial TRX、尚未產生 rebuild reports 的早期失敗，以及完整輸入可用、
+拒絕缺檔、多檔、改檔、編碼變動、失敗的 CLI、
+不同 package、不同 canonical reference、primitive tool provenance、partial generation、
+不同 FHIR package 與 primitive policy。實際 CI comparison step 另以同一平台的本機 fixture
+驗證 6 個正／負向案例，涵蓋缺少 SDK gate、SDK composition 失敗、package 不符、缺少 test
+project 與 SDK 生成檔 hashes 不符；這些 fixture checks 不算 Windows／Ubuntu 執行結果。
+
+本機 clean upgrade 使用保存的 1.1.0 package → 1.2.0；CI 維持既有 immutable 1.0.0 baseline
+→ canonical 1.2.0 的升級路徑。Ubuntu／跨平台比較與該 CI upgrade 路徑待 push 後執行。
+本次不改 production SDK／Runtime／CodeGen、生成 C#、manifests、契約版本或歷史 K0 snapshots。
+
+重現方式（repo root、PowerShell 7.2+、已 pack canonical tool，輸出目錄須全新）：
+
+```powershell
+$smoke = @{
+    PackagePath = 'artifacts/kernel-k6/package/MyFhirSdk.CodeGen.Tool.1.2.0.nupkg'
+    ToolManifestPath = '.config/dotnet-tools.json'
+    FhirPackagePath = 'Tests/CodeGen/Fixtures/FhirPackages/R5/hl7.fhir.r5.core-5.0.0.tgz'
+    PrimitiveDefinitionsPath = 'Tests/CodeGen/Fixtures/StructureDefinitions/Primitives/R5'
+    PrimitivePolicyPath = 'CodeGen/Policy/primitive-generation-policy.json'
+    CommittedGeneratedRoot = 'Generated/R5'
+    OutputDirectory = 'artifacts/k6-reproduce/smoke'
+    ExportGeneratedSources = $true
+}
+./eng/Invoke-CodeGenToolSmoke.ps1 @smoke
+$integration = @{
+    SmokeDirectory = $smoke.OutputDirectory
+    PackagePath = $smoke.PackagePath
+    RuntimeReferenceAssetPath = 'CodeGen/bin/Release/net9.0/Assets/RuntimeReferences/net9.0/MyFhirSdk.Runtime.dll'
+    OutputDirectory = 'artifacts/k6-reproduce/generated-sdk'
+}
+./eng/Test-GeneratedSdkIntegration.ps1 @integration
+$integration.OutputDirectory = 'artifacts/k6-reproduce/input-harness'
+./eng/Test-GeneratedSdkIntegrationHarness.ps1 @integration
+```
+
+本機 portable pwsh 仍須設定 MYFHIRSDK_TEST_PWSH；fresh SDK restore 需要 NuGet network。
+最終證據位於 `artifacts/kernel-k6/final-smoke/`、`final-package-inventory.txt`、
+`final-isolated-sdk/evidence.json` 與 `test-results/*.trx`、`final-input-harness-v2/evidence.json`，
+以及 `cross-evidence-probes.json`。本機資料不代表 remote CI 驗收完成。
+
+K6 code review 修正（2026-10-12）：source selection 改為 `git ls-files --cached --others
+--exclude-standard --deduplicate -z`，納入新檔案並保留檔名邊界；working tree 已刪除的檔案不複製。
+`finally` 共用保存函式保留所有上述診斷後才清理暫存目錄。新增三個 harness cases，
+修正後驗證證據位於 `artifacts/kernel-k6/review-fixes/harness/evidence.json` 與
+`review-fixes/rebuild/evidence.json`、`test-results/*.trx` 及各部署診斷 JSON。
+
+K6 Ubuntu CI 隱藏檔修正：source metadata 的 `Get-Item` 與複製的 `Copy-Item` 加上 `-Force`，
+處理 `.gitattributes` 等 dotfiles。Harness 新增直接執行 production staging loop 的案例，驗證
+`.gitattributes`、`.config/dotnet-tools.json` 與 untracked hidden source 的內容 hashes；Windows
+fixture 明確設定 Hidden attribute，讓本機也能偵測漏加 `-Force`。本機證據位於
+`artifacts/kernel-k6/hidden-source-fix/harness/evidence.json`；Ubuntu 結果須重新 push 驗證。
 
 ### K7：文件、rollback 與 handoff
 

@@ -274,6 +274,13 @@ pwsh ./eng/Invoke-CodeGenToolSmoke.ps1 <required arguments>
 CI 在 Windows/Linux 使用同一 canonical Runtime asset，執行 build、test、pack、isolated tool
 smoke、upgrade contract 與 cross-platform generated hash gate。
 
+K6 canonical smoke 使用 `-ExportGeneratedSources`，將這次 installed tool 的完整輸出保留在
+smoke output 的 `generated/Generated/R5`。`eng/Test-GeneratedSdkIntegration.ps1` 接收
+`-SmokeDirectory`、`-PackagePath`、`-RuntimeReferenceAssetPath`，在 checkout 外的全新 SDK
+source tree／NuGet cache 中，以這份輸出執行完整 SDK regression、consumer 重編與隔離部署。
+證據分別記錄 models CLI、SDK composition 與 external Client smoke；Windows／Ubuntu
+都通過且 provenance／生成檔 hashes 相同，才通過 cross-platform gate。
+
 此 package 僅供 repository-local development。公開發布前必須另外核准 license、package
 license metadata、signing、SBOM、artifact provenance、feed credentials 與 release promotion；
 任何缺項都必須阻擋公開 NuGet push。

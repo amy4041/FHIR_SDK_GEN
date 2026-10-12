@@ -1,8 +1,8 @@
 # ADR：MyFhirSdk Runtime kernel physical extraction
 
-Version 0.8
+Version 0.9
 
-- 狀態：Accepted（2026-10-07）；2026-10-08 全面重編 amendment 已核准；K2／K3 已由使用者確認合併 main 並通過 CI；K4 PR 已由使用者確認合併 main；K5 本機 behavior regression 通過，K5 PR／CI 與 K6–K7 待驗收
+- 狀態：Accepted（2026-10-07）；2026-10-08 全面重編 amendment 已核准；K2–K5 已由使用者確認合併 main，K5 CI 通過；K6 本機實作／驗證見 Guide，K6 remote CI 與 K7 待驗收
 - 核准人：本專案使用者（本對話），兼任 Architecture、Runtime、CodeGen、Compatibility、Package／Release
 - 核准基準：`5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR 與 acceptance decisions；原始核准見 §6，K1 validation amendment 見 §8，全面重編 amendment 見 §9
 - 決策 owner：Architecture + Runtime maintainers
@@ -462,4 +462,18 @@ validation 漏報。修正為保留 slot；validator null-item 規則不變，�
 
 完整本機 regression 922 passed、0 failed、1 skipped，consumer 重編／部署七個 gates 通過。
 外部 Client smoke 因未設定 MYFHIRSDK_INTEGRATION_BASE_URL 明確 skipped；不以受控 handler
-測試替代外部 server evidence。證據與測試對照見 Guide K5；K5 PR／CI 與 K6–K7 待完成。
+測試替代外部 server evidence。證據與測試對照見 Guide K5。使用者已確認 K5 合併 main 並通過 CI。
+
+## 12. K6 package／fresh SDK 驗證實作（2026-10-12）
+
+Windows／Ubuntu 沿用同一 canonical Runtime compiler reference 與同一 tool package。
+Clean tool smoke 可匯出本次安裝工具實際生成且已通過完整 inventory/hash 比對的 sources；
+SDK gate 在 checkout 外的獨立暫存 source tree 中，只加入這份生成結果，使用全新 NuGet
+packages／HTTP／plugins cache 進行完整 solution regression、相依 DLL 重編與隔離部署。
+不複製 checkout 的 Generated/R5、bin/obj 或 Git metadata。
+
+Models CLI 與 SDK composition 分別記錄結果；cross-platform gate 必須核對兩平台的成功證據、
+package／FHIR／policy／canonical reference provenance，以及 SDK 實際使用的完整生成檔 hash。
+不以不同平台重建的 implementation DLL 原始 bytes 相等作為驗收條件。
+契約、公開 API、generated C#、tool version 與 K0 歷史 baseline 不變；本機 Windows 結果見
+Guide K6，Ubuntu／remote CI 須由本次分支 push 後驗證，外部 server smoke 仍需設定 URL。
