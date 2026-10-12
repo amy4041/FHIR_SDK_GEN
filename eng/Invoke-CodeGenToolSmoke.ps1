@@ -9,7 +9,8 @@ param(
     [Parameter(Mandatory)] [string] $PrimitivePolicyPath,
     [Parameter(Mandatory)] [string] $CommittedGeneratedRoot,
     [Parameter(Mandatory)] [string] $OutputDirectory,
-    [string] $PreviousPackagePath
+    [string] $PreviousPackagePath,
+    [switch] $ExportGeneratedSources
 )
 
 Set-StrictMode -Version Latest
@@ -597,6 +598,15 @@ try {
         throw 'Generated model manifest provenance does not match the installed tool identity.'
     }
 
+    if ($ExportGeneratedSources) {
+        $exportRoot = Join-Path $output 'generated/Generated/R5'
+        New-Item -ItemType Directory -Path $exportRoot -Force | Out-Null
+        Get-ChildItem -LiteralPath $firstModelRoot | Copy-Item -Destination $exportRoot -Recurse
+        Copy-Item -LiteralPath $primitiveFirst -Destination (Join-Path $exportRoot 'Primitives') -Recurse
+        Assert-HashMapsEqual $firstModel (Get-FileHashMap $exportRoot -ExcludePrimitives) 'Exported model sources'
+        Assert-HashMapsEqual $firstPrimitives (Get-FileHashMap (Join-Path $exportRoot 'Primitives')) 'Exported primitive sources'
+    }
+
     $summary = [ordered]@{
         schemaVersion = 1
         status = 'passed'
@@ -626,6 +636,7 @@ try {
         primitiveArtifactCount = $firstPrimitives.Count
         primitiveInputEquivalence = 'tgz-directory-byte-identical'
         packageSha256 = (Get-FileHash -LiteralPath $package -Algorithm SHA256).Hash.ToLowerInvariant()
+        exportedGeneratedRoot = if ($ExportGeneratedSources) { 'generated/Generated/R5' } else { $null }
     }
     Write-Utf8NoBomLf (
         Join-Path $output 'smoke-summary.json') (($summary | ConvertTo-Json -Depth 4) + "`n")

@@ -1,11 +1,11 @@
 # Runtime kernel ADR acceptance decision 核准紀錄
 
-Version 0.7
+Version 0.8
 
 - 狀態：Accepted（2026-10-07）；設計 gates 已核准，允許開始 K1；實作 gates 另行驗收。
 - 日期：2026-10-06。
-- 更新日期：2026-10-08，新增全面重編／不提供 forwarders 的 superseding amendment（第 11 節）。
-- 對應文件：[ADR v0.8](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v1.1](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
+- 更新日期：2026-10-12，新增 K6 fresh SDK／跨平台驗證紀錄；2026-10-08 全面重編／不提供 forwarders 的 superseding amendment 保留於第 11 節。
+- 對應文件：[ADR v0.9](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v1.2](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
 - 範圍：設計決策、驗收方法、K1 validation 與 K3 全面重編 amendments，不在本文件執行 K1 或搬移 production declarations。
 
 已確認採最小 public primitive accessor，並保留 SDK-owned registry 的 internal partial composition。
@@ -361,4 +361,20 @@ cardinality 規則、既有 public member shape 與 JSON fixtures。
 
 完整本機 regression 922 passed、0 failed、1 skipped，七個重編／部署 gates 通過；
 詳細測試對照與 evidence 見 Guide K5。未設定外部 FHIR server 的 Client smoke 明確 skipped，
-K5 PR／remote CI、外部 server smoke 與 K6–K7 尚待驗收，不宣稱跨平台 gate 已完成。
+使用者已確認 K5 PR 合併 main 並通過 CI；外部 server smoke 與 K6–K7 另行驗收。
+
+## 14. K6 fresh SDK／跨平台驗收證據（2026-10-12）
+
+K6 gate 必須以本次 clean installed tool 的完整生成輸出重建 SDK；committed generated
+sources 或既有 SDK bin/obj 不得代替。生成輸出必須包含 831 model/composition sources、
+21 primitive sources 與兩份 manifests，且 export、SDK staging、build 前後 hash inventory
+一致。缺檔、多檔、內容或 tool／FHIR／canonical reference provenance 不符必須直接失敗。
+
+每個平台分別執行嚴格七個 test projects 的 TRX 驗證、consumer／相依 DLL 重編、含 SDK／Runtime
+的部署與 missing-Runtime 負面驗證。Models CLI 與 SDK composition 結果各自記錄，兩平台均
+passed 且同一 canonical package/reference 與生成輸出一致，才能通過 cross-platform gate。
+不同平台重建的 implementation DLL bytes 不列入直接比較。
+
+本機 Windows regression／harness 結果與可重現命令見 Guide K6；本節記錄實作方式，
+不宣稱尚未執行的 Ubuntu／remote CI 已通過，也不把未設定 URL 的 external Client smoke
+算成已執行。K0 baseline、runtime-kernel-v2 與 tool 1.2.0 維持原核准契約。

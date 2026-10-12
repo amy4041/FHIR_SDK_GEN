@@ -322,14 +322,38 @@ jobs:
             -PrimitiveDefinitionsPath Tests/CodeGen/Fixtures/StructureDefinitions/Primitives/R5 `
             -PrimitivePolicyPath CodeGen/Policy/primitive-generation-policy.json `
             -CommittedGeneratedRoot Generated/R5 `
-            -OutputDirectory artifacts/d7/canonical-smoke
+            -OutputDirectory artifacts/d7/canonical-smoke `
+            -ExportGeneratedSources
+
+      - name: Rebuild and run SDK from installed tool generated sources
+        shell: pwsh
+        run: |
+          $packages = @(Get-ChildItem artifacts/canonical-package-download -Filter *.nupkg -File)
+          if ($packages.Count -ne 1) { throw 'Expected one canonical tool package.' }
+          ./eng/Test-GeneratedSdkIntegration.ps1 `
+            -SmokeDirectory artifacts/d7/canonical-smoke `
+            -PackagePath $packages[0].FullName `
+            -RuntimeReferenceAssetPath '${{ steps.contract.outputs.runtime-reference }}' `
+            -OutputDirectory artifacts/d7/generated-sdk
+
+      - name: Verify K6 generated input rejection cases
+        shell: pwsh
+        run: |
+          $package = @(Get-ChildItem artifacts/canonical-package-download -Filter *.nupkg -File)[0]
+          ./eng/Test-GeneratedSdkIntegrationHarness.ps1 `
+            -SmokeDirectory artifacts/d7/canonical-smoke `
+            -PackagePath $package.FullName `
+            -RuntimeReferenceAssetPath '${{ steps.contract.outputs.runtime-reference }}' `
+            -OutputDirectory artifacts/d7/generated-sdk-harness
 
       - name: Upload D7 evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: d7-tool-${{ matrix.id }}
-          path: artifacts/d7
+          path: |
+            artifacts/d7
+            !artifacts/d7/generated-sdk-harness/*/**
           if-no-files-found: warn
 
   cross-platform-drift:
@@ -369,12 +393,45 @@ jobs:
               throw "Canonical smoke input mismatch: $field"
             }
           }
+          $windowsSdk = Get-Content artifacts/cross/windows/generated-sdk/evidence.json -Raw | ConvertFrom-Json
+          $linuxSdk = Get-Content artifacts/cross/linux/generated-sdk/evidence.json -Raw | ConvertFrom-Json
+          foreach ($pair in @(@($windowsSdk, $windows), @($linuxSdk, $linux))) {
+            $sdk = $pair[0]; $smoke = $pair[1]
+            if ($sdk.status -cne 'passed' -or $sdk.modelsCli -cne 'passed' -or $sdk.sdkComposition -cne 'passed' -or
+                $sdk.generatedSourceCount -ne 852 -or $sdk.regressionProjects.Count -ne 7 -or
+                $sdk.regressionCounts.failed -ne 0 -or $sdk.regressionCounts.passed -le 0 -or
+                @($sdk.gates.PSObject.Properties | Where-Object { $_.Value -cne 'passed' }).Count) {
+              throw 'Fresh generated SDK build/runtime evidence is incomplete.'
+            }
+            foreach ($gate in @('installedToolInputs', 'cleanSourceStage', 'sdkCompositionRegression', 'generatedInputsUnchanged')) {
+              if ($sdk.gates.$gate -cne 'passed') { throw "Fresh SDK gate missing or failed: $gate" }
+            }
+            foreach ($field in @('packageSha256', 'fhirPackageSha256', 'primitivePolicySha256', 'packageId', 'toolVersion', 'targetFramework')) {
+              if ($sdk.$field -cne $smoke.$field) { throw "SDK/tool smoke provenance mismatch: $field" }
+            }
+          }
+          if ([string]::IsNullOrWhiteSpace($windowsSdk.compilerReferenceSha256) -or
+              $windowsSdk.compilerReferenceSha256 -cne $linuxSdk.compilerReferenceSha256) { throw 'SDK canonical compiler reference mismatch.' }
+          foreach ($hostName in @('windows', 'linux')) {
+            $generated = Get-Content "artifacts/cross/$hostName/generated-sdk/artifact-hashes.txt" -Raw
+            $smokeHashes = Get-Content "artifacts/cross/$hostName/canonical-smoke/artifact-hashes.txt" -Raw
+            if ($generated -cne $smokeHashes) { throw "SDK did not consume tool smoke sources: $hostName" }
+          }
           ./eng/Compare-CodeGenToolArtifacts.ps1 `
             -WindowsPackageInventory artifacts/cross/windows/package-inventory.txt `
             -LinuxPackageInventory artifacts/cross/linux/package-inventory.txt `
             -WindowsArtifactHashes artifacts/cross/windows/canonical-smoke/artifact-hashes.txt `
             -LinuxArtifactHashes artifacts/cross/linux/canonical-smoke/artifact-hashes.txt `
             -OutputPath artifacts/cross/canonical-cross-platform-drift.json
+          . ./eng/KernelMigration.Common.ps1
+          Write-KernelJson artifacts/cross/generated-sdk-cross-platform-drift.json ([ordered]@{
+            schemaVersion = 1; status = 'passed'
+            packageSha256 = $windowsSdk.packageSha256
+            compilerReferenceSha256 = $windowsSdk.compilerReferenceSha256
+            generatedSourceCount = 852
+            windows = [ordered]@{ modelsCli = $windowsSdk.modelsCli; sdkComposition = $windowsSdk.sdkComposition; regressionCounts = $windowsSdk.regressionCounts; externalClientSmoke = $windowsSdk.externalClientSmoke }
+            linux = [ordered]@{ modelsCli = $linuxSdk.modelsCli; sdkComposition = $linuxSdk.sdkComposition; regressionCounts = $linuxSdk.regressionCounts; externalClientSmoke = $linuxSdk.externalClientSmoke }
+          })
 
       - name: Upload cross-platform report
         uses: actions/upload-artifact@v4
