@@ -13,8 +13,9 @@ Version 0.1 — 2026-10-13
 | [Implementation Guide](MyFhirSdk_FHIR_R4_Support_Implementation_Guide.md) | V0–V7 工作包、前置條件、交付內容與開發順序 |
 | [Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md) | 各階段的驗收證據、正向／負面案例與完成定義 |
 
-文件狀態為開發規劃；尚未新增 R4 production 支援，也沒有已通過的 R4 驗收證據。
-使用者已要求依討論準備文件；具體 SPI、namespace、專案配置及版本遷移細節仍由 V0／V1 收斂。
+V0 已建立 baseline runner、R4 input lock 與 [設計決策](V0_Decisions.md)。
+執行結果及 G0 狀態見 [V0 baseline](baselines/v0/README.md)；尚未新增 R4 production 支援。
+namespace／Models assembly 方向由 V0 固定；Runtime 相容性與 SPI signature 仍由 V1／V2 驗證。
 
 ## 目前基準與目標
 

@@ -1,0 +1,1033 @@
+ASSEMBLY MyFhirSdk, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+ASSEMBLY MyFhirSdk.Runtime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+IDENTITY [MyFhirSdk.Runtime] = MyFhirSdk.Runtime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+IDENTITY [MyFhirSdk] = MyFhirSdk, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+IDENTITY [System.Net.Http] = System.Net.Http, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+IDENTITY [System.Net.Primitives] = System.Net.Primitives, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+IDENTITY [System.Private.CoreLib] = System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e
+IDENTITY [System.Private.Uri] = System.Private.Uri, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement Public, Abstract, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneType Public, Abstract, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.Base Public, Abstract, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.FhirObject
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType Public, Abstract, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource Public, Abstract, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Resource
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element Public, Abstract, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Base
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.Extension Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.FhirObject Public, Abstract, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue Public, ClassSemanticsMask, Abstract, BeforeFieldInit BASE -
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor Public, ClassSemanticsMask, Abstract, BeforeFieldInit BASE -
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.Meta Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.Narrative Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<!0> Public, Abstract, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk.Runtime]MyFhirSdk.Core.Resource Public, Abstract, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Base
+TYPE [MyFhirSdk]MyFhirSdk.Client.Abstractions.IFhirClient Public, ClassSemanticsMask, Abstract, BeforeFieldInit BASE -
+TYPE [MyFhirSdk]MyFhirSdk.Client.Abstractions.IFhirHttpSender Public, ClassSemanticsMask, Abstract, BeforeFieldInit BASE -
+TYPE [MyFhirSdk]MyFhirSdk.Client.Abstractions.IFhirRequestBuilder Public, ClassSemanticsMask, Abstract, BeforeFieldInit BASE -
+TYPE [MyFhirSdk]MyFhirSdk.Client.Abstractions.IFhirResponseHandler Public, ClassSemanticsMask, Abstract, BeforeFieldInit BASE -
+TYPE [MyFhirSdk]MyFhirSdk.Client.Authentication.BearerTokenAuthProvider Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Authentication.IAuthProvider Public, ClassSemanticsMask, Abstract, BeforeFieldInit BASE -
+TYPE [MyFhirSdk]MyFhirSdk.Client.Authentication.NoAuthProvider Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Configuration.FhirClientOptions Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Exceptions.FhirClientException Public, BeforeFieldInit BASE [MyFhirSdk]MyFhirSdk.Core.FhirSdkException
+TYPE [MyFhirSdk]MyFhirSdk.Client.Exceptions.FhirHttpException Public, Sealed, BeforeFieldInit BASE [MyFhirSdk]MyFhirSdk.Client.Exceptions.FhirClientException
+TYPE [MyFhirSdk]MyFhirSdk.Client.Exceptions.FhirInvalidResponseException Public, Sealed, BeforeFieldInit BASE [MyFhirSdk]MyFhirSdk.Client.Exceptions.FhirClientException
+TYPE [MyFhirSdk]MyFhirSdk.Client.Exceptions.FhirValidationException Public, Sealed, BeforeFieldInit BASE [MyFhirSdk]MyFhirSdk.Client.Exceptions.FhirClientException
+TYPE [MyFhirSdk]MyFhirSdk.Client.FhirClient Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Http.FhirHttpConstants Public, Abstract, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Http.FhirHttpContent Public, Abstract, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Http.FhirHttpHeaders Public, Abstract, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Http.FhirHttpSender Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Requests.FhirRequestBuilder Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Requests.FhirRequestUriBuilder Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Requests.FhirResourceTypeResolver Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Responses.FhirResponseHandler Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Search.FhirSearchParameter Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Search.FhirSearchQuery Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Client.Search.FhirSearchQueryBuilder Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Core.FhirSdkException Public, BeforeFieldInit BASE [System.Private.CoreLib]System.Exception
+TYPE [MyFhirSdk]MyFhirSdk.ImplementationGuides.TwCore.TwCorePackage Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.ImplementationGuides.TwCore.TwCoreProfiles Public, Abstract, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirBase64Binary Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirBoolean Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.Nullable`1<[System.Private.CoreLib]System.Boolean>>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirCanonical Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirCode Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirDate Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirDateTime Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirDecimal Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.Nullable`1<[System.Private.CoreLib]System.Decimal>>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirId Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirInstant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirInteger Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.Nullable`1<[System.Private.CoreLib]System.Int32>>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirInteger64 Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.Nullable`1<[System.Private.CoreLib]System.Int64>>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirMarkdown Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirOid Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirPositiveInt Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.Nullable`1<[System.Private.CoreLib]System.Int32>>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirString Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirTime Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirUnsignedInt Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.Nullable`1<[System.Private.CoreLib]System.Int32>>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirUri Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirUrl Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Primitives.FhirUuid Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<[System.Private.CoreLib]System.String>
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Account Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AccountBalance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AccountCoverage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AccountDiagnosis Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AccountGuarantor Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AccountProcedure Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AccountRelatedAccount Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ActivityDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ActivityDefinitionDynamicValue Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ActivityDefinitionParticipant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ActorDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AdministrableProductDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AdministrableProductDefinitionProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AdministrableProductDefinitionRouteOfAdministration Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AdministrableProductDefinitionRouteOfAdministrationTargetSpecies Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AdministrableProductDefinitionRouteOfAdministrationTargetSpeciesWithdrawalPeriod Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AdverseEvent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AdverseEventContributingFactor Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AdverseEventMitigatingAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AdverseEventParticipant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AdverseEventPreventiveAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AdverseEventSupportingInfo Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AdverseEventSuspectEntity Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AdverseEventSuspectEntityCausality Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AllergyIntolerance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AllergyIntoleranceParticipant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AllergyIntoleranceReaction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Appointment Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AppointmentParticipant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AppointmentRecurrenceTemplate Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AppointmentRecurrenceTemplateMonthlyTemplate Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AppointmentRecurrenceTemplateWeeklyTemplate Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AppointmentRecurrenceTemplateYearlyTemplate Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AppointmentResponse Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ArtifactAssessment Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ArtifactAssessmentContent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AuditEvent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AuditEventAgent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AuditEventEntity Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AuditEventEntityDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AuditEventOutcome Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.AuditEventSource Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Basic Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Binary Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Resource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BiologicallyDerivedProduct Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BiologicallyDerivedProductCollection Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BiologicallyDerivedProductDispense Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BiologicallyDerivedProductDispensePerformer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BiologicallyDerivedProductProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BodyStructure Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BodyStructureIncludedStructure Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BodyStructureIncludedStructureBodyLandmarkOrientation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BodyStructureIncludedStructureBodyLandmarkOrientationDistanceFromLandmark Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Bundle Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Resource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BundleEntry Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BundleEntryRequest Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BundleEntryResponse Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BundleEntrySearch Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.BundleLink Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CanonicalResource Public, Abstract, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatement Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatementDocument Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatementImplementation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatementMessaging Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatementMessagingEndpoint Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatementMessagingSupportedMessage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatementRest Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatementRestInteraction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatementRestResource Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatementRestResourceInteraction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatementRestResourceOperation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatementRestResourceSearchParam Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatementRestSecurity Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CapabilityStatementSoftware Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CarePlan Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CarePlanActivity Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CareTeam Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CareTeamParticipant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ChargeItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ChargeItemDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ChargeItemDefinitionApplicability Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ChargeItemDefinitionPropertyGroup Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ChargeItemPerformer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Citation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifact Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactAbstract Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactClassification Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactContributorship Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactContributorshipEntry Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactContributorshipEntryContributionInstance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactContributorshipSummary Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactPart Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactPublicationForm Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactPublicationFormPublishedIn Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactRelatesTo Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactStatusDate Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactTitle Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactVersion Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationCitedArtifactWebLocation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationClassification Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationStatusDate Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CitationSummary Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Claim Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimAccident Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimBodySite Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimCareTeam Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimDiagnosis Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimEvent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimInsurance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimPayee Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimProcedure Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimRelated Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponse Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseAddItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseAddItemBodySite Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseAddItemDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseAddItemDetailSubDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseError Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseEvent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseInsurance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseItemAdjudication Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseItemDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseItemDetailSubDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseItemReviewOutcome Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponsePayment Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseProcessNote Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimResponseTotal Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimSubDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClaimSupportingInfo Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClinicalImpression Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClinicalImpressionFinding Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClinicalUseDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClinicalUseDefinitionContraindication Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClinicalUseDefinitionContraindicationOtherTherapy Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClinicalUseDefinitionIndication Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClinicalUseDefinitionInteraction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClinicalUseDefinitionInteractionInteractant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClinicalUseDefinitionUndesirableEffect Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ClinicalUseDefinitionWarning Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CodeSystem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CodeSystemConcept Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CodeSystemConceptDesignation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CodeSystemConceptProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CodeSystemFilter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CodeSystemProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Communication Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CommunicationPayload Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CommunicationRequest Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CommunicationRequestPayload Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CompartmentDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CompartmentDefinitionResource Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Composition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CompositionAttester Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CompositionEvent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CompositionSection Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConceptMap Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConceptMapAdditionalAttribute Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConceptMapGroup Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConceptMapGroupElement Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConceptMapGroupElementTarget Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConceptMapGroupElementTargetDependsOn Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConceptMapGroupElementTargetProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConceptMapGroupUnmapped Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConceptMapProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Condition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConditionDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConditionDefinitionMedication Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConditionDefinitionObservation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConditionDefinitionPlan Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConditionDefinitionPrecondition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConditionDefinitionQuestionnaire Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConditionParticipant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConditionStage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Consent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConsentPolicyBasis Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConsentProvision Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConsentProvisionActor Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConsentProvisionData Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ConsentVerification Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Contract Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractContentDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractFriendly Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractLegal Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractRule Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractSigner Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractTerm Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractTermAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractTermActionSubject Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractTermAsset Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractTermAssetContext Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractTermAssetValuedItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractTermOffer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractTermOfferAnswer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractTermOfferParty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ContractTermSecurityLabel Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Coverage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageClass Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageCostToBeneficiary Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageCostToBeneficiaryException Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageEligibilityRequest Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageEligibilityRequestEvent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageEligibilityRequestInsurance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageEligibilityRequestItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageEligibilityRequestItemDiagnosis Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageEligibilityRequestSupportingInfo Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageEligibilityResponse Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageEligibilityResponseError Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageEligibilityResponseEvent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageEligibilityResponseInsurance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageEligibilityResponseInsuranceItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoverageEligibilityResponseInsuranceItemBenefit Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.CoveragePaymentBy Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DetectedIssue Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DetectedIssueEvidence Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DetectedIssueMitigation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Device Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceAssociation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceAssociationOperation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceConformsTo Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionChargeItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionClassification Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionConformsTo Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionCorrectiveAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionDeviceName Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionGuideline Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionHasPart Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionLink Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionMaterial Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionPackaging Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionPackagingDistributor Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionRegulatoryIdentifier Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionUdiDeviceIdentifier Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionUdiDeviceIdentifierMarketDistribution Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDefinitionVersion Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDispense Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceDispensePerformer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceMetric Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceMetricCalibration Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceName Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceRequest Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceRequestParameter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceUdiCarrier Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceUsage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceUsageAdherence Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DeviceVersion Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DiagnosticReport Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DiagnosticReportMedia Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DiagnosticReportSupportingInfo Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DocumentReference Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DocumentReferenceAttester Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DocumentReferenceContent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DocumentReferenceContentProfile Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.DocumentReferenceRelatesTo Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Encounter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EncounterAdmission Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EncounterDiagnosis Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EncounterHistory Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EncounterHistoryLocation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EncounterLocation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EncounterParticipant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EncounterReason Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Endpoint Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EndpointPayload Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EnrollmentRequest Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EnrollmentResponse Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EpisodeOfCare Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EpisodeOfCareDiagnosis Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EpisodeOfCareReason Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EpisodeOfCareStatusHistory Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EventDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Evidence Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceCertainty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceReport Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceReportRelatesTo Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceReportRelatesToTarget Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceReportSection Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceReportSubject Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceReportSubjectCharacteristic Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceStatistic Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceStatisticAttributeEstimate Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceStatisticModelCharacteristic Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceStatisticModelCharacteristicVariable Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceStatisticSampleSize Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceVariable Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceVariableCategory Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceVariableCharacteristic Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceVariableCharacteristicDefinitionByCombination Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceVariableCharacteristicDefinitionByTypeAndValue Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceVariableCharacteristicTimeFromEvent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.EvidenceVariableDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExampleScenario Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExampleScenarioActor Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExampleScenarioInstance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExampleScenarioInstanceContainedInstance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExampleScenarioInstanceVersion Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExampleScenarioProcess Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExampleScenarioProcessStep Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExampleScenarioProcessStepAlternative Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExampleScenarioProcessStepOperation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefit Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitAccident Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitAddItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitAddItemBodySite Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitAddItemDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitAddItemDetailSubDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitBenefitBalance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitBenefitBalanceFinancial Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitCareTeam Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitDiagnosis Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitEvent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitInsurance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitItemAdjudication Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitItemBodySite Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitItemDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitItemDetailSubDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitItemReviewOutcome Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitPayee Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitPayment Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitProcedure Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitProcessNote Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitRelated Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitSupportingInfo Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ExplanationOfBenefitTotal Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.FamilyMemberHistory Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.FamilyMemberHistoryCondition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.FamilyMemberHistoryParticipant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.FamilyMemberHistoryProcedure Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Flag Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.FormularyItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GenomicStudy Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GenomicStudyAnalysis Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GenomicStudyAnalysisDevice Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GenomicStudyAnalysisInput Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GenomicStudyAnalysisOutput Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GenomicStudyAnalysisPerformer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Goal Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GoalTarget Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GraphDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GraphDefinitionLink Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GraphDefinitionLinkCompartment Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GraphDefinitionNode Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Group Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GroupCharacteristic Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GroupMember Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.GuidanceResponse Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.HealthcareService Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.HealthcareServiceEligibility Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImagingSelection Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImagingSelectionInstance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImagingSelectionInstanceImageRegion2D Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImagingSelectionInstanceImageRegion3D Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImagingSelectionPerformer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImagingStudy Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImagingStudySeries Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImagingStudySeriesInstance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImagingStudySeriesPerformer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Immunization Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImmunizationEvaluation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImmunizationPerformer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImmunizationProgramEligibility Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImmunizationProtocolApplied Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImmunizationReaction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImmunizationRecommendation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImmunizationRecommendationRecommendation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImmunizationRecommendationRecommendationDateCriterion Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImplementationGuide Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImplementationGuideDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImplementationGuideDefinitionGrouping Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImplementationGuideDefinitionPage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImplementationGuideDefinitionParameter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImplementationGuideDefinitionResource Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImplementationGuideDefinitionTemplate Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImplementationGuideDependsOn Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImplementationGuideGlobal Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImplementationGuideManifest Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImplementationGuideManifestPage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ImplementationGuideManifestResource Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Ingredient Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.IngredientManufacturer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.IngredientSubstance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.IngredientSubstanceStrength Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.IngredientSubstanceStrengthReferenceStrength Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InsurancePlan Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InsurancePlanCoverage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InsurancePlanCoverageBenefit Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InsurancePlanCoverageBenefitLimit Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InsurancePlanPlan Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InsurancePlanPlanGeneralCost Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InsurancePlanPlanSpecificCost Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InsurancePlanPlanSpecificCostBenefit Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InsurancePlanPlanSpecificCostBenefitCost Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InventoryItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InventoryItemAssociation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InventoryItemCharacteristic Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InventoryItemDescription Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InventoryItemInstance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InventoryItemName Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InventoryItemResponsibleOrganization Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InventoryReport Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InventoryReportInventoryListing Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InventoryReportInventoryListingItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Invoice Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InvoiceLineItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.InvoiceParticipant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Library Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Linkage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.LinkageItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.List Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ListEntry Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Location Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.LocationPosition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ManufacturedItemDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ManufacturedItemDefinitionComponent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ManufacturedItemDefinitionComponentConstituent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ManufacturedItemDefinitionProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Measure Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MeasureGroup Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MeasureGroupPopulation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MeasureGroupStratifier Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MeasureGroupStratifierComponent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MeasureReport Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MeasureReportGroup Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MeasureReportGroupPopulation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MeasureReportGroupStratifier Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MeasureReportGroupStratifierStratum Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MeasureReportGroupStratifierStratumComponent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MeasureReportGroupStratifierStratumPopulation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MeasureSupplementalData Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MeasureTerm Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Medication Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationAdministration Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationAdministrationDosage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationAdministrationPerformer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationBatch Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationDispense Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationDispensePerformer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationDispenseSubstitution Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationIngredient Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledge Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeCost Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeDefinitional Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeDefinitionalDrugCharacteristic Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeDefinitionalIngredient Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeIndicationGuideline Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeIndicationGuidelineDosingGuideline Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeIndicationGuidelineDosingGuidelineDosage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeIndicationGuidelineDosingGuidelinePatientCharacteristic Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeMedicineClassification Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeMonitoringProgram Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeMonograph Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgePackaging Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeRegulatory Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeRegulatoryMaxDispense Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeRegulatorySubstitution Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeRelatedMedicationKnowledge Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeStorageGuideline Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationKnowledgeStorageGuidelineEnvironmentalSetting Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationRequest Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationRequestDispenseRequest Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationRequestDispenseRequestInitialFill Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationRequestSubstitution Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationStatement Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicationStatementAdherence Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicinalProductDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicinalProductDefinitionCharacteristic Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicinalProductDefinitionContact Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicinalProductDefinitionCrossReference Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicinalProductDefinitionName Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicinalProductDefinitionNamePart Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicinalProductDefinitionNameUsage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MedicinalProductDefinitionOperation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MessageDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MessageDefinitionAllowedResponse Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MessageDefinitionFocus Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MessageHeader Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MessageHeaderDestination Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MessageHeaderResponse Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MessageHeaderSource Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MetadataResource Public, Abstract, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MolecularSequence Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MolecularSequenceRelative Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MolecularSequenceRelativeEdit Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.MolecularSequenceRelativeStartingSequence Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NamingSystem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NamingSystemUniqueId Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionIntake Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionIntakeConsumedItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionIntakeIngredientLabel Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionIntakePerformer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionOrder Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionOrderEnteralFormula Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionOrderEnteralFormulaAdditive Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionOrderEnteralFormulaAdministration Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionOrderEnteralFormulaAdministrationSchedule Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionOrderOralDiet Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionOrderOralDietNutrient Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionOrderOralDietSchedule Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionOrderOralDietTexture Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionOrderSupplement Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionOrderSupplementSchedule Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionProduct Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionProductCharacteristic Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionProductIngredient Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionProductInstance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.NutritionProductNutrient Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Observation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ObservationComponent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ObservationDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ObservationDefinitionComponent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ObservationDefinitionQualifiedValue Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ObservationReferenceRange Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ObservationTriggeredBy Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.OperationDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.OperationDefinitionOverload Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.OperationDefinitionParameter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.OperationDefinitionParameterBinding Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.OperationDefinitionParameterReferencedFrom Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.OperationOutcome Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.OperationOutcomeIssue Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Organization Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.OrganizationAffiliation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.OrganizationQualification Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PackagedProductDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PackagedProductDefinitionLegalStatusOfSupply Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PackagedProductDefinitionPackaging Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PackagedProductDefinitionPackagingContainedItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PackagedProductDefinitionPackagingProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Parameters Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Resource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ParametersParameter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Patient Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PatientCommunication Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PatientContact Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PatientLink Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PaymentNotice Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PaymentReconciliation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PaymentReconciliationAllocation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PaymentReconciliationProcessNote Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Permission Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PermissionJustification Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PermissionRule Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PermissionRuleActivity Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PermissionRuleData Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PermissionRuleDataResource Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Person Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PersonCommunication Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PersonLink Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PlanDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PlanDefinitionAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PlanDefinitionActionCondition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PlanDefinitionActionDynamicValue Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PlanDefinitionActionInput Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PlanDefinitionActionOutput Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PlanDefinitionActionParticipant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PlanDefinitionActionRelatedAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PlanDefinitionActor Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PlanDefinitionActorOption Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PlanDefinitionGoal Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PlanDefinitionGoalTarget Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Practitioner Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PractitionerCommunication Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PractitionerQualification Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.PractitionerRole Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Procedure Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ProcedureFocalDevice Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ProcedurePerformer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Provenance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ProvenanceAgent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ProvenanceEntity Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Questionnaire Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.QuestionnaireItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.QuestionnaireItemAnswerOption Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.QuestionnaireItemEnableWhen Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.QuestionnaireItemInitial Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.QuestionnaireResponse Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.QuestionnaireResponseItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.QuestionnaireResponseItemAnswer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RegulatedAuthorization Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RegulatedAuthorizationCase Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RelatedPerson Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RelatedPersonCommunication Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RequestOrchestration Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RequestOrchestrationAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RequestOrchestrationActionCondition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RequestOrchestrationActionDynamicValue Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RequestOrchestrationActionInput Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RequestOrchestrationActionOutput Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RequestOrchestrationActionParticipant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RequestOrchestrationActionRelatedAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Requirements Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RequirementsStatement Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ResearchStudy Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ResearchStudyAssociatedParty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ResearchStudyComparisonGroup Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ResearchStudyLabel Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ResearchStudyObjective Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ResearchStudyOutcomeMeasure Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ResearchStudyProgressStatus Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ResearchStudyRecruitment Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ResearchSubject Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ResearchSubjectProgress Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RiskAssessment Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.RiskAssessmentPrediction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Schedule Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SearchParameter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SearchParameterComponent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ServiceRequest Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ServiceRequestOrderDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ServiceRequestOrderDetailParameter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ServiceRequestPatientInstruction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Slot Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Specimen Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SpecimenCollection Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SpecimenContainer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SpecimenDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SpecimenDefinitionTypeTested Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SpecimenDefinitionTypeTestedContainer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SpecimenDefinitionTypeTestedContainerAdditive Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SpecimenDefinitionTypeTestedHandling Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SpecimenFeature Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SpecimenProcessing Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureDefinitionContext Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureDefinitionDifferential Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureDefinitionMapping Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureDefinitionSnapshot Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureMap Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureMapConst Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureMapGroup Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureMapGroupInput Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureMapGroupRule Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureMapGroupRuleDependent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureMapGroupRuleSource Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureMapGroupRuleTarget Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureMapGroupRuleTargetParameter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.StructureMapStructure Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Subscription Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubscriptionFilterBy Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubscriptionParameter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubscriptionStatus Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubscriptionStatusNotificationEvent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubscriptionTopic Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubscriptionTopicCanFilterBy Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubscriptionTopicEventTrigger Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubscriptionTopicNotificationShape Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubscriptionTopicResourceTrigger Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubscriptionTopicResourceTriggerQueryCriteria Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Substance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceDefinitionCharacterization Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceDefinitionCode Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceDefinitionMoiety Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceDefinitionMolecularWeight Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceDefinitionName Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceDefinitionNameOfficial Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceDefinitionProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceDefinitionRelationship Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceDefinitionSourceMaterial Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceDefinitionStructure Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceDefinitionStructureRepresentation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceIngredient Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceNucleicAcid Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceNucleicAcidSubunit Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceNucleicAcidSubunitLinkage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceNucleicAcidSubunitSugar Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstancePolymer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstancePolymerMonomerSet Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstancePolymerMonomerSetStartingMaterial Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstancePolymerRepeat Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstancePolymerRepeatRepeatUnit Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstancePolymerRepeatRepeatUnitDegreeOfPolymerisation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstancePolymerRepeatRepeatUnitStructuralRepresentation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceProtein Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceProteinSubunit Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceReferenceInformation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceReferenceInformationGene Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceReferenceInformationGeneElement Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceReferenceInformationTarget Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceSourceMaterial Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceSourceMaterialFractionDescription Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceSourceMaterialOrganism Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceSourceMaterialOrganismAuthor Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceSourceMaterialOrganismHybrid Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceSourceMaterialOrganismOrganismGeneral Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SubstanceSourceMaterialPartDescription Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SupplyDelivery Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SupplyDeliverySuppliedItem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SupplyRequest Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.SupplyRequestParameter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Task Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TaskInput Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TaskOutput Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TaskPerformer Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TaskRestriction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TerminologyCapabilities Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TerminologyCapabilitiesClosure Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TerminologyCapabilitiesCodeSystem Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TerminologyCapabilitiesCodeSystemVersion Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TerminologyCapabilitiesCodeSystemVersionFilter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TerminologyCapabilitiesExpansion Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TerminologyCapabilitiesExpansionParameter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TerminologyCapabilitiesImplementation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TerminologyCapabilitiesSoftware Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TerminologyCapabilitiesTranslation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TerminologyCapabilitiesValidateCode Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestPlan Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestPlanDependency Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestPlanTestCase Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestPlanTestCaseAssertion Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestPlanTestCaseDependency Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestPlanTestCaseTestData Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestPlanTestCaseTestRun Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestPlanTestCaseTestRunScript Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestReport Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestReportParticipant Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestReportSetup Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestReportSetupAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestReportSetupActionAssert Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestReportSetupActionAssertRequirement Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestReportSetupActionOperation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestReportTeardown Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestReportTeardownAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestReportTest Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestReportTestAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScript Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptDestination Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptFixture Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptMetadata Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptMetadataCapability Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptMetadataLink Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptOrigin Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptScope Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptSetup Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptSetupAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptSetupActionAssert Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptSetupActionAssertRequirement Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptSetupActionOperation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptSetupActionOperationRequestHeader Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptTeardown Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptTeardownAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptTest Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptTestAction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TestScriptVariable Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.Transport Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TransportInput Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TransportOutput Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.TransportRestriction Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ValueSet Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ValueSetCompose Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ValueSetComposeInclude Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ValueSetComposeIncludeConcept Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ValueSetComposeIncludeConceptDesignation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ValueSetComposeIncludeFilter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ValueSetExpansion Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ValueSetExpansionContains Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ValueSetExpansionContainsProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ValueSetExpansionContainsPropertySubProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ValueSetExpansionParameter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ValueSetExpansionProperty Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.ValueSetScope Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.VerificationResult Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.VerificationResultAttestation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.VerificationResultPrimarySource Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.VerificationResultValidator Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.VisionPrescription Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DomainResource
+TYPE [MyFhirSdk]MyFhirSdk.Resources.VisionPrescriptionLensSpecification Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Resources.VisionPrescriptionLensSpecificationPrism Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneElement
+TYPE [MyFhirSdk]MyFhirSdk.Serialization.IFhirParser Public, ClassSemanticsMask, Abstract, BeforeFieldInit BASE -
+TYPE [MyFhirSdk]MyFhirSdk.Serialization.IFhirSerializer Public, ClassSemanticsMask, Abstract, BeforeFieldInit BASE -
+TYPE [MyFhirSdk]MyFhirSdk.Serialization.Json.FhirJsonParser Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Serialization.Json.FhirJsonSerializer Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Types.Address Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Age Public, Sealed, BeforeFieldInit BASE [MyFhirSdk]MyFhirSdk.Types.Quantity
+TYPE [MyFhirSdk]MyFhirSdk.Types.Annotation Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Attachment Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Availability Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.AvailabilityAvailableTime Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.AvailabilityNotAvailableTime Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.CodeableConcept Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.CodeableReference Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Coding Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.ContactDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.ContactPoint Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Contributor Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Count Public, Sealed, BeforeFieldInit BASE [MyFhirSdk]MyFhirSdk.Types.Quantity
+TYPE [MyFhirSdk]MyFhirSdk.Types.DataRequirement Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.DataRequirementCodeFilter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.DataRequirementDateFilter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.DataRequirementSort Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.DataRequirementValueFilter Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.Distance Public, Sealed, BeforeFieldInit BASE [MyFhirSdk]MyFhirSdk.Types.Quantity
+TYPE [MyFhirSdk]MyFhirSdk.Types.Dosage Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneType
+TYPE [MyFhirSdk]MyFhirSdk.Types.DosageDoseAndRate Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.Duration Public, Sealed, BeforeFieldInit BASE [MyFhirSdk]MyFhirSdk.Types.Quantity
+TYPE [MyFhirSdk]MyFhirSdk.Types.ElementDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneType
+TYPE [MyFhirSdk]MyFhirSdk.Types.ElementDefinitionBase Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.ElementDefinitionBinding Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.ElementDefinitionBindingAdditional Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.ElementDefinitionConstraint Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.ElementDefinitionExample Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.ElementDefinitionMapping Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.ElementDefinitionSlicing Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.ElementDefinitionSlicingDiscriminator Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.ElementDefinitionType Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.Expression Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.ExtendedContactDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.HumanName Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Identifier Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.MarketingStatus Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneType
+TYPE [MyFhirSdk]MyFhirSdk.Types.MonetaryComponent Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Money Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.ParameterDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Period Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.ProductShelfLife Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Quantity Public, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Range Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Ratio Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.RatioRange Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Reference Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.RelatedArtifact Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.SampledData Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.Signature Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.SimpleQuantity Public, Sealed, BeforeFieldInit BASE [MyFhirSdk]MyFhirSdk.Types.Quantity
+TYPE [MyFhirSdk]MyFhirSdk.Types.Timing Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneType
+TYPE [MyFhirSdk]MyFhirSdk.Types.TimingRepeat Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.Element
+TYPE [MyFhirSdk]MyFhirSdk.Types.TriggerDefinition Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.UsageContext Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Types.VirtualServiceDetail Public, Sealed, BeforeFieldInit BASE [MyFhirSdk.Runtime]MyFhirSdk.Core.DataType
+TYPE [MyFhirSdk]MyFhirSdk.Validation.FhirValidator Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Validation.IFhirValidator Public, ClassSemanticsMask, Abstract, BeforeFieldInit BASE -
+TYPE [MyFhirSdk]MyFhirSdk.Validation.Profiles.IImplementationGuidePackage Public, ClassSemanticsMask, Abstract, BeforeFieldInit BASE -
+TYPE [MyFhirSdk]MyFhirSdk.Validation.Profiles.IProfileValidationRule Public, ClassSemanticsMask, Abstract, BeforeFieldInit BASE -
+TYPE [MyFhirSdk]MyFhirSdk.Validation.Profiles.ProfileValidationContext Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Validation.Profiles.ProfileValidationOptions Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Validation.Profiles.ProfileValidator Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Validation.Profiles.UnknownProfileBehavior Public, Sealed BASE [System.Private.CoreLib]System.Enum
+TYPE [MyFhirSdk]MyFhirSdk.Validation.ValidationIssue Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Validation.ValidationIssueCode Public, Sealed BASE [System.Private.CoreLib]System.Enum
+TYPE [MyFhirSdk]MyFhirSdk.Validation.ValidationResult Public, Sealed, BeforeFieldInit BASE [System.Private.CoreLib]System.Object
+TYPE [MyFhirSdk]MyFhirSdk.Validation.ValidationRuleSource Public, Sealed BASE [System.Private.CoreLib]System.Enum
+TYPE [MyFhirSdk]MyFhirSdk.Validation.ValidationSeverity Public, Sealed BASE [System.Private.CoreLib]System.Enum
+[MyFhirSdk.Runtime]MyFhirSdk.Core.BackboneType INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk.Runtime]MyFhirSdk.Core.DataType INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk.Runtime]MyFhirSdk.Core.Meta INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk.Runtime]MyFhirSdk.Core.Narrative INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<!0> INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk.Runtime]MyFhirSdk.Core.PrimitiveType`1<!0> INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Client.Authentication.BearerTokenAuthProvider INTERFACE [MyFhirSdk]MyFhirSdk.Client.Authentication.IAuthProvider
+[MyFhirSdk]MyFhirSdk.Client.Authentication.NoAuthProvider INTERFACE [MyFhirSdk]MyFhirSdk.Client.Authentication.IAuthProvider
+[MyFhirSdk]MyFhirSdk.Client.Exceptions.FhirClientException INTERFACE [System.Private.CoreLib]System.Runtime.Serialization.ISerializable
+[MyFhirSdk]MyFhirSdk.Client.Exceptions.FhirHttpException INTERFACE [System.Private.CoreLib]System.Runtime.Serialization.ISerializable
+[MyFhirSdk]MyFhirSdk.Client.Exceptions.FhirInvalidResponseException INTERFACE [System.Private.CoreLib]System.Runtime.Serialization.ISerializable
+[MyFhirSdk]MyFhirSdk.Client.Exceptions.FhirValidationException INTERFACE [System.Private.CoreLib]System.Runtime.Serialization.ISerializable
+[MyFhirSdk]MyFhirSdk.Client.FhirClient INTERFACE [MyFhirSdk]MyFhirSdk.Client.Abstractions.IFhirClient
+[MyFhirSdk]MyFhirSdk.Client.Http.FhirHttpSender INTERFACE [MyFhirSdk]MyFhirSdk.Client.Abstractions.IFhirHttpSender
+[MyFhirSdk]MyFhirSdk.Client.Requests.FhirRequestBuilder INTERFACE [MyFhirSdk]MyFhirSdk.Client.Abstractions.IFhirRequestBuilder
+[MyFhirSdk]MyFhirSdk.Client.Responses.FhirResponseHandler INTERFACE [MyFhirSdk]MyFhirSdk.Client.Abstractions.IFhirResponseHandler
+[MyFhirSdk]MyFhirSdk.Core.FhirSdkException INTERFACE [System.Private.CoreLib]System.Runtime.Serialization.ISerializable
+[MyFhirSdk]MyFhirSdk.ImplementationGuides.TwCore.TwCorePackage INTERFACE [MyFhirSdk]MyFhirSdk.Validation.Profiles.IImplementationGuidePackage
+[MyFhirSdk]MyFhirSdk.Primitives.FhirBase64Binary INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirBase64Binary INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirBoolean INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirBoolean INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirCanonical INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirCanonical INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirCode INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirCode INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirDate INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirDate INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirDateTime INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirDateTime INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirDecimal INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirDecimal INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirId INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirId INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirInstant INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirInstant INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirInteger INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirInteger INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirInteger64 INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirInteger64 INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirMarkdown INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirMarkdown INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirOid INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirOid INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirPositiveInt INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirPositiveInt INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirString INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirString INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirTime INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirTime INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirUnsignedInt INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirUnsignedInt INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirUri INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirUri INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirUrl INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirUrl INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Primitives.FhirUuid INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Primitives.FhirUuid INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IPrimitiveValueAccessor
+[MyFhirSdk]MyFhirSdk.Serialization.Json.FhirJsonParser INTERFACE [MyFhirSdk]MyFhirSdk.Serialization.IFhirParser
+[MyFhirSdk]MyFhirSdk.Serialization.Json.FhirJsonSerializer INTERFACE [MyFhirSdk]MyFhirSdk.Serialization.IFhirSerializer
+[MyFhirSdk]MyFhirSdk.Types.Address INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Age INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Annotation INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Attachment INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Availability INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.CodeableConcept INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.CodeableReference INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Coding INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.ContactDetail INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.ContactPoint INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Contributor INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Count INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.DataRequirement INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Distance INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Dosage INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Duration INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.ElementDefinition INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Expression INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.ExtendedContactDetail INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.HumanName INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Identifier INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.MarketingStatus INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.MonetaryComponent INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Money INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.ParameterDefinition INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Period INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.ProductShelfLife INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Quantity INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Range INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Ratio INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.RatioRange INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Reference INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.RelatedArtifact INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.SampledData INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Signature INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.SimpleQuantity INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.Timing INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.TriggerDefinition INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.UsageContext INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Types.VirtualServiceDetail INTERFACE [MyFhirSdk.Runtime]MyFhirSdk.Core.IFhirExtensionValue
+[MyFhirSdk]MyFhirSdk.Validation.FhirValidator INTERFACE [MyFhirSdk]MyFhirSdk.Validation.IFhirValidator
+[MyFhirSdk]MyFhirSdk.Validation.Profiles.UnknownProfileBehavior INTERFACE [System.Private.CoreLib]System.IComparable
+[MyFhirSdk]MyFhirSdk.Validation.Profiles.UnknownProfileBehavior INTERFACE [System.Private.CoreLib]System.IConvertible
+[MyFhirSdk]MyFhirSdk.Validation.Profiles.UnknownProfileBehavior INTERFACE [System.Private.CoreLib]System.IFormattable
+[MyFhirSdk]MyFhirSdk.Validation.Profiles.UnknownProfileBehavior INTERFACE [System.Private.CoreLib]System.ISpanFormattable
+[MyFhirSdk]MyFhirSdk.Validation.ValidationIssueCode INTERFACE [System.Private.CoreLib]System.IComparable
+[MyFhirSdk]MyFhirSdk.Validation.ValidationIssueCode INTERFACE [System.Private.CoreLib]System.IConvertible
+[MyFhirSdk]MyFhirSdk.Validation.ValidationIssueCode INTERFACE [System.Private.CoreLib]System.IFormattable
+[MyFhirSdk]MyFhirSdk.Validation.ValidationIssueCode INTERFACE [System.Private.CoreLib]System.ISpanFormattable
+[MyFhirSdk]MyFhirSdk.Validation.ValidationRuleSource INTERFACE [System.Private.CoreLib]System.IComparable
+[MyFhirSdk]MyFhirSdk.Validation.ValidationRuleSource INTERFACE [System.Private.CoreLib]System.IConvertible
+[MyFhirSdk]MyFhirSdk.Validation.ValidationRuleSource INTERFACE [System.Private.CoreLib]System.IFormattable
+[MyFhirSdk]MyFhirSdk.Validation.ValidationRuleSource INTERFACE [System.Private.CoreLib]System.ISpanFormattable
+[MyFhirSdk]MyFhirSdk.Validation.ValidationSeverity INTERFACE [System.Private.CoreLib]System.IComparable
+[MyFhirSdk]MyFhirSdk.Validation.ValidationSeverity INTERFACE [System.Private.CoreLib]System.IConvertible
+[MyFhirSdk]MyFhirSdk.Validation.ValidationSeverity INTERFACE [System.Private.CoreLib]System.IFormattable
+[MyFhirSdk]MyFhirSdk.Validation.ValidationSeverity INTERFACE [System.Private.CoreLib]System.ISpanFormattable

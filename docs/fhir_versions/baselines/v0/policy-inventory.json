@@ -1,0 +1,87 @@
+[
+  {
+    "path": "CodeGen/Policy/ModelIrGenerationPolicy.cs",
+    "sha256": "a028cfd642529e1887d29731cdc98fbb42e3a4e0c148d31fb606c151aa792fdc",
+    "bytes": 2674
+  },
+  {
+    "path": "CodeGen/Policy/ModelIrGenerationPolicyLoader.cs",
+    "sha256": "2824db1d60f027604f422fe9d18e74c0019d98105f54f4660d1d4653649fc530",
+    "bytes": 6836
+  },
+  {
+    "path": "CodeGen/Policy/ModelOwnershipPolicyDocument.cs",
+    "sha256": "4b29a9aa44126101aae210f242c562c98426da7c6c28500663e45e819d9ce649",
+    "bytes": 1068
+  },
+  {
+    "path": "CodeGen/Policy/ModelOwnershipPolicyLoader.cs",
+    "sha256": "df981787dcba69b4f3f0752879bd60e4bc3cfedb5c200f004d83e190548bcf68",
+    "bytes": 2788
+  },
+  {
+    "path": "CodeGen/Policy/PrimitiveGenerationPolicyDocument.cs",
+    "sha256": "b5f09ec0dcf8e47450be7e392678d9408149ff4fd1e92ff8dfc48331ecc739ec",
+    "bytes": 2642
+  },
+  {
+    "path": "CodeGen/Policy/PrimitiveGenerationPolicyLoader.cs",
+    "sha256": "aaed7c8211804b1253bb1c45605b8fc3ce5cfe18959fe15965d007c332d9650a",
+    "bytes": 3412
+  },
+  {
+    "path": "CodeGen/Policy/PrimitiveGenerationPolicyValidator.cs",
+    "sha256": "b872c0b9c3097a5cbf8dac7ccea191d4acb7a093de8b8d6088b97bd62829da2f",
+    "bytes": 36759
+  },
+  {
+    "path": "CodeGen/Policy/ValidatedPrimitiveGenerationPolicy.cs",
+    "sha256": "59df826583e70490050d89ea7bd0681569f1bcbbb5bc49f69c2b9c718df87f89",
+    "bytes": 4152
+  },
+  {
+    "path": "CodeGen/Policy/primitive-generation-policy.json",
+    "sha256": "3f3739d24c9cbf149746ce066fedd556c5f076d9e48b9d04d6e28302e638856b",
+    "bytes": 11938
+  },
+  {
+    "path": "CodeGen/Policy/r4-package-lock.json",
+    "sha256": "2191eee707437f97ec2ed42b15e9fb614d93e0a3d20a6af81e29076247e6f40e",
+    "bytes": 489
+  },
+  {
+    "path": "CodeGen/Policy/r5-backbone-policy.json",
+    "sha256": "ae13970398b4f1af34ba4be28237f4a7bbae459b1c0a26701459aee450854e56",
+    "bytes": 2275
+  },
+  {
+    "path": "CodeGen/Policy/r5-choice-open-type-policy.json",
+    "sha256": "0ee9018055084ba7ad9137b195fe5b4849021b8c50409e28b809cf85d9bb3e33",
+    "bytes": 4254
+  },
+  {
+    "path": "CodeGen/Policy/r5-model-naming-policy.json",
+    "sha256": "1556e166b5d3b5dc85ed89ed79cfbde42244cea78fe9d0d2ec4b1d6b40b5d06e",
+    "bytes": 4181
+  },
+  {
+    "path": "CodeGen/Policy/r5-model-ownership-policy.json",
+    "sha256": "9a3cc898ff59d9f0bf9c586464e7b935448ae5b86b0da1c84c80d05aeb240923",
+    "bytes": 5507
+  },
+  {
+    "path": "CodeGen/Policy/r5-package-lock.json",
+    "sha256": "bc26c513c1687ff5e51652f9c64562f7ee5555c767309799a28ccd65abd42fd1",
+    "bytes": 460
+  },
+  {
+    "path": "CodeGen/Policy/r5-validation-capability-policy.json",
+    "sha256": "5791682c3f1643689884ef490bca6f7b6e4c2a1e0129fbfc3dd8aafd26a16789",
+    "bytes": 6938
+  },
+  {
+    "path": "CodeGen/Policy/runtime-contract.json",
+    "sha256": "75ce3d0aebb6c0e69ce18919b3b3bb6387faed1eee588e5838716d2abf365d99",
+    "bytes": 6348
+  }
+]

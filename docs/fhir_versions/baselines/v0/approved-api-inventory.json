@@ -1,0 +1,12 @@
+[
+  {
+    "path": "Tests/Architecture/ApprovedPublicApi.txt",
+    "sha256": "1cc02e9d97c2ee52528a6b026a6938c42b2c1165a61540e561ef35478cd64864",
+    "bytes": 14794
+  },
+  {
+    "path": "Tests/Architecture/ApprovedR5ModelApi.txt",
+    "sha256": "5d150daeb9594108154411c7c26d642a767b10f2c87caccfec60d0f8a2589a37",
+    "bytes": 927019
+  }
+]

@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-狀態：Planned，V0–V7 均尚未執行。依據 [ADR](MyFhirSdk_FHIR_R4_Support_ADR.md)，
+狀態：V0 runner／input lock／decisions 已建立，實測狀態見 [V0 baseline](baselines/v0/README.md)；V1–V7 Planned。依據 [ADR](MyFhirSdk_FHIR_R4_Support_ADR.md)，
 驗收採 [Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md)。
 V 編號表示多版本工作包，與已交付的 Runtime extraction K0–K7 分開。
 
@@ -148,7 +148,8 @@ V6 外部 smoke 未執行時，V7 可交付基礎 SDK，但不能標示 R4 Clien
 ## 4. Evidence 與變更管理
 
 建議可提交證據位置為 `docs/fhir_versions/baselines/vN/`，實際執行產物放 `artifacts/fhir-versions/vN/`。
-這些是規劃路徑，runner 尚未建立。新腳本延續 `eng/` 維護，能共用現有 harness 時先共用。
+V0 runner 為 `eng/Export-FhirVersionBaseline.py`，使用 Python 3.10+ 標準庫並共用既有 Inventory／Pack／regression。
+新腳本延續 `eng/` 維護，能共用現有 harness 時先共用。
 Portable summary 記錄 source／tool／input／policy／contract identities、環境、每個 gate 的狀態與 artifact
 位置；不提交 machine absolute paths、DLL、完整 TRX 或快取。
 
