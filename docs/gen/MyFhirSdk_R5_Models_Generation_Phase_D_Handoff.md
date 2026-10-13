@@ -1,18 +1,18 @@
 # MyFhirSdk CodeGen Phase D handoff
 
-Version 2.2
+Version 2.3
 
 - 狀態：D0–D8 implemented、CI passed，已合併至 `main`
 - Baseline：FHIR R5 `5.0.0`、`hl7.fhir.r5.core#5.0.0`、.NET 9 / `net9.0`
-- Tool package：Phase D baseline `MyFhirSdk.CodeGen.Tool` `1.0.0`；post-D current `1.1.0`
+- Tool package：current `MyFhirSdk.CodeGen.Tool` `1.2.0`；Phase D baseline `1.0.0`／post-D baseline `1.1.0`
 - Tool command：`myfhir-codegen`
-- Runtime contract：`phase-a-v1+c4-primitives-v1`
+- Runtime contract：current `runtime-kernel-v2`（descriptor schema 2）；歷史 Phase D／post-D 為 `phase-a-v1+c4-primitives-v1`
 - Compatibility policy：schema `1`、exact ordinal match
-- Model/primitive manifest：schema `2`
+- Model/primitive manifest：current schema `3`；歷史 Phase D／post-D schema `2`
 
 ## 1. Phase D 交付結果
 
-### Post-D：primitive package input handoff
+### Post-D：primitive package input handoff（歷史 1.1.0 基準）
 
 Tool/CodeGen `1.1.0` 的 primitive mode 以本機 versioned FHIR `.tgz` 為 preferred input，
 保留 flat-directory compatibility mode；兩者都要求 explicit `--policy`。操作與復原步驟見
@@ -56,79 +56,74 @@ Tool/CodeGen `1.1.0` 的 primitive mode 以本機 versioned FHIR `.tgz` 為 pref
 
 ## 2. 實際 dependency 與交付架構
 
+K2 已完成最小 Runtime kernel physical extraction；K4 完成 contract-only reference／auxiliary
+source 遷移；K6 Windows／Ubuntu package、fresh generated SDK／deployment gates 已由使用者
+確認 CI 通過並合併 main。K7 handoff／source rollback 本機證據見
+[Kernel handoff](MyFhirSdk_Runtime_Kernel_Extraction_Handoff.md)，本次 K7 PR／CI 另行驗收。
+
 ```text
-Packaging build
-  MyFhirSdk.csproj --Release--> compiler-only MyFhirSdk.dll
-                                      |
-                                      | explicit RuntimeReferenceAssetPath
-                                      v
-CodeGen source ----------------> MyFhirSdk.CodeGen.Tool.nupkg
-  | no SDK ProjectReference          | owns policies + descriptor + reference
-  |                                  v
-  +-- official R5 package ----> installed myfhir-codegen
-                                      |
-                                      v
-                         deterministic Generated/R5 sources
-                                      |
-                                      v
-                         MyFhirSdk assembly (current physical host)
+Consumer / rebuilt dependent DLLs -> MyFhirSdk.dll -> MyFhirSdk.Runtime.dll implementation
+
+Runtime Release build -> metadata-only Runtime reference
+                         + descriptor / policies + SDK-owned SimpleQuantity.cs
+                         -> MyFhirSdk.CodeGen.Tool -> Generated/R5 sources -> MyFhirSdk.dll
 ```
 
-CodeGen 使用 descriptor DTO 與 PE metadata，不載入 compiler reference、不掃描 SDK assembly
-建立 inventory。Roslyn references 由 package-owned Runtime reference 加上 host TPA 明確組成。
-目前 Runtime foundation 與 generated R5 Models 仍物理編譯在同一 `MyFhirSdk` assembly；邏輯
-seam 已建立，未來 physical split 必須另立 ADR/migration。
+CodeGen production 無 SDK／Runtime ProjectReference；只讀 reference PE metadata，Roslyn
+references 由單一 canonical Runtime reference 與 host TPA 明確組成。Kernel 14 declarations
+定義於 Runtime；generated Models、wrappers/codecs、composition 與 engines 仍定義於 SDK。
+完整 Models／engines／Client／IG physical package split 尚未完成。
 
 ## 3. 固定相容性與 manifest contract
 
 | Dimension | 固定值/規則 |
 | --- | --- |
-| Tool package / CodeGen | `MyFhirSdk.CodeGen.Tool` / `1.1.0`（Phase D baseline 為 `1.0.0`） |
-| Runtime descriptor | schema `1` / `phase-a-v1+c4-primitives-v1` |
-| Runtime compiler reference | `MyFhirSdk, Version=1.0.0.0`, `net9.0`, descriptor SHA-256 |
+| Tool package / CodeGen | `MyFhirSdk.CodeGen.Tool` / `1.2.0`（歷史 baseline `1.0.0`／`1.1.0`） |
+| Runtime descriptor | schema `2` / `runtime-kernel-v2` |
+| Runtime compiler reference | `MyFhirSdk.Runtime, Version=1.0.0.0`, `net9.0`, exact canonical SHA-256 |
 | FHIR | `hl7.fhir.r5.core#5.0.0`, FHIR `5.0.0` |
 | Primitive policy | `1.1.0` plus exact SHA-256 |
 | Model policies | name plus exact SHA-256 |
 | Version policy | exact ordinal match |
 
-schema v2 manifest 的 `compatibility` object 記錄 tool、CodeGen、descriptor、compiler
+schema v3 manifest 的 `compatibility` object 記錄 tool、CodeGen、descriptor、compiler
 reference 與 TFM identity/hash；不得包含 physical asset path。schema breaking change、range
 compatibility 或新的 FHIR/TFM 都需先更新 machine-readable contract 與 migration tests。
 
 ## 4. Runtime foundation handwritten ownership register
 
-| Types | Owner | 保留理由 | 退出條件 |
+| Types | Owner / defining assembly | 保留理由 | 後續變更條件 |
 | --- | --- | --- | --- |
-| `Base`, `Element`, `BackboneElement`, `BackboneType`, `DataType`, `Resource`, `DomainResource` | Runtime foundation maintainers | shared inheritance 與執行契約仍位於既有 SDK assembly | 核准 assembly-boundary ADR，且 API/JSON/metadata/behavior migration suite 通過 |
-| `PrimitiveType<T>` | Runtime primitive maintainers | generated primitive wrappers 需要共同 value/metadata contract | standalone Runtime contract/package 完成版本化並由 Models 消費 |
-| `Extension`, `Meta`, `Narrative` | Runtime + R5 model maintainers | base model properties 與 extension/open-type bootstrap 目前避免 assembly cycle | ownership migration 不改 public API/JSON/metadata，不產生 duplicate declaration |
-| `FhirObject`, `IFhirExtensionValue` | Runtime contract maintainers | model root 與 extension marker 是執行契約 | 預設永久保留；只有核准 Runtime contract revision 可取代 |
-| `SimpleQuantity` | future Profile generation owner | constraint Profile 不屬於 Phase C/D specialization scope | Profile phase 生成 constraint declarations 並通過既有 API snapshot |
+| Base hierarchy、PrimitiveType、Resource/DomainResource、FhirObject/IFhirExtensionValue、IPrimitiveValueAccessor | Runtime maintainers / MyFhirSdk.Runtime | 已交付的 kernel 執行／SPI contract | 只有核准契約 revision 與 API/JSON/runtime migration 可變更 |
+| Extension、Meta、Narrative | Runtime + R5 maintainers / MyFhirSdk.Runtime | 核准 bootstrap contract，generated metadata 仍屬 SDK | 另立 ownership decision，無 cycle／duplicate declaration，維持 API/JSON/runtime |
+| SimpleQuantity | SDK + future Profile CodeGen owner / MyFhirSdk | constraint Profile 超出 specialization generation；工具只攜帶明確 auxiliary source | Profile generation migration 維持 API／behavior 並更新 source contract |
 
-上述 declaration ownership 與 generated metadata ownership 分離；D8 cleanup 不授權刪除或
-搬移任何一項。
+完整 14 declarations、source compile owner、identity/hash 與後續責任見 Kernel handoff。
+Phase D 歷史 snapshots 不隨目前 ownership 改寫。
 
 ## 5. Operations 與 rollback
 
-安裝、restore、model/primitive generation、asset overrides、troubleshooting、package contents、
-upgrade 與 rollback 指令，以 `CodeGen/README.md` 為操作基準。
+Tool build／pack／install／CLI overrides 以 [CodeGen README](../../CodeGen/README.md) 為操作基準。
+Consumer 全面重編、AQN migration、implementation DLL deployment、troubleshooting 與整套
+source rollback 以 [Runtime operations](MyFhirSdk_Runtime_Kernel_Extraction_Operations.md) 為準。
 
-rollback 單位是 tool package：將 local manifest pin 回上一個已驗證版本、restore 該真實
-package、重新產生 staging output 並比較。不得用修改目前 source 版本號產生假舊版，也不需
-回復 handwritten models。第一版 `1.0.0` 只有 install/uninstall/reinstall baseline，不宣稱 upgrade。
+Tool-only rollback 必須使用匹配的 SDK source／contract／assets。跨 Runtime extraction boundary
+時必須回復 source ownership、seams、consumers／相依 DLL、deployment、tool pin 與 manifests，
+不能只降 tool version 或移除 Runtime DLL。K7 runner 重建固定 post-D 1.1.0 source，並分開
+驗證 current solution、restored OLD solution、歷史 SDK deployment 與 hashes／inventories。
+公開 NuGet release／已發布版本 rollback policy 尚未核准。
 
 ## 6. 後續工作責任表
 
 | 項目 | Owner | 目前理由 | Exit criterion / gate |
 | --- | --- | --- | --- |
 | 公開 NuGet license/release | Release + legal maintainers | Phase D 未核准 license、公開 feed 或 promotion policy | 核准 license 與 package metadata；signing、SBOM、provenance、credentials、rollback/promotion CI 全部通過 |
-| Runtime/Models physical split | Architecture + Runtime maintainers | 最小 kernel 已於 K2 拆出，完整 Models split 仍未實作 | 依 kernel ADR 全面重編 consumers／相依 DLL，API/JSON/runtime 與獨立部署 gates 通過；不要求舊 binary binding／forwarders |
+| Models physical split | Architecture + Models + Runtime maintainers | 最小 kernel 已交付，Models/wrappers/composition 仍在 SDK | 另立 dependency／provider ADR，API/JSON/runtime、fresh SDK、全面重編／部署 gates 通過 |
 | Profile generation / `SimpleQuantity` | future Profile CodeGen owner | constraint Profiles 不在 R5 specialization scope | 定義 Profile ownership/policy，生成 migration 通過 public API 與 behavior baseline |
 | Deferred validation capabilities | Validation + CodeGen maintainers | terminology、FHIRPath invariant、fixed/pattern、targetProfile 尚需 Runtime support | 各 capability 有 versioned policy、Runtime executor、positive/negative generation/runtime tests |
 | 新 FHIR patch/minor 版本 | CodeGen compatibility owner | 目前只核准 R5 `5.0.0` exact matrix | 新 package lock/hash、policy review、descriptor/matrix 更新及 831-equivalent full regression |
 | 新 .NET/TFM | Build + Runtime contract owner | 目前 central TFM 為 `net9.0` | 更新單一 TFM/SDK 設定，重建 Runtime reference/hash，Windows/Linux build/pack/smoke/TPA CI 通過 |
-| Contract-only Runtime reference | Packaging + Runtime + CodeGen owners | 目前使用完整 `MyFhirSdk.dll` 作 compiler-only asset；kernel ADR §8 已核准調整 CLI／SDK 驗證責任 | 單一 Runtime reference 與真實 SimpleQuantity auxiliary asset 的 identity/hash／packaging 通過；models／wrappers Roslyn、composition 局部／結構檢查及此次完整生成輸出的真實 SDK build／runtime gates 通過 |
-| Primitive `.tgz` input acceptance／handoff | CodeGen + Compatibility maintainers | P0–P7已交付；PR #39已合併main，分支及merge commit的CI均由使用者確認通過，正式owner acceptance尚未記錄 | 補記Decision正式acceptance；K0以post-D `1.1.0`合併commit重建baseline |
+| Primitive `.tgz` input acceptance／handoff | CodeGen + Compatibility maintainers | P0–P7與K0 immutable baseline已交付；Decision正式owner acceptance尚未記錄 | 由owner於獨立Decision補記正式acceptance；不重新標記已完成的K0為未實作 |
 
 沒有 owner、理由與退出條件的新 debt 不得只留在 PR 描述。
 
@@ -137,27 +132,13 @@ Owner為CodeGen + Compatibility maintainers；延後理由是固定Runtime拆分
 基準。退出條件為K0–K7完成，且另案核准directory migration／版本策略與packaged policy
 解析、override及相容性測試；目前directory支援與required `--policy`不變。
 
-Runtime kernel extraction 的已核准決策與工作分解位於（K1–K7 實作仍依各 gates 驗收）：
+最小 kernel physical extraction 與 contract-only reference 已完成（K2／K4–K6）；K7 本機
+handoff／rollback 已執行，PR／CI 待驗收。Engines、Client、IG、Models、Profile generation
+與 release 的完整 owner／理由／exit criteria 位於 Kernel handoff 第 4 節，不只保留在 PR 描述。
 
-- `docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
-- `docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md`
-
-ADR 及 K1 validation amendment 已於 2026-10-07 核准。K2 已將 production kernel 搬至 Runtime
-assembly；歷史 compiler-only baseline 仍保留，K4 canonical assets 待驗收。2026-10-08 核准全面
-重編、不提供 forwarders；K3 clean rebuild／隔離部署七個本機 gates 通過，CI／Ubuntu 證據待完成。
-K1 本機開發與驗證已完成，CLI models 編譯／composition 結構檢查及 fresh generated SDK integration
-已接入；部署 SDK 已移除 generator friend。compiler-only 歷史 reference 暫時保持 bytes，
-由條件 build 重建且不部署該 implementation，於 K4 一併移除。執行證據見上述 Guide。
-
-Runtime extraction前的primitive package-input決策與實作紀錄位於：
-
-- `docs/gen/MyFhirSdk_CodeGen_Primitive_Tgz_Input_Decision.md`
-- `docs/gen/MyFhirSdk_CodeGen_Primitive_Tgz_Input_Implementation_Guide.md`
-
-目前Tool/CodeGen `1.1.0`已支援preferred `.tgz`與相容directory input，兩者均維持required
-explicit policy。Decision仍為Proposed，表示正式owner acceptance尚未記錄，不表示功能尚未
-實作。P6/P7已合併，分支及merge commit的main CI均由使用者確認通過；後續K0依
-implementation guide重建immutable baseline，不直接搬移Runtime types或修改production behavior。
+Primitive package input 功能已於 P0–P7 交付；current Tool 1.2.0 保留 preferred tgz／directory
+compatibility input 與 required explicit policy。Primitive input Decision 的正式 owner acceptance
+以該決策文件為準，K7 不自行替其他決策改狀態。K0 baseline 使用 post-D 1.1.0 immutable source。
 
 ## 7. Phase D 最終 gates
 

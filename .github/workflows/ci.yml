@@ -32,6 +32,12 @@ jobs:
       - name: Rebuild baseline and run consumer, regression and smoke gates
         shell: pwsh
         run: ./eng/Test-KernelMigrationBaseline.ps1 -RunRegressionAndSmoke
+      - name: Verify whole-source rollback against the restored historical solution
+        shell: pwsh
+        run: ./eng/Test-KernelSourceRollback.ps1 -BaselineDirectory artifacts/kernel-k0
+      - name: Verify rollback rejection and failure evidence
+        shell: pwsh
+        run: ./eng/Test-KernelSourceRollbackHarness.ps1
       - name: Upload K0 evidence and reproducible binaries
         if: always()
         uses: actions/upload-artifact@v4
@@ -46,6 +52,11 @@ jobs:
             artifacts/kernel-k0/primitive-equivalence
             artifacts/kernel-k0/smoke
             artifacts/kernel-k0-harness-tests/*.json
+            artifacts/kernel-k7/rollback/*.json
+            artifacts/kernel-k7/rollback/*.log
+            artifacts/kernel-k7/rollback/test-results
+            artifacts/kernel-k7/rollback/current-test-results
+            artifacts/kernel-k7/rollback-harness
           if-no-files-found: warn
 
   compiler-reference-asset:

@@ -1,8 +1,8 @@
 # MyFhirSdk Runtime kernel extraction 實作指引
 
-Version 1.2
+Version 1.3
 
-- 狀態：K2–K5 已由使用者確認合併 main，K5 CI 通過；K6 本機實作／驗證見下方紀錄，K6 remote CI 與 K7 待完成
+- 狀態：K0–K6 已由使用者確認合併 main，K6 CI 通過；K7 handoff／source rollback 本機完成，K7 PR／CI 待驗收
 - 適用範圍：第一階段 Runtime kernel physical extraction
 - Baseline：post-D Tool/CodeGen `1.1.0` handoff、FHIR R5 `5.0.0`、.NET 9 / `net9.0`
 - 決策文件：`docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_ADR.md`
@@ -813,6 +813,58 @@ K7 handoff須保留此後續事項與CodeGen + Compatibility maintainers ownersh
 6. 演練尚未公開 release 的 source rollback；公開發布 rollback 仍由 release policy 管理。
 
 Exit gate：沒有只留在 PR 描述中的新 debt；文件命令可由 clean environment 執行。
+
+#### K7 實作／演練紀錄（2026-10-12）
+
+使用者確認 K6 push CI 通過並合併 main；本次 feature/runtime-kernel-k7 基準為
+`64267f05c335361c6e1a3c5abac0423421ffe690`。K0–K6 最小 kernel／canonical asset／跨平台
+實作已交付；K7 PR／CI 尚待本次分支驗收。
+
+- [Kernel handoff](MyFhirSdk_Runtime_Kernel_Extraction_Handoff.md)：目前兩個 SDK execution
+  assemblies、metadata-only CodeGen dependency diagram、14 declarations、契約 hashes、
+  後續 Models／engines／Client／IG／Profile／CLI／release owner、理由與 exit criteria。
+- [Runtime operations](MyFhirSdk_Runtime_Kernel_Extraction_Operations.md)：全部 consumers／相依
+  DLL 重編、AQN／reflection migration、implementation deployment、canonical build／pack／
+  overrides、troubleshooting 與完整 source rollback。Phase D handoff、root／CodeGen README
+  同步 current 1.2.0／runtime-kernel-v2／schema 3；Phase D 與 K0 歷史 snapshots 不改寫。
+- `Test-KernelSourceRollback.ps1`：預設 fresh reconstruction 固定 K0 source pin，要求九個
+  K0 gates 全 passed；再額外對 restored OLD solution 執行 strict 七個 test projects，驗證
+  raw SDK/reference/descriptor hashes、歷史 inventories 與 monolithic deployment 不需 Runtime。
+  K0 runner 的 regression 實際測 CURRENT solution，本 runner 明確補足 restored source regression。
+- CI K0 Windows job 完成基準後重用已驗證的 baseline 執行 K7 rollback，避免再重建一次；
+  同時跑 `Test-KernelSourceRollbackHarness.ps1`，上傳 JSON／logs／TRX。五個負面案例驗證
+  缺少／skipped gate、source pin 不符、未回復 Runtime project、SDK implementation hash 不符，
+  必須回傳失敗 exit code 與 failed evidence。
+
+本機演練：K0 九個 gates 通過；current solution 922 passed／0 failed／1 skipped，restored
+post-D 1.1.0 solution 805 passed／0 failed／1 skipped；K7 三個 rollback gates 與五個 failure
+probes 全通過。兩套 external Client smoke 都因未設定 URL 而未執行；NuGet 相依套件下載已授權。
+固定 SDK/reference/descriptor raw hashes 與 K0 inventories 一致，main／目前 source 與使用者
+資料未回退，僅在 artifacts 中重建候選。既有 current SDK compile／test 輸出可由 K0 runner 重建。
+
+可攜摘要：[rollback evidence](baselines/kernel-k7/rollback-summary.json)。完整本機證據：
+`artifacts/kernel-k7/rollback/evidence.json`、`baseline/evidence.json`、兩套 TRX、
+`restored-source-regression.log`、`restored-deployment.log` 及 `rollback-harness/evidence.json`。
+回退基準 source pin 與 K6 main revision 不混用；沒有更改 main history 或提交 binary。
+
+```powershell
+./eng/Test-KernelSourceRollback.ps1 -OutputDirectory artifacts/manual-k7/rollback
+./eng/Test-KernelSourceRollbackHarness.ps1 -OutputDirectory artifacts/manual-k7/harness
+```
+
+K7 不執行真正的 main revert／公開發布，也不核准 directory input 退場或 `--policy` 改 optional。
+完成最小 kernel extraction 不代表 Models／engines／Client／IG physical packages 已完成。
+
+K7 review 修正（2026-10-13）：部署 consumer 先核對 K0 `oldConsumerSha256`，再驗證預期
+primitive／model-base／JSON round-trip 輸出。K0 current regression 增加 source fingerprint；
+K7 baseline reuse 只有 fingerprint 相同才重用 strict TRX，缺少／不符時重跑 current solution，
+執行前後要求 fingerprint 一致。新增 currentSourceRegression gate；統計由實際 TRX 取得。
+六個新 harness checks 涵蓋 matching／missing／untracked source change fingerprints、consumer
+替換、exit 0 無行為輸出與預期輸出，共 11 個 checks。原始三-gate／五-probe 紀錄保留為
+修正前證據；修正後四-gate runner／harness 證據位於 `artifacts/kernel-k7/review-fixes/`。
+修正後 full rerun 為 current 922 passed／restored 805 passed，各一個 external smoke skipped；
+matching-fingerprint 七份 TRX reuse gate 與 K0 locale／Actions exit-code harness 亦通過。
+11-check harness 成功時明確回傳 exit 0，避免預期失敗的子程序 exit code 被 Actions 當成失敗。
 
 ## 7. Required test matrix
 

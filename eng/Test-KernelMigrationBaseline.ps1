@@ -7,6 +7,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'KernelMigration.Common.ps1')
+. (Join-Path $PSScriptRoot 'KernelSourceRollback.Common.ps1')
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $output = [IO.Path]::GetFullPath($OutputDirectory, $root)
 $artifactRoot = Join-Path $root 'artifacts'
@@ -130,6 +131,7 @@ Invoke-KernelEvidenceRun -Evidence $result -OutputPath "$output/evidence.json" -
     foreach ($key in $metadata.Keys) { $result[$key] = $metadata[$key] }
     if ($RunRegressionAndSmoke) {
         Start-KernelGate $result 'regression'
+        $currentFingerprint = Get-KernelCurrentSourceFingerprint $root
         # The frozen reference belongs to the old consumer/tool. Current regression
         # must build the current SDK reference matching the current descriptor.
         Run dotnet @('test', "$root/MyFhirSdk.sln", '-c', 'Release', '--logger', "trx;LogFilePrefix=k0", '--results-directory', "$output/test-results")
@@ -141,6 +143,8 @@ Invoke-KernelEvidenceRun -Evidence $result -OutputPath "$output/evidence.json" -
             $counts.skipped += @($report.SelectNodes("//*[local-name()='UnitTestResult' and @outcome='NotExecuted']")).Count
         }
         $result.regressionCounts = $counts
+        if ((Get-KernelCurrentSourceFingerprint $root).sha256 -cne $currentFingerprint.sha256) { throw 'Current source changed during baseline regression.' }
+        $result.currentSourceFingerprint = $currentFingerprint
         Complete-KernelGate $result
         Start-KernelGate $result 'primitiveEquivalence'
         & "$root/eng/Export-PrimitiveTgzInputBaseline.ps1" -OutputDirectory "$output/primitive-equivalence"
