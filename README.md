@@ -21,6 +21,7 @@ The SDK is still in pre-release shape. It is useful for MVP flows and SDK develo
 | Path | Purpose |
 | --- | --- |
 | `MyFhirSdk.csproj` | SDK project |
+| `Runtime/MyFhirSdk.Runtime.csproj` | Runtime kernel project; owns 14 shared declarations with no SDK dependency |
 | `MyFhirSdk.sln` | Solution containing the SDK and test projects |
 | `Generated/R5/Resources/` | Generated FHIR Resource and Resource-owned Backbone declarations |
 | `Generated/R5/Types/` | Generated FHIR complex datatype declarations |
@@ -49,6 +50,13 @@ Until NuGet publishing is prepared, reference the SDK project directly from anot
 dotnet add reference path\to\MyFhirSdk\MyFhirSdk.csproj
 ```
 
+The SDK now references `MyFhirSdk.Runtime`, which defines the 14 shared kernel declarations.
+Rebuild consumers and dependent libraries together. Explicit DLL consumers must reference and
+deploy both `MyFhirSdk.dll` and the Runtime implementation DLL; the compiler-only reference
+inside the CodeGen tool is a build asset. No type forwarders are provided.
+See the [runtime kernel handoff](docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Handoff.md)
+and [consumer migration / rollback operations](docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Operations.md).
+
 ## Repository-local CodeGen tool
 
 Build the compiler-only Runtime reference and pack the pinned local tool with:
@@ -59,9 +67,9 @@ dotnet tool restore --add-source artifacts/packages --ignore-failed-sources
 dotnet myfhir-codegen --help
 ```
 
-The repository manifest pins `MyFhirSdk.CodeGen.Tool` version `1.0.0` and command
+The repository manifest pins `MyFhirSdk.CodeGen.Tool` version `1.2.0` and command
 `myfhir-codegen`. The package includes its default model policies, Runtime contract
-descriptor, and compiler-only Runtime reference; it does not require repository discovery
+descriptor, compiler-only Runtime reference, and the SDK-owned SimpleQuantity auxiliary source; it does not require repository discovery
 when installed. The current package is for repository-local development only; an approved
 license and matching package metadata are required before any public NuGet release.
 
@@ -258,7 +266,11 @@ $env:MYFHIRSDK_INTEGRATION_BEARER_TOKEN="your-token"
 
 ## Continuous Integration
 
-The GitHub Actions workflow at `.github/workflows/ci.yml` runs on push, pull request, and manual dispatch. Ubuntu and Windows jobs restore the solution, build in `Release`, and run the xUnit suite. The Ubuntu job also creates a NuGet package and uploads it as a workflow artifact.
+The GitHub Actions workflow at `.github/workflows/ci.yml` runs on push, pull request, and manual dispatch.
+Windows and Ubuntu build/test the SDK and verify installed-tool generation with the same canonical
+Runtime compiler reference and tool package. Fresh generated sources are compiled into an isolated
+SDK, tested and deployed, and compared across platforms. Windows also reconstructs the immutable
+K0 baseline and verifies the restored historical solution for source rollback.
 
 The workflow does not set `MYFHIRSDK_INTEGRATION_BASE_URL`, so integration smoke tests remain skipped in regular CI runs.
 
@@ -270,7 +282,10 @@ Create a local NuGet package:
 dotnet pack MyFhirSdk.csproj -c Release
 ```
 
-The package is written under `bin/Release`. Package metadata and publishing configuration are part of the release-readiness roadmap and may still change before the first public release.
+This command creates a local SDK package under `bin/Release`; it does not prepare a complete
+approved SDK/Runtime package feed. Independent Runtime/SDK package metadata, licensing and
+publishing remain release-readiness work. Use project references or verified implementation DLL
+deployment while public release is unapproved. Local CodeGen tool packaging uses the pipeline above.
 
 ## Development Commands
 

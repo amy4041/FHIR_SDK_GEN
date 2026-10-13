@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "scope": "pre-release-source-rollback-local-windows",
+  "currentBaselineRevision": "64267f05c335361c6e1a3c5abac0423421ffe690",
+  "rollbackSourceRevision": "1a28f01d8a4c3aeea46c63da875d01594aeee086",
+  "sdkVersion": "9.0.317",
+  "targetFramework": "net9.0",
+  "rollbackToolVersion": "1.1.0",
+  "gates": {
+    "baseline": "passed",
+    "restoredSourceRegression": "passed",
+    "restoredDeployment": "passed"
+  },
+  "currentRegressionCounts": {
+    "total": 923,
+    "passed": 922,
+    "failed": 0,
+    "skipped": 1
+  },
+  "restoredRegressionCounts": {
+    "total": 806,
+    "passed": 805,
+    "failed": 0,
+    "skipped": 1
+  },
+  "restoredRegressionProjects": [
+    {
+      "assembly": "MyFhirSdk.ImplementationGuides.TwCore.Tests.dll",
+      "total": 9,
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "assembly": "MyFhirSdk.Validation.Tests.dll",
+      "total": 74,
+      "passed": 74,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "assembly": "MyFhirSdk.Client.Tests.dll",
+      "total": 43,
+      "passed": 42,
+      "failed": 0,
+      "skipped": 1
+    },
+    {
+      "assembly": "MyFhirSdk.Parser.Json.Tests.dll",
+      "total": 22,
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "assembly": "MyFhirSdk.Serialization.Json.Tests.dll",
+      "total": 15,
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "assembly": "MyFhirSdk.Architecture.Tests.dll",
+      "total": 133,
+      "passed": 133,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "assembly": "MyFhirSdk.CodeGen.Tests.dll",
+      "total": 510,
+      "passed": 510,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "externalClientSmoke": "skipped-no-integration-base-url",
+  "sdkImplementationSha256": "d47a702c5b52277d81f96867ad026b447fc46cfc9e7fcf08d16fd47de1615afc",
+  "compilerReferenceSha256": "7c945def6e2414e7944367d0df0ac33aa6386e4cdbedce0d05922ae5023176c9",
+  "descriptorSha256": "128ba716806fa276186586ec735bb30525a8d0ddfaf00f9525f48b68fd8cad5a",
+  "deployment": "historical-consumer-with-rebuilt-monolithic-sdk",
+  "rollbackHarnessChecks": 5,
+  "mainHistoryRewritten": false,
+  "userDataModified": false,
+  "k6CiEvidence": "User confirmed K6 push CI passed and merged main; CI run URL not supplied.",
+  "k7CiStatus": "pending-push",
+  "command": "./eng/Test-KernelSourceRollback.ps1 -OutputDirectory artifacts/kernel-k7/rollback",
+  "reviewFixes": {
+    "date": "2026-10-13",
+    "status": "passed",
+    "gates": {
+      "baseline": "passed",
+      "currentSourceRegression": "passed",
+      "restoredSourceRegression": "passed",
+      "restoredDeployment": "passed"
+    },
+    "currentRegressionOperation": "rerun-missing-or-stale-source-fingerprint",
+    "currentRegressionCounts": {
+      "total": 923,
+      "passed": 922,
+      "failed": 0,
+      "skipped": 1
+    },
+    "restoredRegressionCounts": {
+      "total": 806,
+      "passed": 805,
+      "failed": 0,
+      "skipped": 1
+    },
+    "consumerHashValidated": true,
+    "consumerBehaviorOutputValidated": true,
+    "matchingFingerprintTrxReuseValidated": true,
+    "harnessChecks": 11,
+    "actionsExitCodeValidated": true
+  }
+}

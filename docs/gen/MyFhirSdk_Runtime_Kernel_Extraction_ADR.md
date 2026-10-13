@@ -1,8 +1,8 @@
 # ADR：MyFhirSdk Runtime kernel physical extraction
 
-Version 0.9
+Version 1.0
 
-- 狀態：Accepted（2026-10-07）；2026-10-08 全面重編 amendment 已核准；K2–K5 已由使用者確認合併 main，K5 CI 通過；K6 本機實作／驗證見 Guide，K6 remote CI 與 K7 待驗收
+- 狀態：Accepted（2026-10-07）；全面重編 amendment 已核准；K0–K6 已由使用者確認合併 main，K6 CI 通過；K7 handoff／source rollback 本機完成，K7 PR／CI 待驗收
 - 核准人：本專案使用者（本對話），兼任 Architecture、Runtime、CodeGen、Compatibility、Package／Release
 - 核准基準：`5e198f14d977fe331b9d381de25492ff85c0c950` 的 ADR 與 acceptance decisions；原始核准見 §6，K1 validation amendment 見 §8，全面重編 amendment 見 §9
 - 決策 owner：Architecture + Runtime maintainers
@@ -477,3 +477,18 @@ package／FHIR／policy／canonical reference provenance，以及 SDK 實際使�
 不以不同平台重建的 implementation DLL 原始 bytes 相等作為驗收條件。
 契約、公開 API、generated C#、tool version 與 K0 歷史 baseline 不變；本機 Windows 結果見
 Guide K6，Ubuntu／remote CI 須由本次分支 push 後驗證，外部 server smoke 仍需設定 URL。
+
+## 13. K7 handoff／source rollback（2026-10-12）
+
+使用者已確認 K6 CI 通過並合併 main；本節 supersedes 上述各工作包實作當時的 CI pending
+紀錄。最小 kernel extraction 已交付，完整 Models／engines／Client／IG package split 尚未實作。
+[Handoff](MyFhirSdk_Runtime_Kernel_Extraction_Handoff.md) 與
+[Operations](MyFhirSdk_Runtime_Kernel_Extraction_Operations.md) 固定目前 topology、compile owners、
+AQN／deployment、canonical asset 操作與所有後續 owner／reason／exit criteria。
+
+發布前 rollback 以固定 K0 source pin 的隔離 archive 演練，重建歷史 SDK／tool／contracts，
+另測 restored OLD solution，與 K0 的 current solution regression 分開；確認 hashes／inventories
+與 monolithic deployment。本機 current 922 passed、restored 805 passed，各有一個未設定 URL
+的 external smoke skipped。三個 rollback gates 與五個拒絕／failure evidence probes 通過。
+摘要與重現命令見 Guide K7。演練不改寫 main、不回退使用者資料；K7 PR／CI 待驗收。
+本節落實 §7 已核准 rollback，未變更公開 API、契約版本或公開 release policy。

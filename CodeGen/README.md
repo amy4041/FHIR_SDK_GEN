@@ -57,10 +57,12 @@ dotnet myfhir-codegen `
 省略 `--canonical` 代表完整 scope；重複傳入 `--canonical <url>` 可產生 selected closure。
 完整 model batch 包含 831 個 model source artifacts，加上一份 manifest。
 
-Accessor contract 遷移更新 SDK compiler reference 與 provenance，未授權公開 package release。
-K2 已拆出 production Runtime assembly；CodeGen package 保留歷史 SDK compiler reference，
-K4 才切換 canonical reference／descriptor／provenance。Hashes 與歷史基準界線見
-[accessor contract evidence](../docs/gen/baselines/kernel-accessor/README.md)。
+K0–K6 已完成最小 Runtime extraction：production Runtime assembly 與 SDK 分開；current
+package 使用 canonical Runtime compiler reference 與 SimpleQuantity auxiliary source。
+SDK consumer migration、defining assembly/AQN、部署與整套 source rollback 見
+[Runtime operations](../docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Operations.md)。
+Hashes 與歷史基準界線見 [kernel handoff](../docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Handoff.md)
+及 [accessor contract evidence](../docs/gen/baselines/kernel-accessor/README.md)。公開 release 仍未核准。
 
 SDK migration 採所有 consumers／相依 DLL 全面重編，不提供 type forwarders。K3 runner
 `eng/Test-KernelConsumerRebuild.ps1` 驗證 clean solution regression、重編相依 DLL 鏈、獨立部署
@@ -91,7 +93,7 @@ dotnet myfhir-codegen `
 
 既有flat-directory input仍受支援：將`--input`改為
 `Tests/CodeGen/Fixtures/StructureDefinitions/Primitives/R5`即可。兩種模式都必須提供`--policy`，
-在相同definitions與policy下產生逐位元相同的wrappers、registry與schema v2 manifest。
+在相同definitions與policy下產生逐位元相同的wrappers、registry與schema v3 manifest。
 工具只接受existing directory或本機`.tgz`，不下載URL、不搜尋cache，也不將archive解壓至filesystem。
 Package identity必須符合命令中的package ID/version/FHIR version。
 
@@ -182,7 +184,7 @@ reference、rooted artifact、`..` traversal 與 path collision。寫入採 stag
 rollback；失敗或取消不應破壞既有 output。tool 不推測 repository root，因此在 repository
 內操作時必須使用 staging directory 並人工審查變更。
 
-schema v2 manifest 記錄 package/policy hashes、artifact inventory，以及：
+schema v3 manifest 記錄 package/policy hashes、artifact inventory，以及：
 
 - tool package ID/version 與 CodeGen version；
 - Runtime descriptor schema/version/SHA-256；
@@ -211,9 +213,12 @@ tool/CodeGen version 與 Runtime descriptor hash 不同，不應要求整份 man
 4. 讓 CI 執行真實舊版安裝、`dotnet tool update`、generation 與 manifest 驗證；
 5. generation contract 未變時，新舊 generated source 必須 byte-identical。
 
-rollback 只需把 local manifest pin 回上一個可用 tool version，從受信任來源 restore，重新產生
-staging output 並驗證；不需要回復 handwritten Runtime/models。若新版本已寫入 output，先保留
-或還原版本控制中的 committed generated artifacts，再用上一版 tool 重建，不直接修改 manifest。
+Tool-only rollback 將 local manifest pin 回上一個可用版本，從受信任來源 restore，使用該版本
+匹配的 descriptor/reference/policies 與 SDK source 產生 staging output 並驗證。若新版本已寫入
+output，先保留或還原對應版本的 generated artifacts，不直接手改 manifest provenance。
+跨 `1.2.0` → `1.1.0` 的 extraction rollback 必須同時回復 SDK ownership、consumer source／
+相依 DLL、project/deployment 設定及整組契約，再全面重編；降 tool pin 不會回復 Runtime
+assembly boundary。完整程序與隔離演練見 [source rollback](../docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Operations.md#4-發布前-source-rollback)。
 
 ```powershell
 dotnet tool uninstall MyFhirSdk.CodeGen.Tool --local

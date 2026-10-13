@@ -1,11 +1,11 @@
 # Runtime kernel ADR acceptance decision 核准紀錄
 
-Version 0.8
+Version 0.9
 
 - 狀態：Accepted（2026-10-07）；設計 gates 已核准，允許開始 K1；實作 gates 另行驗收。
 - 日期：2026-10-06。
 - 更新日期：2026-10-12，新增 K6 fresh SDK／跨平台驗證紀錄；2026-10-08 全面重編／不提供 forwarders 的 superseding amendment 保留於第 11 節。
-- 對應文件：[ADR v0.9](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v1.2](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)。
+- 對應文件：[ADR v1.0](MyFhirSdk_Runtime_Kernel_Extraction_ADR.md)、[Implementation Guide v1.3](MyFhirSdk_Runtime_Kernel_Extraction_Implementation_Guide.md)、[Kernel handoff](MyFhirSdk_Runtime_Kernel_Extraction_Handoff.md)。
 - 範圍：設計決策、驗收方法、K1 validation 與 K3 全面重編 amendments，不在本文件執行 K1 或搬移 production declarations。
 
 已確認採最小 public primitive accessor，並保留 SDK-owned registry 的 internal partial composition。
@@ -378,3 +378,17 @@ passed 且同一 canonical package/reference 與生成輸出一致，才能通�
 本機 Windows regression／harness 結果與可重現命令見 Guide K6；本節記錄實作方式，
 不宣稱尚未執行的 Ubuntu／remote CI 已通過，也不把未設定 URL 的 external Client smoke
 算成已執行。K0 baseline、runtime-kernel-v2 與 tool 1.2.0 維持原核准契約。
+
+## 15. K7 本機 handoff／rollback 驗證（2026-10-12）
+
+使用者已確認 K6 push CI 通過並合併 main，本紀錄更新 K6 implementation acceptance 狀態。
+K7 本機完成 topology／ownership、consumer AQN／全面重編／部署、build／pack／override、
+後續責任 register 與隔離 source rollback 演練；不新增 public release 或完整 Models/package split。
+
+Rollback runner 要求固定 K0 revision、九個成功的 K0 gates、SDK/reference/descriptor raw hashes
+與歷史 inventories，再執行 restored OLD source 七個 test projects 與 monolithic deployment。
+本機 restored 805 passed／0 failed／1 skipped，current 922 passed／0 failed／1 skipped；
+skip 均為未設定 external Client URL。五個負面案例均以非零 exit code／failed evidence 拒絕。
+完整證據見 Guide K7 與 [可攜摘要](baselines/kernel-k7/rollback-summary.json)。
+K7 PR／remote CI 尚待本次分支驗收，未替 Primitive input Decision 正式 acceptance 或未來 CLI
+變更核准；main history、使用者資料與 K0 frozen baseline 未修改。
