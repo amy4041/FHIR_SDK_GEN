@@ -28,6 +28,21 @@ function Assert-KernelConsumerProjectSet {
     }
 }
 
+function Assert-KernelExperimentModelDependencies {
+    param([Parameter(Mandatory)] [string] $ProjectPath, [Parameter(Mandatory)] [string] $RepositoryRoot)
+    $json = & dotnet msbuild $ProjectPath -p:Configuration=Release -getItem:ProjectReference,Reference,PackageReference
+    if ($LASTEXITCODE -ne 0) { throw 'Cannot evaluate experiment Models dependencies.' }
+    $items = ($json -join "`n" | ConvertFrom-Json).Items
+    $references = @($items.ProjectReference)
+    $expected = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot 'Runtime/MyFhirSdk.Runtime.csproj'))
+    $comparison = if ($IsWindows) { [StringComparison]::OrdinalIgnoreCase } else { [StringComparison]::Ordinal }
+    if ($references.Count -ne 1 -or
+        -not [string]::Equals([IO.Path]::GetFullPath($references[0].FullPath), $expected, $comparison) -or
+        @($items.Reference).Count -ne 0 -or @($items.PackageReference).Count -ne 0) {
+        throw 'Experiment Models must reference only Runtime, with no SDK/engines/DLL/package dependencies.'
+    }
+}
+
 function Assert-KernelConsumerRegression {
     param([Parameter(Mandatory)] [string] $ReportsDirectory, [Parameter(Mandatory)] [string[]] $ExpectedAssemblies)
     $reports = @(Get-ChildItem -LiteralPath $ReportsDirectory -Recurse -Filter *.trx -File)

@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-狀態：V0 baseline 的實測結果見 [G0 evidence](baselines/v0/README.md)；G1–G7 Pending，尚無 R4 production 驗收。設計依據為
+狀態：V0 baseline 的實測結果見 [G0 evidence](baselines/v0/README.md)；V1 結果見 [G1 evidence](baselines/v1/README.md)，G2–G7 Pending，尚無 R4 production 驗收。設計依據為
 [ADR](MyFhirSdk_FHIR_R4_Support_ADR.md)，執行順序見
 [Implementation Guide](MyFhirSdk_FHIR_R4_Support_Implementation_Guide.md)。
 
@@ -14,7 +14,7 @@ Gate 指進入下一階段或宣稱某項能力前必須滿足的驗收條件。
 | Gate | 工作包 | 必要證據 | 狀態 |
 | --- | --- | --- | --- |
 | G0 Baseline／decisions | V0 | 固定 source、R5 regression／API、R4 input lock、ownership／namespace／scope 決策 | 見 [V0 evidence](baselines/v0/summary.json) |
-| G1 Runtime feasibility | V1 | Selected closure、bootstrap 差異報告、R4／R5 同程序與版本差異案例、跨版本誤用 | Pending |
+| G1 Runtime feasibility | V1 | Selected closure、bootstrap 差異報告、R4／R5 同程序與版本差異案例、跨版本誤用 | 見 [V1 evidence](baselines/v1/summary.json) |
 | G2 Context／SPI | V2 | 最小公開契約、signature dependencies、版本一致性、default R5 行為、cache／並行隔離 | Pending |
 | G3 R5 migration | V3 | 單一 compile owner、無 cycle、API／AQN diff、全面重編／部署、完整 R5 regression | Pending |
 | G4 Generator | V4 | 精確 compatibility、policy／manifest、installed tool、determinism、無 implementation fallback、失敗不改輸出 | Pending |

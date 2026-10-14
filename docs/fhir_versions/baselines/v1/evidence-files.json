@@ -1,0 +1,22 @@
+[
+  {
+    "path": "summary.json",
+    "sha256": "994c31d49d34b109e731a7161a6bb64eaa09b36b5be00c099e5fe0b6466ae4c0",
+    "bytes": 5892
+  },
+  {
+    "path": "source-inventory.json",
+    "sha256": "8891e5c8a9fd767d01daf6fef0ed9033c240471af86ddc0fb22875c8105d8c25",
+    "bytes": 282300
+  },
+  {
+    "path": "v1-test-cases.json",
+    "sha256": "da7b707a20a3568077916bd9fe847462d56485315dd5c544bea8356d5ed9d304",
+    "bytes": 3831
+  },
+  {
+    "path": "consumer-rebuild-summary.json",
+    "sha256": "ceec67c424d405c812a512077f13ddf0514d632d8ae697cf8e16f5f97b8ec29e",
+    "bytes": 2730
+  }
+]

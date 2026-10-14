@@ -15,7 +15,8 @@ Version 0.1 — 2026-10-13
 
 V0 已建立 baseline runner、R4 input lock 與 [設計決策](V0_Decisions.md)。
 執行結果及 G0 狀態見 [V0 baseline](baselines/v0/README.md)；尚未新增 R4 production 支援。
-namespace／Models assembly 方向由 V0 固定；Runtime 相容性與 SPI signature 仍由 V1／V2 驗證。
+namespace／Models assembly 方向由 V0 固定；[V1 selected closure 實驗](baselines/v1/README.md)已建立，
+實測狀態見其 evidence。完整 Runtime／SPI／production 支援仍須依後續 gates 驗證。
 
 ## 目前基準與目標
 

@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\CodeGen\MyFhirSdk.CodeGen.csproj" />
     <ProjectReference Include="..\..\MyFhirSdk.csproj" />
+    <ProjectReference Include="..\FhirVersions\V1\Models\MyFhirSdk.R4.V1.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

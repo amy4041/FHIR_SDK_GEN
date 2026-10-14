@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "gate": "G1",
+  "status": "Passed",
+  "r4ProductionSupport": false,
+  "v0Revision": "5958d92dd6457a09002662440244ce06de8432bb",
+  "stableMainRevision": "ca0c27f81adb729657da8ddab61c71c70e113984",
+  "sourceRevision": "5958d92dd6457a09002662440244ce06de8432bb",
+  "sourceFingerprint": {
+    "algorithm": "sha256-path-and-bytes-v1",
+    "fileCount": 1493,
+    "sha256": "a8f76d610d8f61abbf35b223257d4d91f6c946c665e72c352c0d03f3ad568669"
+  },
+  "createdAtUtc": "2026-10-14T01:55:44.881784+00:00",
+  "os": "Windows",
+  "sdkVersion": "9.0.317",
+  "pythonVersion": "3.13.13",
+  "targetFramework": "net9.0",
+  "configuration": "Release",
+  "powershellVersion": "7.5.0",
+  "testTempDirectory": "artifacts/fhir-versions/temp-v1-review-final",
+  "buildEnvironment": {
+    "DOTNET_CLI_USE_MSBUILD_SERVER": "0",
+    "MSBUILDDISABLENODEREUSE": "1"
+  },
+  "r4Package": {
+    "id": "hl7.fhir.r4.core",
+    "version": "4.0.1",
+    "sha256": "b090bf929e1f665cf2c91583720849695bc38d2892a7c5037c56cb00817fb091"
+  },
+  "r5Package": {
+    "id": "hl7.fhir.r5.core",
+    "version": "5.0.0",
+    "sha256": "74b27cd1bfce9e80eaceac431edf230b0945a443564fbf5512f82e5fa50a80d4"
+  },
+  "selectedClosure": {
+    "seeds": [
+      "Patient",
+      "Observation",
+      "Attachment"
+    ],
+    "definitions": 60,
+    "generatedSources": 63,
+    "manifestSha256": "407024448ae041c173d2e150d981a89a7a2acfc94c63c95186c3171a51a7cf32"
+  },
+  "regression": [
+    {
+      "assembly": "MyFhirSdk.Validation.Tests",
+      "trx": "artifacts/fhir-versions/v1/review-fixes-verified-final/regression/A90408_65-0A90408-01_2026-10-14_09_55_54.trx",
+      "sha256": "e37b3a40c625d438f06140015dd275cc84586f75aedfeee03ea919c1e8998844",
+      "total": 74,
+      "passed": 74,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Parser.Json.Tests",
+      "trx": "artifacts/fhir-versions/v1/review-fixes-verified-final/regression/A90408_65-0A90408-01_2026-10-14_09_55_54[1].trx",
+      "sha256": "6bbb7eb4beb15fc48a512e224e64ca29436224f5028bdf587af138ebc769d6dd",
+      "total": 22,
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Client.Tests",
+      "trx": "artifacts/fhir-versions/v1/review-fixes-verified-final/regression/A90408_65-0A90408-01_2026-10-14_09_55_54[2].trx",
+      "sha256": "d0a9cdd7aed875411ce90be20ee69789582e789265003b3311a2212a1663e33b",
+      "total": 45,
+      "passed": 44,
+      "failed": 0,
+      "skipped": 1,
+      "skips": [
+        {
+          "test": "MyFhirSdk.Tests.Client.FhirClientIntegrationSmokeTests.PatientCrudSearchSmokeFlow",
+          "reason": "Set MYFHIRSDK_INTEGRATION_BASE_URL to run integration smoke tests."
+        }
+      ]
+    },
+    {
+      "assembly": "MyFhirSdk.ImplementationGuides.TwCore.Tests",
+      "trx": "artifacts/fhir-versions/v1/review-fixes-verified-final/regression/A90408_65-0A90408-01_2026-10-14_09_55_54[3].trx",
+      "sha256": "40ee239f88d09c85a67e19d84daa0bf3454fa8a8ac7b56b28e6e76e3423b650c",
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Architecture.Tests",
+      "trx": "artifacts/fhir-versions/v1/review-fixes-verified-final/regression/A90408_65-0A90408-01_2026-10-14_09_55_54[4].trx",
+      "sha256": "aa8681823dd4b10cfe3a1eb19113d101d7a7e6c7c1d3d62cb718010ef54e762c",
+      "total": 208,
+      "passed": 208,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Serialization.Json.Tests",
+      "trx": "artifacts/fhir-versions/v1/review-fixes-verified-final/regression/A90408_65-0A90408-01_2026-10-14_09_55_55.trx",
+      "sha256": "aa353e8d0208840d00a23ba82922a94a128ffb86e1ce044467e8bda65fed389c",
+      "total": 15,
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.CodeGen.Tests",
+      "trx": "artifacts/fhir-versions/v1/review-fixes-verified-final/regression/A90408_65-0A90408-01_2026-10-14_09_55_57.trx",
+      "sha256": "243730a694e259a3e935ca2c3b5c0b8f2172fab863eb8bb2b9673610c1d3dcd4",
+      "total": 568,
+      "passed": 568,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    }
+  ],
+  "testCounts": {
+    "total": 942,
+    "passed": 941,
+    "failed": 0,
+    "skipped": 1
+  },
+  "externalClientSmoke": {
+    "endpointConfigured": false,
+    "endpointSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "skipPolicy": "Only the known Client smoke may skip, with its exact reason and no configured endpoint"
+  },
+  "v1Tests": {
+    "total": 19,
+    "passed": 19
+  },
+  "runtimeContract": {
+    "descriptorSha256": "75ce3d0aebb6c0e69ce18919b3b3bb6387faed1eee588e5838716d2abf365d99",
+    "compilerReferenceSha256": "8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71"
+  },
+  "implementationHashes": {
+    "MyFhirSdk.dll": "00a60c8049c5007c797847cd2e5ec52c3bad1c547b8da636a44da178bb03fcb8",
+    "MyFhirSdk.Runtime.dll": "6045859661ae7e3f5aca5c7e57f433ff7934cb59b0e7aab13ae28a1ce4ee7c87",
+    "MyFhirSdk.R4.V1.Models.dll": "c1e2e3eee76356ae7b7951781ceec5438f81947890c942d47fb75ed84475291a"
+  },
+  "testedR4ModelsSha256": "c1e2e3eee76356ae7b7951781ceec5438f81947890c942d47fb75ed84475291a",
+  "runtimeConclusion": "Shared Runtime works for this selected closure with the documented abstract bridges and V1 context guard; no compiler contract change.",
+  "productionBlockers": [
+    "Neutral public SPI and immutable provider identities",
+    "Nested ownership guard in production engines",
+    "R5 Models extraction",
+    "Version-specific primitive/model/validation policies and full R4 generation"
+  ]
+}

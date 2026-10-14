@@ -56,6 +56,7 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
     $special = @{
         'MyFhirSdk.csproj' = 'production-sdk'; 'Runtime/MyFhirSdk.Runtime.csproj' = 'production-runtime'
         'CodeGen/MyFhirSdk.CodeGen.csproj' = 'production-metadata-only-generator'
+        'Tests/FhirVersions/V1/Models/MyFhirSdk.R4.V1.Models.csproj' = 'experiment-r4-models'
         'Tests/KernelMigration/BaselineConsumer/v1/Consumer.csproj' = 'frozen-historical-only-K0'
         'Tests/KernelMigration/Consumer/Consumer.csproj' = 'current-explicit-DLL-consumer'
         'Tests/KernelMigration/RebuiltLibrary/RebuiltLibrary.csproj' = 'rebuilt-dependent-library'
@@ -69,10 +70,14 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
         $dllReferences = @($xml.SelectNodes('//Reference') | ForEach-Object { $_.GetAttribute('Include') })
         $role = if ($project -in $sdkTests) { 'sdk-test-consumer' } elseif ($special.ContainsKey($project)) { $special[$project] } else { throw "Unclassified consumer project: $project" }
         if ($role -eq 'sdk-test-consumer' -and -not @($references | Where-Object { $_ -match '(^|[\\/])MyFhirSdk.csproj$' }).Count) { throw "SDK consumer reference missing: $project" }
+        if ($role -eq 'experiment-r4-models') {
+            Assert-KernelExperimentModelDependencies -ProjectPath (Join-Path $root $project) -RepositoryRoot $root
+        }
         $command = if ($role -eq 'sdk-test-consumer') { "dotnet test $project -c Release --logger trx" }
             elseif ($role -like 'production-*') { 'dotnet test MyFhirSdk.sln -c Release --logger trx (builds production dependencies)' }
             elseif ($role -eq 'frozen-historical-only-K0') { 'pwsh -File eng/Test-KernelMigrationBaseline.ps1' }
             elseif ($role -eq 'explicit-implementation-inventory-tool') { 'dotnet build <fresh-staging>/Inventory/Inventory.csproj; dotnet Inventory.dll <SDK> <output> <Runtime>' }
+            elseif ($role -eq 'experiment-r4-models') { 'dotnet test Tests/Architecture/MyFhirSdk.Architecture.Tests.csproj -c Release (builds the Runtime-only experiment Models dependency)' }
             else { 'dotnet build <fresh-staging>/' + [IO.Path]::GetFileName($project) + ' -c Release -p:SdkAssemblyPath=<SDK implementation> -p:RuntimeAssemblyPath=<Runtime implementation>' }
         [ordered]@{ source = $project; role = $role; projectReferences = $references; assemblyReferences = $dllReferences; rebuildCommand = $command }
     }

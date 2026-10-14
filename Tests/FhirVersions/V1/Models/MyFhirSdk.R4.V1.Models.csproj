@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(MyFhirSdkTargetFramework)</TargetFramework>
+    <AssemblyName>MyFhirSdk.R4.V1.Models</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../../Runtime/MyFhirSdk.Runtime.csproj" />
+  </ItemGroup>
+</Project>

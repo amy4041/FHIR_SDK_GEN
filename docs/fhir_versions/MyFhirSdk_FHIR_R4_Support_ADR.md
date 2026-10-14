@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-- 狀態：V0 邊界決策見 [V0 Decisions](V0_Decisions.md)；Runtime 共用與 SPI signature 保留 Draft，production 實作尚未開始。
+- 狀態：V0 邊界決策見 [V0 Decisions](V0_Decisions.md)；Runtime selected closure 實驗見 [V1 evidence](baselines/v1/README.md)，完整相容性與 SPI signature 保留 Draft，production R4 實作尚未開始。
 - 目標版本：R4 `4.0.1` 與 R5 `5.0.0`；R4B 不包含在本階段範圍。
 - 決策責任：Architecture、Runtime、Models、Serialization、Validation、CodeGen、Compatibility 維護者。
 - 實作及證據：[Implementation Guide](MyFhirSdk_FHIR_R4_Support_Implementation_Guide.md)、[Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md)。

@@ -47,6 +47,24 @@ $checks.Add('repository-wide-discovery-and-output-exclusions')
 Reject 'unknown-business-consumer' { Assert-KernelConsumerProjectSet $projects @('MyFhirSdk.csproj', 'Tests/Probe/Probe.csproj') } 'Unclassified consumer project: Apps/BusinessConsumer'
 Reject 'missing-known-project' { Assert-KernelConsumerProjectSet @('MyFhirSdk.csproj') @('MyFhirSdk.csproj', 'Tests/Probe/Probe.csproj') } 'Missing consumer project:'
 
+$experimentProject = Join-Path $root 'Tests/FhirVersions/V1/Models/MyFhirSdk.R4.V1.Models.csproj'
+Assert-KernelExperimentModelDependencies -ProjectPath $experimentProject -RepositoryRoot $root
+$checks.Add('v1-runtime-only-models-dependency')
+# Use evaluated items in an isolated project to prove that SDK, DLL and package
+# dependencies are rejected; do not modify the committed experiment project.
+$modelProbe = Join-Path $output 'model-probe/Probe.csproj'
+New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($modelProbe)) -Force | Out-Null
+$runtimeProject = [Security.SecurityElement]::Escape((Join-Path $root 'Runtime/MyFhirSdk.Runtime.csproj'))
+$sdkProject = [Security.SecurityElement]::Escape((Join-Path $root 'MyFhirSdk.csproj'))
+foreach ($probe in @(
+    @{ name = 'v1-models-sdk-project-dependency'; item = "<ProjectReference Include=`"$sdkProject`" />" },
+    @{ name = 'v1-models-explicit-dll-dependency'; item = '<Reference Include="MyFhirSdk" />' },
+    @{ name = 'v1-models-package-dependency'; item = '<PackageReference Include="Probe.Package" Version="1.0.0" />' }
+)) {
+    [IO.File]::WriteAllText($modelProbe, "<Project Sdk=`"Microsoft.NET.Sdk`"><PropertyGroup><TargetFramework>net9.0</TargetFramework></PropertyGroup><ItemGroup><ProjectReference Include=`"$runtimeProject`" />$($probe.item)</ItemGroup></Project>")
+    Reject $probe.name { Assert-KernelExperimentModelDependencies -ProjectPath $modelProbe -RepositoryRoot $root } 'Experiment Models must reference only Runtime'
+}
+
 $expected = @('MyFhirSdk.CodeGen.Tests.dll', 'MyFhirSdk.Client.Tests.dll')
 $good = "$output/good"
 WriteReport $good 'codegen' $expected[0] -CodeBase 'C:\fresh\output\MyFhirSdk.CodeGen.Tests.dll'

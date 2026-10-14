@@ -14,6 +14,34 @@ env:
   SOLUTION_PATH: MyFhirSdk.sln
 
 jobs:
+  fhir-v1-experiment:
+    name: V1 bounded R4/R5 experiment (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Restore solution
+        run: dotnet restore MyFhirSdk.sln
+      - name: Verify closure and run fresh experiment/regression
+        shell: pwsh
+        run: python eng/Test-FhirV1Experiment.py --output artifacts/fhir-versions/v1/ci
+      - name: Upload V1 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-v1-${{ matrix.os }}
+          path: artifacts/fhir-versions/v1/ci
+          if-no-files-found: error
+
   kernel-migration-baseline:
     name: Rebuild K0 migration baseline
     runs-on: windows-latest
