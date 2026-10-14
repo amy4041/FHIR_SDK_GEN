@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\CodeGen\MyFhirSdk.CodeGen.csproj" />
     <ProjectReference Include="..\..\MyFhirSdk.csproj" />
     <ProjectReference Include="..\FhirVersions\V1\Models\MyFhirSdk.R4.V1.Models.csproj" />
+    <ProjectReference Include="..\FhirVersions\V2\Provider\MyFhirSdk.R4.V2.Provider.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +28,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="ApprovedR5ModelApi.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ApprovedModelContractsApi.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

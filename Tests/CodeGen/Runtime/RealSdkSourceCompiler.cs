@@ -68,6 +68,7 @@ internal static class RealSdkSourceCompiler
             RuntimeReferenceService.GetTrustedPlatformAssemblyPaths()
                 .Where(path => Path.GetDirectoryName(path) == frameworkDirectory)
                 .Append(typeof(MyFhirSdk.Core.FhirObject).Assembly.Location)
+                .Append(typeof(MyFhirSdk.ModelContracts.ModelIdentity).Assembly.Location)
                 .Select(path => MetadataReference.CreateFromFile(path)),
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
                 nullableContextOptions: NullableContextOptions.Enable, deterministic: true));

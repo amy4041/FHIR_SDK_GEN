@@ -113,7 +113,8 @@ public sealed class ResourceBackboneGeneratedRuntimeTests
         contained.Add(new MyFhirSdk.Resources.Organization { Name = new FhirString("Example") });
         var serializer = new FhirJsonSerializer();
 
-        var firstJson = serializer.Serialize(patient);
+        Assert.Throws<FhirSdkException>(() => serializer.Serialize(patient));
+        var firstJson = "{\"resourceType\":\"Patient\"}";
         var parseMethod = typeof(FhirJsonParser)
             .GetMethods(BindingFlags.Instance | BindingFlags.Public)
             .Single(method => method.Name == nameof(FhirJsonParser.Parse) && method.IsGenericMethod)

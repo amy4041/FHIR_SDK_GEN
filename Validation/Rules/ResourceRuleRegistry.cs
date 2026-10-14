@@ -6,6 +6,8 @@ internal sealed class ResourceRuleRegistry : IValidationRuleProvider
 {
     private readonly IReadOnlyDictionary<Type, IReadOnlyList<IFhirValidationRule>> _rules;
 
+    internal IReadOnlyDictionary<Type, IReadOnlyList<IFhirValidationRule>> Entries => _rules;
+
     private ResourceRuleRegistry(
         IReadOnlyDictionary<Type, IReadOnlyList<IFhirValidationRule>> rules)
     {

@@ -135,8 +135,8 @@ public sealed class KernelBehaviorMigrationTests
     public void DefaultCompositionDoesNotDiscoverExternalTypes()
     {
         Assert.Throws<FhirSdkException>(() => new FhirJsonParser().Parse<Resource>("{\"resourceType\":\"ExternalResource\"}"));
-        var externalJson = new FhirJsonSerializer().Serialize(new ExternalResource());
-        Assert.Throws<FhirSdkException>(() => new FhirJsonParser().Parse<Resource>(externalJson));
+        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer().Serialize(new ExternalResource()));
+        Assert.Throws<FhirSdkException>(() => new FhirValidator().Validate(new ExternalResource()));
         var patient = new Patient();
         patient.Extension.Add(new Extension { Url = "https://example.test/value", Value = new ExternalDatatype { Id = "external" } });
         Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer().Serialize(patient));

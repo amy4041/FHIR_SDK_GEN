@@ -48,6 +48,13 @@ TYPE abstract class MyFhirSdk.Core.Resource | Base=MyFhirSdk.Core.Base | Interfa
   PROPERTY System.String ImplicitRules
   PROPERTY System.String Language
   PROPERTY System.String ResourceType
+TYPE sealed class MyFhirSdk.ModelMetadata.FhirModelContext | Base=System.Object | Interfaces=-
+  CONSTRUCTOR Void .ctor(MyFhirSdk.ModelContracts.ModelMetadataDefinition, MyFhirSdk.ModelContracts.PrimitiveProviderDefinition, MyFhirSdk.ModelContracts.ValidationProviderDefinition)
+  METHOD MyFhirSdk.Core.Resource CreateResource(System.String)
+  PROPERTY MyFhirSdk.ModelContracts.ModelCapabilities Capabilities
+  PROPERTY MyFhirSdk.ModelContracts.ModelIdentity Identity
+TYPE static class MyFhirSdk.ModelMetadata.R5.R5ModelContext | Base=System.Object | Interfaces=-
+  PROPERTY MyFhirSdk.ModelMetadata.FhirModelContext Default
 TYPE sealed class MyFhirSdk.Primitives.FhirBase64Binary | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)
@@ -129,12 +136,15 @@ TYPE interface MyFhirSdk.Serialization.IFhirSerializer | Base=- | Interfaces=-
   METHOD System.String Serialize[TResource](TResource)
 TYPE sealed class MyFhirSdk.Serialization.Json.FhirJsonParser | Base=System.Object | Interfaces=MyFhirSdk.Serialization.IFhirParser
   CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(MyFhirSdk.ModelMetadata.FhirModelContext)
   METHOD TResource Parse[TResource](System.String)
 TYPE sealed class MyFhirSdk.Serialization.Json.FhirJsonSerializer | Base=System.Object | Interfaces=MyFhirSdk.Serialization.IFhirSerializer
   CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(MyFhirSdk.ModelMetadata.FhirModelContext)
   METHOD System.String Serialize[TResource](TResource)
 TYPE sealed class MyFhirSdk.Validation.FhirValidator | Base=System.Object | Interfaces=MyFhirSdk.Validation.IFhirValidator
   CONSTRUCTOR Void .ctor()
+  CONSTRUCTOR Void .ctor(MyFhirSdk.ModelMetadata.FhirModelContext)
   METHOD MyFhirSdk.Validation.ValidationResult Validate(MyFhirSdk.Core.Resource)
 TYPE interface MyFhirSdk.Validation.IFhirValidator | Base=- | Interfaces=-
   METHOD MyFhirSdk.Validation.ValidationResult Validate(MyFhirSdk.Core.Resource)

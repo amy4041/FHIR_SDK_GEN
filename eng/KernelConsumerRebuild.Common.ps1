@@ -43,6 +43,19 @@ function Assert-KernelExperimentModelDependencies {
     }
 }
 
+function Assert-KernelNeutralProjectDependencies {
+    param([string] $ProjectPath, [string] $RepositoryRoot, [string[]] $AllowedProjects)
+    $json = & dotnet msbuild $ProjectPath -p:Configuration=Release -getItem:ProjectReference,Reference,PackageReference
+    if ($LASTEXITCODE -ne 0) { throw 'Cannot evaluate neutral project dependencies.' }
+    $items = ($json -join "`n" | ConvertFrom-Json).Items
+    $expected = @($AllowedProjects | ForEach-Object { [IO.Path]::GetFullPath((Join-Path $RepositoryRoot $_)) })
+    $actual = @($items.ProjectReference | ForEach-Object { [IO.Path]::GetFullPath($_.FullPath) })
+    if ($actual.Count -ne $expected.Count -or @($actual | Where-Object { $_ -notin $expected }).Count -or
+        @($expected | Where-Object { $_ -notin $actual }).Count -or @($items.Reference).Count -or @($items.PackageReference).Count) {
+        throw 'Neutral project has unapproved SDK/engines/DLL/package dependencies.'
+    }
+}
+
 function Assert-KernelConsumerRegression {
     param([Parameter(Mandatory)] [string] $ReportsDirectory, [Parameter(Mandatory)] [string[]] $ExpectedAssemblies)
     $reports = @(Get-ChildItem -LiteralPath $ReportsDirectory -Recurse -Filter *.trx -File)

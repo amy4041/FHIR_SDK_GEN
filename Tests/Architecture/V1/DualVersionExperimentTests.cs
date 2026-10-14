@@ -198,16 +198,16 @@ public sealed class DualVersionExperimentTests
     }
 
     [Fact]
-    public void RawR5EnginesNeedTheV2NestedOwnershipGuard()
+    public void DefaultR5EnginesNowApplyTheV2NestedOwnershipGuard()
     {
-        // Evidence of a production gap, not a claim that the current engines
-        // already enforce contexts. The isolated boundary above closes it.
+        // V1 recorded the gap; V2 closes it at the production engine boundary.
         var patient = new R5R.Patient { Meta = new Meta() };
         patient.Meta.Tag.Add(new R4T.Coding { Code = new R4P.FhirCode("foreign") });
-        Assert.Throws<KeyNotFoundException>(() => new FhirJsonSerializer().Serialize(patient));
+        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer().Serialize(patient));
         var emptyForeign = new R4T.Coding();
         patient.Meta.Tag[0] = emptyForeign;
-        new FhirJsonSerializer().Serialize(patient); // Empty foreign datatype is silently omitted.
+        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer().Serialize(patient));
+        Assert.Throws<FhirSdkException>(() => new FhirValidator().Validate(patient));
         Assert.Throws<FhirSdkException>(() => ExperimentContext.R5().Serialize(patient));
     }
 

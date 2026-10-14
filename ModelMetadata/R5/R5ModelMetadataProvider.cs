@@ -24,6 +24,9 @@ internal sealed class R5ModelMetadataProvider :
 
     internal static R5ModelMetadataProvider Default { get; } = CreateDefault();
 
+    internal ImmutableModelMetadataProvider Models => _models;
+    internal ResourceRuleRegistry ValidationRules => _validationRules;
+
     public IReadOnlyList<Type> ConcreteDataTypes => _models.ConcreteDataTypes;
 
     public ResourceTypeMetadata GetRequiredResource(string fhirTypeName) =>

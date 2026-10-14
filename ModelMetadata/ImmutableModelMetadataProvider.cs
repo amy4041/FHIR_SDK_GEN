@@ -106,6 +106,18 @@ internal sealed class ImmutableModelMetadataProvider : IModelMetadataProvider
 
     public IReadOnlyList<Type> ConcreteDataTypes { get; }
 
+    internal ModelContracts.ModelMetadataDefinition Export(ModelContracts.ModelIdentity identity,
+        IEnumerable<Type> modelTypes) => new(identity, modelTypes,
+        _resourcesByName.Values.Select(r => new ModelContracts.ResourceDefinition(r.FhirTypeName, r.ResourceType, r.CreateResource)),
+        ConcreteDataTypes,
+        _declaredDataTypes.Select(d => new ModelContracts.DeclaredDataTypeDefinition(d.Key.DeclaringType, d.Key.PropertyName, d.Value)),
+        _extensionPropertiesByType.Select(e => new ModelContracts.ExtensionValueDefinition(e.Key, e.Value,
+            _extensionTypesByProperty.TryGetValue(e.Value, out var target) && target == e.Key)),
+        _openTypePropertiesByValue.Select(o => new ModelContracts.OpenTypeDefinition(
+            o.Key.DeclaringType, o.Key.PropertyName, o.Key.ValueType, o.Value)));
+
+    internal IEnumerable<Type> ResourceTypes => _resourcesByType.Keys;
+
     public ResourceTypeMetadata GetRequiredResource(string fhirTypeName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(fhirTypeName);

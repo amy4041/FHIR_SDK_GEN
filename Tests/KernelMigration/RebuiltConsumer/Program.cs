@@ -10,6 +10,7 @@ var runtime = typeof(Base).Assembly;
 var sdk = typeof(FhirBoolean).Assembly;
 var library = typeof(MigrationProbe).Assembly;
 var application = Assembly.GetExecutingAssembly();
+var contracts = Assembly.Load("MyFhirSdk.ModelContracts");
 var kernelNames = new[] {
     "BackboneElement", "BackboneType", "Base", "DataType", "DomainResource", "Element",
     "Extension", "FhirObject", "IFhirExtensionValue", "IPrimitiveValueAccessor", "Meta",
@@ -29,7 +30,7 @@ foreach (var type in runtime.GetExportedTypes())
     Require(type.AssemblyQualifiedName!.Contains(", MyFhirSdk.Runtime,"), "Unexpected assembly-qualified identity.");
     Require(Type.GetType(type.AssemblyQualifiedName, throwOnError: true) == type, "Reflection identity resolution failed.");
 }
-foreach (var assembly in new[] { runtime, sdk, library, application })
+foreach (var assembly in new[] { runtime, sdk, contracts, library, application })
     Require(Path.GetFullPath(Path.GetDirectoryName(assembly.Location)!) == Path.GetFullPath(AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar)),
         "An assembly was loaded outside the isolated deployment: " + assembly.Location);
 foreach (var assembly in new[] { library, application })
@@ -51,5 +52,5 @@ PrimitiveType<bool?> primitive = MigrationProbe.AccessPrimitive();
 Require(((IPrimitiveValueAccessor)primitive).UntypedValue is null, "Application SPI access failed.");
 Console.WriteLine(JsonSerializer.Serialize(new {
     status = "passed", checks = new[] { "ownership", "noForwarders", "libraryAndApplicationPe", "reflection", "loadPaths", "jsonRoundTrip", "accessorCasts" },
-    assemblies = new[] { runtime, sdk, library, application }.Select(a => new { identity = a.FullName, path = a.Location })
+    assemblies = new[] { runtime, sdk, contracts, library, application }.Select(a => new { identity = a.FullName, path = a.Location })
 }));

@@ -1,4 +1,5 @@
 using MyFhirSdk.Core;
+using MyFhirSdk.ModelMetadata;
 using MyFhirSdk.ModelMetadata.R5;
 using MyFhirSdk.Primitives;
 using MyFhirSdk.Validation.Rules;
@@ -14,16 +15,21 @@ public sealed class FhirValidator : IFhirValidator
     private readonly IValidationRuleProvider _ruleProvider;
     private readonly PrimitiveRegistry _primitiveDefinitions;
     private readonly FhirObjectGraphWalker _walker;
+    private readonly FhirModelContext? _context;
 
     /// <summary>
     /// Creates a validator with the default R5 model and primitive rules.
     /// </summary>
     public FhirValidator()
-        : this(
-            R5ModelMetadataProvider.Default,
-            PrimitiveRegistry.Default,
-            new FhirObjectGraphWalker())
+        : this(R5ModelContext.Default)
     {
+    }
+
+    public FhirValidator(FhirModelContext context)
+        : this((context ?? throw new ArgumentNullException(nameof(context))).Rules,
+            context.Primitives, new FhirObjectGraphWalker())
+    {
+        _context = context;
     }
 
     internal FhirValidator(
@@ -48,6 +54,7 @@ public sealed class FhirValidator : IFhirValidator
     public ValidationResult Validate(Resource resource)
     {
         ArgumentNullException.ThrowIfNull(resource);
+        _context?.EnsureOwnership(resource);
 
         var issues = new List<ValidationIssue>();
 

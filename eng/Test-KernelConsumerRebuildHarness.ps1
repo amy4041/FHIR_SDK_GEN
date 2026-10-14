@@ -50,6 +50,11 @@ Reject 'missing-known-project' { Assert-KernelConsumerProjectSet @('MyFhirSdk.cs
 $experimentProject = Join-Path $root 'Tests/FhirVersions/V1/Models/MyFhirSdk.R4.V1.Models.csproj'
 Assert-KernelExperimentModelDependencies -ProjectPath $experimentProject -RepositoryRoot $root
 $checks.Add('v1-runtime-only-models-dependency')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'ModelContracts/MyFhirSdk.ModelContracts.csproj') $root @('Runtime/MyFhirSdk.Runtime.csproj')
+$checks.Add('v2-runtime-only-neutral-contracts')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'Tests/FhirVersions/V2/Provider/MyFhirSdk.R4.V2.Provider.csproj') $root @(
+    'ModelContracts/MyFhirSdk.ModelContracts.csproj', 'Tests/FhirVersions/V1/Models/MyFhirSdk.R4.V1.Models.csproj')
+$checks.Add('v2-provider-without-sdk-or-engines')
 # Use evaluated items in an isolated project to prove that SDK, DLL and package
 # dependencies are rejected; do not modify the committed experiment project.
 $modelProbe = Join-Path $output 'model-probe/Probe.csproj'

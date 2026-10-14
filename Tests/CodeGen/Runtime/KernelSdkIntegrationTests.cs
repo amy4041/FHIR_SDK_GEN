@@ -46,8 +46,8 @@ public sealed class KernelSdkIntegrationTests
         Assert.Equal(852, (await RealSdkSourceCompiler.GeneratedSourcesAsync()).Count);
         var compilation = await Sdk.Value;
         Assert.Empty(Errors(compilation));
-        Assert.Equal(["MyFhirSdk.Runtime"], compilation.ReferencedAssemblyNames
-            .Where(identity => identity.Name.StartsWith("MyFhirSdk")).Select(identity => identity.Name));
+        Assert.Equal(["MyFhirSdk.ModelContracts", "MyFhirSdk.Runtime"], compilation.ReferencedAssemblyNames
+            .Where(identity => identity.Name.StartsWith("MyFhirSdk")).Select(identity => identity.Name).Order(StringComparer.Ordinal));
     }
 
     [Fact]

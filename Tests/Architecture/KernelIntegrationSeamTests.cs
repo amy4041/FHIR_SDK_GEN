@@ -31,6 +31,15 @@ public sealed class KernelIntegrationSeamTests
         return MetadataReference.CreateFromImage(stream.ToArray());
     });
 
+    private static readonly Lazy<MetadataReference> ContractsReference = new(() =>
+    {
+        var compilation = Compile("K1.ModelContracts", Sources("ModelContracts"), KernelReference.Value);
+        using var stream = new MemoryStream();
+        var result = compilation.Emit(stream);
+        Assert.True(result.Success, Describe(result.Diagnostics));
+        return MetadataReference.CreateFromImage(stream.ToArray());
+    });
+
     private static readonly Lazy<CSharpCompilation> Sdk = new(() =>
     {
         var generatorAssembly = Assembly.LoadFrom(Path.Combine(AppContext.BaseDirectory,
@@ -40,7 +49,7 @@ public sealed class KernelIntegrationSeamTests
         var generator = (IIncrementalGenerator)Activator.CreateInstance(generatorType)!;
         CSharpGeneratorDriver.Create([generator.AsSourceGenerator()],
                 parseOptions: new CSharpParseOptions(LanguageVersion.CSharp13))
-            .RunGeneratorsAndUpdateCompilation(Compile("K1.Sdk", SdkSources(), KernelReference.Value),
+            .RunGeneratorsAndUpdateCompilation(Compile("K1.Sdk", SdkSources(), KernelReference.Value, ContractsReference.Value),
                 out var compilation, out var diagnostics);
         Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Severity == DiagnosticSeverity.Error);
         return (CSharpCompilation)compilation;
@@ -146,9 +155,10 @@ public sealed class KernelIntegrationSeamTests
         {
             var fields = engine.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
             var registry = Assert.Single(fields, field => field.FieldType == typeof(PrimitiveRegistry));
-            Assert.Same(PrimitiveRegistry.Default, registry.GetValue(engine));
+            Assert.Same(R5ModelContext.Default.Primitives, registry.GetValue(engine));
             var provider = Assert.Single(fields, field => field.Name is "_metadataProvider" or "_ruleProvider");
-            Assert.Same(R5ModelMetadataProvider.Default, provider.GetValue(engine));
+            Assert.Same(engine is FhirValidator ? R5ModelContext.Default.Rules : R5ModelContext.Default.Metadata,
+                provider.GetValue(engine));
         }
         Assert.NotEqual(typeof(FhirObject).Assembly, typeof(PrimitiveRegistry).Assembly);
         Assert.Equal(typeof(PrimitiveRegistry).Assembly, typeof(FhirString).Assembly);
@@ -161,7 +171,7 @@ public sealed class KernelIntegrationSeamTests
             .Where(tree => !KernelFiles.Any(name => tree.FilePath == $"core/{name}.cs"));
 
     private static CSharpCompilation Compile(string name, IEnumerable<SyntaxTree> sources,
-        MetadataReference? kernel = null) => CSharpCompilation.Create(name,
+        MetadataReference? kernel = null, MetadataReference? contracts = null) => CSharpCompilation.Create(name,
             sources.Append(Parse("ImplicitUsings.g.cs", """
                 global using System;
                 global using System.Collections.Generic;
@@ -175,7 +185,8 @@ public sealed class KernelIntegrationSeamTests
                 // testhost's TPA list also contains application/test assemblies.
                 .Where(path => Path.GetDirectoryName(path) == Path.GetDirectoryName(typeof(object).Assembly.Location))
                 .Select(path => (MetadataReference)MetadataReference.CreateFromFile(path))
-                .Concat(kernel is null ? [] : new[] { kernel }),
+                .Concat(kernel is null ? [] : new[] { kernel })
+                .Concat(contracts is null ? [] : new[] { contracts }),
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
                 nullableContextOptions: NullableContextOptions.Enable, deterministic: true));
 

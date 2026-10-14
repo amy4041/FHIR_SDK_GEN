@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-狀態：V0 已提交並由使用者確認 CI 通過；V1 selected closure 實驗已建立，實測狀態見 [V1 baseline](baselines/v1/README.md)；V2–V7 Planned。依據 [ADR](MyFhirSdk_FHIR_R4_Support_ADR.md)，
+狀態：V0／V1 已提交並由使用者確認 CI 通過；V2 provider/context 實作與驗證見 [V2 baseline](baselines/v2/README.md)；V3–V7 Planned。依據 [ADR](MyFhirSdk_FHIR_R4_Support_ADR.md)，
 驗收採 [Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md)。
 V 編號表示多版本工作包，與已交付的 Runtime extraction K0–K7 分開。
 
@@ -21,7 +21,7 @@ V0 baseline / decisions
 
 V1 允許隔離的實驗修改，不先承諾完整 production SPI。V4 的盤點可提前進行，正式生成產物
 應使用 V2／V3 已固定的 ownership。V3 每次搬移後保持 R5 可建置可執行；不能先留下壞掉的 SDK
-再等待 R4 完成。依使用者決定，V0／V1 先在同一 feature branch 以獨立 commits 接續，暫不合併 main；
+再等待 R4 完成。依使用者決定，V0／V1／V2 在同一 feature branch 以獨立 commits 接續，暫不合併 main；
 保留 main 與已驗證 V0 的完整 revision 作為隔離 checkout／重建還原點，各工作包仍需 review 與 gates。
 
 ## 2. 工作包
@@ -55,6 +55,10 @@ backbone、metadata、Extension／Meta／Narrative）。selected closure 不代�
 [R5 datatype definitions](https://hl7.org/fhir/R5/datatypes-definitions.html)。
 
 ### V2 — Provider／context 契約與 engines 注入
+
+實作狀態與重現方式見 [V2 baseline](baselines/v2/README.md)。中立 owner 為
+`MyFhirSdk.ModelContracts.dll`；context、engines adapters 及 R5 default composition 目前仍在 SDK。
+R4 驗收 provider 是引用 V1 bounded Models 的獨立 fixture，不等於 V5 production R4 provider。
 
 - 將 metadata／factory、primitive definitions、validation rules 與能力清單的必要契約放入中立 owner。
 - 盤點 public SPI signature 的所有參數／回傳型別，不留下 public 介面依賴 internal 型別。

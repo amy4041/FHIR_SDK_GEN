@@ -1,0 +1,40 @@
+{
+  "productionR4Support": false,
+  "inputHashNormalization": "utf8-lf",
+  "inputs": [
+    {
+      "path": "Tests/Architecture/V1/Generated/R4ExperimentComposition.g.cs",
+      "sha256": "56cf9e060754e8b4537c86148e5081b705b791a9b1e926799816c3ff4a2313d9"
+    },
+    {
+      "path": "Primitives/Runtime/PrimitiveCodecs.cs",
+      "sha256": "4d75dfaca3ab9f582b338bbd92cbaa261330746b89870e8ef798ade1f9421db6"
+    },
+    {
+      "path": "Primitives/Runtime/PrimitiveValidators.cs",
+      "sha256": "65ecc6ccd00bb8ed0da616a5fb7514db9027ee48e72968bfbb3639c4924c2eec"
+    },
+    {
+      "path": "Primitives/Runtime/PrimitiveDefinition.cs",
+      "sha256": "a7d19983e3a6aa5e8211a59b49c01e2e992e6515dbc024211edbf005988ce66b"
+    }
+  ],
+  "sources": [
+    {
+      "path": "Tests/FhirVersions/V2/Provider/Generated/PrimitiveCodecs.g.cs",
+      "sha256": "a10b302e744fa9f5b7d63621c838d85699a64b69791312b7f171b4c3acdfc34d"
+    },
+    {
+      "path": "Tests/FhirVersions/V2/Provider/Generated/PrimitiveValidators.g.cs",
+      "sha256": "9b1a98236408e72da243acdba48fb78a508411e7172c01ee0817e37f0d16e04c"
+    },
+    {
+      "path": "Tests/FhirVersions/V2/Provider/Generated/PrimitiveValueAccess.g.cs",
+      "sha256": "0ee19a41887a60add92a1d651b7c6f0e269fbd47c6aa06c9b41686f165cea326"
+    },
+    {
+      "path": "Tests/FhirVersions/V2/Provider/Generated/R4ProviderFixture.g.cs",
+      "sha256": "355855b02a5babe290010cf91ecf5dc3ca6b53e4126ef67ed17458eca001d4cb"
+    }
+  ]
+}

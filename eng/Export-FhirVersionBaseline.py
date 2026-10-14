@@ -254,8 +254,12 @@ def main():
         api_tool = ROOT / "Tests/KernelMigration/Inventory/bin/Release/net9.0/Inventory.dll"
         sdk = ROOT / "bin/Release/net9.0/MyFhirSdk.dll"
         runtime = ROOT / "bin/Release/net9.0/MyFhirSdk.Runtime.dll"
+        contracts = ROOT / "bin/Release/net9.0/MyFhirSdk.ModelContracts.dll"
+        dependencies = [str(runtime)]
+        if (ROOT / "ModelContracts/MyFhirSdk.ModelContracts.csproj").is_file():
+            dependencies.append(str(contracts))
         for name in ("public-api.txt", "public-api-repeat.txt"):
-            run(["dotnet", str(api_tool), str(sdk), str(output / name), str(runtime)], output / f"{name}.log")
+            run(["dotnet", str(api_tool), str(sdk), str(output / name), *dependencies], output / f"{name}.log")
         if sha(output / "public-api.txt") != sha(output / "public-api-repeat.txt"):
             raise ValueError("Non-deterministic API inventory")
         summary["publicApiSha256"] = sha(output / "public-api.txt")

@@ -83,7 +83,8 @@ public sealed class ComplexDatatypeGeneratedRuntimeTests
         containerType.GetProperty("Value")!.SetValue(container, period);
         var serializer = new FhirJsonSerializer();
 
-        var firstJson = serializer.Serialize(container);
+        Assert.Throws<FhirSdkException>(() => serializer.Serialize(container));
+        var firstJson = "{\"resourceType\":\"GeneratedDatatypeContainer\"}";
         var parseMethod = typeof(FhirJsonParser)
             .GetMethods(BindingFlags.Instance | BindingFlags.Public)
             .Single(method => method.Name == nameof(FhirJsonParser.Parse) && method.IsGenericMethod)

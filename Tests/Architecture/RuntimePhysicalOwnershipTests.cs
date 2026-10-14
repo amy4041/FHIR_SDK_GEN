@@ -60,8 +60,10 @@ public sealed class RuntimePhysicalOwnershipTests
         var sdkItems = sdk.RootElement.GetProperty("Items");
         Assert.Empty(runtimeItems.GetProperty("ProjectReference").EnumerateArray());
         var references = sdkItems.GetProperty("ProjectReference").EnumerateArray().ToArray();
-        Assert.Single(references);
-        Assert.Equal(Path.Combine(root, "Runtime", "MyFhirSdk.Runtime.csproj"), references[0].GetProperty("FullPath").GetString());
+        Assert.Equal(2, references.Length);
+        Assert.Equal(new[] { Path.Combine(root, "ModelContracts", "MyFhirSdk.ModelContracts.csproj"),
+            Path.Combine(root, "Runtime", "MyFhirSdk.Runtime.csproj") }.Order(StringComparer.Ordinal),
+            references.Select(r => r.GetProperty("FullPath").GetString()).Order(StringComparer.Ordinal));
         var runtimeSources = Paths(runtimeItems, "Compile");
         var sdkSources = Paths(sdkItems, "Compile");
         var expected = KernelNames.Select(name => Path.Combine(root, "core", name.Replace("`1", "") + ".cs")).ToHashSet(StringComparer.OrdinalIgnoreCase);

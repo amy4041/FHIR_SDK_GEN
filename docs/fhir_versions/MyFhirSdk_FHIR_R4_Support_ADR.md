@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-- 狀態：V0 邊界決策見 [V0 Decisions](V0_Decisions.md)；Runtime selected closure 實驗見 [V1 evidence](baselines/v1/README.md)，完整相容性與 SPI signature 保留 Draft，production R4 實作尚未開始。
+- 狀態：V0 邊界決策見 [V0 Decisions](V0_Decisions.md)；V1 已提交並由使用者確認 push CI 通過；公開 SPI／context 實作見 [V2 evidence](baselines/v2/README.md)。完整 R4 相容性及後續生成仍待 V3–V7 驗收。
 - 目標版本：R4 `4.0.1` 與 R5 `5.0.0`；R4B 不包含在本階段範圍。
 - 決策責任：Architecture、Runtime、Models、Serialization、Validation、CodeGen、Compatibility 維護者。
 - 實作及證據：[Implementation Guide](MyFhirSdk_FHIR_R4_Support_Implementation_Guide.md)、[Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md)。
@@ -82,7 +82,8 @@ asset 是可接受的過渡方式，但要有版本／hash／compile ownership�
 
 Engine 指 Parser、Serializer、Validator。共用處理流程，由不可變的版本 context 提供
 FHIR／package identity、model metadata／factory、primitive definitions／codecs、validation rules
-及能力清單。API 名稱由 V2 固定，這裡不先宣告已存在的 `FhirContext` 類別。
+及能力清單。V2 API 名稱固定為 `MyFhirSdk.ModelMetadata.FhirModelContext`，
+中立 DTO／codec／validator／validation signatures 由 `MyFhirSdk.ModelContracts.dll` 擁有。
 
 Context 的各元件必須屬於同一版本，建立時驗證一致性；registry/cache 必須依 context 隔離。
 不把兩套同名 primitive wrappers 合併至現有單一 registry。相同 CLR／JSON 行為的 codec 可共用，
@@ -108,8 +109,9 @@ primitive、open type 及 Extension 同樣受檢查。誤用不得靜默依另�
 
 ### 3.5 目標依賴方向
 
-下圖是邏輯責任與允許的依賴，不代表每個框都必須成為獨立 DLL。中立 contracts 可位於 Runtime
-或獨立小型 assembly，V2 固定 ownership。Models 指向該契約，engines 也只透過契約取得版本資訊。
+下圖是邏輯責任與允許的依賴，不代表每個框都必須成為獨立 DLL。V2 固定中立 contracts 位於
+`MyFhirSdk.ModelContracts.dll`，只引用 Runtime。版本 provider 指向該契約，engines 透過 context 使用版本資訊；
+engines 與 R5 compatibility composition 暫留 SDK，R5 Models 的實體分離在 V3 完成。
 
 ```mermaid
 flowchart TD

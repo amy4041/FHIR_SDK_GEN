@@ -14,6 +14,34 @@ env:
   SOLUTION_PATH: MyFhirSdk.sln
 
 jobs:
+  fhir-v2-context:
+    name: V2 production context and neutral SPI (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Restore solution
+        run: dotnet restore MyFhirSdk.sln
+      - name: Verify fixture, SPI and fresh regression
+        shell: pwsh
+        run: python eng/Test-FhirV2Context.py --output artifacts/fhir-versions/v2/ci
+      - name: Upload V2 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-v2-${{ matrix.os }}
+          path: artifacts/fhir-versions/v2/ci
+          if-no-files-found: error
+
   fhir-v1-experiment:
     name: V1 bounded R4/R5 experiment (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
