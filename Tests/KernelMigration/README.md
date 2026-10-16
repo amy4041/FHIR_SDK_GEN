@@ -3,6 +3,11 @@
 K3 follows the approved rebuild-all policy: rebuild consumers and dependent DLLs against
 the split SDK and Runtime, deploy them together, and provide no kernel type forwarders.
 
+V3 also moves R5 models to `MyFhirSdk.R5.Models.dll`. Explicit-DLL consumers must pass
+`ModelsAssemblyPath`, rebuild all dependent DLLs, and deploy SDK, R5 Models, ModelSupport,
+ModelContracts and Runtime together. K3 checks missing dependencies for all four supporting DLLs.
+The independent provider consumer loads no SDK. See [V3 migration and rollback](../../docs/fhir_versions/baselines/v3/README.md).
+
 | Source | Purpose | Build/execution gate |
 | --- | --- | --- |
 | `BaselineConsumer/v1` | Frozen, content-pinned K0 consumer; historical SDK only | `eng/Test-KernelMigrationBaseline.ps1` |

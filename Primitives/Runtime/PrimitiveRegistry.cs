@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 
 namespace MyFhirSdk.Primitives;
 
-internal sealed partial class PrimitiveRegistry
+internal sealed class PrimitiveRegistry
 {
     private readonly IReadOnlyDictionary<string, IPrimitiveDefinition> _byFhirTypeName;
     private readonly IReadOnlyDictionary<Type, IPrimitiveDefinition> _byPrimitiveType;
@@ -18,7 +18,9 @@ internal sealed partial class PrimitiveRegistry
             definitions.ToDictionary(definition => definition.PrimitiveType));
     }
 
-    internal static PrimitiveRegistry Default { get; } = Create(CreateDefinitions());
+    internal static PrimitiveRegistry Default { get; } = Create(
+        ModelMetadata.R5.R5ModelProvider.Primitives.Definitions.Select(p =>
+            new PrimitiveDefinition(p.FhirTypeName, p.PrimitiveType, p.ValueType, new CodecAdapter(p.Codec), new ValidatorAdapter(p.Validator))));
 
     internal IReadOnlyList<IPrimitiveDefinition> Definitions { get; }
 
@@ -80,26 +82,19 @@ internal sealed partial class PrimitiveRegistry
                 $"Primitive wrapper type '{primitiveType.FullName}' is not registered.");
     }
 
-    private static IPrimitiveDefinition[] CreateDefinitions()
+    private sealed class CodecAdapter(ModelContracts.IPrimitiveCodec codec) : IPrimitiveCodec
     {
-        var definitions = new List<IPrimitiveDefinition>();
-        AddGeneratedDefinitions(definitions);
-        return definitions.ToArray();
+        public object CreatePrimitive(Type type, System.Text.Json.JsonElement? raw)
+        {
+            try { return codec.CreatePrimitive(type, raw); }
+            catch (ModelSupport.PrimitiveCodecException error) { throw new Core.FhirSdkException(error.Message, error); }
+        }
+        public bool HasRawValue(object value) => codec.HasRawValue(value);
+        public void WriteRawValue(System.Text.Json.Utf8JsonWriter writer, object value, bool missing) => codec.WriteRawValue(writer, value, missing);
     }
-
-    static partial void AddGeneratedDefinitions(
-        List<IPrimitiveDefinition> definitions);
-
-    private static IPrimitiveDefinition Define<TPrimitive, TValue>(
-        string fhirTypeName,
-        IPrimitiveCodec codec,
-        IPrimitiveValidator validator)
+    private sealed class ValidatorAdapter(ModelContracts.IPrimitiveValidator validator) : IPrimitiveValidator
     {
-        return new PrimitiveDefinition(
-            fhirTypeName,
-            typeof(TPrimitive),
-            typeof(TValue),
-            codec,
-            validator);
+        public bool IsValid(object value) => validator.IsValid(value);
+        public bool IsValidValue(object? value) => validator.IsValidValue(value);
     }
 }

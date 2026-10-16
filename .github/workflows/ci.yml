@@ -14,6 +14,36 @@ env:
   SOLUTION_PATH: MyFhirSdk.sln
 
 jobs:
+  fhir-v3-migration:
+    name: V3 R5 Models migration (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Restore solution
+        run: dotnet restore MyFhirSdk.sln
+      - name: Verify model source preservation and fresh migration regression
+        shell: pwsh
+        run: python eng/Test-FhirV3Migration.py --output artifacts/fhir-versions/v3/ci
+      - name: Upload V3 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-v3-${{ matrix.os }}
+          path: artifacts/fhir-versions/v3/ci
+          if-no-files-found: error
+
   fhir-v2-context:
     name: V2 production context and neutral SPI (${{ matrix.os }})
     runs-on: ${{ matrix.os }}

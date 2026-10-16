@@ -1,0 +1,79 @@
+TYPE abstract class MyFhirSdk.Core.BackboneElement | Base=MyFhirSdk.Core.Element | Interfaces=-
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] ModifierExtension
+TYPE abstract class MyFhirSdk.Core.BackboneType | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] ModifierExtension
+TYPE abstract class MyFhirSdk.Core.Base | Base=MyFhirSdk.Core.FhirObject | Interfaces=-
+TYPE abstract class MyFhirSdk.Core.DataType | Base=MyFhirSdk.Core.Element | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE abstract class MyFhirSdk.Core.DomainResource | Base=MyFhirSdk.Core.Resource | Interfaces=-
+  PROPERTY MyFhirSdk.Core.Narrative Text
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] Extension
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] ModifierExtension
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Resource] Contained
+TYPE abstract class MyFhirSdk.Core.Element | Base=MyFhirSdk.Core.Base | Interfaces=-
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] Extension
+  PROPERTY System.String Id
+TYPE sealed class MyFhirSdk.Core.Extension | Base=MyFhirSdk.Core.Element | Interfaces=-
+  CONSTRUCTOR Void .ctor()
+  PROPERTY MyFhirSdk.Core.IFhirExtensionValue Value
+  PROPERTY System.String Url
+TYPE abstract class MyFhirSdk.Core.FhirObject | Base=System.Object | Interfaces=-
+TYPE interface MyFhirSdk.Core.IFhirExtensionValue | Base=- | Interfaces=-
+TYPE interface MyFhirSdk.Core.IPrimitiveValueAccessor | Base=- | Interfaces=-
+  METHOD Void SetUntypedValue(System.Object)
+  PROPERTY System.Object UntypedValue
+  PROPERTY System.Type ValueType
+TYPE sealed class MyFhirSdk.Core.Meta | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.DataType] Security
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.DataType] Tag
+  PROPERTY System.Collections.Generic.IList`1[System.String] Profile
+  PROPERTY System.Nullable`1[System.DateTimeOffset] LastUpdated
+  PROPERTY System.String Source
+  PROPERTY System.String VersionId
+TYPE sealed class MyFhirSdk.Core.Narrative | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  PROPERTY System.String Div
+  PROPERTY System.String Status
+TYPE abstract class MyFhirSdk.Core.PrimitiveType`1 | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
+  METHOD System.String ToString()
+  PROPERTY Boolean HasValue
+  PROPERTY T Value
+TYPE abstract class MyFhirSdk.Core.Resource | Base=MyFhirSdk.Core.Base | Interfaces=-
+  PROPERTY MyFhirSdk.Core.Meta Meta
+  PROPERTY System.String Id
+  PROPERTY System.String ImplicitRules
+  PROPERTY System.String Language
+  PROPERTY System.String ResourceType
+TYPE static class MyFhirSdk.ModelSupport.ModelRules | Base=System.Object | Interfaces=-
+  METHOD MyFhirSdk.ModelContracts.ValidationRuleDefinition Choice[T](System.String, Boolean, System.Func`2[T,System.Object][])
+  METHOD MyFhirSdk.ModelContracts.ValidationRuleDefinition Required[T](System.String, System.Func`2[T,System.Object], Boolean)
+TYPE sealed class MyFhirSdk.ModelSupport.PrimitiveCodecException | Base=System.FormatException | Interfaces=System.Runtime.Serialization.ISerializable
+  CONSTRUCTOR Void .ctor(System.String)
+  CONSTRUCTOR Void .ctor(System.String, System.Exception)
+TYPE static class MyFhirSdk.ModelSupport.PrimitiveCodecs | Base=System.Object | Interfaces=-
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveCodec Boolean
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveCodec Decimal
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveCodec Integer
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveCodec Integer64
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveCodec String
+TYPE static class MyFhirSdk.ModelSupport.PrimitiveValidators | Base=System.Object | Interfaces=-
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Base64Binary
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Boolean
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Canonical
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Code
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Date
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator DateTime
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Decimal
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Id
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Instant
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Integer
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Integer64
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Markdown
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Oid
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator PositiveInt
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator String
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Time
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator UnsignedInt
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Uri
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Url
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Uuid

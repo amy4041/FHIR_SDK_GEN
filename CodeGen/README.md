@@ -7,7 +7,7 @@ deterministic C# source 的 repository-local .NET tool。命令為 `myfhir-codeg
 
 | 項目 | 支援值 |
 | --- | --- |
-| Tool / CodeGen | `1.2.0` |
+| Tool / CodeGen | `1.2.1` |
 | .NET target framework | `net9.0` |
 | FHIR package | `hl7.fhir.r5.core#5.0.0` |
 | FHIR version | `5.0.0` |
@@ -101,7 +101,7 @@ Package identity必須符合命令中的package ID/version/FHIR version。
 
 ### 在 repository 外操作
 
-準備 .NET 9 SDK、一份已驗證的 `MyFhirSdk.CodeGen.Tool.1.2.0.nupkg`、
+準備 .NET 9 SDK、一份已驗證的 `MyFhirSdk.CodeGen.Tool.1.2.1.nupkg`、
 `hl7.fhir.r5.core-5.0.0.tgz`，以及同一版本 source 的
 [`primitive-generation-policy.json`](Policy/primitive-generation-policy.json)。
 交付時將 policy 原樣複製成獨立檔案；primitive mode 即使安裝包內有 policy，仍要求
@@ -112,7 +112,7 @@ Package identity必須符合命令中的package ID/version/FHIR version。
 ```text
 work/
   NuGet.Config
-  feed/MyFhirSdk.CodeGen.Tool.1.2.0.nupkg
+  feed/MyFhirSdk.CodeGen.Tool.1.2.1.nupkg
   inputs/hl7.fhir.r5.core-5.0.0.tgz
   inputs/primitive-generation-policy.json
 ```
@@ -137,7 +137,7 @@ work/
 ```powershell
 dotnet new tool-manifest
 $env:NUGET_PACKAGES = Join-Path (Get-Location).Path '.nuget/packages'
-dotnet tool install MyFhirSdk.CodeGen.Tool --local --version 1.2.0 --configfile ./NuGet.Config
+dotnet tool install MyFhirSdk.CodeGen.Tool --local --version 1.2.1 --configfile ./NuGet.Config
 dotnet myfhir-codegen --help
 dotnet myfhir-codegen `
   --mode primitive `
@@ -151,7 +151,7 @@ dotnet myfhir-codegen `
 
 預期產物為 20 個 wrappers、1 個 registry composition 與 1 份 manifest，共 22 個檔案；
 `xhtml` 維持 policy 明確列出的 unsupported primitive。再次執行應得到相同 bytes。
-已有 pin 為 `1.2.0` 的 manifest 時，省略建立 manifest 與 install，改用
+已有 pin 為 `1.2.1` 的 manifest 時，省略建立 manifest 與 install，改用
 `dotnet tool restore --configfile ./NuGet.Config`。若仍 pin 舊版，先依下方升級流程更新版本。
 
 ### 資產解析
@@ -294,3 +294,8 @@ CodeGen packaging tests 會呼叫 PowerShell 7.2+ 執行真實 package inventory
 驗證 LF/CRLF source 可用，以及 UTF-8 BOM、UTF-16、損壞 UTF-8 會被拒絕。
 CI 使用 PATH 中的 pwsh；若本機使用 portable PowerShell，可設定
 MYFHIRSDK_TEST_PWSH 為 pwsh 執行檔的絕對路徑後再執行 dotnet test。
+
+V3 將 R5 model ownership 移至 `MyFhirSdk.R5.Models`，共用 primitive codecs／rule implementations 位於 `MyFhirSdk.ModelSupport`。
+Tool 1.2.1 同步 ownership policy／descriptor provenance，並排除 host 的 Models／support assemblies 作為 TPA compiler references。
+Runtime API 與 canonical compiler reference bytes 不變；852 個 generated C# files 不變，兩份 manifests 更新版本與 hashes。
+遷移與驗收見 [V3 baseline](../docs/fhir_versions/baselines/v3/README.md)。

@@ -11,48 +11,35 @@ internal sealed class R5ModelMetadataProvider :
     IModelMetadataProvider,
     IValidationRuleProvider
 {
-    private readonly ImmutableModelMetadataProvider _models;
-    private readonly ResourceRuleRegistry _validationRules;
+    private static IModelMetadataProvider Models => R5ModelContext.Default.Metadata;
+    internal static R5ModelMetadataProvider Default { get; } = new();
 
-    private R5ModelMetadataProvider(
-        ImmutableModelMetadataProvider models,
-        ResourceRuleRegistry validationRules)
-    {
-        _models = models;
-        _validationRules = validationRules;
-    }
-
-    internal static R5ModelMetadataProvider Default { get; } = CreateDefault();
-
-    internal ImmutableModelMetadataProvider Models => _models;
-    internal ResourceRuleRegistry ValidationRules => _validationRules;
-
-    public IReadOnlyList<Type> ConcreteDataTypes => _models.ConcreteDataTypes;
+    public IReadOnlyList<Type> ConcreteDataTypes => Models.ConcreteDataTypes;
 
     public ResourceTypeMetadata GetRequiredResource(string fhirTypeName) =>
-        _models.GetRequiredResource(fhirTypeName);
+        Models.GetRequiredResource(fhirTypeName);
 
     public ResourceTypeMetadata GetRequiredResource(Type resourceType) =>
-        _models.GetRequiredResource(resourceType);
+        Models.GetRequiredResource(resourceType);
 
     public bool TryGetDeclaredDataType(
         Type declaringType,
         string propertyName,
         out Type concreteType) =>
-        _models.TryGetDeclaredDataType(declaringType, propertyName, out concreteType);
+        Models.TryGetDeclaredDataType(declaringType, propertyName, out concreteType);
 
     public string GetRequiredExtensionValuePropertyName(Type valueType) =>
-        _models.GetRequiredExtensionValuePropertyName(valueType);
+        Models.GetRequiredExtensionValuePropertyName(valueType);
 
     public bool TryGetExtensionValueType(string propertyName, out Type valueType) =>
-        _models.TryGetExtensionValueType(propertyName, out valueType);
+        Models.TryGetExtensionValueType(propertyName, out valueType);
 
     public bool TryGetOpenTypeJsonPropertyName(
         Type declaringType,
         string propertyName,
         Type valueType,
         out string jsonPropertyName) =>
-        _models.TryGetOpenTypeJsonPropertyName(
+        Models.TryGetOpenTypeJsonPropertyName(
             declaringType,
             propertyName,
             valueType,
@@ -63,20 +50,13 @@ internal sealed class R5ModelMetadataProvider :
         string propertyName,
         string jsonPropertyName,
         out Type valueType) =>
-        _models.TryGetOpenTypeValueType(
+        Models.TryGetOpenTypeValueType(
             declaringType,
             propertyName,
             jsonPropertyName,
             out valueType);
 
     public IReadOnlyList<IFhirValidationRule> GetRules(Type type) =>
-        _validationRules.GetRules(type);
-
-    private static R5ModelMetadataProvider CreateDefault()
-    {
-        return new R5ModelMetadataProvider(
-            GeneratedR5ModelMetadata.Create(),
-            GeneratedR5ValidationRules.Create());
-    }
+        R5ModelContext.Default.Rules.GetRules(type);
 
 }

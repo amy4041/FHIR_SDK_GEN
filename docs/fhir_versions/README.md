@@ -16,7 +16,8 @@ Version 0.1 — 2026-10-13
 V0 已建立 baseline runner、R4 input lock 與 [設計決策](V0_Decisions.md)。
 執行結果及 G0 狀態見 [V0 baseline](baselines/v0/README.md)；尚未新增 R4 production 支援。
 namespace／Models assembly 方向由 V0 固定；[V1 selected closure 實驗](baselines/v1/README.md)已提交，使用者確認 push CI 通過。
-[V2 context／SPI](baselines/v2/README.md)建立正式版本 context、中立契約與 engines ownership guard；
+[V2 context／SPI](baselines/v2/README.md)已提交並由使用者確認 CI 通過；
+[V3 R5 Models 分離](baselines/v3/README.md)將模型與 provider 編譯至獨立 assembly，共用實作由 ModelSupport 擁有。
 完整 R4 Models／generator／Client 支援仍須依後續 gates 驗證。
 
 ## 目前基準與目標
@@ -30,7 +31,7 @@ namespace／Models assembly 方向由 V0 固定；[V1 selected closure 實驗](b
 | FHIR | R5 `5.0.0` | 新增 R4 `4.0.1`，保留 R5 `5.0.0` |
 | Repository | Runtime、SDK、Generator 同 repository | 保持同 repository，以專案與契約劃分責任 |
 | Generator | 同一工具，但多處固定 R5 | 共用 pipeline，各版本使用明確設定、policy 與輸出 |
-| Models | R5 models 與 composition 編譯於 `MyFhirSdk.dll` | R4、R5 Models 獨立 assembly 與型別身分 |
+| Models | R5 models／provider 編譯於 `MyFhirSdk.R5.Models.dll`；R4 仍為 bounded fixture | 後續交付完整 R4 Models |
 | Engines | Parser／Serializer／Validator 在 SDK，預設 R5 | 使用明確版本 context；獨立 engines assembly 視實作需要 |
 | Runtime | 最小 kernel，含 bootstrap types | 優先共用，先驗證 bootstrap 與跨版本邊界 |
 | 工具鏈 | SDK `9.0.317`／`net9.0` | 此工作不順帶升級 TFM |

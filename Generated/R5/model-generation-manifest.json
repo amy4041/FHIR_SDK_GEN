@@ -10,20 +10,20 @@
     "version": "1.1.0",
     "sha256": "3f3739d24c9cbf149746ce066fedd556c5f076d9e48b9d04d6e28302e638856b"
   },
-  "codeGenVersion": "1.2.0",
+  "codeGenVersion": "1.2.1",
   "runtimeContractVersion": "runtime-kernel-v2",
   "compatibility": {
     "schemaVersion": 1,
     "versionPolicy": "exact",
     "tool": {
       "packageId": "MyFhirSdk.CodeGen.Tool",
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
-    "codeGenVersion": "1.2.0",
+    "codeGenVersion": "1.2.1",
     "runtimeDescriptor": {
       "schemaVersion": 2,
       "version": "runtime-kernel-v2",
-      "sha256": "75ce3d0aebb6c0e69ce18919b3b3bb6387faed1eee588e5838716d2abf365d99"
+      "sha256": "f3cabf2c7171adbec63aca303db4670b8468190f2b755ed00eefcb11d3cb9c85"
     },
     "compilerReference": {
       "logicalIdentity": "MyFhirSdk.Runtime, Version=1.0.0.0, PublicKeyToken=null, TargetFramework=net9.0",
@@ -59,7 +59,7 @@
     },
     {
       "name": "model-ownership",
-      "sha256": "9a3cc898ff59d9f0bf9c586464e7b935448ae5b86b0da1c84c80d05aeb240923"
+      "sha256": "781d9ee62f9d6e34e0134085a130112697f1414a7f94c5d9a819e359f0e2883b"
     },
     {
       "name": "validation-capability",

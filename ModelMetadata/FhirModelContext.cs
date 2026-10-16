@@ -160,6 +160,10 @@ public sealed class FhirModelContext
         {
             object result;
             try { result = _codec.CreatePrimitive(type, raw); }
+            catch (ModelSupport.PrimitiveCodecException exception)
+            {
+                throw new FhirSdkException(exception.Message, exception);
+            }
             catch (Exception exception) when (exception is FormatException or OverflowException or ArgumentException)
             {
                 throw new FhirSdkException($"FHIR_PRIMITIVE_CODEC: could not read '{type.FullName}'.", exception);

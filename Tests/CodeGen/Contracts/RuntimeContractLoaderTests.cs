@@ -36,7 +36,7 @@ public sealed class RuntimeContractLoaderTests : IDisposable
         Assert.Equal(1, view.Compatibility.SchemaVersion);
         Assert.Equal("exact", view.Compatibility.VersionPolicy);
         Assert.Equal(
-            "75ce3d0aebb6c0e69ce18919b3b3bb6387faed1eee588e5838716d2abf365d99",
+            "f3cabf2c7171adbec63aca303db4670b8468190f2b755ed00eefcb11d3cb9c85",
             view.DescriptorSha256);
         Assert.Equal(
             Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(path))).ToLowerInvariant(),

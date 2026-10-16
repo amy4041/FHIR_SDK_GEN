@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-- 狀態：V0 邊界決策見 [V0 Decisions](V0_Decisions.md)；V1 已提交並由使用者確認 push CI 通過；公開 SPI／context 實作見 [V2 evidence](baselines/v2/README.md)。完整 R4 相容性及後續生成仍待 V3–V7 驗收。
+- 狀態：V0–V2 已提交並由使用者確認 CI 通過；R5 Models 分離與共用實作 owner 見 [V3 evidence](baselines/v3/README.md)。完整 R4 相容性及後續生成仍待 V4–V7 驗收。
 - 目標版本：R4 `4.0.1` 與 R5 `5.0.0`；R4B 不包含在本階段範圍。
 - 決策責任：Architecture、Runtime、Models、Serialization、Validation、CodeGen、Compatibility 維護者。
 - 實作及證據：[Implementation Guide](MyFhirSdk_FHIR_R4_Support_Implementation_Guide.md)、[Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md)。
@@ -111,7 +111,9 @@ primitive、open type 及 Extension 同樣受檢查。誤用不得靜默依另�
 
 下圖是邏輯責任與允許的依賴，不代表每個框都必須成為獨立 DLL。V2 固定中立 contracts 位於
 `MyFhirSdk.ModelContracts.dll`，只引用 Runtime。版本 provider 指向該契約，engines 透過 context 使用版本資訊；
-engines 與 R5 compatibility composition 暫留 SDK，R5 Models 的實體分離在 V3 完成。
+V3 的 R5 Models／provider 位於 `MyFhirSdk.R5.Models`，只引用 Contracts／ModelSupport；
+共用 codec／rule implementations 位於 `MyFhirSdk.ModelSupport`，只引用 Contracts（及其 Runtime 相依）。
+SDK 只負責 default R5 context 組裝與 engines；Models／ModelSupport 不引用 SDK，不建立 production friend access。
 
 ```mermaid
 flowchart TD

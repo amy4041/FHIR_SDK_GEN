@@ -33,6 +33,9 @@
     <None Update="ApprovedModelContractsApi.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="ApprovedModelSupportApi.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <!-- Run the same framework Regex generator when compiling real SDK sources in K1 tests. -->
   <Target Name="StageK1RegexGenerator" AfterTargets="ResolveReferences" BeforeTargets="CoreCompile">

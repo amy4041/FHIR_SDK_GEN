@@ -107,7 +107,7 @@ public sealed class GeneratorCommandLineParserTests
         Assert.Equal("policy.json", options.PolicyPath);
         Assert.Equal("hl7.fhir.r5.core", options.FhirPackageId);
         Assert.Equal("5.0.0", options.FhirPackageVersion);
-        Assert.Equal("1.2.0", options.CodeGenVersion);
+        Assert.Equal("1.2.1", options.CodeGenVersion);
     }
 
     [Fact]

@@ -20,7 +20,7 @@ public sealed class RuntimePhysicalOwnershipTests
     public void ProductionPeOwnsExactlyTheApprovedKernelAndHasNoSdkDependencies()
     {
         var runtime = typeof(FhirObject).Assembly;
-        var sdk = typeof(FhirString).Assembly;
+        var sdk = typeof(MyFhirSdk.Serialization.Json.FhirJsonParser).Assembly;
         Assert.Equal("MyFhirSdk.Runtime", runtime.GetName().Name);
         Assert.NotSame(runtime, sdk);
         Assert.Equal(KernelNames, runtime.GetExportedTypes().Select(type => type.Name).Order(StringComparer.Ordinal));
@@ -60,8 +60,10 @@ public sealed class RuntimePhysicalOwnershipTests
         var sdkItems = sdk.RootElement.GetProperty("Items");
         Assert.Empty(runtimeItems.GetProperty("ProjectReference").EnumerateArray());
         var references = sdkItems.GetProperty("ProjectReference").EnumerateArray().ToArray();
-        Assert.Equal(2, references.Length);
+        Assert.Equal(4, references.Length);
         Assert.Equal(new[] { Path.Combine(root, "ModelContracts", "MyFhirSdk.ModelContracts.csproj"),
+            Path.Combine(root, "ModelSupport", "MyFhirSdk.ModelSupport.csproj"),
+            Path.Combine(root, "Models", "R5", "MyFhirSdk.R5.Models.csproj"),
             Path.Combine(root, "Runtime", "MyFhirSdk.Runtime.csproj") }.Order(StringComparer.Ordinal),
             references.Select(r => r.GetProperty("FullPath").GetString()).Order(StringComparer.Ordinal));
         var runtimeSources = Paths(runtimeItems, "Compile");
@@ -76,7 +78,7 @@ public sealed class RuntimePhysicalOwnershipTests
     private static HashSet<string> Paths(JsonElement items, string name) => items.GetProperty(name).EnumerateArray()
         .Select(item => item.GetProperty("FullPath").GetString()!).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-    private static async Task<JsonDocument> Evaluate(string project)
+    internal static async Task<JsonDocument> Evaluate(string project)
     {
         var start = new ProcessStartInfo("dotnet") { RedirectStandardOutput = true, RedirectStandardError = true,
             UseShellExecute = false, CreateNoWindow = true, WorkingDirectory = RepositoryRoot() };

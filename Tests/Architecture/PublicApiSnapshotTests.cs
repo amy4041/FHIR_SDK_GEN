@@ -12,7 +12,7 @@ public sealed class PublicApiSnapshotTests
             AppContext.BaseDirectory,
             "ApprovedPublicApi.txt");
         var approved = NormalizeNewlines(File.ReadAllText(approvedPath)).TrimEnd();
-        var actual = CreateSnapshot(typeof(MyFhirSdk.Primitives.FhirString).Assembly);
+        var actual = CreateSnapshot(typeof(MyFhirSdk.Serialization.Json.FhirJsonParser).Assembly);
         File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "ActualPublicApi.txt"), actual + "\n");
 
         if (string.Equals(approved, "PENDING", StringComparison.Ordinal))
@@ -51,7 +51,9 @@ public sealed class PublicApiSnapshotTests
 
         foreach (var type in assembly
                      .GetExportedTypes()
+                     .Concat(includeAll ? [] : typeof(MyFhirSdk.Primitives.FhirString).Assembly.GetExportedTypes())
                      .Concat(typeof(FhirObject).Assembly.GetExportedTypes())
+                     .Distinct()
                      .Where(type => includeAll || IsRuntimeSurface(type))
                      .OrderBy(type => type.FullName, StringComparer.Ordinal))
         {

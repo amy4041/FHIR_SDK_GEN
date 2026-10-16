@@ -47,12 +47,15 @@ public sealed class RuntimeReferenceServiceTests : IDisposable
     {
         var paths = RuntimeReferenceService.GetTrustedPlatformAssemblyPaths()
             .Append(typeof(MyFhirSdk.Core.FhirObject).Assembly.Location)
+            .Append(typeof(MyFhirSdk.Serialization.Json.FhirJsonParser).Assembly.Location)
+            .Append(typeof(MyFhirSdk.ModelContracts.ModelIdentity).Assembly.Location)
+            .Append(typeof(MyFhirSdk.ModelSupport.ModelRules).Assembly.Location)
             .Append(typeof(MyFhirSdk.Primitives.FhirString).Assembly.Location).Distinct();
         var result = new RuntimeReferenceService().Resolve(CodeGenTestRuntime.RuntimeContract,
             [GetPackageAssetPath()], paths);
         Assert.True(result.IsSuccess, Describe(result.Diagnostics));
         Assert.DoesNotContain(result.Value!.TrustedPlatformReferences,
-            reference => reference.Assembly.Name is "MyFhirSdk" or "MyFhirSdk.Runtime");
+            reference => reference.Assembly.Name == "MyFhirSdk" || reference.Assembly.Name.StartsWith("MyFhirSdk.", StringComparison.Ordinal));
         Assert.Single(result.Value.RuntimeContractReferences);
         var missing = new RuntimeReferenceService().Resolve(CodeGenTestRuntime.RuntimeContract, [], paths);
         AssertFailure(missing, GeneratorDiagnosticCodes.RuntimeReferenceMissing);

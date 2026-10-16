@@ -131,6 +131,8 @@ def project_inventory(project):
     """
     paths = {"SdkAssemblyPath": "bin/Release/net9.0/MyFhirSdk.dll",
              "RuntimeAssemblyPath": "bin/Release/net9.0/MyFhirSdk.Runtime.dll"}
+    if (ROOT / "Models/R5/MyFhirSdk.R5.Models.csproj").is_file():
+        paths["ModelsAssemblyPath"] = "bin/Release/net9.0/MyFhirSdk.R5.Models.dll"
     data = json.loads(run(["dotnet", "msbuild", project, "-p:Configuration=Release",
                            *[f"-p:{name}={ROOT / path}" for name, path in paths.items()],
                            "-getItem:Compile,ProjectReference,Reference", "-getProperty:TargetFramework,AssemblyName"]))
@@ -142,7 +144,7 @@ def project_inventory(project):
     dll_references = []
     for item in data["Items"]["Reference"]:
         hint = item.get("HintPath")
-        if item["Identity"] in {"MyFhirSdk", "MyFhirSdk.Runtime"} and not hint:
+        if item["Identity"] in {"MyFhirSdk", "MyFhirSdk.Runtime", "MyFhirSdk.R5.Models"} and not hint:
             raise ValueError(f"Unresolved implementation HintPath in {project}: {item['Identity']}")
         dll_references.append({"identity": item["Identity"],
                                "hintPath": portable((ROOT / project).parent / hint) if hint else None})
@@ -239,13 +241,14 @@ def main():
         write(output / "consumer-findings.json", findings)
         run(["dotnet", "msbuild", "eng/MyFhirSdk.CodeGen.Build.proj", "/t:Pack", "/p:Configuration=Release",
              f"/p:PackageOutputPath={output / 'package'}"], output / "pack.log")
-        package = output / "package/MyFhirSdk.CodeGen.Tool.1.2.0.nupkg"
         reference = ROOT / "Runtime/obj/Release/net9.0/ref/MyFhirSdk.Runtime.dll"
         descriptor = json.loads((ROOT / "CodeGen/Policy/runtime-contract.json").read_text())
+        tool_version = descriptor["compatibility"]["toolVersion"]
+        package = output / f"package/MyFhirSdk.CodeGen.Tool.{tool_version}.nupkg"
         expected = descriptor["compilerReference"]["sha256"]
         if sha(reference) != expected:
             raise ValueError("Canonical compiler reference mismatch")
-        summary["tool"] = {"packageId": "MyFhirSdk.CodeGen.Tool", "version": "1.2.0", "sha256": sha(package),
+        summary["tool"] = {"packageId": "MyFhirSdk.CodeGen.Tool", "version": tool_version, "sha256": sha(package),
                            "descriptorSha256": sha(ROOT / "CodeGen/Policy/runtime-contract.json"),
                            "compilerReferenceSha256": sha(reference), "contract": descriptor["contractVersion"]}
         run(["dotnet", "build", "MyFhirSdk.csproj", "-c", "Release", "--no-restore"], output / "sdk-build.log")
@@ -258,6 +261,8 @@ def main():
         dependencies = [str(runtime)]
         if (ROOT / "ModelContracts/MyFhirSdk.ModelContracts.csproj").is_file():
             dependencies.append(str(contracts))
+        if (ROOT / "Models/R5/MyFhirSdk.R5.Models.csproj").is_file():
+            dependencies.extend(str(ROOT / "bin/Release/net9.0" / name) for name in ("MyFhirSdk.ModelSupport.dll", "MyFhirSdk.R5.Models.dll"))
         for name in ("public-api.txt", "public-api-repeat.txt"):
             run(["dotnet", str(api_tool), str(sdk), str(output / name), *dependencies], output / f"{name}.log")
         if sha(output / "public-api.txt") != sha(output / "public-api-repeat.txt"):

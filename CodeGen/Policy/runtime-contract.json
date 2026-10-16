@@ -10,8 +10,8 @@
   "compatibility": {
     "schemaVersion": 1,
     "versionPolicy": "exact",
-    "toolVersion": "1.2.0",
-    "codeGenVersion": "1.2.0",
+    "toolVersion": "1.2.1",
+    "codeGenVersion": "1.2.1",
     "fhirPackage": {
       "id": "hl7.fhir.r5.core",
       "version": "5.0.0",
@@ -36,7 +36,7 @@
       },
       {
         "name": "model-ownership",
-        "sha256": "9a3cc898ff59d9f0bf9c586464e7b935448ae5b86b0da1c84c80d05aeb240923"
+        "sha256": "781d9ee62f9d6e34e0134085a130112697f1414a7f94c5d9a819e359f0e2883b"
       },
       {
         "name": "validation-capability",

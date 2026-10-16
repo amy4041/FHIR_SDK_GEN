@@ -5,11 +5,12 @@
     <Nullable>enable</Nullable>
     <!-- Exclude non-SDK trees before default globs enumerate their build/cache
          outputs; Compile Remove below retains the explicit ownership boundary. -->
-    <DefaultItemExcludes>$(DefaultItemExcludes);artifacts/**;Tests/**;CodeGen/**;Runtime/**;ModelContracts/**</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);artifacts/**;Tests/**;CodeGen/**;Runtime/**;ModelContracts/**;ModelSupport/**;Models/**</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Runtime\**\*.cs" />
     <Compile Remove="ModelContracts\**\*.cs" />
+    <Compile Remove="ModelSupport\**\*.cs;Models\**\*.cs;Generated\R5\**\*.cs;Types\SimpleQuantity.cs" />
     <Compile Remove="artifacts\**\*.cs" />
     <Compile Remove="CodeGen\**\*.cs" />
     <Compile Remove="core\bin\**\*.cs" />
@@ -21,6 +22,8 @@
     <Compile Remove="@(RuntimeKernelSource)" />
     <ProjectReference Include="Runtime\MyFhirSdk.Runtime.csproj" />
     <ProjectReference Include="ModelContracts\MyFhirSdk.ModelContracts.csproj" />
+    <ProjectReference Include="ModelSupport\MyFhirSdk.ModelSupport.csproj" />
+    <ProjectReference Include="Models\R5\MyFhirSdk.R5.Models.csproj" />
   </ItemGroup>
 
 </Project>

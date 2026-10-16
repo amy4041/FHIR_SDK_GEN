@@ -23,18 +23,18 @@ public sealed class R5ModelOwnershipPolicyTests
 
         Assert.Equal(1, root.GetProperty("schemaVersion").GetInt32());
         Assert.Equal("5.0.0", root.GetProperty("fhirVersion").GetString());
-        Assert.Equal("single-sdk-assembly", layout.GetProperty("phaseCMode").GetString());
+        Assert.Equal("split-models-assembly", layout.GetProperty("phaseCMode").GetString());
         Assert.Equal("MyFhirSdk", layout.GetProperty("sdkAssemblyName").GetString());
         Assert.Equal(
-            "MyFhirSdk",
+            "MyFhirSdk.R5.Models",
             layout.GetProperty("generatedModelsAssemblyName").GetString());
         Assert.Equal(
-            "sdk-project-reference",
+            "metadata-only-runtime-compiler-reference",
             layout.GetProperty("codeGenRuntimeReference").GetString());
         Assert.Equal(
             "MyFhirSdk.CodeGen",
             layout.GetProperty("codeGenAssemblyName").GetString());
-        Assert.True(layout.GetProperty("splitRequiresAdr").GetBoolean());
+        Assert.False(layout.GetProperty("splitRequiresAdr").GetBoolean());
 
         var runtimeContracts = root
             .GetProperty("runtimeContracts")
@@ -59,7 +59,7 @@ public sealed class R5ModelOwnershipPolicyTests
                     item.GetProperty("clrType").GetString()!)));
 
         var sdkAssembly = typeof(Patient).Assembly;
-        Assert.Equal("MyFhirSdk", sdkAssembly.GetName().Name);
+        Assert.Equal("MyFhirSdk.R5.Models", sdkAssembly.GetName().Name);
         Assert.Equal(
             "MyFhirSdk.CodeGen",
             typeof(ModelGenerationPipeline).Assembly.GetName().Name);

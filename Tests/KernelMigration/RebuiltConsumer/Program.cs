@@ -7,7 +7,9 @@ using MyFhirSdk.Core;
 using MyFhirSdk.Primitives;
 
 var runtime = typeof(Base).Assembly;
-var sdk = typeof(FhirBoolean).Assembly;
+var sdk = typeof(MyFhirSdk.Serialization.Json.FhirJsonParser).Assembly;
+var models = typeof(FhirBoolean).Assembly;
+var support = Assembly.Load("MyFhirSdk.ModelSupport");
 var library = typeof(MigrationProbe).Assembly;
 var application = Assembly.GetExecutingAssembly();
 var contracts = Assembly.Load("MyFhirSdk.ModelContracts");
@@ -19,6 +21,7 @@ var kernelNames = new[] {
 void Require(bool condition, string message) { if (!condition) throw new Exception(message); }
 Require(runtime.GetName().Name == "MyFhirSdk.Runtime", "Incorrect Runtime defining assembly.");
 Require(sdk.GetName().Name == "MyFhirSdk", "Incorrect SDK identity.");
+Require(models.GetName().Name == "MyFhirSdk.R5.Models", "Incorrect R5 Models identity.");
 Require(runtime.GetExportedTypes().Select(t => t.Name).Order(StringComparer.Ordinal)
     .SequenceEqual(kernelNames.Order(StringComparer.Ordinal)), "Unexpected kernel ownership.");
 Require(!sdk.GetExportedTypes().Any(t => t.Namespace == "MyFhirSdk.Core" && kernelNames.Contains(t.Name)),
@@ -30,7 +33,7 @@ foreach (var type in runtime.GetExportedTypes())
     Require(type.AssemblyQualifiedName!.Contains(", MyFhirSdk.Runtime,"), "Unexpected assembly-qualified identity.");
     Require(Type.GetType(type.AssemblyQualifiedName, throwOnError: true) == type, "Reflection identity resolution failed.");
 }
-foreach (var assembly in new[] { runtime, sdk, contracts, library, application })
+foreach (var assembly in new[] { runtime, sdk, contracts, models, support, library, application })
     Require(Path.GetFullPath(Path.GetDirectoryName(assembly.Location)!) == Path.GetFullPath(AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar)),
         "An assembly was loaded outside the isolated deployment: " + assembly.Location);
 foreach (var assembly in new[] { library, application })
@@ -52,5 +55,5 @@ PrimitiveType<bool?> primitive = MigrationProbe.AccessPrimitive();
 Require(((IPrimitiveValueAccessor)primitive).UntypedValue is null, "Application SPI access failed.");
 Console.WriteLine(JsonSerializer.Serialize(new {
     status = "passed", checks = new[] { "ownership", "noForwarders", "libraryAndApplicationPe", "reflection", "loadPaths", "jsonRoundTrip", "accessorCasts" },
-    assemblies = new[] { runtime, sdk, contracts, library, application }.Select(a => new { identity = a.FullName, path = a.Location })
+    assemblies = new[] { runtime, sdk, contracts, models, support, library, application }.Select(a => new { identity = a.FullName, path = a.Location })
 }));

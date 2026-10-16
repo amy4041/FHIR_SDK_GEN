@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="MigrationProbe.cs" />
     <Reference Include="MyFhirSdk"><HintPath>$(SdkAssemblyPath)</HintPath></Reference>
+    <Reference Include="MyFhirSdk.R5.Models" Condition="'$(ModelsAssemblyPath)' != ''"><HintPath>$(ModelsAssemblyPath)</HintPath></Reference>
     <Reference Include="MyFhirSdk.Runtime"><HintPath>$(RuntimeAssemblyPath)</HintPath></Reference>
   </ItemGroup>
   <Target Name="RequireImplementationAssemblies" BeforeTargets="ResolveReferences">

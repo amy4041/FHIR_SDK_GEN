@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-狀態：V0／V1 已提交並由使用者確認 CI 通過；V2 provider/context 實作與驗證見 [V2 baseline](baselines/v2/README.md)；V3–V7 Planned。依據 [ADR](MyFhirSdk_FHIR_R4_Support_ADR.md)，
+狀態：V0／V1／V2 已提交並由使用者確認 CI 通過；V3 Models 分離與驗證見 [V3 baseline](baselines/v3/README.md)；V4–V7 Planned。依據 [ADR](MyFhirSdk_FHIR_R4_Support_ADR.md)，
 驗收採 [Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md)。
 V 編號表示多版本工作包，與已交付的 Runtime extraction K0–K7 分開。
 
@@ -72,6 +72,10 @@ R4 驗收 provider 是引用 V1 bounded Models 的獨立 fixture，不等於 V5 
 如需 engines assembly，三個 engines 可共用一個專案；不以多拆 DLL 作為驗收目標。
 
 ### V3 — R5 Models 分離與重編遷移
+
+實作 owner：`MyFhirSdk.R5.Models` 擁有 R5 模型與版本 composition，`MyFhirSdk.ModelSupport` 擁有共用
+primitive codecs／validators 與 base rule implementations；SDK 擁有 context、lookup adapters 與 engines。
+V3 不更動 generated C# 內容；Tool 1.2.1 同步 ownership policy／descriptor provenance 與 TPA 隔離修正。
 
 - 將 R5 generated primitives／datatypes／resources、必要 constraint declarations 與版本 composition
   編譯到獨立 Models assembly，維持單一 compile owner。

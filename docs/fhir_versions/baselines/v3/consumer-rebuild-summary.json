@@ -1,0 +1,116 @@
+{
+  "status": "passed",
+  "gates": {
+    "consumerInventory": "passed",
+    "cleanRegression": "passed",
+    "rebuiltConsumers": "passed",
+    "deployment": "passed",
+    "missingRuntime": "passed",
+    "missingModelContracts": "passed",
+    "missingR5Models": "passed",
+    "missingModelSupport": "passed",
+    "splitInventory": "passed",
+    "historicalBaseline": "passed"
+  },
+  "regressionCounts": {
+    "total": 977,
+    "passed": 976,
+    "failed": 0,
+    "skipped": 1
+  },
+  "missingRuntime": {
+    "exitCode": -532462766,
+    "dependency": "MyFhirSdk.Runtime",
+    "fallbackObserved": false
+  },
+  "missingModelContracts": {
+    "exitCode": -532462766,
+    "dependency": "MyFhirSdk.ModelContracts",
+    "fallbackObserved": false
+  },
+  "missingR5Models": {
+    "exitCode": -532462766,
+    "dependency": "MyFhirSdk.R5.Models",
+    "fallbackObserved": false
+  },
+  "missingModelSupport": {
+    "exitCode": -532462766,
+    "dependency": "MyFhirSdk.ModelSupport",
+    "fallbackObserved": false
+  },
+  "providerOnlyConsumer": {
+    "status": "passed",
+    "sdkLoaded": false,
+    "models": "MyFhirSdk.R5.Models",
+    "primitive": "independent",
+    "version": "5.0.0",
+    "ruleIssues": 2
+  },
+  "runtimeDeclarations": 14,
+  "publicApiSha256": "fedabbd03b4ce0d8bfc692ad580d33441cd59ffc57295534a118c58206d35246",
+  "historicalBaseline": "Frozen fixture pin verified; baseline files unchanged. Historical execution remains the separate K0 gate.",
+  "rawEvidence": "artifacts/fhir-versions/v3/consumers/evidence.json",
+  "rawEvidenceSha256": "24e3a44f62f0bfb1133aea4262e1befd6349cbdfb4ab56cc6c60fd133e5df6d6",
+  "harnessChecks": 23,
+  "harnessSha256": "3e6892e7e427e8b0b9f0bd2e6ce14ab4e16fd0f50f2ff153ac81de7384143564",
+  "deployedHashes": [
+    {
+      "identity": "MyFhirSdk.Runtime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sha256": "94273a3af9f76f47823253c2d41a707f86fa1360f73765e7acf402ab82fb1fbd"
+    },
+    {
+      "identity": "MyFhirSdk, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sha256": "d190658b70725308cabc7e9d93bd3db8ceabb3f1bcbdc7d7ab6075bc4ef19fa1"
+    },
+    {
+      "identity": "MyFhirSdk.ModelContracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sha256": "f93ccc96249f046c5d2f9806a8da35729c2cd952b6c8a4332ec20ee8a26e5a97"
+    },
+    {
+      "identity": "MyFhirSdk.R5.Models, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sha256": "139df1e1252f5512adb67fd5e1b4fc2349c005ef4904707a4f41e0c09e21e04c"
+    },
+    {
+      "identity": "MyFhirSdk.ModelSupport, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sha256": "862b3b6a684851638e387f3cb823b6c98d32bbf43f6790d48cf747674038486e"
+    },
+    {
+      "identity": "RebuiltLibrary, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sha256": "04658ac3fe8269bae29ab414440468ce376f6675cdfba5b4e8f3677b293cab7e"
+    },
+    {
+      "identity": "RebuiltConsumer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sha256": "0372e745aa1e644fd4e0acd2181dbfae0c1a904c34ac089443d2a8f2447d3001"
+    }
+  ],
+  "migrationProjects": [
+    {
+      "source": "Models/R5/MyFhirSdk.R5.Models.csproj",
+      "role": "production-r5-models",
+      "projectReferences": [
+        "../../ModelSupport/MyFhirSdk.ModelSupport.csproj",
+        "../../ModelContracts/MyFhirSdk.ModelContracts.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test MyFhirSdk.sln -c Release --logger trx (builds production dependencies)"
+    },
+    {
+      "source": "ModelSupport/MyFhirSdk.ModelSupport.csproj",
+      "role": "production-model-support",
+      "projectReferences": [
+        "../ModelContracts/MyFhirSdk.ModelContracts.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test MyFhirSdk.sln -c Release --logger trx (builds production dependencies)"
+    },
+    {
+      "source": "Tests/FhirVersions/V3/ProviderConsumer/ProviderConsumer.csproj",
+      "role": "provider-only-consumer",
+      "projectReferences": [
+        "../../../../Models/R5/MyFhirSdk.R5.Models.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet run --project Tests/FhirVersions/V3/ProviderConsumer/ProviderConsumer.csproj -c Release"
+    }
+  ]
+}

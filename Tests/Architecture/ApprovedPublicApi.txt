@@ -55,6 +55,11 @@ TYPE sealed class MyFhirSdk.ModelMetadata.FhirModelContext | Base=System.Object 
   PROPERTY MyFhirSdk.ModelContracts.ModelIdentity Identity
 TYPE static class MyFhirSdk.ModelMetadata.R5.R5ModelContext | Base=System.Object | Interfaces=-
   PROPERTY MyFhirSdk.ModelMetadata.FhirModelContext Default
+TYPE static class MyFhirSdk.ModelMetadata.R5.R5ModelProvider | Base=System.Object | Interfaces=-
+  PROPERTY MyFhirSdk.ModelContracts.ModelIdentity Identity
+  PROPERTY MyFhirSdk.ModelContracts.ModelMetadataDefinition Metadata
+  PROPERTY MyFhirSdk.ModelContracts.PrimitiveProviderDefinition Primitives
+  PROPERTY MyFhirSdk.ModelContracts.ValidationProviderDefinition Validation
 TYPE sealed class MyFhirSdk.Primitives.FhirBase64Binary | Base=MyFhirSdk.Core.PrimitiveType<System.String> | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(System.String)

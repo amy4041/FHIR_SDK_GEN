@@ -55,6 +55,13 @@ $checks.Add('v2-runtime-only-neutral-contracts')
 Assert-KernelNeutralProjectDependencies (Join-Path $root 'Tests/FhirVersions/V2/Provider/MyFhirSdk.R4.V2.Provider.csproj') $root @(
     'ModelContracts/MyFhirSdk.ModelContracts.csproj', 'Tests/FhirVersions/V1/Models/MyFhirSdk.R4.V1.Models.csproj')
 $checks.Add('v2-provider-without-sdk-or-engines')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'ModelSupport/MyFhirSdk.ModelSupport.csproj') $root @('ModelContracts/MyFhirSdk.ModelContracts.csproj')
+$checks.Add('v3-shared-support-without-sdk-or-models')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'Models/R5/MyFhirSdk.R5.Models.csproj') $root @(
+    'ModelContracts/MyFhirSdk.ModelContracts.csproj', 'ModelSupport/MyFhirSdk.ModelSupport.csproj')
+$checks.Add('v3-independent-r5-models')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'Tests/FhirVersions/V3/ProviderConsumer/ProviderConsumer.csproj') $root @('Models/R5/MyFhirSdk.R5.Models.csproj')
+$checks.Add('v3-provider-only-consumer')
 # Use evaluated items in an isolated project to prove that SDK, DLL and package
 # dependencies are rejected; do not modify the committed experiment project.
 $modelProbe = Join-Path $output 'model-probe/Probe.csproj'

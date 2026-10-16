@@ -16,7 +16,7 @@ public sealed class KernelSdkIntegrationTests
     [Fact]
     public void DeployedSdkDoesNotGrantProductionGeneratorFriendAccess()
     {
-        var friends = typeof(MyFhirSdk.Primitives.FhirString).Assembly.GetCustomAttributes(typeof(InternalsVisibleToAttribute), false)
+        var friends = typeof(MyFhirSdk.Serialization.Json.FhirJsonParser).Assembly.GetCustomAttributes(typeof(InternalsVisibleToAttribute), false)
             .Cast<InternalsVisibleToAttribute>().Select(attribute => attribute.AssemblyName).ToArray();
         Assert.Equal(["MyFhirSdk.Architecture.Tests"], friends);
     }
@@ -46,8 +46,11 @@ public sealed class KernelSdkIntegrationTests
         Assert.Equal(852, (await RealSdkSourceCompiler.GeneratedSourcesAsync()).Count);
         var compilation = await Sdk.Value;
         Assert.Empty(Errors(compilation));
-        Assert.Equal(["MyFhirSdk.ModelContracts", "MyFhirSdk.Runtime"], compilation.ReferencedAssemblyNames
-            .Where(identity => identity.Name.StartsWith("MyFhirSdk")).Select(identity => identity.Name).Order(StringComparer.Ordinal));
+        var references = compilation.ReferencedAssemblyNames.Where(i => i.Name.StartsWith("MyFhirSdk")).Select(i => i.Name).ToArray();
+        Assert.Contains("MyFhirSdk.ModelContracts", references);
+        Assert.Contains("MyFhirSdk.ModelSupport", references);
+        Assert.Contains("MyFhirSdk.Runtime", references);
+        Assert.Single(references, name => name.StartsWith("MyFhirSdk.R5.Models.Integration.", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -70,13 +73,13 @@ public sealed class KernelSdkIntegrationTests
     }
 
     [Theory]
-    [InlineData("ModelMetadata/ImmutableModelMetadataProvider.cs", "ImmutableModelMetadataProvider", "MetadataProviderAfterDrift", "Generated/R5/ModelMetadata/R5ModelMetadata.g.cs")]
-    [InlineData("Validation/Rules/RequiredFieldRule.cs", " For(", " ForAfterDrift(", "Generated/R5/ModelMetadata/R5ValidationRules.g.cs")]
-    [InlineData("Primitives/Runtime/PrimitiveRegistry.cs", "Define<TPrimitive, TValue>(", "DefineAfterDrift<TPrimitive, TValue>(", "Generated/R5/Primitives/PrimitiveRegistry.Composition.g.cs")]
+    [InlineData("Models/R5/MetadataComposition.cs", "ImmutableModelMetadataProvider", "MetadataProviderAfterDrift", "Generated/R5/ModelMetadata/R5ModelMetadata.g.cs")]
+    [InlineData("Models/R5/ValidationComposition.cs", " For(", " ForAfterDrift(", "Generated/R5/ModelMetadata/R5ValidationRules.g.cs")]
+    [InlineData("Models/R5/PrimitiveComposition.cs", "Define<TPrimitive, TValue>(", "DefineAfterDrift<TPrimitive, TValue>(", "Generated/R5/Primitives/PrimitiveRegistry.Composition.g.cs")]
     public async Task RealSdkContractDriftFailsAtFreshGeneratedComposition(
         string path, string original, string replacement, string generatedPath)
     {
-        var compilation = await Sdk.Value;
+        var compilation = RealSdkSourceCompiler.CreateModels(await RealSdkSourceCompiler.GeneratedSourcesAsync());
         var tree = compilation.SyntaxTrees.Single(tree => tree.FilePath == path);
         var source = tree.GetText().ToString();
         Assert.Contains(original, source);
@@ -89,7 +92,7 @@ public sealed class KernelSdkIntegrationTests
     [Fact]
     public async Task MissingFreshCompositionIsNotFilledByCommittedGeneratedSources()
     {
-        var compilation = await Sdk.Value;
+        var compilation = RealSdkSourceCompiler.CreateModels(await RealSdkSourceCompiler.GeneratedSourcesAsync());
         var tree = compilation.SyntaxTrees.Single(tree => tree.FilePath == "Generated/R5/ModelMetadata/R5ModelMetadata.g.cs");
         Assert.Contains(Errors(compilation.RemoveSyntaxTrees(tree)), error =>
             error.GetMessage().Contains("GeneratedR5ModelMetadata"));

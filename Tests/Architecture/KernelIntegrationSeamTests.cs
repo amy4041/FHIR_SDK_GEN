@@ -40,7 +40,25 @@ public sealed class KernelIntegrationSeamTests
         return MetadataReference.CreateFromImage(stream.ToArray());
     });
 
-    private static readonly Lazy<CSharpCompilation> Sdk = new(() =>
+    private static readonly Lazy<CSharpCompilation> Support = new(() => WithRegex(
+        Compile("K1.ModelSupport", Sources("ModelSupport"), KernelReference.Value, ContractsReference.Value)));
+    private static readonly Lazy<MetadataReference> SupportReference = new(() => Reference(Support.Value));
+    private static readonly Lazy<CSharpCompilation> Models = new(() => Compile("K1.R5.Models",
+        Sources("Models/R5").Concat(Sources("Generated/R5")).Append(Read("Types/SimpleQuantity.cs")),
+        KernelReference.Value, ContractsReference.Value, SupportReference.Value));
+    private static readonly Lazy<MetadataReference> ModelsReference = new(() => Reference(Models.Value));
+    private static readonly Lazy<CSharpCompilation> Sdk = new(() => Compile("K1.Sdk", SdkSources(),
+        KernelReference.Value, ContractsReference.Value, SupportReference.Value, ModelsReference.Value));
+
+    private static MetadataReference Reference(CSharpCompilation compilation)
+    {
+        using var stream = new MemoryStream();
+        var result = compilation.Emit(stream);
+        Assert.True(result.Success, Describe(result.Diagnostics));
+        return MetadataReference.CreateFromImage(stream.ToArray());
+    }
+
+    private static CSharpCompilation WithRegex(CSharpCompilation input)
     {
         var generatorAssembly = Assembly.LoadFrom(Path.Combine(AppContext.BaseDirectory,
             "K1Analyzers", "System.Text.RegularExpressions.Generator.dll"));
@@ -49,11 +67,11 @@ public sealed class KernelIntegrationSeamTests
         var generator = (IIncrementalGenerator)Activator.CreateInstance(generatorType)!;
         CSharpGeneratorDriver.Create([generator.AsSourceGenerator()],
                 parseOptions: new CSharpParseOptions(LanguageVersion.CSharp13))
-            .RunGeneratorsAndUpdateCompilation(Compile("K1.Sdk", SdkSources(), KernelReference.Value, ContractsReference.Value),
+            .RunGeneratorsAndUpdateCompilation(input,
                 out var compilation, out var diagnostics);
         Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Severity == DiagnosticSeverity.Error);
         return (CSharpCompilation)compilation;
-    });
+    }
 
     [Fact]
     public void ApprovedKernelCompilesWithPlatformReferencesOnly()
@@ -135,12 +153,12 @@ public sealed class KernelIntegrationSeamTests
     [Fact]
     public void RealRegistryContractDriftFailsGeneratedCompositionCompilation()
     {
-        var original = Sdk.Value.SyntaxTrees.Single(tree =>
-            tree.FilePath == "Primitives/Runtime/PrimitiveRegistry.cs");
+        var original = Models.Value.SyntaxTrees.Single(tree =>
+            tree.FilePath == "Models/R5/PrimitiveComposition.cs");
         var source = original.GetText().ToString();
         const string declaration = "Define<TPrimitive, TValue>(";
         Assert.Contains(declaration, source);
-        var drifted = Sdk.Value.ReplaceSyntaxTree(original, Parse(original.FilePath,
+        var drifted = Models.Value.ReplaceSyntaxTree(original, Parse(original.FilePath,
             source.Replace(declaration, "DefineAfterDrift<TPrimitive, TValue>(", StringComparison.Ordinal)));
         Assert.Contains(Errors(drifted), error => error.Id == "CS0103"
             && error.Location.SourceTree?.FilePath
@@ -161,17 +179,17 @@ public sealed class KernelIntegrationSeamTests
                 provider.GetValue(engine));
         }
         Assert.NotEqual(typeof(FhirObject).Assembly, typeof(PrimitiveRegistry).Assembly);
-        Assert.Equal(typeof(PrimitiveRegistry).Assembly, typeof(FhirString).Assembly);
+        Assert.NotEqual(typeof(PrimitiveRegistry).Assembly, typeof(FhirString).Assembly);
     }
 
     private static IEnumerable<SyntaxTree> SdkSources() =>
-        new[] { "core", "Primitives", "Generated", "Types", "ModelMetadata", "Serialization",
+        new[] { "core", "Primitives", "ModelMetadata", "Serialization",
             "Validation", "Client", "ImplementationGuides" }
             .SelectMany(Sources)
             .Where(tree => !KernelFiles.Any(name => tree.FilePath == $"core/{name}.cs"));
 
     private static CSharpCompilation Compile(string name, IEnumerable<SyntaxTree> sources,
-        MetadataReference? kernel = null, MetadataReference? contracts = null) => CSharpCompilation.Create(name,
+        params MetadataReference[] additional) => CSharpCompilation.Create(name,
             sources.Append(Parse("ImplicitUsings.g.cs", """
                 global using System;
                 global using System.Collections.Generic;
@@ -185,8 +203,7 @@ public sealed class KernelIntegrationSeamTests
                 // testhost's TPA list also contains application/test assemblies.
                 .Where(path => Path.GetDirectoryName(path) == Path.GetDirectoryName(typeof(object).Assembly.Location))
                 .Select(path => (MetadataReference)MetadataReference.CreateFromFile(path))
-                .Concat(kernel is null ? [] : new[] { kernel })
-                .Concat(contracts is null ? [] : new[] { contracts }),
+                .Concat(additional),
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
                 nullableContextOptions: NullableContextOptions.Enable, deterministic: true));
 

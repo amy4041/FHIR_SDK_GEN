@@ -94,6 +94,8 @@ def main():
         assemblies = {"MyFhirSdk.dll": ROOT / "bin/Release/net9.0/MyFhirSdk.dll",
             "MyFhirSdk.Runtime.dll": ROOT / "Runtime/bin/Release/net9.0/MyFhirSdk.Runtime.dll",
             "MyFhirSdk.ModelContracts.dll": ROOT / "ModelContracts/bin/Release/net9.0/MyFhirSdk.ModelContracts.dll",
+            "MyFhirSdk.ModelSupport.dll": ROOT / "ModelSupport/bin/Release/net9.0/MyFhirSdk.ModelSupport.dll",
+            "MyFhirSdk.R5.Models.dll": ROOT / "Models/R5/bin/Release/net9.0/MyFhirSdk.R5.Models.dll",
             "MyFhirSdk.R4.V1.Models.dll": ROOT / "Tests/FhirVersions/V1/Models/bin/Release/net9.0/MyFhirSdk.R4.V1.Models.dll",
             "MyFhirSdk.R4.V2.Provider.dll": ROOT / "Tests/FhirVersions/V2/Provider/bin/Release/net9.0/MyFhirSdk.R4.V2.Provider.dll"}
         summary["testedImplementationHashes"] = {}

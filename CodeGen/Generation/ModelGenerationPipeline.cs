@@ -19,7 +19,7 @@ namespace MyFhirSdk.CodeGen.Generation;
 
 public sealed class ModelGenerationPipeline
 {
-    public const string DefaultCodeGenVersion = "1.2.0";
+    public const string DefaultCodeGenVersion = "1.2.1";
 
     private readonly DefinitionInventoryPipeline _inventoryPipeline = new();
     private readonly PrimitiveGenerationPolicyLoader _primitivePolicyLoader = new();

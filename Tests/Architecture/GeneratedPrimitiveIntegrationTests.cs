@@ -8,7 +8,7 @@ public sealed class GeneratedPrimitiveIntegrationTests
     [Fact]
     public void DefaultRegistryUsesGeneratedCompositionWithoutHandwrittenFallback()
     {
-        var registryType = typeof(PrimitiveRegistry);
+        var registryType = typeof(FhirString).Assembly.GetType("MyFhirSdk.Primitives.PrimitiveRegistry", throwOnError: true)!;
         const BindingFlags privateStatic =
             BindingFlags.NonPublic | BindingFlags.Static;
 
@@ -19,6 +19,7 @@ public sealed class GeneratedPrimitiveIntegrationTests
             "AddHandwrittenDefinitions",
             privateStatic));
         Assert.Equal(20, PrimitiveRegistry.Default.Definitions.Count);
+        Assert.NotEqual(registryType.Assembly, typeof(PrimitiveRegistry).Assembly);
         Assert.Equal(
             PrimitiveRegistry.Default.Definitions.Count,
             PrimitiveRegistry.Default.Definitions

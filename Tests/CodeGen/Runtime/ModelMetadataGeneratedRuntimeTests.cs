@@ -64,16 +64,15 @@ public sealed class ModelMetadataGeneratedRuntimeTests
         {
             public static string CreateResourceType(string fhirTypeName)
             {
-                var provider = GeneratedR5ModelMetadata.Create();
-                return provider.GetRequiredResource(fhirTypeName)
-                    .CreateResource()
+                var provider = R5ModelContext.Default;
+                return provider.CreateResource(fhirTypeName)
                     .GetType()
                     .FullName!;
             }
 
             public static string RoundTripTaskOpenType()
             {
-                var provider = GeneratedR5ModelMetadata.Create();
+                var provider = R5ModelContext.Default;
                 var task = new MyFhirSdk.Resources.Task
                 {
                     Status = new FhirCode("requested"),
@@ -99,9 +98,7 @@ public sealed class ModelMetadataGeneratedRuntimeTests
                     Intent = new FhirCode("order")
                 };
                 task.Input.Add(new MyFhirSdk.Resources.TaskInput());
-                var validator = new FhirValidator(
-                    GeneratedR5ValidationRules.Create(),
-                    new FhirObjectGraphWalker());
+                var validator = new FhirValidator(R5ModelContext.Default);
                 return validator.Validate(task).Issues
                     .Select(issue => issue.Path)
                     .OrderBy(path => path, System.StringComparer.Ordinal)
@@ -110,7 +107,7 @@ public sealed class ModelMetadataGeneratedRuntimeTests
 
             public static string ParseEmptyMetaTagType()
             {
-                var provider = GeneratedR5ModelMetadata.Create();
+                var provider = R5ModelContext.Default;
                 const string json = "{ \"resourceType\": \"Patient\", \"meta\": { \"tag\": [{}] } }";
                 return new FhirJsonParser(provider)
                     .Parse<MyFhirSdk.Resources.Patient>(json)
@@ -128,9 +125,7 @@ public sealed class ModelMetadataGeneratedRuntimeTests
                     Text = new Narrative()
                 };
                 patient.Extension.Add(new Extension());
-                var validator = new FhirValidator(
-                    GeneratedR5ValidationRules.Create(),
-                    new FhirObjectGraphWalker());
+                var validator = new FhirValidator(R5ModelContext.Default);
                 return validator.Validate(patient).Issues
                     .Select(issue => issue.Path)
                     .OrderBy(path => path, System.StringComparer.Ordinal)

@@ -1,0 +1,57 @@
+[
+  {
+    "path": "consumer-rebuild-summary.json",
+    "sha256": "205fe017707ebd6554422e3a225b5224a753fa4c91b26391fc8f77e75db20acf",
+    "bytes": 4373
+  },
+  {
+    "path": "context-summary.json",
+    "sha256": "8be36ae98267fc7575bbd72833add09d69cb792bada8d226373a30f19b99a484",
+    "bytes": 5319
+  },
+  {
+    "path": "README.md",
+    "sha256": "e4dfcde2a6c9b28ae12d13664587741c7a444ef7ac4baa06fd3ab7c2af62bb15",
+    "bytes": 6639
+  },
+  {
+    "path": "source-inventory.json",
+    "sha256": "bacdde274c093f9ec9b1a2def009b4a9e6d059788d2e08fcf7f8550648853576",
+    "bytes": 288721
+  },
+  {
+    "path": "summary.json",
+    "sha256": "da7ba1feca15ce33d33a25c043316d7379776853826b7ed42be3895ac3dc961e",
+    "bytes": 2701
+  },
+  {
+    "path": "tool-1.2.1/cli-help-1.2.1.txt",
+    "sha256": "076961cd0258f01ab7e4eface5108fbf049b0501f28e84756adf686a2a0c7e20",
+    "bytes": 984
+  },
+  {
+    "path": "tool-1.2.1/directory-artifact-hashes-1.2.1.txt",
+    "sha256": "d5cdede78390499a4012e5156d47bf12b4b6c20b89009d8914c6cc51627f950a",
+    "bytes": 1851
+  },
+  {
+    "path": "tool-1.2.1/directory-artifact-inventory-1.2.1.txt",
+    "sha256": "43a2d6884c69048916f89f2b659947b5da378673d3ff4bde18404c6f7926f3d1",
+    "bytes": 399
+  },
+  {
+    "path": "tool-1.2.1/directory-manifest-1.2.1.json",
+    "sha256": "576e25756d2a88e199ae83a7d27c49990a0c6d863720d2e43b95bcb09cde3ab5",
+    "bytes": 9422
+  },
+  {
+    "path": "tool-1.2.1/package-primitive-fixture-contract.txt",
+    "sha256": "09a9407faa6e9da5822d28188c4599bc75b6ad315f8cd9ac1cc1f3531cd1e5e3",
+    "bytes": 2516
+  },
+  {
+    "path": "v3-test-cases.json",
+    "sha256": "adc6f4f8a9ac364702129556004e9da92d58dbf19343486be0674af9801e816e",
+    "bytes": 686
+  }
+]
