@@ -24,7 +24,7 @@ public sealed class PrimitivePackageGenerationTests : IDisposable
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void Cli_ClassifiesInputAndStillRequiresExplicitPolicy(bool archive)
+    public void Cli_ClassifiesInputAndDefaultsToPackagedReleasePolicy(bool archive)
     {
         var args = Arguments(archive ? ArchiveInput : DirectoryInput);
         var parsed = Parser().Parse(args);
@@ -33,7 +33,8 @@ public sealed class PrimitivePackageGenerationTests : IDisposable
             parsed.PrimitiveOptions!.InputKind);
         var index = Array.IndexOf(args, "--policy");
         var missing = Parser().Parse(args.Where((_, position) => position != index && position != index + 1).ToArray());
-        Assert.Equal("Required option '--policy' was not provided.", missing.Error);
+        Assert.True(missing.IsSuccess, missing.Error);
+        Assert.Equal(Policy, missing.PrimitiveOptions!.PolicyPath);
     }
 
     [Theory]

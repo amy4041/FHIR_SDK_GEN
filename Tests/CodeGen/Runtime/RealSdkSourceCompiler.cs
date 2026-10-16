@@ -46,6 +46,28 @@ internal static class RealSdkSourceCompiler
             handwritten.Concat(generated.Where(s => s.FileName.StartsWith("Generated/R5/", StringComparison.Ordinal))), References());
     }
 
+    internal static CSharpCompilation CreateR4Models(IReadOnlyList<GeneratedSource> generated)
+    {
+        var handwritten = new[] { "PrimitiveComposition.cs", "MetadataComposition.cs", "ValidationComposition.cs" }
+            .Select(name => ReadSource("Models/R5/" + name))
+            .Select(source => source with { Source = source.Source.Replace("namespace MyFhirSdk.Primitives;", "namespace MyFhirSdk.R4.Primitives;") });
+        var provider = new GeneratedSource("V4FixtureProvider.cs", """
+            using MyFhirSdk.Core;
+            using MyFhirSdk.ModelContracts;
+            using MyFhirSdk.ModelMetadata.R4;
+            public static class V4FixtureProvider
+            {
+                private static readonly ModelIdentity Identity = new("4.0.1", "hl7.fhir.r4.core", "4.0.1", "r4-policy-v1", "v4-compile-fixture");
+                public static PrimitiveProviderDefinition Primitives { get; } = new(Identity, MyFhirSdk.R4.Primitives.PrimitiveRegistry.Definitions);
+                public static ValidationProviderDefinition Validation { get; } = new(Identity, new(false, true, true, false, false), GeneratedR4ValidationRules.Create().Definitions);
+                public static ModelMetadataDefinition Metadata { get; } = GeneratedR4ModelMetadata.Create().Export(Identity,
+                    typeof(V4FixtureProvider).Assembly.GetExportedTypes().Where(t => typeof(FhirObject).IsAssignableFrom(t)));
+            }
+            """);
+        return Build($"MyFhirSdk.R4.Models.V4Compile.{Guid.NewGuid():N}", handwritten.Concat(generated)
+            .Append(ReadSource("CodeGen/Assets/CompilerSources/R4/SimpleQuantity.cs")).Append(provider), References());
+    }
+
     internal static CSharpCompilation Create(IReadOnlyList<GeneratedSource> generated)
     {
         var models = CreateModels(generated);

@@ -24,9 +24,10 @@ public static class Program
                 .GetResult();
         }
 
+        var fhirVersion = parseResult.ModelOptions?.FhirVersion ?? parseResult.PrimitiveOptions!.FhirVersion;
         var assetOverrides = parseResult.AssetOverrides ?? new ToolAssetOverrides();
         var runtimeContractPath = assetResolver.ResolveRuntimeContractPath(
-            assetOverrides);
+            assetOverrides, fhirVersion);
         var contractResult = new RuntimeContractLoader().LoadAsync(runtimeContractPath)
             .GetAwaiter()
             .GetResult();
@@ -80,7 +81,7 @@ public static class Program
             inputPath,
             runtimeContractPath,
             runtimeReferencePaths,
-            policyPaths.Append(assetResolver.ResolveCompilerSourcePath(assetOverrides)));
+            policyPaths.Append(assetResolver.ResolveCompilerSourcePath(assetOverrides, fhirVersion)));
         var compilationValidator = new RoslynCompilationValidator(referenceResult.Value);
         var primitivePipeline = new PrimitiveGenerationPipeline(
             outputSafetyContext,
@@ -90,7 +91,7 @@ public static class Program
             outputSafetyContext,
             contractResult.Value,
             compilationValidator,
-            assetResolver.ResolveCompilerSourcePath(assetOverrides));
+            assetResolver.ResolveCompilerSourcePath(assetOverrides, fhirVersion));
         var cli = new GeneratorCli(
             Console.Out,
             Console.Error,

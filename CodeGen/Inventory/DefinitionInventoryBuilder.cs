@@ -94,7 +94,7 @@ public sealed class DefinitionInventoryBuilder
                 "A package entry source identity is required."));
         }
 
-        var category = Classify(definition, sourceIdentity, diagnostics);
+        var category = Classify(definition, sourceIdentity, diagnostics, expectedFhirVersion);
         ValidateCommonIdentity(definition, sourceIdentity, diagnostics);
         if (category is not null)
         {
@@ -134,8 +134,14 @@ public sealed class DefinitionInventoryBuilder
     private static DefinitionInventoryCategory? Classify(
         StructureDefinitionDto definition,
         string sourceIdentity,
-        ICollection<GeneratorDiagnostic> diagnostics)
+        ICollection<GeneratorDiagnostic> diagnostics, string fhirVersion)
     {
+        // R4 has two independent roots and a logical MetadataResource specialization.
+        if (fhirVersion == "4.0.1" && definition.Kind == "logical") return DefinitionInventoryCategory.LogicalModel;
+        if (fhirVersion == "4.0.1" && string.IsNullOrWhiteSpace(definition.Derivation) &&
+            ((definition.Type == "Element" && definition.Kind == "complex-type") ||
+             (definition.Type == "Resource" && definition.Kind == "resource")))
+            return DefinitionInventoryCategory.ModelRoot;
         if (string.Equals(definition.Derivation, "specialization", StringComparison.Ordinal))
         {
             return definition.Kind switch

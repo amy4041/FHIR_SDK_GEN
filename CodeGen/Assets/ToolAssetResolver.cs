@@ -14,12 +14,12 @@ public sealed class ToolAssetResolver
         _toolRoot = Path.GetFullPath(toolRoot);
     }
 
-    public string ResolveRuntimeContractPath(ToolAssetOverrides overrides)
+    public string ResolveRuntimeContractPath(ToolAssetOverrides overrides, string fhirVersion = "5.0.0")
     {
         ArgumentNullException.ThrowIfNull(overrides);
         return ResolveOverride(
             overrides.RuntimeContractPath,
-            Path.Combine(_toolRoot, "Contracts", "runtime-contract.json"));
+            Path.Combine(_toolRoot, "Contracts", Generation.FhirReleaseConfiguration.ForVersion(fhirVersion).Release == "R5" ? "" : "R4", "runtime-contract.json"));
     }
 
     public IReadOnlyList<string> ResolveRuntimeReferencePaths(
@@ -47,17 +47,18 @@ public sealed class ToolAssetResolver
         ];
     }
 
-    public string ResolveCompilerSourcePath(ToolAssetOverrides overrides) =>
+    public string ResolveCompilerSourcePath(ToolAssetOverrides overrides, string fhirVersion = "5.0.0") =>
         ResolveOverride(overrides.CompilerSourcePath,
-            Path.Combine(_toolRoot, "Assets", "CompilerSources", "SimpleQuantity.cs"));
+            Path.Combine(_toolRoot, "Assets", "CompilerSources", Generation.FhirReleaseConfiguration.ForVersion(fhirVersion).Release == "R5" ? "" : "R4", "SimpleQuantity.cs"));
 
     public ModelPolicyAssetPaths ResolveModelPolicies(
         ToolAssetOverrides overrides,
-        string? primitivePolicyOverride)
+        string? primitivePolicyOverride, string fhirVersion = "5.0.0")
     {
         ArgumentNullException.ThrowIfNull(overrides);
+        var release = Generation.FhirReleaseConfiguration.ForVersion(fhirVersion);
         var policyRoot = string.IsNullOrWhiteSpace(overrides.PolicyRoot)
-            ? Path.Combine(_toolRoot, "Policy")
+            ? Path.Combine(_toolRoot, "Policy", release.Release == "R5" ? "" : "R4")
             : Path.GetFullPath(overrides.PolicyRoot);
 
         string Policy(string name) => Path.Combine(policyRoot, name);
@@ -65,12 +66,12 @@ public sealed class ToolAssetResolver
             ResolveOverride(
                 primitivePolicyOverride,
                 Policy("primitive-generation-policy.json")),
-            Policy("r5-model-ownership-policy.json"),
+            Policy($"{release.Release.ToLowerInvariant()}-model-ownership-policy.json"),
             new ModelIrPolicyPaths(
-                Policy("r5-model-naming-policy.json"),
-                Policy("r5-backbone-policy.json"),
-                Policy("r5-choice-open-type-policy.json")),
-            Policy("r5-validation-capability-policy.json"));
+                Policy($"{release.Release.ToLowerInvariant()}-model-naming-policy.json"),
+                Policy($"{release.Release.ToLowerInvariant()}-backbone-policy.json"),
+                Policy($"{release.Release.ToLowerInvariant()}-choice-open-type-policy.json")),
+            Policy($"{release.Release.ToLowerInvariant()}-validation-capability-policy.json"));
     }
 
     public OutputSafetyContext CreateOutputSafetyContext(

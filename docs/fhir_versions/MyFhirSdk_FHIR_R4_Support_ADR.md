@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-- 狀態：V0–V2 已提交並由使用者確認 CI 通過；R5 Models 分離與共用實作 owner 見 [V3 evidence](baselines/v3/README.md)。完整 R4 相容性及後續生成仍待 V4–V7 驗收。
+- 狀態：V0–V3 已提交並由使用者確認 CI 通過；R5 Models 分離與共用實作 owner 見 [V3 evidence](baselines/v3/README.md)。V4 generator 見 [V4 evidence](baselines/v4/README.md)；完整 R4 SDK／Client 與交付仍待 V5–V7 驗收。
 - 目標版本：R4 `4.0.1` 與 R5 `5.0.0`；R4B 不包含在本階段範圍。
 - 決策責任：Architecture、Runtime、Models、Serialization、Validation、CodeGen、Compatibility 維護者。
 - 實作及證據：[Implementation Guide](MyFhirSdk_FHIR_R4_Support_Implementation_Guide.md)、[Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md)。
@@ -56,7 +56,7 @@ FHIR 型別名稱可能出現在兩個版本，cache／lookup key 必須包含�
 輸出批次包含 namespace／destination contract，不只 package 身分；錯誤組合在寫檔前拒絕。
 
 保留 exact compatibility policy，新增經測試的精確組合，不能把 `4.x` 或任意 package 放行。
-現行 tool `1.2.0` 沒有 R4 支援；新 tool、schema、policy 與 descriptor 版本由 V4 根據契約變更決定。
+V4 tool `1.3.0` 提供 R4／R5 明確設定；各版本 policy／descriptor 分開，沿用 schema 2 descriptor 與 schema 3 manifest。
 Runtime API 未變更時不必為 R4 人為重建 reference；若 compiler contract 改變，需原子更新
 canonical reference、descriptor、matrix、manifests 與 snapshots。
 

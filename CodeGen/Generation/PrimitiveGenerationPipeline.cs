@@ -12,7 +12,7 @@ namespace MyFhirSdk.CodeGen.Generation;
 
 public sealed class PrimitiveGenerationPipeline
 {
-    public const string DefaultCodeGenVersion = "1.2.1";
+    public const string DefaultCodeGenVersion = "1.3.0";
 
     private readonly PrimitiveInventoryCoveragePipeline _coveragePipeline;
     private readonly PrimitiveWrapperModelBuilder _wrapperModelBuilder;
@@ -110,17 +110,25 @@ public sealed class PrimitiveGenerationPipeline
             return Failure(compatibilityResult.Diagnostics);
         }
 
+        var release = FhirReleaseConfiguration.ForVersion(options.FhirVersion);
+        options = options with { FhirSpecification = "FHIR " + release.Release };
         var coverageResult = await _coveragePipeline.BuildAsync(
             input.Value,
             options.PolicyPath,
             new DefinitionPackageLoadOptions(
-                options.FhirPackageId, options.FhirPackageVersion, options.FhirVersion),
+                options.FhirPackageId, options.FhirPackageVersion, options.FhirVersion, release.PackageType),
             cancellationToken);
         if (!coverageResult.IsSuccess || coverageResult.Value is null)
         {
             return Failure(coverageResult.Diagnostics);
         }
 
+        if (File.Exists(options.DefinitionsPath))
+        {
+            await using var archive = File.OpenRead(options.DefinitionsPath);
+            var hash = Convert.ToHexString(await System.Security.Cryptography.SHA256.HashDataAsync(archive, cancellationToken)).ToLowerInvariant();
+            if (hash != release.PackageSha256) return Failure([new(GeneratorDiagnosticCodes.IncompatibleFhirPackage, GeneratorDiagnosticSeverity.Error, "Package archive SHA-256 does not match the approved release.", options.DefinitionsPath)]);
+        }
         var coverage = coverageResult.Value;
         var wrapperResult = _wrapperModelBuilder.Build(coverage);
         if (!wrapperResult.IsSuccess)

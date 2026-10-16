@@ -34,3 +34,11 @@ Tests/Architecture/ApprovedModelSupportApi.txt text eol=lf
 Tests/FhirVersions/V3/** text eol=lf
 eng/Test-FhirV3Migration.py text eol=lf
 docs/fhir_versions/baselines/v3/** text eol=lf
+
+CodeGen/Policy/R4/** text eol=lf
+CodeGen/Assets/CompilerSources/R4/** text eol=lf
+CodeGen/Generation/FhirReleaseConfiguration.cs text eol=lf
+Tests/CodeGen/Generation/FhirReleaseGenerationTests.cs text eol=lf
+eng/Test-FhirV4Generator.py text eol=lf
+docs/fhir_versions/baselines/v4/** text eol=lf
+Generated/R4/** text eol=lf

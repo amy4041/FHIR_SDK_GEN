@@ -5,20 +5,20 @@
   "fhirPackageVersion": "5.0.0",
   "fhirVersion": "5.0.0",
   "policyVersion": "1.1.0",
-  "codeGenVersion": "1.2.1",
+  "codeGenVersion": "1.3.0",
   "runtimeContractVersion": "runtime-kernel-v2",
   "compatibility": {
     "schemaVersion": 1,
     "versionPolicy": "exact",
     "tool": {
       "packageId": "MyFhirSdk.CodeGen.Tool",
-      "version": "1.2.1"
+      "version": "1.3.0"
     },
-    "codeGenVersion": "1.2.1",
+    "codeGenVersion": "1.3.0",
     "runtimeDescriptor": {
       "schemaVersion": 2,
       "version": "runtime-kernel-v2",
-      "sha256": "f3cabf2c7171adbec63aca303db4670b8468190f2b755ed00eefcb11d3cb9c85"
+      "sha256": "f04581bb61b7090ec2eb60fb6cd95dc2240bef1389121dfd74b68eb492561562"
     },
     "compilerReference": {
       "logicalIdentity": "MyFhirSdk.Runtime, Version=1.0.0.0, PublicKeyToken=null, TargetFramework=net9.0",

@@ -376,8 +376,34 @@ public sealed class CodeGenToolPackageTests
             "R5",
             "model-generation-manifest.json")));
 
+        // R4 uses only copied input plus package-owned policies, compiler metadata and auxiliary source.
+        var r4Input = Path.Combine(directory.Path, "input-r4.tgz");
+        File.Copy(Path.Combine(AppContext.BaseDirectory, "Fixtures/FhirPackages/R4/hl7.fhir.r4.core-4.0.1.tgz"), r4Input);
+        var r4Output = Path.Combine(directory.Path, "r4-output");
+        var r4Args = new[] { ToolCommand, "--mode", "model", "--input", r4Input,
+            "--output", r4Output, "--fhir-version", "4.0.1", "--package-id", "hl7.fhir.r4.core", "--package-version", "4.0.1" };
+        AssertSuccess(await RunDotNetAsync(directory.Path, environment, r4Args));
+        var r4Before = Directory.EnumerateFiles(r4Output, "*", SearchOption.AllDirectories)
+            .ToDictionary(path => path, path => Sha256(File.ReadAllBytes(path)));
+        AssertSuccess(await RunDotNetAsync(directory.Path, environment, r4Args));
+        Assert.Equal(r4Before, Directory.EnumerateFiles(r4Output, "*", SearchOption.AllDirectories)
+            .ToDictionary(path => path, path => Sha256(File.ReadAllBytes(path))));
+        var r4Primitives = Path.Combine(directory.Path, "r4-primitives");
+        AssertSuccess(await RunDotNetAsync(directory.Path, environment, ToolCommand,
+            "--mode", "primitive", "--input", r4Input, "--output", r4Primitives,
+            "--fhir-version", "4.0.1", "--package-id", "hl7.fhir.r4.core", "--package-version", "4.0.1"));
+        Assert.True(File.Exists(Path.Combine(r4Primitives, "FhirUnsignedInt.g.cs")));
+        Assert.False(File.Exists(Path.Combine(r4Primitives, "FhirInteger64.g.cs")));
+        var r4WrongSource = await RunDotNetAsync(directory.Path, environment,
+            r4Args.Concat(["--compiler-source", Path.Combine(GetRepositoryRoot(), "Types/SimpleQuantity.cs")]).ToArray());
+        Assert.Equal(2, r4WrongSource.ExitCode);
+        Assert.Contains("FSG0131", r4WrongSource.StandardError);
+        Assert.Equal(r4Before, Directory.EnumerateFiles(r4Output, "*", SearchOption.AllDirectories)
+            .ToDictionary(path => path, path => Sha256(File.ReadAllBytes(path))));
+
         var installedSource = Assert.Single(Directory.EnumerateFiles(
-            environment["NUGET_PACKAGES"]!, "SimpleQuantity.cs", SearchOption.AllDirectories));
+            environment["NUGET_PACKAGES"]!, "SimpleQuantity.cs", SearchOption.AllDirectories),
+            path => !path.Replace('\\', '/').Contains("/CompilerSources/R4/", StringComparison.Ordinal));
         var externalSource = Path.Combine(directory.Path, "external", "SimpleQuantity.cs");
         Directory.CreateDirectory(Path.GetDirectoryName(externalSource)!);
         File.Copy(installedSource, externalSource);
@@ -416,7 +442,8 @@ public sealed class CodeGenToolPackageTests
         path.Contains("/bin/", StringComparison.OrdinalIgnoreCase) ||
         path.Contains("/obj/", StringComparison.OrdinalIgnoreCase) ||
         (path.EndsWith(".cs", StringComparison.OrdinalIgnoreCase) &&
-         path != ToolRoot + "Assets/CompilerSources/SimpleQuantity.cs");
+         path != ToolRoot + "Assets/CompilerSources/SimpleQuantity.cs" &&
+         path != ToolRoot + "Assets/CompilerSources/R4/SimpleQuantity.cs");
 
     private static void AssertPackageDoesNotContainRepositoryPath(ZipArchive package)
     {

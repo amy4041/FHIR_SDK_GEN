@@ -1,0 +1,66 @@
+[
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.MixedReleaseInputsFailBeforeChangingOutput(fault: \"r5-policy\", diagnostic: \"FSG0124\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.ForeignAuxiliaryClrIdentityIsRejectedInBothModesWithoutChangingOutput(version: \"4.0.1\", mode: \"model\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.MixedReleaseInputsFailBeforeChangingOutput(fault: \"r5-auxiliary\", diagnostic: \"FSG0131\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.MixedReleaseInputsFailBeforeChangingOutput(fault: \"package-bytes\", diagnostic: \"FSG0125\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.FullR4BatchIsDeterministicAndUsesR4NamespacesPathsAndPrimitiveRules",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.R5PolicyAndAuxiliaryAreNotReusedForR4",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.MixedReleaseInputsFailBeforeChangingOutput(fault: \"r5-model-policy\", diagnostic: \"FSG0126\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.ForeignAuxiliaryClrIdentityIsRejectedInBothModesWithoutChangingOutput(version: \"4.0.1\", mode: \"primitive\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.FreshR4CompositionCompilesAndRunsWithProductionContextAndEngines",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.ForeignAuxiliaryClrIdentityIsRejectedInBothModesWithoutChangingOutput(version: \"5.0.0\", mode: \"model\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.RootSdkCannotAccidentallyCompileNewR4OrR5GeneratedTrees",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.DocumentedR4CommandsProduceCompleteModelsAndPrimitivesInOneTree",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.MixedReleaseInputsFailBeforeChangingOutput(fault: \"r5-package\", diagnostic: \"FSG0125\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.MixedReleaseInputsFailBeforeChangingOutput(fault: \"r5-contract\", diagnostic: \"FSG0125\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.ForeignAuxiliaryClrIdentityIsRejectedInBothModesWithoutChangingOutput(version: \"5.0.0\", mode: \"primitive\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.CodeGen.Tests.Generation.FhirReleaseGenerationTests.MixedReleaseInputsFailBeforeChangingOutput(fault: \"r4b\", diagnostic: \"FSG0125\")",
+    "outcome": "Passed"
+  }
+]

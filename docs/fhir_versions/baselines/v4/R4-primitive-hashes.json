@@ -1,0 +1,23 @@
+{
+  "FhirBase64Binary.g.cs": "3630cb7578e82b652e0cf4994b925be0ed6a1901346b0406146262417b8d88e3",
+  "FhirBoolean.g.cs": "aaab4885bed3c700cd81bc1208c5eecc9f05323cbe77cefd42152873c021b309",
+  "FhirCanonical.g.cs": "226f7aaf4304291913a59e0b521879fc551da03899b9b0685fb6e024aa936354",
+  "FhirCode.g.cs": "fa464bd34fb7cebe7cda70fd854ef1fd9d02ad779c67eab33a1f47380adad5ff",
+  "FhirDate.g.cs": "579a663c0671d78f133db5c3e71d09ca7f8fa43576f5ab2500d347cfc8076c43",
+  "FhirDateTime.g.cs": "9acd0937a34c74659b37aa3c5506815b15fe0f96aeeb2d6a063948b4bae7209b",
+  "FhirDecimal.g.cs": "d504b05f39cc32dcc11b8912975b2668d396a2d88c41c8b15c54655c8acbf2a1",
+  "FhirId.g.cs": "1b81ac411d711ab49c4fe2109190e1b0a076fd0b0def696f156b3bb9fb0d2f52",
+  "FhirInstant.g.cs": "6bff3d21aa43a655e67bc35b8fe767d41e145dd362955bc1feae55c1fe49ab9c",
+  "FhirInteger.g.cs": "d6f8315da27ec1cdbedbed974638e54938d4bf3ee76a3f2fee160e0897610155",
+  "FhirMarkdown.g.cs": "5889de4deb47c49cdf46b2d45ccdec66cfa482f9cd966311f74fba14db2c2a77",
+  "FhirOid.g.cs": "6dfab24dbfd320a6b7ddc20fa7402b28fa77a4f854d01d0662779374d5dfa9da",
+  "FhirPositiveInt.g.cs": "1b89caee63d9bc25e2feba609f3a07601a15b0417377defe3548f4d59bc358cc",
+  "FhirString.g.cs": "16a0530a6392667e2e32f18f8e1447c63e6342b501640bb1e7be873a977e480e",
+  "FhirTime.g.cs": "bf47d10cc91ddb79a5e88265d4527b6dec21a5bc09e16b8f007c3e8f936f7b85",
+  "FhirUnsignedInt.g.cs": "036a38dce57302c7d320b88c5e782038d3effac934951e081470ccf3181be56d",
+  "FhirUri.g.cs": "20e2f3ea4a834e6034572214af51f3f692a9abb867e63f28e4d9dcf658e2b013",
+  "FhirUrl.g.cs": "a644b633074aec84911b19a27e7de7a972265f9b57314070eb5d1cb5f197f868",
+  "FhirUuid.g.cs": "6e7cbe1a181dad4b255d9d97743182613b550d1e6413c21bfaae57fff582b6b3",
+  "primitive-generation-manifest.json": "bdaa7e3b3977bbd8c9358f67d27da76e2d45df9276e9d0726fbffd4f407cdf56",
+  "PrimitiveRegistry.Composition.g.cs": "a91b13cc4bc2ddd2091cb8b52a9968cb56412467f98a7588d4946e2fbc863381"
+}

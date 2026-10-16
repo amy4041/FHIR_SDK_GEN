@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-狀態：V0–V2 已提交並由使用者確認 CI 通過；V3 結果見 [G3 evidence](baselines/v3/README.md)，G4–G7 Pending，尚無完整 R4 production 驗收。設計依據為
+狀態：V0–V3 已提交並由使用者確認 CI 通過；V4 實作見 [G4 evidence](baselines/v4/README.md)，G5–G7 Pending，尚無完整 R4 production 驗收。設計依據為
 [ADR](MyFhirSdk_FHIR_R4_Support_ADR.md)，執行順序見
 [Implementation Guide](MyFhirSdk_FHIR_R4_Support_Implementation_Guide.md)。
 
@@ -16,8 +16,8 @@ Gate 指進入下一階段或宣稱某項能力前必須滿足的驗收條件。
 | G0 Baseline／decisions | V0 | 固定 source、R5 regression／API、R4 input lock、ownership／namespace／scope 決策 | 見 [V0 evidence](baselines/v0/summary.json) |
 | G1 Runtime feasibility | V1 | Selected closure、bootstrap 差異報告、R4／R5 同程序與版本差異案例、跨版本誤用 | 見 [V1 evidence](baselines/v1/summary.json) |
 | G2 Context／SPI | V2 | 最小公開契約、signature dependencies、版本一致性、default R5 行為、cache／並行隔離 | 見 [V2 evidence](baselines/v2/summary.json)；使用者確認 V2 CI 通過 |
-| G3 R5 migration | V3 | 單一 compile owner、無 cycle、API／AQN diff、全面重編／部署、完整 R5 regression | 見 [V3 evidence](baselines/v3/summary.json)；新 CI 待提交後執行 |
-| G4 Generator | V4 | 精確 compatibility、policy／manifest、installed tool、determinism、無 implementation fallback、失敗不改輸出 | Pending |
+| G3 R5 migration | V3 | 單一 compile owner、無 cycle、API／AQN diff、全面重編／部署、完整 R5 regression | 見 [V3 evidence](baselines/v3/summary.json)；使用者確認 V3 CI 通過 |
+| G4 Generator | V4 | 精確 compatibility、policy／manifest、installed tool、determinism、無 implementation fallback、失敗不改輸出 | 見 [V4 evidence](baselines/v4/README.md)；新 CI 待提交後執行 |
 | G5 R4 SDK | V5 | Full approved scope inventory、fresh compilation／runtime tests、能力清單、同程序 consumer、R5 regression | Pending |
 | G6 R4 Client | V6 | 版本 API、受控 HTTP、R5 Client regression、明確版本 server smoke 與 skipped 清單 | Pending |
 | G7 Delivery | V7 | Windows／Ubuntu clean generation／integration、deploy／missing dependency、rollback／fingerprint、handoff | Pending |

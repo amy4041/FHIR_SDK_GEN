@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 2,
+  "contractVersion": "runtime-kernel-v2",
+  "targetFramework": "net9.0",
+  "runtimeAssembly": {
+    "name": "MyFhirSdk.Runtime",
+    "version": "1.0.0.0",
+    "publicKeyToken": "null"
+  },
+  "compatibility": {
+    "schemaVersion": 1,
+    "versionPolicy": "exact",
+    "toolVersion": "1.3.0",
+    "codeGenVersion": "1.3.0",
+    "fhirPackage": {
+      "id": "hl7.fhir.r4.core",
+      "version": "4.0.1",
+      "fhirVersion": "4.0.1"
+    },
+    "primitivePolicy": {
+      "version": "1.0.0",
+      "sha256": "5282aaa28af56ae46e63d695282065ec9a801b50c6b5df08e30a613fe07a760a"
+    },
+    "modelPolicies": [
+      {
+        "name": "backbone",
+        "sha256": "e0a7feb0821c09586a6826ed6c307c29162540575b74e9187743c9239e77c088"
+      },
+      {
+        "name": "choice-open-type",
+        "sha256": "f6e13c8d74a33d0ffdb2403c726b4b05df87a34d031b7fc2ef5d1e640b12ed83"
+      },
+      {
+        "name": "model-naming",
+        "sha256": "244dc588bc59dd8fa4027c7732cc2a27ac0ace22231c3716bf74a5c89cb44f72"
+      },
+      {
+        "name": "model-ownership",
+        "sha256": "0a7cf4f82dda5c1cc0c41d2dedbe77e5c83b0364a3e10cee2ead9066507883d6"
+      },
+      {
+        "name": "validation-capability",
+        "sha256": "8cb74e3d206aa894ec23be8fd5a05b624403c2f033d842ab4e658ee6bfad8242"
+      }
+    ]
+  },
+  "symbols": [
+    {
+      "clrType": "MyFhirSdk.Core.BackboneElement",
+      "role": "backbone-element-foundation",
+      "kind": "class",
+      "baseClrType": "MyFhirSdk.Core.Element",
+      "abstract": true,
+      "sealed": false,
+      "genericArity": 0,
+      "interfaces": []
+    },
+    {
+      "clrType": "MyFhirSdk.Core.BackboneType",
+      "role": "backbone-type-foundation",
+      "kind": "class",
+      "baseClrType": "MyFhirSdk.Core.DataType",
+      "abstract": true,
+      "sealed": false,
+      "genericArity": 0,
+      "interfaces": []
+    },
+    {
+      "clrType": "MyFhirSdk.Core.Base",
+      "role": "foundation-base",
+      "kind": "class",
+      "baseClrType": "MyFhirSdk.Core.FhirObject",
+      "abstract": true,
+      "sealed": false,
+      "genericArity": 0,
+      "interfaces": []
+    },
+    {
+      "clrType": "MyFhirSdk.Core.DataType",
+      "role": "datatype-foundation",
+      "kind": "class",
+      "baseClrType": "MyFhirSdk.Core.Element",
+      "abstract": true,
+      "sealed": false,
+      "genericArity": 0,
+      "interfaces": [
+        "MyFhirSdk.Core.IFhirExtensionValue"
+      ]
+    },
+    {
+      "clrType": "MyFhirSdk.Core.DomainResource",
+      "role": "domain-resource-foundation",
+      "kind": "class",
+      "baseClrType": "MyFhirSdk.Core.Resource",
+      "abstract": true,
+      "sealed": false,
+      "genericArity": 0,
+      "interfaces": []
+    },
+    {
+      "clrType": "MyFhirSdk.Core.Element",
+      "role": "element-foundation",
+      "kind": "class",
+      "baseClrType": "MyFhirSdk.Core.Base",
+      "abstract": true,
+      "sealed": false,
+      "genericArity": 0,
+      "interfaces": []
+    },
+    {
+      "clrType": "MyFhirSdk.Core.Extension",
+      "role": "extension-bootstrap",
+      "kind": "class",
+      "baseClrType": "MyFhirSdk.Core.Element",
+      "abstract": false,
+      "sealed": true,
+      "genericArity": 0,
+      "interfaces": []
+    },
+    {
+      "clrType": "MyFhirSdk.Core.FhirObject",
+      "role": "model-root",
+      "kind": "class",
+      "baseClrType": "System.Object",
+      "abstract": true,
+      "sealed": false,
+      "genericArity": 0,
+      "interfaces": []
+    },
+    {
+      "clrType": "MyFhirSdk.Core.IFhirExtensionValue",
+      "role": "extension-value-marker",
+      "kind": "interface",
+      "baseClrType": null,
+      "abstract": true,
+      "sealed": false,
+      "genericArity": 0,
+      "interfaces": []
+    },
+    {
+      "clrType": "MyFhirSdk.Core.Meta",
+      "role": "meta-bootstrap",
+      "kind": "class",
+      "baseClrType": "MyFhirSdk.Core.DataType",
+      "abstract": false,
+      "sealed": true,
+      "genericArity": 0,
+      "interfaces": []
+    },
+    {
+      "clrType": "MyFhirSdk.Core.Narrative",
+      "role": "narrative-bootstrap",
+      "kind": "class",
+      "baseClrType": "MyFhirSdk.Core.DataType",
+      "abstract": false,
+      "sealed": true,
+      "genericArity": 0,
+      "interfaces": []
+    },
+    {
+      "clrType": "MyFhirSdk.Core.PrimitiveType`1",
+      "role": "primitive-wrapper-base",
+      "kind": "class",
+      "baseClrType": "MyFhirSdk.Core.DataType",
+      "abstract": true,
+      "sealed": false,
+      "genericArity": 1,
+      "interfaces": []
+    },
+    {
+      "clrType": "MyFhirSdk.Core.Resource",
+      "role": "resource-foundation",
+      "kind": "class",
+      "baseClrType": "MyFhirSdk.Core.Base",
+      "abstract": true,
+      "sealed": false,
+      "genericArity": 0,
+      "interfaces": []
+    }
+  ],
+  "declaredSlots": [
+    {
+      "declaringClrType": "MyFhirSdk.Core.Extension",
+      "clrPropertyName": "Value",
+      "propertyClrType": "MyFhirSdk.Core.IFhirExtensionValue",
+      "elementClrType": "MyFhirSdk.Core.IFhirExtensionValue",
+      "collection": false,
+      "nullable": true,
+      "role": "extension-value"
+    },
+    {
+      "declaringClrType": "MyFhirSdk.Core.Meta",
+      "clrPropertyName": "Security",
+      "propertyClrType": "System.Collections.Generic.IList<MyFhirSdk.Core.DataType>",
+      "elementClrType": "MyFhirSdk.Core.DataType",
+      "collection": true,
+      "nullable": false,
+      "role": "declared-datatype"
+    },
+    {
+      "declaringClrType": "MyFhirSdk.Core.Meta",
+      "clrPropertyName": "Tag",
+      "propertyClrType": "System.Collections.Generic.IList<MyFhirSdk.Core.DataType>",
+      "elementClrType": "MyFhirSdk.Core.DataType",
+      "collection": true,
+      "nullable": false,
+      "role": "declared-datatype"
+    }
+  ],
+  "compilerReference": {
+    "logicalName": "MyFhirSdk.Runtime/net9.0",
+    "targetFramework": "net9.0",
+    "assembly": {
+      "name": "MyFhirSdk.Runtime",
+      "version": "1.0.0.0",
+      "publicKeyToken": "null"
+    },
+    "sha256": "8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71"
+  },
+  "compilerSources": [
+    {
+      "logicalName": "SimpleQuantity.cs",
+      "version": "simple-quantity-r4-source-v1",
+      "clrType": "MyFhirSdk.R4.Types.SimpleQuantity",
+      "normalization": "utf8-lf",
+      "sha256": "8e0d53e95a66f618eeb12860a3f2ddee0dea9d1515c0b63607250fdeaf4ab2a2"
+    }
+  ]
+}

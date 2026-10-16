@@ -19,7 +19,7 @@ namespace MyFhirSdk.CodeGen.Generation;
 
 public sealed class ModelGenerationPipeline
 {
-    public const string DefaultCodeGenVersion = "1.2.1";
+    public const string DefaultCodeGenVersion = "1.3.0";
 
     private readonly DefinitionInventoryPipeline _inventoryPipeline = new();
     private readonly PrimitiveGenerationPolicyLoader _primitivePolicyLoader = new();
@@ -62,20 +62,6 @@ public sealed class ModelGenerationPipeline
         ArgumentNullException.ThrowIfNull(options);
         cancellationToken.ThrowIfCancellationRequested();
 
-        GeneratedSource compilerSource;
-        try
-        {
-            compilerSource = MyFhirSdk.CodeGen.Assets.ModelCompilerSourceAsset.Read(
-                _compilerSourcePath, _runtimeContract);
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or
-            InvalidOperationException or DecoderFallbackException)
-        {
-            return Failure([Diagnostic(exception is FileNotFoundException or DirectoryNotFoundException
-                ? GeneratorDiagnosticCodes.PackagedAssetMissing : GeneratorDiagnosticCodes.PackagedAssetCorrupt,
-                $"Compiler source 'SimpleQuantity.cs': {exception.Message}", "<asset:SimpleQuantity.cs>")]);
-        }
-
         var compatibilityResult = await _compatibilityService.ValidateAsync(
             new GenerationCompatibilityRequest(
                 options.CodeGenVersion,
@@ -106,6 +92,21 @@ public sealed class ModelGenerationPipeline
             return Failure(compatibilityResult.Diagnostics);
         }
 
+        GeneratedSource compilerSource;
+        try
+        {
+            compilerSource = MyFhirSdk.CodeGen.Assets.ModelCompilerSourceAsset.Read(
+                _compilerSourcePath, _runtimeContract);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or
+            InvalidOperationException or DecoderFallbackException)
+        {
+            return Failure([Diagnostic(exception is FileNotFoundException or DirectoryNotFoundException
+                ? GeneratorDiagnosticCodes.PackagedAssetMissing : GeneratorDiagnosticCodes.PackagedAssetCorrupt,
+                $"Compiler source 'SimpleQuantity.cs': {exception.Message}", "<asset:SimpleQuantity.cs>")]);
+        }
+
+        var release = FhirReleaseConfiguration.ForVersion(options.FhirVersion);
         var primitiveDocument = await _primitivePolicyLoader.LoadAsync(options.PrimitivePolicyPath, cancellationToken);
         if (!primitiveDocument.IsSuccess || primitiveDocument.Value is null) return Failure(primitiveDocument.Diagnostics);
         var primitivePolicy = _primitivePolicyValidator.Validate(primitiveDocument.Value, Path.GetFullPath(options.PrimitivePolicyPath));
@@ -119,9 +120,14 @@ public sealed class ModelGenerationPipeline
 
         var inventoryResult = await _inventoryPipeline.BuildAsync(
             new FileDefinitionPackageInput(options.PackagePath),
-            new DefinitionPackageLoadOptions(options.PackageId, options.PackageVersion, options.FhirVersion),
+            new DefinitionPackageLoadOptions(options.PackageId, options.PackageVersion, options.FhirVersion, release.PackageType),
             cancellationToken);
         if (!inventoryResult.IsSuccess || inventoryResult.Value is null) return Failure(inventoryResult.Diagnostics);
+        var packageHash = await HashBinaryFileAsync(options.PackagePath, cancellationToken);
+        if (packageHash != release.PackageSha256)
+            return Failure([Diagnostic(GeneratorDiagnosticCodes.IncompatibleFhirPackage, "Package archive SHA-256 does not match the approved release.", options.PackagePath)]);
+
+
 
         var ownershipResult = await _ownershipPolicyLoader.LoadAsync(options.OwnershipPolicyPath, cancellationToken);
         if (!ownershipResult.IsSuccess || ownershipResult.Value is null) return Failure(ownershipResult.Diagnostics);
@@ -136,6 +142,10 @@ public sealed class ModelGenerationPipeline
 
         var modelPolicyResult = await _modelPolicyLoader.LoadAsync(options.ModelIrPolicyPaths, cancellationToken);
         if (!modelPolicyResult.IsSuccess || modelPolicyResult.Value is null) return Failure(modelPolicyResult.Diagnostics);
+        var naming = modelPolicyResult.Value;
+        if (naming.DatatypeNamespace != release.TypeNamespace || naming.ResourceNamespace != release.ResourceNamespace || naming.BackboneNamespace != release.ResourceNamespace ||
+            naming.ProfileTypeOverrides.Values.Any(p => p.ClrType != release.TypeNamespace + ".SimpleQuantity"))
+            return Failure([Diagnostic(GeneratorDiagnosticCodes.IncompatibleModelPolicy, "Model namespace or auxiliary CLR identity does not match the selected release.", options.ModelIrPolicyPaths.NamingPolicyPath)]);
         var irResult = _irBuilder.Build(graphResult.Value, scopeResult.Value, mappings, modelPolicyResult.Value);
         if (!irResult.IsSuccess || irResult.Value is null) return Failure(irResult.Diagnostics);
         // Compile against wrappers rendered from the same package/policy, never
@@ -148,10 +158,10 @@ public sealed class ModelGenerationPipeline
             .Where(source => !source.FileName.EndsWith("PrimitiveRegistry.Composition.g.cs", StringComparison.Ordinal))
             .ToList();
         if (irResult.Value.Declarations.Any(declaration => declaration.Members.Any(member =>
-                member.TypeAlternatives.Any(type => type.ClrType == "MyFhirSdk.Types.SimpleQuantity"))))
+                member.TypeAlternatives.Any(type => type.ClrType == release.TypeNamespace + ".SimpleQuantity"))))
             auxiliary.Add(compilerSource);
         var renderPipeline = new ModelMetadataGenerationPipeline(_runtimeContract,
-            _compilationValidator.WithAdditionalSources(auxiliary));
+            _compilationValidator.WithAdditionalSources(auxiliary), release);
         var renderResult = renderPipeline.Generate(irResult.Value);
         if (!renderResult.IsSuccess || renderResult.Value is null) return Failure(renderResult.Diagnostics);
 

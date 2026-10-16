@@ -33,6 +33,15 @@ public sealed class ModelIrGenerationPolicyLoader
                 throw new InvalidDataException("C0 model IR policies do not have the same FHIR version.");
             }
 
+            if (fhirVersion == "4.0.1")
+            {
+                var bridges = namingRoot.GetProperty("runtimeDatatypeBridges").EnumerateArray()
+                    .ToDictionary(e => RequireString(e, "officialBase"), e => RequireString(e, "runtimeBase"), StringComparer.Ordinal);
+                if (bridges.Count != 2 || !bridges.TryGetValue("Element", out var elementBridge) || elementBridge != "MyFhirSdk.Core.DataType" ||
+                    !bridges.TryGetValue("BackboneElement", out var backboneBridge) || backboneBridge != "MyFhirSdk.Core.BackboneType")
+                    throw new InvalidDataException("R4 datatype bridges must match the approved shared Runtime bases.");
+            }
+
             var namespaces = namingRoot.GetProperty("namespaceRules")
                 .EnumerateArray()
                 .ToDictionary(

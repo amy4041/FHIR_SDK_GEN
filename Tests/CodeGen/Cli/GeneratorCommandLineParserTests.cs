@@ -107,24 +107,24 @@ public sealed class GeneratorCommandLineParserTests
         Assert.Equal("policy.json", options.PolicyPath);
         Assert.Equal("hl7.fhir.r5.core", options.FhirPackageId);
         Assert.Equal("5.0.0", options.FhirPackageVersion);
-        Assert.Equal("1.2.1", options.CodeGenVersion);
+        Assert.Equal("1.3.0", options.CodeGenVersion);
     }
 
     [Fact]
-    public void Parse_PrimitiveModeWithoutPolicy_ReturnsStableError()
+    public void Parse_PrimitiveModeWithoutPolicy_UsesPackagedReleasePolicy()
     {
         var result = _parser.Parse(
         [
             "--mode", "primitive",
-            "--input", "definitions",
+            "--input", Path.Combine(AppContext.BaseDirectory, "Fixtures", "StructureDefinitions", "Primitives", "R5"),
             "--output", "Generated/R5/Primitives",
             "--fhir-version", "5.0.0",
             "--package-id", "hl7.fhir.r5.core",
             "--package-version", "5.0.0"
         ]);
 
-        Assert.False(result.IsSuccess);
-        Assert.Equal("Required option '--policy' was not provided.", result.Error);
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.EndsWith("primitive-generation-policy.json", result.PrimitiveOptions!.PolicyPath);
     }
 
     [Fact]

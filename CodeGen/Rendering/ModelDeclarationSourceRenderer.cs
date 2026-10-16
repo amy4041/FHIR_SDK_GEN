@@ -175,9 +175,9 @@ internal sealed class ModelDeclarationSourceRenderer
         // System.Range is supplied by SDK implicit global usings. Keep the FHIR
         // datatype identity explicit so generated sources compile both in the
         // isolated Roslyn batch and in the SDK project.
-        if (string.Equals(cSharpType, "MyFhirSdk.Types.Range", StringComparison.Ordinal))
+        if (cSharpType is "MyFhirSdk.Types.Range" or "MyFhirSdk.R4.Types.Range")
         {
-            return "global::MyFhirSdk.Types.Range";
+            return "global::" + cSharpType;
         }
 
         var separator = cSharpType.LastIndexOf('.');

@@ -120,7 +120,7 @@ public sealed class PrimitiveTgzInputBaselineTests : IDisposable
         }
         foreach (var (name, bytes) in evidence)
         {
-            var currentBaseline = Path.Combine(AppContext.BaseDirectory, "Baselines", "FhirV3Tool", name);
+            var currentBaseline = Path.Combine(AppContext.BaseDirectory, "Baselines", "FhirV4Tool", name);
             Assert.True(File.Exists(currentBaseline), $"Missing approved accessor baseline: {name}");
             Assert.Equal(File.ReadAllBytes(currentBaseline), bytes);
         }

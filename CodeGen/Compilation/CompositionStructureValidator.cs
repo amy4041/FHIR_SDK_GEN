@@ -9,13 +9,15 @@ namespace MyFhirSdk.CodeGen.Compilation;
 /// <summary>Checks rendered composition syntax and entry points, not SDK semantic compatibility.</summary>
 public sealed class CompositionStructureValidator
 {
+    private readonly Generation.FhirReleaseConfiguration _release;
+    public CompositionStructureValidator(Generation.FhirReleaseConfiguration? release = null) => _release = release ?? Generation.FhirReleaseConfiguration.R5;
     public GenerationResult<IReadOnlyList<GeneratedSource>> Validate(IReadOnlyList<GeneratedSource> sources)
     {
         ArgumentNullException.ThrowIfNull(sources);
         var expected = new Dictionary<string, string>(StringComparer.Ordinal)
         {
-            [ModelMetadataRenderer.ArtifactPath] = "GeneratedR5ModelMetadata",
-            [ValidationCompositionRenderer.ArtifactPath] = "GeneratedR5ValidationRules"
+            [_release.MetadataPath] = _release.MetadataClass,
+            [_release.ValidationPath] = _release.ValidationClass
         };
         var diagnostics = new List<GeneratorDiagnostic>();
         foreach (var (path, name) in expected)
@@ -40,7 +42,7 @@ public sealed class CompositionStructureValidator
                     && method.Modifiers.Any(SyntaxKind.InternalKeyword)) != 1)
                 Add(path, $"Expected internal static {name}.Create() composition entry point.");
             var ns = tree.GetRoot().DescendantNodes().OfType<BaseNamespaceDeclarationSyntax>().ToArray();
-            if (ns.Length != 1 || ns[0].Name.ToString() != "MyFhirSdk.ModelMetadata.R5")
+            if (ns.Length != 1 || ns[0].Name.ToString() != _release.MetadataNamespace)
                 Add(path, "Unexpected composition namespace.");
         }
         if (sources.Count != expected.Count) Add("<composition-batch>", "Unexpected composition artifact inventory.");

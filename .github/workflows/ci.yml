@@ -14,6 +14,36 @@ env:
   SOLUTION_PATH: MyFhirSdk.sln
 
 jobs:
+  fhir-v4-generator:
+    name: V4 R4/R5 generator (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Restore solution
+        run: dotnet restore MyFhirSdk.sln
+      - name: Verify release generation, fresh regression and installed tool isolation
+        shell: pwsh
+        run: python eng/Test-FhirV4Generator.py --output artifacts/fhir-versions/v4/ci
+      - name: Upload V4 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-v4-${{ matrix.os }}
+          path: artifacts/fhir-versions/v4/ci
+          if-no-files-found: error
+
   fhir-v3-migration:
     name: V3 R5 Models migration (${{ matrix.os }})
     runs-on: ${{ matrix.os }}

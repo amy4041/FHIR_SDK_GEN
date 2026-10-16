@@ -5,8 +5,8 @@ public static class GenerationCompatibilityMatrix
     public const int SchemaVersion = 1;
     public const string VersionPolicy = "exact";
     public const string ToolPackageId = "MyFhirSdk.CodeGen.Tool";
-    public const string ToolVersion = "1.2.1";
-    public const string CodeGenVersion = "1.2.1";
+    public const string ToolVersion = "1.3.0";
+    public const string CodeGenVersion = "1.3.0";
     public const string RuntimeContractVersion = "runtime-kernel-v2";
     public const string RuntimeAssemblyName = "MyFhirSdk.Runtime";
     public const string RuntimeAssemblyVersion = "1.0.0.0";

@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "fhirVersion": "4.0.1",
+  "comparers": {
+    "symbolIdentity": "ordinal",
+    "outputPathIdentity": "ordinal-ignore-case",
+    "deterministicOrdering": "ordinal"
+  },
+  "namespaceRules": [
+    {
+      "category": "primitive-wrapper",
+      "scope": "phase-b-policy-supported-primitive",
+      "namespace": "MyFhirSdk.R4.Primitives",
+      "outputDirectory": "Generated/R4/Primitives",
+      "typeNameSource": "primitive-generation-policy"
+    },
+    {
+      "category": "complex-datatype",
+      "scope": "complex-type-specialization-non-external",
+      "namespace": "MyFhirSdk.R4.Types",
+      "outputDirectory": "Generated/R4/Types",
+      "typeNameSource": "fhir-type-via-csharp-name-converter"
+    },
+    {
+      "category": "resource",
+      "scope": "resource-specialization-non-external",
+      "namespace": "MyFhirSdk.R4.Resources",
+      "outputDirectory": "Generated/R4/Resources",
+      "typeNameSource": "fhir-type-via-csharp-name-converter"
+    },
+    {
+      "category": "model-metadata",
+      "scope": "generated-r4-model-metadata",
+      "namespace": "MyFhirSdk.ModelMetadata.R4",
+      "outputDirectory": "Generated/R4/ModelMetadata",
+      "typeNameSource": "artifact-identity-via-csharp-name-converter"
+    },
+    {
+      "category": "external-definition",
+      "scope": "r4-model-ownership-policy-external-node",
+      "namespace": "from-r4-model-ownership-policy",
+      "outputDirectory": null,
+      "typeNameSource": "from-r4-model-ownership-policy"
+    },
+    {
+      "category": "backbone",
+      "scope": "resource-owned-backbone-from-r4-backbone-policy",
+      "namespace": "MyFhirSdk.R4.Resources",
+      "outputDirectory": "Generated/R4/Resources",
+      "typeNameSource": "r4-backbone-policy"
+    }
+  ],
+  "fileNaming": {
+    "modelFilePattern": "{CSharpTypeName}.g.cs",
+    "resourceOwnerSource": "csharp-resource-type-name",
+    "resourceOwnerDirectoryPattern": "{ResourceOwner}",
+    "resourceModelPathPattern": "Generated/R4/Resources/{ResourceOwner}/{CSharpTypeName}.g.cs",
+    "metadataFilePattern": "{ArtifactIdentity}.g.cs",
+    "onePublicTopLevelTypePerModelFile": true,
+    "manifestFileName": "model-generation-manifest.json",
+    "pathSeparator": "/",
+    "portableFileNamePolicy": "windows-linux",
+    "rejectRootedOrTraversalSegments": true,
+    "rejectWindowsDeviceNames": true
+  },
+  "identifierRules": {
+    "typeConverter": "CSharpNameConverter.ConvertTypeName",
+    "propertyConverter": "CSharpNameConverter.ConvertPropertyName",
+    "jsonWireNameSource": "exact-fhir-element-name",
+    "jsonPropertyNameEmission": "required-when-wire-name-is-not-recoverable",
+    "automaticNumericSuffixesAllowed": false
+  },
+  "collisionRules": {
+    "checkFullyQualifiedTypeIdentity": true,
+    "checkOutputPathIdentity": true,
+    "checkDeclaringTypeName": true,
+    "checkDeclaredMembers": true,
+    "checkInheritedMembers": true,
+    "checkSyntheticMembers": true,
+    "unapprovedCollisionDisposition": "fail-before-render",
+    "diagnosticOrdering": "ordinal-element-identity"
+  },
+  "explicitMemberRenames": [
+    {
+      "elementId": "Expression.expression",
+      "clrName": "ExpressionValue",
+      "jsonName": "expression",
+      "reason": "member-name-matches-declaring-type"
+    },
+    {
+      "elementId": "Reference.reference",
+      "clrName": "ReferenceValue",
+      "jsonName": "reference",
+      "reason": "member-name-matches-declaring-type"
+    }
+  ],
+  "profileTypeOverrides": [
+    {
+      "profileCanonical": "http://hl7.org/fhir/StructureDefinition/SimpleQuantity",
+      "clrType": "MyFhirSdk.R4.Types.SimpleQuantity",
+      "declarationOwner": "retained-handwritten-constraint-profile",
+      "reason": "preserve-c0-002-public-api-for-profile-narrowed-quantity-elements"
+    }
+  ],
+  "syntheticMembers": [
+    {
+      "category": "concrete-resource",
+      "clrName": "ResourceType",
+      "jsonName": "resourceType",
+      "shape": "public-readonly-override",
+      "collisionDisposition": "fail-before-render"
+    }
+  ],
+  "resolvedDecisions": {
+    "choiceMemberNamingAndRepresentation": "r4-choice-open-type-policy.json",
+    "openTypeNamingAndRepresentation": "r4-choice-open-type-policy.json"
+  },
+  "runtimeDatatypeBridges": [
+    {
+      "officialBase": "Element",
+      "runtimeBase": "MyFhirSdk.Core.DataType",
+      "reason": "shared-abstract-extension-marker-bridge"
+    },
+    {
+      "officialBase": "BackboneElement",
+      "runtimeBase": "MyFhirSdk.Core.BackboneType",
+      "reason": "shared-abstract-extension-marker-bridge"
+    }
+  ]
+}

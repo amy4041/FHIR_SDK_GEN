@@ -85,8 +85,8 @@
       <Link>Baselines\RuntimeKernelK4\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\docs\fhir_versions\baselines\v3\tool-1.2.1\*">
-      <Link>Baselines\FhirV3Tool\%(Filename)%(Extension)</Link>
+    <None Include="..\..\docs\fhir_versions\baselines\v4\tool-1.3.0\*">
+      <Link>Baselines\FhirV4Tool\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\Generated\R5\Primitives\*">

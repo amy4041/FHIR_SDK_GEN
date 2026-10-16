@@ -20,6 +20,6 @@ public sealed class ComplexDatatypeRenderer
 
         return _renderer.Render(
             declaration,
-            $"FHIR R5 {declaration.FhirName} datatype.");
+            $"FHIR {Generation.FhirReleaseConfiguration.ForVersion(declaration.Source.DefinitionVersion!).Release} {declaration.FhirName} datatype.");
     }
 }
