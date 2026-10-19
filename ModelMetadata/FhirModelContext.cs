@@ -206,7 +206,7 @@ public sealed class FhirModelContext
             foreach (var issue in rule.Evaluate(new ModelValidationNode(node.Value, node.Path)))
                 issues.Add(new ValidationIssue { Path = issue.Path, Message = issue.Message,
                     Code = (ValidationIssueCode)issue.Code, Severity = (ValidationSeverity)issue.Severity,
-                    RuleId = issue.RuleId });
+                    RuleId = issue.RuleId ?? rule.RuleId });
         }
     }
 }

@@ -1,0 +1,87 @@
+[
+  {
+    "path": "context-summary.json",
+    "sha256": "effc8ed3b83d851a040f2dbaff918c27dac16770f0bb2b4fd403eaaaf9c78ccb",
+    "bytes": 5887
+  },
+  {
+    "path": "generator-summary.json",
+    "sha256": "b3ece059cadb31c32e734d59ce367be604196d654b59aa94cf35d309b0223619",
+    "bytes": 2733
+  },
+  {
+    "path": "migration-summary.json",
+    "sha256": "ff5a31db2c94517c7c4e76826d092b31473d5308ce4a883a9fdc7ba141072836",
+    "bytes": 2703
+  },
+  {
+    "path": "provider-inventory.json",
+    "sha256": "1e560cb3eabe2c4597c57836b07bca98e20302cbc97763e554282678858162d0",
+    "bytes": 203252
+  },
+  {
+    "path": "R4-generated-hashes.json",
+    "sha256": "8d6583e81bff6724ad8ccea25f9d3f0809074f5d1c4252f9555ab5a694140157",
+    "bytes": 86704
+  },
+  {
+    "path": "R5-generated-hashes.json",
+    "sha256": "4e988b675b882dffca8fd74c0e0370f6095d4a9fd1c1e9ad83fd19dfdce0cf6f",
+    "bytes": 109155
+  },
+  {
+    "path": "README.md",
+    "sha256": "59bef69a28a7b0c4a812af2204636544a6c3a5a02faafe0c85477269651d6866",
+    "bytes": 7409
+  },
+  {
+    "path": "rollback-harness-summary.json",
+    "sha256": "9eb92ac4c7e946b1238eb595d21baa49ef630660c9727fa30de4cb6d0ce90cca",
+    "bytes": 780
+  },
+  {
+    "path": "scope-inventory.json",
+    "sha256": "812601d6a3e9f3985413bfb1cec7a55cdbb2fb466ae1e50249d3f1b0db751eaf",
+    "bytes": 424162
+  },
+  {
+    "path": "source-inventory.json",
+    "sha256": "20c749e12ee4c1d533b97b6f68c3efe0137af9f8ebf4ae250f526b2670186422",
+    "bytes": 425428
+  },
+  {
+    "path": "summary.json",
+    "sha256": "b92791a416f4141f0cc6927a1d2be7ccb05e9546f00214ce618e896e7a9ee257",
+    "bytes": 2317
+  },
+  {
+    "path": "tool-1.3.1/cli-help-1.3.1.txt",
+    "sha256": "ae0ce82de7a9bf9550e38919aeae70a6c2f751a24b4c03927260f7edc81d69f5",
+    "bytes": 998
+  },
+  {
+    "path": "tool-1.3.1/directory-artifact-hashes-1.3.1.txt",
+    "sha256": "0cb8687bcaf4cd1fd56116b24c199c54d70f1ab7df54790644e5f29b05456b33",
+    "bytes": 1851
+  },
+  {
+    "path": "tool-1.3.1/directory-artifact-inventory-1.3.1.txt",
+    "sha256": "43a2d6884c69048916f89f2b659947b5da378673d3ff4bde18404c6f7926f3d1",
+    "bytes": 399
+  },
+  {
+    "path": "tool-1.3.1/directory-manifest-1.3.1.json",
+    "sha256": "17772b433f44806cf91290447fabc07db6c491dba684c95c7efe88bb69b614e6",
+    "bytes": 9422
+  },
+  {
+    "path": "tool-1.3.1/package-primitive-fixture-contract.txt",
+    "sha256": "09a9407faa6e9da5822d28188c4599bc75b6ad315f8cd9ac1cc1f3531cd1e5e3",
+    "bytes": 2516
+  },
+  {
+    "path": "v5-test-cases.json",
+    "sha256": "f99dc145bd58ab2657556d197ddc865f7b2541b63910d0ca0aa64a12ebb0b1b1",
+    "bytes": 16394
+  }
+]

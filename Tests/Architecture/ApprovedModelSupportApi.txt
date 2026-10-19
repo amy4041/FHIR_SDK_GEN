@@ -56,6 +56,8 @@ TYPE static class MyFhirSdk.ModelSupport.PrimitiveCodecs | Base=System.Object | 
   PROPERTY MyFhirSdk.ModelContracts.IPrimitiveCodec Integer
   PROPERTY MyFhirSdk.ModelContracts.IPrimitiveCodec Integer64
   PROPERTY MyFhirSdk.ModelContracts.IPrimitiveCodec String
+TYPE static class MyFhirSdk.ModelSupport.PrimitiveValidationPolicies | Base=System.Object | Interfaces=-
+  METHOD MyFhirSdk.ModelContracts.IPrimitiveValidator WithPattern(System.String, MyFhirSdk.ModelContracts.IPrimitiveValidator, System.Func`2[System.String,System.String], Boolean)
 TYPE static class MyFhirSdk.ModelSupport.PrimitiveValidators | Base=System.Object | Interfaces=-
   PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Base64Binary
   PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Boolean

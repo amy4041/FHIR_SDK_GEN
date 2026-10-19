@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "gate": "G5",
+  "status": "Passed",
+  "r4ClientSupport": false,
+  "completeFhirValidation": false,
+  "deliveryGate": "G7 Pending",
+  "sourceRevision": "84c61ef022c1770751284665871aa3fbdab4e02c",
+  "sourceFingerprint": {
+    "algorithm": "sha256-path-and-bytes-v1",
+    "fileCount": 2233,
+    "sha256": "428eb40f3c8cb97d5571d5089b2ade311de671d62aae7135e2fb01f728f027da"
+  },
+  "createdAtUtc": "2026-10-19T06:00:04.834209+00:00",
+  "os": "Windows",
+  "sdkVersion": "9.0.317",
+  "testCounts": {
+    "total": 1074,
+    "passed": 1073,
+    "failed": 0,
+    "skipped": 1
+  },
+  "runtimeContract": {
+    "descriptorSha256": "422ac582a75724ea3ecc275131b3f190b3b19d9571aa857925960edc9b23c2f2",
+    "compilerReferenceSha256": "8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71"
+  },
+  "toolVersion": "1.3.1",
+  "toolPackageSha256": "4ea93cf44a67941db6d762f16af9604fa830951044c8d32b97a2f451dc5b93e8",
+  "preservedGeneratedSources": 852,
+  "rollbackRegression": {
+    "status": "Passed",
+    "currentAssemblies": 8,
+    "historicalAssemblies": 7,
+    "harnessChecks": 16,
+    "evidenceSha256": "9eb92ac4c7e946b1238eb595d21baa49ef630660c9727fa30de4cb6d0ce90cca"
+  },
+  "freshIntegration": {
+    "outsideCheckout": true,
+    "reusedBinObj": false,
+    "reusedCommittedGeneratedSources": false,
+    "r4GeneratedSources": 677,
+    "r5GeneratedSources": 852,
+    "testsPassed": 81,
+    "generatedInputsUnchanged": true,
+    "sameProcessR4R5Consumer": true,
+    "testedImplementationHashes": {
+      "MyFhirSdk.dll": "7b632bbb2481830e0499d4f6ac089ffe0793ba25ff96e91ec944d9daa5a5febc",
+      "MyFhirSdk.Runtime.dll": "98b019312159b559ced60389da327fff32794d280ee0a6b3773c2f775f5657e9",
+      "MyFhirSdk.ModelContracts.dll": "8aedb02dee8b95ae8c9ddd107126291b30620ec1707501fc4185eaa79d30dee6",
+      "MyFhirSdk.ModelSupport.dll": "2d7bbbd43b2ff605f72bd067710fa7a400b16e94dd2e81a0ba1e7c8324d34aa8",
+      "MyFhirSdk.R4.Models.dll": "0db0c7bd698655be8a48a735075abc4c423ec316aa1d164afd86932e3b87ed90",
+      "MyFhirSdk.R5.Models.dll": "9a53c54ed34f264bfccb12fc4bbb2ddd2a0cd103b02919fefd93278314a67a50"
+    }
+  },
+  "r4ModelsAndRuntimeIntegration": true,
+  "scopeDefinitions": 655,
+  "concreteR4Resources": 146,
+  "r4ModelDeclarations": 675
+}

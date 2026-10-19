@@ -31,6 +31,7 @@ def inventory(root):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", default="artifacts/fhir-versions/v4/run")
+    parser.add_argument("--export-generated", action="store_true", help="Retain verified installed-tool trees for G5 fresh compilation")
     args = parser.parse_args()
     output = (ROOT / args.output).resolve()
     if output == ROOT / "artifacts" or not output.is_relative_to((ROOT / "artifacts").resolve()) or output.exists():
@@ -156,6 +157,11 @@ def main():
                     if inventory(model_output) != combined:
                         raise ValueError("Foreign auxiliary CLR identity changed existing output")
                 summary["installedTool"]["releases"][release]["foreignAuxiliaryClrIdentityRejected"] = True
+                if args.export_generated:
+                    exported = output / "generated" / release
+                    shutil.copytree(root, exported)
+                    if inventory(exported) != inventory(root):
+                        raise ValueError("Exported installed-tool sources changed")
                 if release == "R4":
                     before = inventory(model_output)
                     command = ["myfhir-codegen", "--mode", "model", *common, "--output", str(model_output)]

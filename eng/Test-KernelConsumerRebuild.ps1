@@ -51,13 +51,15 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
         'Tests/Architecture/MyFhirSdk.Architecture.Tests.csproj', 'Tests/CodeGen/MyFhirSdk.CodeGen.Tests.csproj',
         'Tests/Client/MyFhirSdk.Client.Tests.csproj', 'Tests/Parser/Json/MyFhirSdk.Parser.Json.Tests.csproj',
         'Tests/Serializer/Json/MyFhirSdk.Serialization.Json.Tests.csproj', 'Tests/Validation/MyFhirSdk.Validation.Tests.csproj',
-        'Tests/ImplementationGuides/TwCore/MyFhirSdk.ImplementationGuides.TwCore.Tests.csproj'
+        'Tests/ImplementationGuides/TwCore/MyFhirSdk.ImplementationGuides.TwCore.Tests.csproj',
+        'Tests/FhirVersions/V5/MyFhirSdk.FhirVersions.V5.Tests.csproj'
     )
     $special = @{
         'MyFhirSdk.csproj' = 'production-sdk'; 'Runtime/MyFhirSdk.Runtime.csproj' = 'production-runtime'
         'ModelContracts/MyFhirSdk.ModelContracts.csproj' = 'production-model-contracts'
         'ModelSupport/MyFhirSdk.ModelSupport.csproj' = 'production-model-support'
         'Models/R5/MyFhirSdk.R5.Models.csproj' = 'production-r5-models'
+        'Models/R4/MyFhirSdk.R4.Models.csproj' = 'production-r4-models'
         'Tests/FhirVersions/V3/ProviderConsumer/ProviderConsumer.csproj' = 'provider-only-consumer'
         'CodeGen/MyFhirSdk.CodeGen.csproj' = 'production-metadata-only-generator'
         'Tests/FhirVersions/V1/Models/MyFhirSdk.R4.V1.Models.csproj' = 'experiment-r4-models'
@@ -84,7 +86,7 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
         if ($role -eq 'production-model-support') {
             Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @('ModelContracts/MyFhirSdk.ModelContracts.csproj')
         }
-        if ($role -eq 'production-r5-models') {
+        if ($role -in @('production-r5-models', 'production-r4-models')) {
             Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @(
                 'ModelContracts/MyFhirSdk.ModelContracts.csproj', 'ModelSupport/MyFhirSdk.ModelSupport.csproj')
         }

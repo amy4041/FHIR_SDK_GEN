@@ -80,11 +80,7 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
         # K0's regression gate tests CURRENT source; this additional gate explicitly tests the restored OLD source.
         Invoke-KernelDotNet (@('test', "$source/MyFhirSdk.sln", '-c', 'Release', '--logger', 'trx;LogFilePrefix=k7-rollback', '--results-directory', "$output/test-results") + $properties) *> "$output/restored-source-regression.log"
     } finally { Pop-Location }
-    $regression = Assert-KernelConsumerRegression "$output/test-results" @(
-        'MyFhirSdk.Architecture.Tests.dll', 'MyFhirSdk.CodeGen.Tests.dll', 'MyFhirSdk.Client.Tests.dll',
-        'MyFhirSdk.Parser.Json.Tests.dll', 'MyFhirSdk.Serialization.Json.Tests.dll',
-        'MyFhirSdk.Validation.Tests.dll', 'MyFhirSdk.ImplementationGuides.TwCore.Tests.dll'
-    )
+    $regression = Assert-KernelConsumerRegression "$output/test-results" (Get-KernelRegressionAssemblies -Historical)
     $evidence.restoredRegressionCounts = $regression.counts
     $evidence.restoredRegressionProjects = $regression.projects
     $evidence.externalClientSmoke = if ($regression.counts.skipped -eq 1) { 'skipped-no-integration-base-url' } else { 'passed' }

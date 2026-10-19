@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 3,
+  "fhirSpecification": "FHIR R4",
+  "fhirPackageId": "hl7.fhir.r4.core",
+  "fhirPackageVersion": "4.0.1",
+  "fhirVersion": "4.0.1",
+  "policyVersion": "1.0.1",
+  "codeGenVersion": "1.3.1",
+  "runtimeContractVersion": "runtime-kernel-v2",
+  "compatibility": {
+    "schemaVersion": 1,
+    "versionPolicy": "exact",
+    "tool": {
+      "packageId": "MyFhirSdk.CodeGen.Tool",
+      "version": "1.3.1"
+    },
+    "codeGenVersion": "1.3.1",
+    "runtimeDescriptor": {
+      "schemaVersion": 2,
+      "version": "runtime-kernel-v2",
+      "sha256": "f649d65aa08ff73c3a3f4d03a2c19cf79ae43e60861673968dc8744d45f8540b"
+    },
+    "compilerReference": {
+      "logicalIdentity": "MyFhirSdk.Runtime, Version=1.0.0.0, PublicKeyToken=null, TargetFramework=net9.0",
+      "sha256": "8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71"
+    },
+    "targetFramework": "net9.0",
+    "compilerSources": [
+      {
+        "logicalName": "SimpleQuantity.cs",
+        "version": "simple-quantity-r4-source-v1",
+        "clrType": "MyFhirSdk.R4.Types.SimpleQuantity",
+        "normalization": "utf8-lf",
+        "sha256": "8e0d53e95a66f618eeb12860a3f2ddee0dea9d1515c0b63607250fdeaf4ab2a2"
+      }
+    ]
+  },
+  "primitiveNamespace": "MyFhirSdk.R4.Primitives",
+  "primitives": [
+    {
+      "fhirTypeName": "base64Binary",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/base64Binary",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirBase64Binary"
+    },
+    {
+      "fhirTypeName": "boolean",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/boolean",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirBoolean"
+    },
+    {
+      "fhirTypeName": "canonical",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/canonical",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirCanonical"
+    },
+    {
+      "fhirTypeName": "code",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/code",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirCode"
+    },
+    {
+      "fhirTypeName": "date",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/date",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirDate"
+    },
+    {
+      "fhirTypeName": "dateTime",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/dateTime",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirDateTime"
+    },
+    {
+      "fhirTypeName": "decimal",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/decimal",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirDecimal"
+    },
+    {
+      "fhirTypeName": "id",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/id",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirId"
+    },
+    {
+      "fhirTypeName": "instant",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/instant",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirInstant"
+    },
+    {
+      "fhirTypeName": "integer",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/integer",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirInteger"
+    },
+    {
+      "fhirTypeName": "markdown",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/markdown",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirMarkdown"
+    },
+    {
+      "fhirTypeName": "oid",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/oid",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirOid"
+    },
+    {
+      "fhirTypeName": "positiveInt",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/positiveInt",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirPositiveInt"
+    },
+    {
+      "fhirTypeName": "string",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/string",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirString"
+    },
+    {
+      "fhirTypeName": "time",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/time",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirTime"
+    },
+    {
+      "fhirTypeName": "unsignedInt",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/unsignedInt",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirUnsignedInt"
+    },
+    {
+      "fhirTypeName": "uri",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/uri",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirUri"
+    },
+    {
+      "fhirTypeName": "url",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/url",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirUrl"
+    },
+    {
+      "fhirTypeName": "uuid",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/uuid",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "supported",
+      "unsupportedReason": null,
+      "wrapperName": "FhirUuid"
+    },
+    {
+      "fhirTypeName": "xhtml",
+      "canonical": "http://hl7.org/fhir/StructureDefinition/xhtml",
+      "fhirVersion": "4.0.1",
+      "supportStatus": "unsupported",
+      "unsupportedReason": "Phase A Runtime has no approved CLR, wire-format, codec, or validator contract for xhtml.",
+      "wrapperName": null
+    }
+  ],
+  "artifacts": [
+    {
+      "fileName": "FhirBase64Binary.g.cs",
+      "sha256": "3630cb7578e82b652e0cf4994b925be0ed6a1901346b0406146262417b8d88e3"
+    },
+    {
+      "fileName": "FhirBoolean.g.cs",
+      "sha256": "aaab4885bed3c700cd81bc1208c5eecc9f05323cbe77cefd42152873c021b309"
+    },
+    {
+      "fileName": "FhirCanonical.g.cs",
+      "sha256": "226f7aaf4304291913a59e0b521879fc551da03899b9b0685fb6e024aa936354"
+    },
+    {
+      "fileName": "FhirCode.g.cs",
+      "sha256": "fa464bd34fb7cebe7cda70fd854ef1fd9d02ad779c67eab33a1f47380adad5ff"
+    },
+    {
+      "fileName": "FhirDate.g.cs",
+      "sha256": "579a663c0671d78f133db5c3e71d09ca7f8fa43576f5ab2500d347cfc8076c43"
+    },
+    {
+      "fileName": "FhirDateTime.g.cs",
+      "sha256": "9acd0937a34c74659b37aa3c5506815b15fe0f96aeeb2d6a063948b4bae7209b"
+    },
+    {
+      "fileName": "FhirDecimal.g.cs",
+      "sha256": "3993fc582c38c77076806b2b88a8f7a5c8680fb24a8098866260705ae13f9f59"
+    },
+    {
+      "fileName": "FhirId.g.cs",
+      "sha256": "1b81ac411d711ab49c4fe2109190e1b0a076fd0b0def696f156b3bb9fb0d2f52"
+    },
+    {
+      "fileName": "FhirInstant.g.cs",
+      "sha256": "6bff3d21aa43a655e67bc35b8fe767d41e145dd362955bc1feae55c1fe49ab9c"
+    },
+    {
+      "fileName": "FhirInteger.g.cs",
+      "sha256": "d6f8315da27ec1cdbedbed974638e54938d4bf3ee76a3f2fee160e0897610155"
+    },
+    {
+      "fileName": "FhirMarkdown.g.cs",
+      "sha256": "5889de4deb47c49cdf46b2d45ccdec66cfa482f9cd966311f74fba14db2c2a77"
+    },
+    {
+      "fileName": "FhirOid.g.cs",
+      "sha256": "6dfab24dbfd320a6b7ddc20fa7402b28fa77a4f854d01d0662779374d5dfa9da"
+    },
+    {
+      "fileName": "FhirPositiveInt.g.cs",
+      "sha256": "1b89caee63d9bc25e2feba609f3a07601a15b0417377defe3548f4d59bc358cc"
+    },
+    {
+      "fileName": "FhirString.g.cs",
+      "sha256": "16a0530a6392667e2e32f18f8e1447c63e6342b501640bb1e7be873a977e480e"
+    },
+    {
+      "fileName": "FhirTime.g.cs",
+      "sha256": "bf47d10cc91ddb79a5e88265d4527b6dec21a5bc09e16b8f007c3e8f936f7b85"
+    },
+    {
+      "fileName": "FhirUnsignedInt.g.cs",
+      "sha256": "036a38dce57302c7d320b88c5e782038d3effac934951e081470ccf3181be56d"
+    },
+    {
+      "fileName": "FhirUri.g.cs",
+      "sha256": "20e2f3ea4a834e6034572214af51f3f692a9abb867e63f28e4d9dcf658e2b013"
+    },
+    {
+      "fileName": "FhirUrl.g.cs",
+      "sha256": "a644b633074aec84911b19a27e7de7a972265f9b57314070eb5d1cb5f197f868"
+    },
+    {
+      "fileName": "FhirUuid.g.cs",
+      "sha256": "6e7cbe1a181dad4b255d9d97743182613b550d1e6413c21bfaae57fff582b6b3"
+    },
+    {
+      "fileName": "PrimitiveRegistry.Composition.g.cs",
+      "sha256": "a91b13cc4bc2ddd2091cb8b52a9968cb56412467f98a7588d4946e2fbc863381"
+    }
+  ]
+}

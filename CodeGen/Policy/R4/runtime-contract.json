@@ -10,16 +10,16 @@
   "compatibility": {
     "schemaVersion": 1,
     "versionPolicy": "exact",
-    "toolVersion": "1.3.0",
-    "codeGenVersion": "1.3.0",
+    "toolVersion": "1.3.1",
+    "codeGenVersion": "1.3.1",
     "fhirPackage": {
       "id": "hl7.fhir.r4.core",
       "version": "4.0.1",
       "fhirVersion": "4.0.1"
     },
     "primitivePolicy": {
-      "version": "1.0.0",
-      "sha256": "5282aaa28af56ae46e63d695282065ec9a801b50c6b5df08e30a613fe07a760a"
+      "version": "1.0.1",
+      "sha256": "c4c18064ce265b7a0ecdc0818272dcc96626985f931b87a716bacb0f53a6c16d"
     },
     "modelPolicies": [
       {
@@ -28,7 +28,7 @@
       },
       {
         "name": "choice-open-type",
-        "sha256": "f6e13c8d74a33d0ffdb2403c726b4b05df87a34d031b7fc2ef5d1e640b12ed83"
+        "sha256": "2e9c76c582a7eca501b4aa8ad98fb74682bd54277dbada64103e9b39b40fb3f8"
       },
       {
         "name": "model-naming",
@@ -40,7 +40,7 @@
       },
       {
         "name": "validation-capability",
-        "sha256": "8cb74e3d206aa894ec23be8fd5a05b624403c2f033d842ab4e658ee6bfad8242"
+        "sha256": "abdd61a39cbcff95379466d8070bb2b550be5a05da3e787ef8676dd892a8c627"
       }
     ]
   },

@@ -1,10 +1,11 @@
 #Requires -Version 7.2
 [CmdletBinding()]
-param([string] $OutputDirectory = 'artifacts/kernel-k7/rollback-harness')
+param([string] $OutputDirectory = 'artifacts/kernel-k7/rollback-harness', [string] $CurrentRegressionDirectory = '')
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'KernelMigration.Common.ps1')
 . (Join-Path $PSScriptRoot 'KernelSourceRollback.Common.ps1')
+. (Join-Path $PSScriptRoot 'KernelConsumerRebuild.Common.ps1')
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $output = [IO.Path]::GetFullPath($OutputDirectory, $root)
 $comparison = if ($IsWindows) { [StringComparison]::OrdinalIgnoreCase } else { [StringComparison]::Ordinal }
@@ -27,6 +28,44 @@ function Reject([string] $Name, [scriptblock] $Mutation, [string] $Message) {
     $checks.Add($Name)
 }
 try {
+    $currentAssemblies = @(Get-KernelRegressionAssemblies)
+    $historicalAssemblies = @(Get-KernelRegressionAssemblies -Historical)
+    if ($currentAssemblies.Count -ne 8 -or $currentAssemblies -cnotcontains 'MyFhirSdk.FhirVersions.V5.Tests.dll' -or
+        $historicalAssemblies.Count -ne 7 -or $historicalAssemblies -ccontains 'MyFhirSdk.FhirVersions.V5.Tests.dll') {
+        throw 'Current and historical regression assembly inventories are incorrect.'
+    }
+    foreach ($set in @(@{ name = 'current'; assemblies = $currentAssemblies }, @{ name = 'historical'; assemblies = $historicalAssemblies })) {
+        $reports = "$output/$($set.name)-reports"
+        New-Item -ItemType Directory -Path $reports | Out-Null
+        foreach ($assembly in $set.assemblies) {
+            $text = @"
+<TestRun xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestDefinitions><UnitTest id="1"><TestMethod codeBase="$assembly" /></UnitTest></TestDefinitions>
+  <Results><UnitTestResult testId="1" testName="Probe.Passes" outcome="Passed" /></Results>
+  <ResultSummary><Counters total="1" passed="1" failed="0" /></ResultSummary>
+</TestRun>
+"@
+            [IO.File]::WriteAllText("$reports/$assembly.trx", $text, [Text.UTF8Encoding]::new($false))
+        }
+        $accepted = Assert-KernelConsumerRegression $reports $set.assemblies
+        if ($accepted.projects.Count -ne $set.assemblies.Count) { throw 'Regression report set was incomplete.' }
+        $checks.Add("$($set.name)-regression-assembly-set-accepted")
+        $caught = $false
+        try {
+            $wrong = if ($set.name -eq 'current') { $historicalAssemblies } else { $currentAssemblies }
+            Assert-KernelConsumerRegression $reports $wrong | Out-Null
+        } catch {
+            if ($_.Exception.Message -notmatch 'Unexpected test assembly:|Missing test assembly report:') { throw }
+            $caught = $true
+        }
+        if (-not $caught) { throw 'Mismatched regression assembly set was accepted.' }
+        $checks.Add("$($set.name)-regression-wrong-assembly-set-rejected")
+    }
+    if ($CurrentRegressionDirectory) {
+        $accepted = Assert-KernelConsumerRegression $CurrentRegressionDirectory $currentAssemblies
+        if ($accepted.projects.Count -ne 8) { throw 'Expected all eight current regression assemblies.' }
+        $checks.Add('current-v5-regression-reports-accepted')
+    }
     $fingerprint = Get-KernelCurrentSourceFingerprint $root
     $saved = [pscustomobject]@{ currentSourceFingerprint = [pscustomobject] $fingerprint }
     if (-not (Test-KernelRegressionFingerprint $saved $fingerprint)) { throw 'Matching fingerprint was not reusable.' }

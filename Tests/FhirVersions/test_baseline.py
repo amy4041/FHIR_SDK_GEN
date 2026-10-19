@@ -76,7 +76,7 @@ class BaselineIntegrityTests(unittest.TestCase):
     def test_missing_test_assemblies_cannot_pass(self):
         (ROOT / "artifacts").mkdir(exist_ok=True)
         with tempfile.TemporaryDirectory(dir=ROOT / "artifacts") as directory:
-            with self.assertRaisesRegex(ValueError, "seven expected"):
+            with self.assertRaisesRegex(ValueError, "exactly the expected"):
                 baseline.regression_inventory(Path(directory))
 
     def test_trx_skips_are_counted_from_results_and_counter_mismatch_is_rejected(self):

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "checks": [
+    "current-regression-assembly-set-accepted",
+    "current-regression-wrong-assembly-set-rejected",
+    "historical-regression-assembly-set-accepted",
+    "historical-regression-wrong-assembly-set-rejected",
+    "current-v5-regression-reports-accepted",
+    "matching-current-source-fingerprint",
+    "legacy-baseline-without-fingerprint-requires-rerun",
+    "untracked-current-source-change-requires-rerun",
+    "replacement-consumer-rejected",
+    "exit-zero-without-behavior-proof-rejected",
+    "expected-consumer-behavior-output",
+    "missing-baseline-gate",
+    "skipped-baseline-gate",
+    "different-source-pin",
+    "runtime-project-not-reverted",
+    "different-sdk-implementation"
+  ],
+  "failure": null
+}

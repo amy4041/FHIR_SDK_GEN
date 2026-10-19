@@ -85,21 +85,30 @@
     "diagnosticOrdering": "ordinal-element-identity-then-fhir-type-code"
   },
   "approvedR4Inventory": {
-    "generatedScopeChoiceElementCount": 259,
-    "generatedScopeChoiceAlternativeCount": 1303,
-    "ordinaryChoiceElementCount": 250,
-    "ordinaryChoiceAlternativeCount": 817,
-    "openTypeChoiceElementCount": 9,
-    "openTypeChoiceAlternativeCount": 486,
-    "externalBootstrapOpenTypeElementCount": 1,
-    "openTypeAlternativeCountPerElement": 54,
-    "optionalChoiceElementCount": 198,
-    "requiredChoiceElementCount": 61,
-    "unsupportedPrimitiveAlternativeOccurrences": {
-      "oid": 9,
-      "time": 20,
-      "uuid": 9,
-      "xhtml": 0
-    }
+    "source": "eng/FhirV5Inventory.py (locked R4 package; differential direct elements, snapshot effective elements)",
+    "generatedDefinitions": 182,
+    "generatedResourceDefinitions": 146,
+    "generatedDatatypeDefinitions": 36,
+    "directElements": 4712,
+    "effectiveElementsExcludingRoots": 7373,
+    "directRequiredElements": 770,
+    "directConstraints": 96,
+    "directBindings": 1022,
+    "directBindingStrengths": {
+      "example": 454,
+      "extensible": 147,
+      "preferred": 60,
+      "required": 361
+    },
+    "directChoices": 185,
+    "directChoiceAlternatives": 937,
+    "ordinaryChoices": 178,
+    "openChoices": 7,
+    "requiredOrdinaryChoices": 45,
+    "requiredOpenChoices": 3,
+    "directFixedValues": 0,
+    "directPatternValues": 0,
+    "directSlicing": 0,
+    "finiteCollectionMaxima": 0
   }
 }

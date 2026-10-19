@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "policyVersion": "1.0.0",
+  "policyVersion": "1.0.1",
   "fhirVersion": "4.0.1",
   "runtimeContractVersion": "runtime-kernel-v2",
   "primitiveNamespace": "MyFhirSdk.R4.Primitives",
@@ -122,23 +122,7 @@
       "supportStatus": "supported",
       "unsupportedReason": null,
       "toStringBehavior": "literal-or-invariant-value",
-      "publicConstants": [
-        {
-          "name": "MaxExponentDigits",
-          "clrType": "int",
-          "value": 9
-        },
-        {
-          "name": "MaxFractionDigits",
-          "clrType": "int",
-          "value": 17
-        },
-        {
-          "name": "MaxIntegerDigits",
-          "clrType": "int",
-          "value": 18
-        }
-      ]
+      "publicConstants": []
     },
     {
       "fhirTypeName": "id",

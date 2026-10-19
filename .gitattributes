@@ -42,3 +42,7 @@ Tests/CodeGen/Generation/FhirReleaseGenerationTests.cs text eol=lf
 eng/Test-FhirV4Generator.py text eol=lf
 docs/fhir_versions/baselines/v4/** text eol=lf
 Generated/R4/** text eol=lf
+Tests/FhirVersions/V5/** text eol=lf
+eng/Test-FhirV5Integration.py text eol=lf
+eng/FhirV5Inventory.py text eol=lf
+docs/fhir_versions/baselines/v5/** text eol=lf

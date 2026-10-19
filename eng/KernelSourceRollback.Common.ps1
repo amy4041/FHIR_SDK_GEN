@@ -33,9 +33,12 @@ function Test-KernelRegressionFingerprint {
 }
 
 function Get-KernelRegressionAssemblies {
-    @('MyFhirSdk.Architecture.Tests.dll', 'MyFhirSdk.CodeGen.Tests.dll', 'MyFhirSdk.Client.Tests.dll',
+    param([switch] $Historical)
+    $assemblies = @('MyFhirSdk.Architecture.Tests.dll', 'MyFhirSdk.CodeGen.Tests.dll', 'MyFhirSdk.Client.Tests.dll',
       'MyFhirSdk.Parser.Json.Tests.dll', 'MyFhirSdk.Serialization.Json.Tests.dll',
       'MyFhirSdk.Validation.Tests.dll', 'MyFhirSdk.ImplementationGuides.TwCore.Tests.dll')
+    if (-not $Historical) { $assemblies += 'MyFhirSdk.FhirVersions.V5.Tests.dll' }
+    $assemblies
 }
 
 function Assert-KernelRollbackConsumer {

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "gate": "G3",
+  "status": "Passed",
+  "v2Revision": "fa8dbb38c4809b028151167887d5d72968d100a8",
+  "migrationPolicy": "rebuild-all-no-forwarders",
+  "completeR4Support": false,
+  "buildUiLanguage": "en-US",
+  "preservedGeneratedSources": 852,
+  "existingApiPreserved": true,
+  "sourceRevision": "84c61ef022c1770751284665871aa3fbdab4e02c",
+  "sourceFingerprint": {
+    "algorithm": "sha256-path-and-bytes-v1",
+    "fileCount": 2233,
+    "sha256": "428eb40f3c8cb97d5571d5089b2ade311de671d62aae7135e2fb01f728f027da"
+  },
+  "createdAtUtc": "2026-10-19T06:00:04.834209+00:00",
+  "os": "Windows",
+  "sdkVersion": "9.0.317",
+  "configuration": "Release",
+  "targetFramework": "net9.0",
+  "testCounts": {
+    "total": 1074,
+    "passed": 1073,
+    "failed": 0,
+    "skipped": 1
+  },
+  "runtimeContract": {
+    "descriptorSha256": "422ac582a75724ea3ecc275131b3f190b3b19d9571aa857925960edc9b23c2f2",
+    "compilerReferenceSha256": "8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71"
+  },
+  "testedImplementationHashes": {
+    "MyFhirSdk.dll": "3e2e1b221da70e98627e7c832a56264b5e94459e615f6d3bcd4fddf26202fa7d",
+    "MyFhirSdk.Runtime.dll": "0fb370dc6ad8adc33c031e9c56317f8b23df1217556dd399ac0c217f561b4329",
+    "MyFhirSdk.ModelContracts.dll": "319bda4211e774b64e1aa81c569da30d51216991eafa4f298e5d3dfb133f2dcb",
+    "MyFhirSdk.ModelSupport.dll": "888c8e27fd3feb8d71ef9e700f088f92fda7587f50fc7b59033445c77519b53b",
+    "MyFhirSdk.R5.Models.dll": "8b0ed4483999d9c2b12650674e2301cde2cb60c247f7a5562f3d4ce033541980",
+    "MyFhirSdk.R4.V1.Models.dll": "9f1fc93c565889a0366af5e3ccf4551f9dc09cd02c0834759024461d27cac7ba",
+    "MyFhirSdk.R4.V2.Provider.dll": "5a29cdd3081c968949b8fe62dbf8047a5c055a8442246b41145a68892637f895"
+  },
+  "apiSnapshots": {
+    "Tests/Architecture/ApprovedPublicApi.txt": "95d785ee700647c3cc5be473cf3368015bbf258e854c989e9946450de97074bf",
+    "Tests/Architecture/ApprovedR5ModelApi.txt": "5d150daeb9594108154411c7c26d642a767b10f2c87caccfec60d0f8a2589a37",
+    "Tests/Architecture/ApprovedModelContractsApi.txt": "6a75af68afe81f383af6a13bab668584e012caaa824d76f14d2a56a83d1bb907"
+  },
+  "v3Tests": {
+    "total": 4,
+    "passed": 4
+  },
+  "modelSupportApiSha256": "5a9a32003e15ab50db4f483b71509e465272d5824196691bc47c2f71742c479b",
+  "toolVersion": "1.3.1",
+  "definingAssemblies": {
+    "R5PrimitivesTypesResourcesAndSimpleQuantity": "MyFhirSdk.R5.Models",
+    "R5Provider": "MyFhirSdk.R5.Models",
+    "SharedCodecsAndRuleImplementations": "MyFhirSdk.ModelSupport",
+    "ContextAndEngines": "MyFhirSdk",
+    "NeutralSpi": "MyFhirSdk.ModelContracts",
+    "Bootstrap": "MyFhirSdk.Runtime"
+  }
+}

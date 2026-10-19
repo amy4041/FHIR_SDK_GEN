@@ -24,6 +24,7 @@ EXPECTED_TESTS = {
     "MyFhirSdk.Client.Tests", "MyFhirSdk.Parser.Json.Tests",
     "MyFhirSdk.Serialization.Json.Tests", "MyFhirSdk.Validation.Tests",
     "MyFhirSdk.ImplementationGuides.TwCore.Tests",
+    "MyFhirSdk.FhirVersions.V5.Tests",
 }
 
 
@@ -180,7 +181,7 @@ def regression_inventory(directory):
                         "skips": [{"test": r.attrib["testName"], "reason": " ".join(r.itertext()).strip()}
                                   for r in results if r.attrib["outcome"] == "NotExecuted"]})
     if len(reports) != len(EXPECTED_TESTS) or {r["assembly"] for r in reports} != EXPECTED_TESTS:
-        raise ValueError("Regression did not produce exactly the seven expected assemblies")
+        raise ValueError("Regression did not produce exactly the expected assemblies")
     return reports
 
 
