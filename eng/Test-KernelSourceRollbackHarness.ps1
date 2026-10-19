@@ -30,7 +30,8 @@ function Reject([string] $Name, [scriptblock] $Mutation, [string] $Message) {
 try {
     $currentAssemblies = @(Get-KernelRegressionAssemblies)
     $historicalAssemblies = @(Get-KernelRegressionAssemblies -Historical)
-    if ($currentAssemblies.Count -ne 8 -or $currentAssemblies -cnotcontains 'MyFhirSdk.FhirVersions.V5.Tests.dll' -or
+    if ($currentAssemblies.Count -ne 9 -or $currentAssemblies -cnotcontains 'MyFhirSdk.FhirVersions.V5.Tests.dll' -or
+        $currentAssemblies -cnotcontains 'MyFhirSdk.FhirVersions.V6.Tests.dll' -or
         $historicalAssemblies.Count -ne 7 -or $historicalAssemblies -ccontains 'MyFhirSdk.FhirVersions.V5.Tests.dll') {
         throw 'Current and historical regression assembly inventories are incorrect.'
     }
@@ -63,7 +64,7 @@ try {
     }
     if ($CurrentRegressionDirectory) {
         $accepted = Assert-KernelConsumerRegression $CurrentRegressionDirectory $currentAssemblies
-        if ($accepted.projects.Count -ne 8) { throw 'Expected all eight current regression assemblies.' }
+        if ($accepted.projects.Count -ne $currentAssemblies.Count) { throw 'Expected all current regression assemblies.' }
         $checks.Add('current-v5-regression-reports-accepted')
     }
     $fingerprint = Get-KernelCurrentSourceFingerprint $root

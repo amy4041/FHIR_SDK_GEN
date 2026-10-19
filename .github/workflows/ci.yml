@@ -14,6 +14,36 @@ env:
   SOLUTION_PATH: MyFhirSdk.sln
 
 jobs:
+  fhir-v6-client:
+    name: V6 R4/R5 Client integration (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Restore solution
+        run: dotnet restore MyFhirSdk.sln
+      - name: Verify fresh typed clients, HTTP behavior and external smoke status
+        shell: pwsh
+        run: python eng/Test-FhirV6Client.py --output artifacts/fhir-versions/v6/ci
+      - name: Upload V6 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-v6-${{ matrix.os }}
+          path: artifacts/fhir-versions/v6/ci
+          if-no-files-found: error
+
   fhir-v5-integration:
     name: V5 full R4 Models and runtime (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -555,7 +585,7 @@ jobs:
           foreach ($pair in @(@($windowsSdk, $windows), @($linuxSdk, $linux))) {
             $sdk = $pair[0]; $smoke = $pair[1]
             if ($sdk.status -cne 'passed' -or $sdk.modelsCli -cne 'passed' -or $sdk.sdkComposition -cne 'passed' -or
-                $sdk.generatedSourceCount -ne 852 -or $sdk.regressionProjects.Count -ne 8 -or
+                $sdk.generatedSourceCount -ne 852 -or $sdk.regressionProjects.Count -ne 9 -or
                 $sdk.regressionCounts.failed -ne 0 -or $sdk.regressionCounts.passed -le 0 -or
                 @($sdk.gates.PSObject.Properties | Where-Object { $_.Value -cne 'passed' }).Count) {
               throw 'Fresh generated SDK build/runtime evidence is incomplete.'

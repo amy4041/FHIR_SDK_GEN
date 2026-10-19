@@ -37,7 +37,7 @@ function Get-KernelRegressionAssemblies {
     $assemblies = @('MyFhirSdk.Architecture.Tests.dll', 'MyFhirSdk.CodeGen.Tests.dll', 'MyFhirSdk.Client.Tests.dll',
       'MyFhirSdk.Parser.Json.Tests.dll', 'MyFhirSdk.Serialization.Json.Tests.dll',
       'MyFhirSdk.Validation.Tests.dll', 'MyFhirSdk.ImplementationGuides.TwCore.Tests.dll')
-    if (-not $Historical) { $assemblies += 'MyFhirSdk.FhirVersions.V5.Tests.dll' }
+    if (-not $Historical) { $assemblies += 'MyFhirSdk.FhirVersions.V5.Tests.dll', 'MyFhirSdk.FhirVersions.V6.Tests.dll' }
     $assemblies
 }
 

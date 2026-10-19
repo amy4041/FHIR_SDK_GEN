@@ -44,6 +44,12 @@ public sealed class FhirRequestUriBuilder
             throw new ArgumentException("FHIR resource id cannot be empty.", nameof(id));
         }
 
+        // Uri normalizes these segments even after EscapeDataString, changing the target endpoint.
+        if (id is "." or "..")
+        {
+            throw new ArgumentException("FHIR resource id cannot be a URI dot segment.", nameof(id));
+        }
+
         var relativePath = $"{Uri.EscapeDataString(resourceType)}/{Uri.EscapeDataString(id)}";
         return new Uri(_baseAddress, relativePath);
     }

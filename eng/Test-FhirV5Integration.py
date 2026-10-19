@@ -80,8 +80,8 @@ def main():
             raise ValueError("Current/historical rollback regression failed; see rollback-harness.log")
         rollback_evidence = json.loads((output / "rollback-harness/evidence.json").read_text(encoding="utf-8-sig"))
         if rollback_evidence["status"] != "passed" or "current-v5-regression-reports-accepted" not in rollback_evidence["checks"]:
-            raise ValueError("Missing actual eight-assembly rollback regression acceptance")
-        summary["rollbackRegression"] = {"status": "Passed", "currentAssemblies": 8, "historicalAssemblies": 7,
+            raise ValueError("Missing actual current-assembly rollback regression acceptance")
+        summary["rollbackRegression"] = {"status": "Passed", "currentAssemblies": len(baseline.EXPECTED_TESTS), "historicalAssemblies": 7,
             "harnessChecks": len(rollback_evidence["checks"]), "evidenceSha256": baseline.sha(output / "rollback-harness/evidence.json")}
         # Validate complete inventories including both manifests and exact bytes.
         for release in ("R4", "R5"):

@@ -25,6 +25,7 @@ EXPECTED_TESTS = {
     "MyFhirSdk.Serialization.Json.Tests", "MyFhirSdk.Validation.Tests",
     "MyFhirSdk.ImplementationGuides.TwCore.Tests",
     "MyFhirSdk.FhirVersions.V5.Tests",
+    "MyFhirSdk.FhirVersions.V6.Tests",
 }
 
 

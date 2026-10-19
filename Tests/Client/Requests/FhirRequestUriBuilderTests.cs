@@ -32,6 +32,30 @@ public sealed class FhirRequestUriBuilderTests
         Assert.Equal("https://example.org/fhir/Patient/a%2Fb", uri.AbsoluteUri);
     }
 
+    [Theory]
+    [InlineData(".")]
+    [InlineData("..")]
+    public void BuildResourceInstanceUriRejectsDotSegments(string id)
+    {
+        var builder = new FhirRequestUriBuilder(new Uri("https://example.org/base/fhir"));
+
+        var error = Assert.Throws<ArgumentException>(() => builder.BuildResourceInstanceUri("Patient", id));
+
+        Assert.Equal("id", error.ParamName);
+    }
+
+    [Theory]
+    [InlineData("a.b")]
+    [InlineData("...")]
+    [InlineData("a..b")]
+    public void BuildResourceInstanceUriPreservesDotsWithinIds(string id)
+    {
+        var builder = new FhirRequestUriBuilder(new Uri("https://example.org/base/fhir"));
+
+        Assert.Equal("https://example.org/base/fhir/Patient/" + id,
+            builder.BuildResourceInstanceUri("Patient", id).AbsoluteUri);
+    }
+
     [Fact]
     public void BuildSearchUriTrimsLeadingQuestionMark()
     {

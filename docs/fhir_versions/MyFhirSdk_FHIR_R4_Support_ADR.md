@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-- 狀態：V0–V4 已提交並由使用者確認 CI 通過；完整 R4 Models／provider 與 runtime integration 見 [V5 evidence](baselines/v5/README.md)，新 CI 待提交；R4 Client 與正式交付仍待 V6–V7 驗收。
+- 狀態：V0–V5 已提交並由使用者確認 CI 通過；Client 實作與驗收見 [V6 evidence](baselines/v6/README.md)，新增 CI 待提交；外部 server smoke 依實際設定標示，正式交付待 V7。
 - 目標版本：R4 `4.0.1` 與 R5 `5.0.0`；R4B 不包含在本階段範圍。
 - 決策責任：Architecture、Runtime、Models、Serialization、Validation、CodeGen、Compatibility 維護者。
 - 實作及證據：[Implementation Guide](MyFhirSdk_FHIR_R4_Support_Implementation_Guide.md)、[Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md)。

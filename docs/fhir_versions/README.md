@@ -19,8 +19,9 @@ namespace／Models assembly 方向由 V0 固定；[V1 selected closure 實驗](b
 [V2 context／SPI](baselines/v2/README.md)已提交並由使用者確認 CI 通過；
 [V3 R5 Models 分離](baselines/v3/README.md)將模型與 provider 編譯至獨立 assembly，共用實作由 ModelSupport 擁有。
 V3、[V4 雙版本 generator](baselines/v4/README.md)已提交，使用者確認 CI 通過。
-[V5 完整 R4 Models 與 runtime integration](baselines/v5/README.md)已實作，驗證結果由 G5 記錄；新 CI 待提交。
-R4 Client 與正式交付仍須依 V6–V7 gates 驗證。
+[V5 完整 R4 Models 與 runtime integration](baselines/v5/README.md)已提交，使用者確認 push CI 通過。
+[V6 R4／R5 Client integration](baselines/v6/README.md)已實作，新增 CI 待提交；外部伺服器驗收依實際 smoke 結果標示。
+正式部署與 handoff 仍須依 V7 驗證。
 
 ## 目前基準與目標
 
@@ -30,7 +31,7 @@ R4 Client 與正式交付仍須依 V6–V7 gates 驗證。
 
 | 維度 | 目前已實作 | 本階段目標 |
 | --- | --- | --- |
-| FHIR | R5 `5.0.0`；R4 `4.0.1` Models 與明確 context 的 JSON／validation 整合 | R4 Client 與正式交付另經 V6／V7 |
+| FHIR | R5 `5.0.0`／R4 `4.0.1` Models、engines 與明確 context 的 typed Client | 外部 Client smoke 與 V7 正式交付分別驗收 |
 | Repository | Runtime、SDK、Generator 同 repository | 保持同 repository，以專案與契約劃分責任 |
 | Generator | Tool `1.3.1`，共用 pipeline，各版本固定 policies 與資產 | G4 雙版本生成；G5 實際編譯當次生成來源 |
 | Models | `MyFhirSdk.R4.Models.dll`／`MyFhirSdk.R5.Models.dll` 各自擁有模型與 provider | 維持單一 compile owner，無 SDK 反向依賴 |

@@ -1,0 +1,370 @@
+[
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.ResponseAndRequestContentAreDisposedAfterParsing",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \"..\", operation: \"update\", validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \".\", operation: \"update\", validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \".\", operation: \"delete\", validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \"..\", operation: \"read\", validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \"..\", operation: \"delete\", validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \".\", operation: \"read\", validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.ForeignReadAndAbstractSearchTypesAreRejectedBeforeHttp",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.MalformedErrorBodyKeepsHttpFailureAndRawBody(body: \"{\\\"resourceType\\\":\\\"FutureResource\\\"}\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.InvalidSuccessResponsesAreWrappedAsInvalidResponse(body: \"{\\\"resourceType\\\":\\\"FutureResource\\\"}\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.MissingIdsAreRejectedBeforeHttp(operation: \"delete\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \"..\", operation: \"update\", validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.ForeignModelsAreRejectedBeforeHttpEvenWithoutValidation(location: \"root\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.InvalidSuccessResponsesAreWrappedAsInvalidResponse(body: \"{bad\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.ClientCompositionTests.ParallelR4AndR5ClientsUseIndependentFactoriesAndWireRules",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DeleteErrorsRetainHttpStatusAndUnexpectedSuccessBodiesAreRejected",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.SearchRejectsEmptyOrNonBundleSuccessBodies(body: \"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.ForeignModelsAreRejectedBeforeHttpEvenWithoutValidation(location: \"extension\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DefaultValidationUsesContextAndCanBeDisabled(validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.InvalidSuccessResponsesAreWrappedAsInvalidResponse(body: \"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.InvalidSuccessResponsesAreWrappedAsInvalidResponse(body: \"{\\\"resourceType\\\":\\\"FutureResource\\\"}\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.CrudSearchUsesTheBoundContextAndHttpHeaders",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.MalformedErrorBodyKeepsHttpFailureAndRawBody(body: \"<html>failure</html>\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.SearchRejectsEmptyOrNonBundleSuccessBodies(body: \"{\\\"resourceType\\\":\\\"Patient\\\"}\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.MissingIdsAreRejectedBeforeHttp(operation: \"update\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \"..\", operation: \"delete\", validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \"..\", operation: \"delete\", validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \".\", operation: \"delete\", validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \".\", operation: \"update\", validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.InvalidSuccessResponsesAreWrappedAsInvalidResponse(body: \"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.UnknownContainedResourceInSearchIsRejected",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \".\", operation: \"read\", validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DefaultValidationHonorsTheReleaseSpecificLexicalRules",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \"..\", operation: \"update\", validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \"..\", operation: \"read\", validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DeleteErrorsRetainHttpStatusAndUnexpectedSuccessBodiesAreRejected",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.ClientCompositionTests.MixedReleaseAndIncorrectBundleOrOutcomeArgumentsAreRejectedAtConstruction",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.InvalidSuccessResponsesAreWrappedAsInvalidResponse(body: \"{bad\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \"..\", operation: \"read\", validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.HttpErrorsExposeVersionOwnedOperationOutcomeAndRequestDetails(status: 500)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.UnknownContainedResourceInSearchIsRejected",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.HttpErrorsExposeVersionOwnedOperationOutcomeAndRequestDetails(status: 401)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.MissingIdsAreRejectedBeforeHttp(operation: \"read\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.ForeignReadAndAbstractSearchTypesAreRejectedBeforeHttp",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.ForeignModelsAreRejectedBeforeHttpEvenWithoutValidation(location: \"extension\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.HttpErrorsExposeVersionOwnedOperationOutcomeAndRequestDetails(status: 422)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.ClientCompositionTests.ClientApiMatchesApprovedSnapshot",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.SearchRawAndStructuredQueriesReturnVersionOwnedBundleEntries(structured: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.SearchRawAndStructuredQueriesReturnVersionOwnedBundleEntries(structured: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.ClientCompositionTests.LegacyClientKeepsR5DefaultsAndRejectsForeignReadsBeforeHttp",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.SearchRawAndStructuredQueriesReturnVersionOwnedBundleEntries(structured: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.ForeignModelsAreRejectedBeforeHttpEvenWithoutValidation(location: \"root\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.CrudSearchUsesTheBoundContextAndHttpHeaders",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.ForeignModelsAreRejectedBeforeHttpEvenWithoutValidation(location: \"contained\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.SearchRawAndStructuredQueriesReturnVersionOwnedBundleEntries(structured: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.HttpErrorsExposeVersionOwnedOperationOutcomeAndRequestDetails(status: 500)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.MissingIdsAreRejectedBeforeHttp(operation: \"update\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.CancellationPropagatesWithoutBeingWrapped",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.CancellationPropagatesWithoutBeingWrapped",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.ForeignModelsAreRejectedBeforeHttpEvenWithoutValidation(location: \"contained\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \".\", operation: \"read\", validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.Read404ReturnsNullAndDelete200ReturnsTypedOutcome",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.ResponseAndRequestContentAreDisposedAfterParsing",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \".\", operation: \"delete\", validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \".\", operation: \"delete\", validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \"..\", operation: \"update\", validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.Read404ReturnsNullAndDelete200ReturnsTypedOutcome",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.MalformedErrorBodyKeepsHttpFailureAndRawBody(body: \"{\\\"resourceType\\\":\\\"FutureResource\\\"}\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \".\", operation: \"update\", validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DefaultValidationHonorsTheReleaseSpecificLexicalRules",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \".\", operation: \"update\", validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DefaultValidationUsesContextAndCanBeDisabled(validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.HttpErrorsExposeVersionOwnedOperationOutcomeAndRequestDetails(status: 400)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DefaultValidationUsesContextAndCanBeDisabled(validate: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \"..\", operation: \"delete\", validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.MalformedErrorBodyKeepsHttpFailureAndRawBody(body: \"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.MissingIdsAreRejectedBeforeHttp(operation: \"delete\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.MalformedErrorBodyKeepsHttpFailureAndRawBody(body: \"<html>failure</html>\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.SearchRejectsEmptyOrNonBundleSuccessBodies(body: \"{\\\"resourceType\\\":\\\"Patient\\\"}\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.InvalidSuccessResponsesAreWrappedAsInvalidResponse(body: \"{\\\"resourceType\\\":\\\"OperationOutcome\\\"}\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.InvalidSuccessResponsesAreWrappedAsInvalidResponse(body: \"{\\\"resourceType\\\":\\\"OperationOutcome\\\"}\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.DefaultValidationUsesContextAndCanBeDisabled(validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.AuthenticationFailuresDisposeRequestsWithoutSendingHttp",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.HttpErrorsExposeVersionOwnedOperationOutcomeAndRequestDetails(status: 401)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.AuthenticationFailuresDisposeRequestsWithoutSendingHttp",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.MissingIdsAreRejectedBeforeHttp(operation: \"read\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.HttpErrorsExposeVersionOwnedOperationOutcomeAndRequestDetails(status: 400)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.HttpErrorsExposeVersionOwnedOperationOutcomeAndRequestDetails(status: 422)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \"..\", operation: \"read\", validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.MalformedErrorBodyKeepsHttpFailureAndRawBody(body: \"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R5ClientTests.DotSegmentIdsAreRejectedBeforeHttp(id: \".\", operation: \"read\", validate: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V6.R4ClientTests.SearchRejectsEmptyOrNonBundleSuccessBodies(body: \"\")",
+    "outcome": "Passed"
+  }
+]

@@ -52,7 +52,8 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
         'Tests/Client/MyFhirSdk.Client.Tests.csproj', 'Tests/Parser/Json/MyFhirSdk.Parser.Json.Tests.csproj',
         'Tests/Serializer/Json/MyFhirSdk.Serialization.Json.Tests.csproj', 'Tests/Validation/MyFhirSdk.Validation.Tests.csproj',
         'Tests/ImplementationGuides/TwCore/MyFhirSdk.ImplementationGuides.TwCore.Tests.csproj',
-        'Tests/FhirVersions/V5/MyFhirSdk.FhirVersions.V5.Tests.csproj'
+        'Tests/FhirVersions/V5/MyFhirSdk.FhirVersions.V5.Tests.csproj',
+        'Tests/FhirVersions/V6/MyFhirSdk.FhirVersions.V6.Tests.csproj'
     )
     $special = @{
         'MyFhirSdk.csproj' = 'production-sdk'; 'Runtime/MyFhirSdk.Runtime.csproj' = 'production-runtime'
@@ -60,6 +61,7 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
         'ModelSupport/MyFhirSdk.ModelSupport.csproj' = 'production-model-support'
         'Models/R5/MyFhirSdk.R5.Models.csproj' = 'production-r5-models'
         'Models/R4/MyFhirSdk.R4.Models.csproj' = 'production-r4-models'
+        'Tests/FhirVersions/V6/Smoke/VersionedClientSmoke.csproj' = 'versioned-client-smoke-consumer'
         'Tests/FhirVersions/V3/ProviderConsumer/ProviderConsumer.csproj' = 'provider-only-consumer'
         'CodeGen/MyFhirSdk.CodeGen.csproj' = 'production-metadata-only-generator'
         'Tests/FhirVersions/V1/Models/MyFhirSdk.R4.V1.Models.csproj' = 'experiment-r4-models'
@@ -92,6 +94,9 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
         }
         if ($role -eq 'provider-only-consumer') {
             Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @('Models/R5/MyFhirSdk.R5.Models.csproj')
+        }
+        if ($role -eq 'versioned-client-smoke-consumer') {
+            Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @('MyFhirSdk.csproj', 'Models/R4/MyFhirSdk.R4.Models.csproj')
         }
         if ($role -eq 'experiment-r4-provider') {
             Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @(
