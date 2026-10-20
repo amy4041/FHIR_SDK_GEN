@@ -5,6 +5,7 @@ from collections import Counter
 import hashlib
 import json
 from pathlib import Path
+import re
 import xml.etree.ElementTree as ET
 
 EXPECTED = {"R4": 677, "R5": 852}
@@ -81,6 +82,15 @@ def check_external_acceptance(root, data, prerequisite):
     return derived
 
 
+def rollback_sources(root, rollback):
+    hashes = load(root / "rollback-source-hashes.json")
+    if (not isinstance(hashes, dict) or not hashes or len(hashes) != rollback["sourceFiles"]
+            or any(not isinstance(path, str) or not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None
+                   for path, digest in hashes.items())):
+        raise ValueError("Rollback source inventory is incomplete or invalid")
+    return hashes
+
+
 def validate_leg(root):
     data = load(root / "summary.json")
     if data.get("gate") != "G7-platform" or data.get("status") != "Passed" or data["os"] not in {"Windows", "Linux"}:
@@ -146,6 +156,7 @@ def validate_leg(root):
         raise ValueError("Incomplete rollback acceptance")
     if rollback["sourceRevision"] != ROLLBACK_REVISION:
         raise ValueError("Rollback revision is not the accepted V6 pin")
+    rollback_sources(root, rollback)
     check_reports(root / "rollback-test-results", ASSEMBLIES, rollback["testCounts"], load(root / "rollback-regression.json"))
     return data
 
@@ -158,8 +169,15 @@ def compare(windows, linux):
                 "toolPackageSha256", "runtimeContract", "policies", "testCounts", "freshV5Tests", "freshV6Tests"):
         if a[key] != b[key]:
             raise ValueError("Cross-platform mismatch: " + key)
-    if any(a["rollback"][k] != b["rollback"][k] for k in ("sourceRevision", "archiveSha256", "testCounts", "assemblies")):
-        raise ValueError("Rollback source/count mismatch")
+    for key in ("sourceRevision", "testCounts", "assemblies", "sourceFiles"):
+        if a["rollback"][key] != b["rollback"][key]:
+            raise ValueError("Rollback mismatch: " + key)
+    # Tar headers are packaging metadata. Compare the actual restored file bytes instead.
+    left = rollback_sources(windows, a["rollback"])
+    right = rollback_sources(linux, b["rollback"])
+    differences = sorted(path for path in left.keys() | right.keys() if left.get(path) != right.get(path))
+    if differences:
+        raise ValueError("Rollback source files differ: " + ", ".join(differences[:5]))
     for release in EXPECTED:
         if a["generation"][release] != b["generation"][release]:
             # Inventory JSON file bytes may have platform line endings; compare semantic fields instead.

@@ -21,7 +21,8 @@ namespace／Models assembly 方向由 V0 固定；[V1 selected closure 實驗](b
 V3、[V4 雙版本 generator](baselines/v4/README.md)已提交，使用者確認 CI 通過。
 [V5 完整 R4 Models 與 runtime integration](baselines/v5/README.md)已提交，使用者確認 push CI 通過。
 [V6 R4／R5 Client integration](baselines/v6/README.md)已提交於 `99017ef`，使用者確認 CI 通過；外部伺服器驗收依實際 smoke 結果標示。
-[V7 跨平台交付與 handoff](baselines/v7/README.md)已加入 canonical package 生成、乾淨部署、缺少依賴與 V6 source rollback 驗證；各平台結果與跨平台驗收分開記錄，新增 CI 待提交執行。
+[V7 跨平台交付與 handoff](baselines/v7/README.md)已提交，包含 canonical package 生成、乾淨部署、缺少依賴與 V6 source rollback 驗證；首次 CI 的兩個平台驗證通過，跨平台比較修正後待完整 CI 重跑。
+V7 首次 CI 的跨平台 rollback 比較遇到 Git CRLF／LF 匯出差異，原因與修正、完整 CI 重跑方式見 [V7 CI rollback fix](V7_CI_Rollback_Fix.md)。
 
 ## 目前基準與目標
 

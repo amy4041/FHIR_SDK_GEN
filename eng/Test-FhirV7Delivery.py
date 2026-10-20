@@ -40,6 +40,12 @@ def inventory(root):
     return {p.relative_to(root).as_posix(): baseline.sha(p) for p in sorted(root.rglob("*")) if p.is_file()}
 
 
+def archive_rollback_source():
+    # git archive applies checkout conversion; do not inherit a runner's CRLF policy.
+    return subprocess.check_output(["git", "-c", "core.autocrlf=false", "-c", "core.eol=lf",
+        "archive", "--format=tar", ROLLBACK_REVISION], cwd=ROOT)
+
+
 def portable_fingerprint(files):
     """Normalize UTF-8 text line endings only; keep raw per-platform evidence separately."""
     rows = []
@@ -264,7 +270,7 @@ def main():
             # Restore a whole pinned source tree; never reset/move the active branch or main.
             restored = work / "rollback"
             restored.mkdir()
-            archive_bytes = subprocess.check_output(["git", "archive", "--format=tar", ROLLBACK_REVISION], cwd=ROOT)
+            archive_bytes = archive_rollback_source()
             with tarfile.open(fileobj=io.BytesIO(archive_bytes)) as archive:
                 for member in archive:
                     if not member.isfile():
@@ -288,6 +294,7 @@ def main():
                     raise ValueError("Rollback source changed during rebuild")
             baseline.write(output / "rollback-regression.json", rollback_reports)
             summary["rollback"] = {"status": "Passed", "sourceRevision": ROLLBACK_REVISION, "archiveSha256": hashlib.sha256(archive_bytes).hexdigest(),
+                "archiveNormalization": {"core.autocrlf": "false", "core.eol": "lf"},
                 "sourceFiles": len(restored_files), "freshRebuild": True, "currentBranchChanged": False, "mainChanged": False,
                 "testCounts": {key: sum(r[key] for r in rollback_reports) for key in ("total", "passed", "failed", "skipped")},
                 "assemblies": sorted(r["assembly"] for r in rollback_reports), "restoredInputsUnchanged": True}
