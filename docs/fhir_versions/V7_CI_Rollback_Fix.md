@@ -29,3 +29,23 @@
 只重跑最後的 comparison job 會繼續使用舊 artifacts；舊 Windows artifact 仍含 CRLF 來源，應繼續被逐檔比較拒絕。
 
 原有 baseline／CI artifacts 保持不變；本機重現與驗證放在 ignored `artifacts/fhir-versions/v7/`。修正後 G7 完整 CI 通過前，不將交付狀態改為 Passed；外部 server acceptance 也不受此修正影響。
+
+## 後續 V1／V2 integrity suite 的 shallow checkout 問題
+
+[CI run 39371407283](https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39371407283) 的 V1 job 失敗於共用 Python suite：
+`test_rollback_archive_ignores_inherited_git_line_ending_configuration` 直接要求 V6 commit，Git 回報 `fatal: not a tree object: 99017eff8c608aa1e34292ddaf10eab60912bbed`。
+V1 job 使用預設 depth-1 checkout，沒有該歷史物件；外層 `RuntimeError` 只是回報 unittest 子程序失敗，並非 R4／R5 功能回歸。
+
+行尾測試改用自行建立的暫存 Git repository 與 fixture commit，實際執行 Git archive，驗證 LF 文字、二進位內容與不同 inherited Git 設定下的輸出一致。
+fixture 也確認不含 production V6 commit，確保測試不依賴完整歷史；Git identity、hooks 與 repository 指定都限定在 fixture 操作，不修改專案或使用者的 Git 設定。
+正式 G7 rollback 仍固定 V6 revision 且需要完整歷史，V1 job 不需要為此改成 full checkout，也不略過共用完整性測試。
+
+## 其他 CI 工作檢查結果
+
+已檢查 run `39371407283` 的完整 21 個工作及 V2 兩個平台的 `integrity.log`：
+
+- V1、V2 的 Windows／Ubuntu 共 4 個工作失敗，均為同一個 archive 單元測試找不到 V6 commit；兩階段共用 `Tests/FhirVersions` 的 unittest discovery，因此上述 fixture 修正同時涵蓋兩者。
+- 其餘 17 個工作均已成功，包含 V3～V7、K0 baseline、compiler reference、tool baseline、兩平台 build/test/tool smoke，以及工具與 V7 交付的跨平台比較。
+- 已核對歷史來源的需求：V3～V7 與 K0 使用完整 checkout；V1／V2 的正式 runner 只需目前 checkout，共用單元測試改為獨立 fixture 後不需增加 fetch depth；兩個跨平台比較工作讀取 artifacts，不需歷史 commit。
+
+本次未發現其他需修改的 CI 設定或 runner。既有 4 個失敗工作的完整重跑仍需提交上述測試修正後由新 CI 驗證；舊 run 的其他工作成功不代表修正後的整輪 CI 已通過。

@@ -6,6 +6,7 @@ import io
 import json
 import os
 from pathlib import Path
+import subprocess
 import tempfile
 import tarfile
 import unittest
@@ -101,22 +102,45 @@ class DeliveryEvidenceTests(unittest.TestCase):
                     comparison.compare(windows, linux)
 
     def test_rollback_archive_ignores_inherited_git_line_ending_configuration(self):
-        archives = []
-        inherited_count = int(os.environ.get("GIT_CONFIG_COUNT", "0"))
-        for autocrlf, eol in (("true", "crlf"), ("false", "lf")):
-            settings = {"GIT_CONFIG_COUNT": str(inherited_count + 2), f"GIT_CONFIG_KEY_{inherited_count}": "core.autocrlf",
-                f"GIT_CONFIG_VALUE_{inherited_count}": autocrlf, f"GIT_CONFIG_KEY_{inherited_count + 1}": "core.eol",
-                f"GIT_CONFIG_VALUE_{inherited_count + 1}": eol}
-            with patch.dict(os.environ, settings):
-                data = delivery.archive_rollback_source()
-                with tarfile.open(fileobj=io.BytesIO(data)) as archive:
-                    text = archive.extractfile(".config/dotnet-tools.json").read()
-                    self.assertNotIn(b"\r\n", text)
-                    binary = archive.extractfile("Tests/CodeGen/Fixtures/FhirPackages/R4/hl7.fhir.r4.core-4.0.1.tgz").read()
-                    self.assertEqual(delivery.baseline.sha(ROOT / "Tests/CodeGen/Fixtures/FhirPackages/R4/hl7.fhir.r4.core-4.0.1.tgz"),
-                        hashlib.sha256(binary).hexdigest())
-                archives.append(data)
-        self.assertEqual(archives[0], archives[1])
+        # The shared integrity suite also runs in V1's depth-1 checkout.
+        # Test real Git conversion with a self-contained commit, not production history.
+        with tempfile.TemporaryDirectory(prefix="MyFhirSdk-V7-Git-") as temporary, patch.dict(os.environ):
+            repository = Path(temporary)
+            for name in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_OBJECT_DIRECTORY",
+                         "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_COMMON_DIR", "GIT_SHALLOW_FILE"):
+                os.environ.pop(name, None)
+
+            def git(*arguments, check=True):
+                return subprocess.run(["git", "-c", "core.autocrlf=false", "-c", "core.eol=lf", *arguments],
+                    cwd=repository, check=check, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+            git("init", "--template=")
+            text = b'{"fixture":true}\n'
+            binary = b"\x00\xff\r\n\x01binary\r\n"
+            (repository / "fixture.json").write_bytes(text)
+            (repository / "payload.bin").write_bytes(binary)
+            hooks = repository / "empty-hooks"
+            hooks.mkdir()
+            git("add", "--", "fixture.json", "payload.bin")
+            git("-c", "user.name=V7 test", "-c", "user.email=v7-test@example.invalid", "-c", "commit.gpgsign=false",
+                "-c", "core.hooksPath=" + str(hooks), "commit", "-m", "Create archive test fixture")
+            revision = git("rev-parse", "HEAD").stdout.decode().strip()
+            self.assertNotEqual(0, git("cat-file", "-e", delivery.ROLLBACK_REVISION + "^{commit}", check=False).returncode)
+
+            archives = []
+            inherited_count = int(os.environ.get("GIT_CONFIG_COUNT", "0"))
+            with patch.object(delivery, "ROOT", repository), patch.object(delivery, "ROLLBACK_REVISION", revision):
+                for autocrlf, eol in (("true", "crlf"), ("false", "lf")):
+                    settings = {"GIT_CONFIG_COUNT": str(inherited_count + 2), f"GIT_CONFIG_KEY_{inherited_count}": "core.autocrlf",
+                        f"GIT_CONFIG_VALUE_{inherited_count}": autocrlf, f"GIT_CONFIG_KEY_{inherited_count + 1}": "core.eol",
+                        f"GIT_CONFIG_VALUE_{inherited_count + 1}": eol}
+                    with patch.dict(os.environ, settings):
+                        data = delivery.archive_rollback_source()
+                    with tarfile.open(fileobj=io.BytesIO(data)) as archive:
+                        self.assertEqual(text, archive.extractfile("fixture.json").read())
+                        self.assertEqual(hashlib.sha256(binary).hexdigest(), hashlib.sha256(archive.extractfile("payload.bin").read()).hexdigest())
+                    archives.append(data)
+            self.assertEqual(archives[0], archives[1])
 
     def test_tampered_canonical_package_is_rejected_before_comparison(self):
         with tempfile.TemporaryDirectory() as temp:
