@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "gate": "G7",
+  "status": "Pending",
+  "platforms": {
+    "Windows": "Passed",
+    "Linux": "Pending"
+  },
+  "crossPlatformComparison": "Pending",
+  "externalServerAcceptance": "Pending",
+  "publicNuGetRelease": "OutOfScope",
+  "rawEvidence": "artifacts/fhir-versions/v7/verified",
+  "rawPlatformSummarySha256": "670fe8ace83f1a45b3a025950635d91a72e9df541d4593343d4b720ffb625258",
+  "sourceRevision": "99017eff8c608aa1e34292ddaf10eab60912bbed",
+  "sourceFingerprint": {
+    "algorithm": "sha256-path-and-bytes-v1",
+    "fileCount": 2252,
+    "sha256": "411bbca71214a0dd923e70219d3cb54f59d21c3fc3d9b3000c9e7f22ee445760"
+  }
+}

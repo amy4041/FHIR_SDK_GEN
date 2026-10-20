@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-狀態：V0–V5 已提交並由使用者確認 CI 通過；V6 本機驗證見 [G6 evidence](baselines/v6/README.md)，新增 CI 待提交；外部 Client 驗收依實際 smoke 結果標示，G7 Pending。設計依據為
+狀態：V0–V6 已提交並由使用者確認 CI 通過；V7 平台驗收及跨平台比較見 [V7 evidence](baselines/v7/README.md)，新增 CI 待提交；外部 Client 驗收依實際 smoke 結果標示，跨平台 G7 Pending。設計依據為
 [ADR](MyFhirSdk_FHIR_R4_Support_ADR.md)，執行順序見
 [Implementation Guide](MyFhirSdk_FHIR_R4_Support_Implementation_Guide.md)。
 
@@ -19,8 +19,8 @@ Gate 指進入下一階段或宣稱某項能力前必須滿足的驗收條件。
 | G3 R5 migration | V3 | 單一 compile owner、無 cycle、API／AQN diff、全面重編／部署、完整 R5 regression | 見 [V3 evidence](baselines/v3/summary.json)；使用者確認 V3 CI 通過 |
 | G4 Generator | V4 | 精確 compatibility、policy／manifest、installed tool、determinism、無 implementation fallback、失敗不改輸出 | 見 [V4 evidence](baselines/v4/README.md)；使用者確認 V4 CI 通過 |
 | G5 R4 SDK | V5 | Full approved scope inventory、fresh compilation／runtime tests、能力清單、同程序 consumer、R5 regression | 見 [V5 evidence](baselines/v5/README.md)；使用者確認 V5 CI 通過 |
-| G6 R4 Client | V6 | 版本 API、受控 HTTP、R5 Client regression、明確版本 server smoke 與 skipped 清單 | 見 [V6 evidence](baselines/v6/README.md)；新 CI 待提交，未設定 endpoint 的外部驗收仍 Pending |
-| G7 Delivery | V7 | Windows／Ubuntu clean generation／integration、deploy／missing dependency、rollback／fingerprint、handoff | Pending |
+| G6 R4 Client | V6 | 版本 API、受控 HTTP、R5 Client regression、明確版本 server smoke 與 skipped 清單 | 見 [V6 evidence](baselines/v6/README.md)；使用者確認 V6 CI 通過，未設定 endpoint 的外部驗收仍 Pending |
+| G7 Delivery | V7 | Windows／Ubuntu clean generation／integration、deploy／missing dependency、rollback／fingerprint、handoff | 見 [V7 evidence](baselines/v7/README.md)；單平台與跨平台分開記錄，新增 CI 待提交執行 |
 
 設計尚未收斂或實測顯示不相容時，記錄缺口與必要修訂，不把 Pending 改成 Passed。
 

@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-狀態：V0–V5 已提交並由使用者確認 CI 通過；V6 實作與本機驗證見 [V6 baseline](baselines/v6/README.md)，新增 CI 待提交，V7 Planned。依據 [ADR](MyFhirSdk_FHIR_R4_Support_ADR.md)，
+狀態：V0–V6 已提交並由使用者確認 CI 通過；[V7 baseline](baselines/v7/README.md) 記錄實際平台結果，新增跨平台 CI 待提交，G7 須兩平台證據經比較後驗收。依據 [ADR](MyFhirSdk_FHIR_R4_Support_ADR.md)，
 驗收採 [Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md)。
 V 編號表示多版本工作包，與已交付的 Runtime extraction K0–K7 分開。
 

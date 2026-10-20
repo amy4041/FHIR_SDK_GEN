@@ -1,0 +1,18 @@
+{
+  "DualConsumer.deps.json": "7526be9ca2ed5d4e0b7ff87d158b5cb8a7a120373fe6c36416ef3109aa8b8ce4",
+  "DualConsumer.dll": "c9961fb1d2a387c5319beb6d058fac47c89862c70d807b8c464bd143a1c9c669",
+  "DualConsumer.pdb": "55b555b64840be4b7a5afb241503c0aa22dff4e451e61be896d97a33e9eda4d9",
+  "DualConsumer.runtimeconfig.json": "3c0bf772b95c93363a0a14e5df78e4ec408c90f04cb7103205af97b2d276fab0",
+  "MyFhirSdk.dll": "5dc0521e5e0bd8107de4dae81f8a338a13443f79531f31c00e18b51515156a57",
+  "MyFhirSdk.ModelContracts.dll": "4d485294342d46f30ade1fffde18c998544ecd4b965b4c2c8f7f69f2f800f406",
+  "MyFhirSdk.ModelContracts.pdb": "953a2b11d9b27efef23ac94138779d40e1d9ac8aa366d75d5772ab1048c70b36",
+  "MyFhirSdk.ModelSupport.dll": "a6b43b2f74a8c48c5ff7a55768476cb267055824a8cf98eb83af218b0a965cbf",
+  "MyFhirSdk.ModelSupport.pdb": "4e495381471c05e1e68466d925eaa4082a332944a457ed1f3485d8dd3d808495",
+  "MyFhirSdk.pdb": "bcd6c46b8c00147420e019d75fb7f06fb90e11479eb6d976c5c775d1ad530b68",
+  "MyFhirSdk.R4.Models.dll": "fbc8d1439d1d035e4f0835de48a9b3286a300d8d4c3f9df48ba128dc8742c231",
+  "MyFhirSdk.R4.Models.pdb": "f0b8673be81e1d9a241c8c7b40cd7124d076464d3783a571eb9cfd65ccb5905c",
+  "MyFhirSdk.R5.Models.dll": "bf275b08b240fab793bd2788305ea614bce0b7ff0bfff5107be617c4b8de1e98",
+  "MyFhirSdk.R5.Models.pdb": "239541bd4c7ae00232ac16ab4c1f3c48b5d189162fdcbfb9ff6eea167d747e8d",
+  "MyFhirSdk.Runtime.dll": "98b019312159b559ced60389da327fff32794d280ee0a6b3773c2f775f5657e9",
+  "MyFhirSdk.Runtime.pdb": "b5a0d08c6643c8d9f4bd1b40c0f7dddce8c5193332c374d2b5334eaa0f17eef5"
+}

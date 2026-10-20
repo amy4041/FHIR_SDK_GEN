@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "status": "Passed",
+  "scope": "V7 comparator review fixes; revalidation of original Windows artifact",
+  "createdAtUtc": "2026-10-20T02:08:07.222659+00:00",
+  "sourceRevision": "99017eff8c608aa1e34292ddaf10eab60912bbed",
+  "sourceFingerprint": {
+    "algorithm": "sha256-path-and-bytes-v1",
+    "fileCount": 2252,
+    "sha256": "d6a9679dcb49643914c2508ba4c07a5111a86f6b9ab480851bfdbafad7da71f5"
+  },
+  "changedSinceOriginalRun": [
+    "Tests/FhirVersions/test_v7_delivery.py",
+    "eng/Compare-FhirV7Delivery.py"
+  ],
+  "validatorSha256": "c88ce77186d432ec156e78ed9965ae82a2d006bd1bc14f34c1545b8f46f1b647",
+  "testsSha256": "bfcb2fcae666c1f24c4870ca999cc831787337967e459f3fb7bf3fb5cbbc0fb5",
+  "unitTests": {
+    "total": 31,
+    "passed": 31,
+    "failed": 0,
+    "skipped": 0
+  },
+  "unitTestLogSha256": "97b88124e79a228da19f739ebac5118f53ab2eca5dc7aafdb0c7a0d85ef96717",
+  "subject": {
+    "rawEvidence": "artifacts/fhir-versions/v7/verified",
+    "sourceFingerprint": {
+      "algorithm": "sha256-path-and-bytes-v1",
+      "fileCount": 2252,
+      "sha256": "411bbca71214a0dd923e70219d3cb54f59d21c3fc3d9b3000c9e7f22ee445760"
+    },
+    "summarySha256": "670fe8ace83f1a45b3a025950635d91a72e9df541d4593343d4b720ffb625258",
+    "validation": "Passed"
+  },
+  "artifactChecks": [
+    "original-Windows-artifact-accepted",
+    "platform-Passed-with-skipped-smokes-rejected",
+    "missing-Runtime-after-inventory-rehash-rejected",
+    "restored-artifact-accepted"
+  ],
+  "artifactChecksSha256": "8650b6879ca53e2d6cb4c1b6ced017a5913c00897cc109babed7be8002e52092",
+  "fullDeliveryRerun": false,
+  "crossPlatformAcceptance": "Pending",
+  "externalServerAcceptance": "Pending"
+}

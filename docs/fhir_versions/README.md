@@ -20,8 +20,8 @@ namespace／Models assembly 方向由 V0 固定；[V1 selected closure 實驗](b
 [V3 R5 Models 分離](baselines/v3/README.md)將模型與 provider 編譯至獨立 assembly，共用實作由 ModelSupport 擁有。
 V3、[V4 雙版本 generator](baselines/v4/README.md)已提交，使用者確認 CI 通過。
 [V5 完整 R4 Models 與 runtime integration](baselines/v5/README.md)已提交，使用者確認 push CI 通過。
-[V6 R4／R5 Client integration](baselines/v6/README.md)已實作，新增 CI 待提交；外部伺服器驗收依實際 smoke 結果標示。
-正式部署與 handoff 仍須依 V7 驗證。
+[V6 R4／R5 Client integration](baselines/v6/README.md)已提交於 `99017ef`，使用者確認 CI 通過；外部伺服器驗收依實際 smoke 結果標示。
+[V7 跨平台交付與 handoff](baselines/v7/README.md)已加入 canonical package 生成、乾淨部署、缺少依賴與 V6 source rollback 驗證；各平台結果與跨平台驗收分開記錄，新增 CI 待提交執行。
 
 ## 目前基準與目標
 

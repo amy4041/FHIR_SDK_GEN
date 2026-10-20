@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "gate": "G7-platform",
+  "status": "Passed",
+  "crossPlatformAcceptance": "Pending",
+  "externalServerAcceptance": "Pending",
+  "publicNuGetRelease": "OutOfScope",
+  "sourceRevision": "99017eff8c608aa1e34292ddaf10eab60912bbed",
+  "sourceFingerprint": {
+    "algorithm": "sha256-path-and-bytes-v1",
+    "fileCount": 2252,
+    "sha256": "411bbca71214a0dd923e70219d3cb54f59d21c3fc3d9b3000c9e7f22ee445760"
+  },
+  "portableSourceFingerprint": {
+    "algorithm": "sha256-path-and-utf8-lf-bytes-v1",
+    "fileCount": 2252,
+    "sha256": "386c670a08599520881a01a262a25a17fa06f80d52bfd6f6349e8a7daf40aa94"
+  },
+  "os": "Windows",
+  "architecture": "AMD64",
+  "sdkVersion": "9.0.317",
+  "targetFramework": "net9.0",
+  "configuration": "Release",
+  "createdAtUtc": "2026-10-19T10:07:52.230050+00:00",
+  "toolVersion": "1.3.1",
+  "toolPackageSha256": "5589ce7f20c54084afd73682e0562c59c912e609f4ac407879211340cfc27430",
+  "testCounts": {
+    "total": 1171,
+    "passed": 1170,
+    "failed": 0,
+    "skipped": 1
+  },
+  "runtimeContract": {
+    "descriptorSha256": "422ac582a75724ea3ecc275131b3f190b3b19d9571aa857925960edc9b23c2f2",
+    "compilerReferenceSha256": "8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71"
+  },
+  "rollbackHarness": {
+    "status": "Passed",
+    "currentAssemblies": 9,
+    "historicalAssemblies": 7,
+    "harnessChecks": 16,
+    "evidenceSha256": "9eb92ac4c7e946b1238eb595d21baa49ef630660c9727fa30de4cb6d0ce90cca"
+  },
+  "prerequisiteSha256": "62564d83a9eb4242e0a360988140660138d51010f8f58771b8584482fc5ca4f1",
+  "policies": {
+    "CodeGen/Policy/primitive-generation-policy.json": "3f3739d24c9cbf149746ce066fedd556c5f076d9e48b9d04d6e28302e638856b",
+    "CodeGen/Policy/R4/primitive-generation-policy.json": "c4c18064ce265b7a0ecdc0818272dcc96626985f931b87a716bacb0f53a6c16d",
+    "CodeGen/Policy/R4/r4-backbone-policy.json": "e0a7feb0821c09586a6826ed6c307c29162540575b74e9187743c9239e77c088",
+    "CodeGen/Policy/R4/r4-choice-open-type-policy.json": "2e9c76c582a7eca501b4aa8ad98fb74682bd54277dbada64103e9b39b40fb3f8",
+    "CodeGen/Policy/R4/r4-model-naming-policy.json": "244dc588bc59dd8fa4027c7732cc2a27ac0ace22231c3716bf74a5c89cb44f72",
+    "CodeGen/Policy/R4/r4-model-ownership-policy.json": "0a7cf4f82dda5c1cc0c41d2dedbe77e5c83b0364a3e10cee2ead9066507883d6",
+    "CodeGen/Policy/R4/r4-validation-capability-policy.json": "abdd61a39cbcff95379466d8070bb2b550be5a05da3e787ef8676dd892a8c627",
+    "CodeGen/Policy/R4/runtime-contract.json": "f649d65aa08ff73c3a3f4d03a2c19cf79ae43e60861673968dc8744d45f8540b",
+    "CodeGen/Policy/r4-package-lock.json": "2191eee707437f97ec2ed42b15e9fb614d93e0a3d20a6af81e29076247e6f40e",
+    "CodeGen/Policy/r5-backbone-policy.json": "ae13970398b4f1af34ba4be28237f4a7bbae459b1c0a26701459aee450854e56",
+    "CodeGen/Policy/r5-choice-open-type-policy.json": "0ee9018055084ba7ad9137b195fe5b4849021b8c50409e28b809cf85d9bb3e33",
+    "CodeGen/Policy/r5-model-naming-policy.json": "1556e166b5d3b5dc85ed89ed79cfbde42244cea78fe9d0d2ec4b1d6b40b5d06e",
+    "CodeGen/Policy/r5-model-ownership-policy.json": "781d9ee62f9d6e34e0134085a130112697f1414a7f94c5d9a819e359f0e2883b",
+    "CodeGen/Policy/r5-package-lock.json": "bc26c513c1687ff5e51652f9c64562f7ee5555c767309799a28ccd65abd42fd1",
+    "CodeGen/Policy/r5-validation-capability-policy.json": "5791682c3f1643689884ef490bca6f7b6e4c2a1e0129fbfc3dd8aafd26a16789",
+    "CodeGen/Policy/runtime-contract.json": "422ac582a75724ea3ecc275131b3f190b3b19d9571aa857925960edc9b23c2f2"
+  },
+  "generation": {
+    "R4": {
+      "fhirVersion": "4.0.1",
+      "packageSha256": "b090bf929e1f665cf2c91583720849695bc38d2892a7c5037c56cb00817fb091",
+      "sourceCount": 677,
+      "fileCount": 679,
+      "deterministic": true,
+      "matchesCommittedModels": true,
+      "hashesSha256": "8d6583e81bff6724ad8ccea25f9d3f0809074f5d1c4252f9555ab5a694140157"
+    },
+    "R5": {
+      "fhirVersion": "5.0.0",
+      "packageSha256": "74b27cd1bfce9e80eaceac431edf230b0945a443564fbf5512f82e5fa50a80d4",
+      "sourceCount": 852,
+      "fileCount": 854,
+      "deterministic": true,
+      "matchesCommittedModels": true,
+      "hashesSha256": "4e988b675b882dffca8fd74c0e0370f6095d4a9fd1c1e9ad83fd19dfdce0cf6f"
+    }
+  },
+  "canonicalInstall": {
+    "outsideCheckout": true,
+    "emptyInitialCache": true,
+    "localFeedOnly": true
+  },
+  "freshV5Tests": 81,
+  "freshV6Tests": 92,
+  "deployments": {
+    "R4": {
+      "status": "Passed",
+      "requiredDlls": [
+        "MyFhirSdk.ModelContracts.dll",
+        "MyFhirSdk.ModelSupport.dll",
+        "MyFhirSdk.R4.Models.dll",
+        "MyFhirSdk.Runtime.dll",
+        "MyFhirSdk.dll"
+      ],
+      "ownDirectoryOnly": true,
+      "files": 16,
+      "hashesSha256": "1805a29adf6b5832f23017e785f1fe180ecda39cef01303f889d9dfe75cbafc8"
+    },
+    "R5": {
+      "status": "Passed",
+      "requiredDlls": [
+        "MyFhirSdk.ModelContracts.dll",
+        "MyFhirSdk.ModelSupport.dll",
+        "MyFhirSdk.R5.Models.dll",
+        "MyFhirSdk.Runtime.dll",
+        "MyFhirSdk.dll"
+      ],
+      "ownDirectoryOnly": true,
+      "files": 14,
+      "hashesSha256": "6d58754c4d79b95bf9a7a797c986156e6675a0a8f0d254eeb7c4fee0c4def3c5"
+    },
+    "Dual": {
+      "status": "Passed",
+      "requiredDlls": [
+        "MyFhirSdk.ModelContracts.dll",
+        "MyFhirSdk.ModelSupport.dll",
+        "MyFhirSdk.R4.Models.dll",
+        "MyFhirSdk.R5.Models.dll",
+        "MyFhirSdk.Runtime.dll",
+        "MyFhirSdk.dll"
+      ],
+      "ownDirectoryOnly": true,
+      "files": 16,
+      "hashesSha256": "c057834f3f6e76b83deb9c9a3803adbc3356ddc395fe5a5a70ee9957e321d204"
+    }
+  },
+  "missingDependencyCases": 16,
+  "freshIntegration": {
+    "outsideCheckout": true,
+    "reusedBinObj": false,
+    "reusedCommittedGeneratedSources": false,
+    "freshDependencyCache": true,
+    "generatedInputsUnchanged": true
+  },
+  "rollback": {
+    "status": "Passed",
+    "sourceRevision": "99017eff8c608aa1e34292ddaf10eab60912bbed",
+    "archiveSha256": "d8a6e07e942e45c9596239b29bdecbe2546a1f22227160923a615e1d126af145",
+    "sourceFiles": 2331,
+    "freshRebuild": true,
+    "currentBranchChanged": false,
+    "mainChanged": false,
+    "testCounts": {
+      "total": 1171,
+      "passed": 1170,
+      "failed": 0,
+      "skipped": 1
+    },
+    "assemblies": [
+      "MyFhirSdk.Architecture.Tests",
+      "MyFhirSdk.Client.Tests",
+      "MyFhirSdk.CodeGen.Tests",
+      "MyFhirSdk.FhirVersions.V5.Tests",
+      "MyFhirSdk.FhirVersions.V6.Tests",
+      "MyFhirSdk.ImplementationGuides.TwCore.Tests",
+      "MyFhirSdk.Parser.Json.Tests",
+      "MyFhirSdk.Serialization.Json.Tests",
+      "MyFhirSdk.Validation.Tests"
+    ],
+    "restoredInputsUnchanged": true
+  }
+}

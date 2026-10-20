@@ -62,6 +62,9 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
         'Models/R5/MyFhirSdk.R5.Models.csproj' = 'production-r5-models'
         'Models/R4/MyFhirSdk.R4.Models.csproj' = 'production-r4-models'
         'Tests/FhirVersions/V6/Smoke/VersionedClientSmoke.csproj' = 'versioned-client-smoke-consumer'
+        'Tests/FhirVersions/V7/R4/R4Consumer.csproj' = 'delivery-r4-consumer'
+        'Tests/FhirVersions/V7/R5/R5Consumer.csproj' = 'delivery-r5-consumer'
+        'Tests/FhirVersions/V7/Dual/DualConsumer.csproj' = 'delivery-dual-consumer'
         'Tests/FhirVersions/V3/ProviderConsumer/ProviderConsumer.csproj' = 'provider-only-consumer'
         'CodeGen/MyFhirSdk.CodeGen.csproj' = 'production-metadata-only-generator'
         'Tests/FhirVersions/V1/Models/MyFhirSdk.R4.V1.Models.csproj' = 'experiment-r4-models'
@@ -98,6 +101,11 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
         if ($role -eq 'versioned-client-smoke-consumer') {
             Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @('MyFhirSdk.csproj', 'Models/R4/MyFhirSdk.R4.Models.csproj')
         }
+        if ($role -like 'delivery-*-consumer') {
+            $dependencies = @('MyFhirSdk.csproj')
+            if ($role -ne 'delivery-r5-consumer') { $dependencies += 'Models/R4/MyFhirSdk.R4.Models.csproj' }
+            Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root $dependencies
+        }
         if ($role -eq 'experiment-r4-provider') {
             Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @(
                 'ModelContracts/MyFhirSdk.ModelContracts.csproj', 'Tests/FhirVersions/V1/Models/MyFhirSdk.R4.V1.Models.csproj')
@@ -108,6 +116,7 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
             elseif ($role -eq 'explicit-implementation-inventory-tool') { 'dotnet build <fresh-staging>/Inventory/Inventory.csproj; dotnet Inventory.dll <SDK> <output> <Runtime>' }
             elseif ($role -like 'experiment-r4-*') { 'dotnet test Tests/Architecture/MyFhirSdk.Architecture.Tests.csproj -c Release (builds independent experiment models/providers)' }
             elseif ($role -eq 'provider-only-consumer') { 'dotnet run --project Tests/FhirVersions/V3/ProviderConsumer/ProviderConsumer.csproj -c Release' }
+            elseif ($role -like 'delivery-*-consumer') { 'python eng/Test-FhirV7Delivery.py --tool-package <canonical.nupkg> --output <fresh-artifacts-directory>' }
             else { 'dotnet build <fresh-staging>/' + [IO.Path]::GetFileName($project) + ' -c Release -p:SdkAssemblyPath=<SDK implementation> -p:RuntimeAssemblyPath=<Runtime implementation>' }
         [ordered]@{ source = $project; role = $role; projectReferences = $references; assemblyReferences = $dllReferences; rebuildCommand = $command }
     }

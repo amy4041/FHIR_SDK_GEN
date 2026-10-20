@@ -1,0 +1,295 @@
+{
+  "projects": [
+    {
+      "source": "CodeGen/MyFhirSdk.CodeGen.csproj",
+      "role": "production-metadata-only-generator",
+      "projectReferences": [],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test MyFhirSdk.sln -c Release --logger trx (builds production dependencies)"
+    },
+    {
+      "source": "ModelContracts/MyFhirSdk.ModelContracts.csproj",
+      "role": "production-model-contracts",
+      "projectReferences": [
+        "../Runtime/MyFhirSdk.Runtime.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test MyFhirSdk.sln -c Release --logger trx (builds production dependencies)"
+    },
+    {
+      "source": "Models/R4/MyFhirSdk.R4.Models.csproj",
+      "role": "production-r4-models",
+      "projectReferences": [
+        "../../ModelSupport/MyFhirSdk.ModelSupport.csproj",
+        "../../ModelContracts/MyFhirSdk.ModelContracts.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test MyFhirSdk.sln -c Release --logger trx (builds production dependencies)"
+    },
+    {
+      "source": "Models/R5/MyFhirSdk.R5.Models.csproj",
+      "role": "production-r5-models",
+      "projectReferences": [
+        "../../ModelSupport/MyFhirSdk.ModelSupport.csproj",
+        "../../ModelContracts/MyFhirSdk.ModelContracts.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test MyFhirSdk.sln -c Release --logger trx (builds production dependencies)"
+    },
+    {
+      "source": "ModelSupport/MyFhirSdk.ModelSupport.csproj",
+      "role": "production-model-support",
+      "projectReferences": [
+        "../ModelContracts/MyFhirSdk.ModelContracts.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test MyFhirSdk.sln -c Release --logger trx (builds production dependencies)"
+    },
+    {
+      "source": "MyFhirSdk.csproj",
+      "role": "production-sdk",
+      "projectReferences": [
+        "Runtime\\MyFhirSdk.Runtime.csproj",
+        "ModelContracts\\MyFhirSdk.ModelContracts.csproj",
+        "ModelSupport\\MyFhirSdk.ModelSupport.csproj",
+        "Models\\R5\\MyFhirSdk.R5.Models.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test MyFhirSdk.sln -c Release --logger trx (builds production dependencies)"
+    },
+    {
+      "source": "Runtime/MyFhirSdk.Runtime.csproj",
+      "role": "production-runtime",
+      "projectReferences": [],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test MyFhirSdk.sln -c Release --logger trx (builds production dependencies)"
+    },
+    {
+      "source": "Tests/Architecture/MyFhirSdk.Architecture.Tests.csproj",
+      "role": "sdk-test-consumer",
+      "projectReferences": [
+        "..\\..\\CodeGen\\MyFhirSdk.CodeGen.csproj",
+        "..\\..\\MyFhirSdk.csproj",
+        "..\\FhirVersions\\V1\\Models\\MyFhirSdk.R4.V1.Models.csproj",
+        "..\\FhirVersions\\V2\\Provider\\MyFhirSdk.R4.V2.Provider.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test Tests/Architecture/MyFhirSdk.Architecture.Tests.csproj -c Release --logger trx"
+    },
+    {
+      "source": "Tests/Client/MyFhirSdk.Client.Tests.csproj",
+      "role": "sdk-test-consumer",
+      "projectReferences": [
+        "..\\..\\MyFhirSdk.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test Tests/Client/MyFhirSdk.Client.Tests.csproj -c Release --logger trx"
+    },
+    {
+      "source": "Tests/CodeGen/MyFhirSdk.CodeGen.Tests.csproj",
+      "role": "sdk-test-consumer",
+      "projectReferences": [
+        "..\\..\\CodeGen\\MyFhirSdk.CodeGen.csproj",
+        "..\\..\\MyFhirSdk.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test Tests/CodeGen/MyFhirSdk.CodeGen.Tests.csproj -c Release --logger trx"
+    },
+    {
+      "source": "Tests/FhirVersions/V1/Models/MyFhirSdk.R4.V1.Models.csproj",
+      "role": "experiment-r4-models",
+      "projectReferences": [
+        "../../../../Runtime/MyFhirSdk.Runtime.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test Tests/Architecture/MyFhirSdk.Architecture.Tests.csproj -c Release (builds independent experiment models/providers)"
+    },
+    {
+      "source": "Tests/FhirVersions/V2/Provider/MyFhirSdk.R4.V2.Provider.csproj",
+      "role": "experiment-r4-provider",
+      "projectReferences": [
+        "../../../../ModelContracts/MyFhirSdk.ModelContracts.csproj",
+        "../../V1/Models/MyFhirSdk.R4.V1.Models.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test Tests/Architecture/MyFhirSdk.Architecture.Tests.csproj -c Release (builds independent experiment models/providers)"
+    },
+    {
+      "source": "Tests/FhirVersions/V3/ProviderConsumer/ProviderConsumer.csproj",
+      "role": "provider-only-consumer",
+      "projectReferences": [
+        "../../../../Models/R5/MyFhirSdk.R5.Models.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet run --project Tests/FhirVersions/V3/ProviderConsumer/ProviderConsumer.csproj -c Release"
+    },
+    {
+      "source": "Tests/FhirVersions/V5/MyFhirSdk.FhirVersions.V5.Tests.csproj",
+      "role": "sdk-test-consumer",
+      "projectReferences": [
+        "../../../MyFhirSdk.csproj",
+        "../../../Models/R4/MyFhirSdk.R4.Models.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test Tests/FhirVersions/V5/MyFhirSdk.FhirVersions.V5.Tests.csproj -c Release --logger trx"
+    },
+    {
+      "source": "Tests/FhirVersions/V6/MyFhirSdk.FhirVersions.V6.Tests.csproj",
+      "role": "sdk-test-consumer",
+      "projectReferences": [
+        "../../../MyFhirSdk.csproj",
+        "../../../Models/R4/MyFhirSdk.R4.Models.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test Tests/FhirVersions/V6/MyFhirSdk.FhirVersions.V6.Tests.csproj -c Release --logger trx"
+    },
+    {
+      "source": "Tests/FhirVersions/V6/Smoke/VersionedClientSmoke.csproj",
+      "role": "versioned-client-smoke-consumer",
+      "projectReferences": [
+        "../../../../MyFhirSdk.csproj",
+        "../../../../Models/R4/MyFhirSdk.R4.Models.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet build <fresh-staging>/VersionedClientSmoke.csproj -c Release -p:SdkAssemblyPath=<SDK implementation> -p:RuntimeAssemblyPath=<Runtime implementation>"
+    },
+    {
+      "source": "Tests/FhirVersions/V7/Dual/DualConsumer.csproj",
+      "role": "delivery-dual-consumer",
+      "projectReferences": [
+        "../../../../MyFhirSdk.csproj",
+        "../../../../Models/R4/MyFhirSdk.R4.Models.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "python eng/Test-FhirV7Delivery.py --tool-package <canonical.nupkg> --output <fresh-artifacts-directory>"
+    },
+    {
+      "source": "Tests/FhirVersions/V7/R4/R4Consumer.csproj",
+      "role": "delivery-r4-consumer",
+      "projectReferences": [
+        "../../../../MyFhirSdk.csproj",
+        "../../../../Models/R4/MyFhirSdk.R4.Models.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "python eng/Test-FhirV7Delivery.py --tool-package <canonical.nupkg> --output <fresh-artifacts-directory>"
+    },
+    {
+      "source": "Tests/FhirVersions/V7/R5/R5Consumer.csproj",
+      "role": "delivery-r5-consumer",
+      "projectReferences": [
+        "../../../../MyFhirSdk.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "python eng/Test-FhirV7Delivery.py --tool-package <canonical.nupkg> --output <fresh-artifacts-directory>"
+    },
+    {
+      "source": "Tests/ImplementationGuides/TwCore/MyFhirSdk.ImplementationGuides.TwCore.Tests.csproj",
+      "role": "sdk-test-consumer",
+      "projectReferences": [
+        "..\\..\\..\\MyFhirSdk.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test Tests/ImplementationGuides/TwCore/MyFhirSdk.ImplementationGuides.TwCore.Tests.csproj -c Release --logger trx"
+    },
+    {
+      "source": "Tests/KernelMigration/BaselineConsumer/v1/Consumer.csproj",
+      "role": "frozen-historical-only-K0",
+      "projectReferences": [],
+      "assemblyReferences": [
+        "MyFhirSdk",
+        "MyFhirSdk.Runtime"
+      ],
+      "rebuildCommand": "pwsh -File eng/Test-KernelMigrationBaseline.ps1"
+    },
+    {
+      "source": "Tests/KernelMigration/Consumer/Consumer.csproj",
+      "role": "current-explicit-DLL-consumer",
+      "projectReferences": [],
+      "assemblyReferences": [
+        "MyFhirSdk",
+        "MyFhirSdk.R5.Models",
+        "MyFhirSdk.Runtime"
+      ],
+      "rebuildCommand": "dotnet build <fresh-staging>/Consumer.csproj -c Release -p:SdkAssemblyPath=<SDK implementation> -p:RuntimeAssemblyPath=<Runtime implementation>"
+    },
+    {
+      "source": "Tests/KernelMigration/Inventory/Inventory.csproj",
+      "role": "explicit-implementation-inventory-tool",
+      "projectReferences": [],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet build <fresh-staging>/Inventory/Inventory.csproj; dotnet Inventory.dll <SDK> <output> <Runtime>"
+    },
+    {
+      "source": "Tests/KernelMigration/RebuiltConsumer/RebuiltConsumer.csproj",
+      "role": "rebuilt-application",
+      "projectReferences": [
+        "../RebuiltLibrary/RebuiltLibrary.csproj"
+      ],
+      "assemblyReferences": [
+        "MyFhirSdk",
+        "MyFhirSdk.R5.Models",
+        "MyFhirSdk.Runtime"
+      ],
+      "rebuildCommand": "dotnet build <fresh-staging>/RebuiltConsumer.csproj -c Release -p:SdkAssemblyPath=<SDK implementation> -p:RuntimeAssemblyPath=<Runtime implementation>"
+    },
+    {
+      "source": "Tests/KernelMigration/RebuiltLibrary/RebuiltLibrary.csproj",
+      "role": "rebuilt-dependent-library",
+      "projectReferences": [],
+      "assemblyReferences": [
+        "MyFhirSdk",
+        "MyFhirSdk.R5.Models",
+        "MyFhirSdk.Runtime"
+      ],
+      "rebuildCommand": "dotnet build <fresh-staging>/RebuiltLibrary.csproj -c Release -p:SdkAssemblyPath=<SDK implementation> -p:RuntimeAssemblyPath=<Runtime implementation>"
+    },
+    {
+      "source": "Tests/Parser/Json/MyFhirSdk.Parser.Json.Tests.csproj",
+      "role": "sdk-test-consumer",
+      "projectReferences": [
+        "..\\..\\..\\MyFhirSdk.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test Tests/Parser/Json/MyFhirSdk.Parser.Json.Tests.csproj -c Release --logger trx"
+    },
+    {
+      "source": "Tests/Serializer/Json/MyFhirSdk.Serialization.Json.Tests.csproj",
+      "role": "sdk-test-consumer",
+      "projectReferences": [
+        "..\\..\\..\\MyFhirSdk.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test Tests/Serializer/Json/MyFhirSdk.Serialization.Json.Tests.csproj -c Release --logger trx"
+    },
+    {
+      "source": "Tests/Validation/MyFhirSdk.Validation.Tests.csproj",
+      "role": "sdk-test-consumer",
+      "projectReferences": [
+        "..\\..\\MyFhirSdk.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test Tests/Validation/MyFhirSdk.Validation.Tests.csproj -c Release --logger trx"
+    }
+  ],
+  "dynamicConsumers": [
+    "Tests/Architecture/RuntimeContractCompilationTests.cs",
+    "Tests/CodeGen/Runtime/GeneratedModelTestCompiler.cs",
+    "Tests/CodeGen/Runtime/RealSdkSourceCompiler.cs",
+    "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs"
+  ],
+  "solutionCommand": "dotnet test MyFhirSdk.sln -c Release --logger trx",
+  "explicitReferenceCommand": "dotnet build <staged-project> -c Release -p:SdkAssemblyPath=<implementation> -p:RuntimeAssemblyPath=<implementation>",
+  "deploymentDependencies": [
+    "MyFhirSdk.dll",
+    "MyFhirSdk.Runtime.dll",
+    "MyFhirSdk.ModelContracts.dll",
+    "MyFhirSdk.ModelSupport.dll",
+    "MyFhirSdk.R5.Models.dll",
+    "RebuiltLibrary.dll",
+    "RebuiltConsumer.dll",
+    "RebuiltConsumer.deps.json",
+    "RebuiltConsumer.runtimeconfig.json"
+  ],
+  "historicalCommand": "pwsh -File eng/Test-KernelMigrationBaseline.ps1 -RunRegressionAndSmoke",
+  "generatorBoundary": "No SDK/Runtime ProjectReference; legacy compiler asset migration remains K4."
+}

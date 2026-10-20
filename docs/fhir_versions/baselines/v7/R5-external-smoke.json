@@ -1,0 +1,6 @@
+{
+  "release": "R5",
+  "expectedFhirVersion": "5.0.0",
+  "status": "Skipped",
+  "reason": "Set MYFHIRSDK_R5_INTEGRATION_BASE_URL to run this release's external server smoke."
+}
