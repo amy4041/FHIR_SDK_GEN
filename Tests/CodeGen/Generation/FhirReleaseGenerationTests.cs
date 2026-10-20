@@ -252,7 +252,7 @@ public sealed class FhirReleaseGenerationTests : IDisposable
         Assert.True(references.IsSuccess, Describe(references.Diagnostics));
         var validator = new RoslynCompilationValidator(references.Value!);
         var safety = new OutputSafetyContext(AppContext.BaseDirectory);
-        var source = Path.Combine(Root, fault == "r5-auxiliary" ? "Types/SimpleQuantity.cs" : "CodeGen/Assets/CompilerSources/R4/SimpleQuantity.cs");
+        var source = Path.Combine(Root, fault == "r5-auxiliary" ? "Models/R5/SimpleQuantity.cs" : "CodeGen/Assets/CompilerSources/R4/SimpleQuantity.cs");
         var policies = resolver.ResolveModelPolicies(new() { PolicyRoot = policyRoot }, null, "4.0.1");
         var options = new ModelGenerationOptions(Path.Combine(Root, "Tests/CodeGen/Fixtures/FhirPackages/R4/hl7.fhir.r4.core-4.0.1.tgz"), Path.GetTempPath(),
             "hl7.fhir.r4.core", "4.0.1", "4.0.1", policies.PrimitivePolicyPath, policies.OwnershipPolicyPath, policies.ModelIrPolicyPaths,

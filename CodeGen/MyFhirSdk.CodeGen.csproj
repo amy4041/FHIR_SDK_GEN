@@ -26,7 +26,7 @@
     <RuntimeReferenceTargetPath>Assets\RuntimeReferences\$(TargetFramework)\MyFhirSdk.Runtime.dll</RuntimeReferenceTargetPath>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\Types\SimpleQuantity.cs" Link="Assets\CompilerSources\SimpleQuantity.cs" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Models\R5\SimpleQuantity.cs" Link="Assets\CompilerSources\SimpleQuantity.cs" CopyToOutputDirectory="PreserveNewest" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
     <InternalsVisibleTo Include="MyFhirSdk.CodeGen.Tests" />
     <!-- Must be enabled before the first compression stream initializes. -->

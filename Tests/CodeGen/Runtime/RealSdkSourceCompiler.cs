@@ -41,7 +41,7 @@ internal static class RealSdkSourceCompiler
 
     internal static CSharpCompilation CreateModels(IReadOnlyList<GeneratedSource> generated, string? name = null)
     {
-        var handwritten = ReadSources("Models/R5").Append(ReadSource("Types/SimpleQuantity.cs"));
+        var handwritten = ReadSources("Models/R5");
         return Build(name ?? $"MyFhirSdk.R5.Models.Integration.{Guid.NewGuid():N}",
             handwritten.Concat(generated.Where(s => s.FileName.StartsWith("Generated/R5/", StringComparison.Ordinal))), References());
     }

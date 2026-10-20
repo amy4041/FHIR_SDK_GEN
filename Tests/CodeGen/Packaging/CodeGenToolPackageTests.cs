@@ -395,7 +395,7 @@ public sealed class CodeGenToolPackageTests
         Assert.True(File.Exists(Path.Combine(r4Primitives, "FhirUnsignedInt.g.cs")));
         Assert.False(File.Exists(Path.Combine(r4Primitives, "FhirInteger64.g.cs")));
         var r4WrongSource = await RunDotNetAsync(directory.Path, environment,
-            r4Args.Concat(["--compiler-source", Path.Combine(GetRepositoryRoot(), "Types/SimpleQuantity.cs")]).ToArray());
+            r4Args.Concat(["--compiler-source", Path.Combine(GetRepositoryRoot(), "Models/R5/SimpleQuantity.cs")]).ToArray());
         Assert.Equal(2, r4WrongSource.ExitCode);
         Assert.Contains("FSG0131", r4WrongSource.StandardError);
         Assert.Equal(r4Before, Directory.EnumerateFiles(r4Output, "*", SearchOption.AllDirectories)

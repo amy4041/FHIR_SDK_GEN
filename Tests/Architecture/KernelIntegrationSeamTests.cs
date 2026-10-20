@@ -44,7 +44,7 @@ public sealed class KernelIntegrationSeamTests
         Compile("K1.ModelSupport", Sources("ModelSupport"), KernelReference.Value, ContractsReference.Value)));
     private static readonly Lazy<MetadataReference> SupportReference = new(() => Reference(Support.Value));
     private static readonly Lazy<CSharpCompilation> Models = new(() => Compile("K1.R5.Models",
-        Sources("Models/R5").Concat(Sources("Generated/R5")).Append(Read("Types/SimpleQuantity.cs")),
+        Sources("Models/R5").Concat(Sources("Generated/R5")),
         KernelReference.Value, ContractsReference.Value, SupportReference.Value));
     private static readonly Lazy<MetadataReference> ModelsReference = new(() => Reference(Models.Value));
     private static readonly Lazy<CSharpCompilation> Sdk = new(() => Compile("K1.Sdk", SdkSources(),
@@ -118,7 +118,7 @@ public sealed class KernelIntegrationSeamTests
             Assert.Contains("SimpleQuantity", error.GetMessage());
         });
         // Real SDK source, not a validation stub or a second metadata reference.
-        Assert.Empty(Errors(compilation.AddSyntaxTrees(Read("Types/SimpleQuantity.cs"))));
+        Assert.Empty(Errors(compilation.AddSyntaxTrees(Read("Models/R5/SimpleQuantity.cs"))));
     }
 
     [Fact]

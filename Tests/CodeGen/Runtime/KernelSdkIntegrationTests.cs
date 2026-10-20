@@ -25,7 +25,7 @@ public sealed class KernelSdkIntegrationTests
     public void PackagedAuxiliarySourceIsTheRealSdkSourceWithPinnedHash()
     {
         var source = ModelCompilerSourceAsset.Read();
-        var real = File.ReadAllText(Path.Combine(RealSdkSourceCompiler.RepositoryRoot(), "Types", "SimpleQuantity.cs"))
+        var real = File.ReadAllText(Path.Combine(RealSdkSourceCompiler.RepositoryRoot(), "Models", "R5", "SimpleQuantity.cs"))
             .Replace("\r\n", "\n", StringComparison.Ordinal).Replace('\r', '\n');
         Assert.Equal(real, source.Source);
         Assert.Equal("simple-quantity-source-v1", ModelCompilerSourceAsset.Version);

@@ -25,7 +25,7 @@ The SDK is still in pre-release shape. It is useful for MVP flows and SDK develo
 | `MyFhirSdk.sln` | Solution containing the SDK and test projects |
 | `Generated/R5/Resources/` | Generated FHIR Resource and Resource-owned Backbone declarations |
 | `Generated/R5/Types/` | Generated FHIR complex datatype declarations |
-| `Types/SimpleQuantity.cs` | Retained handwritten constraint-profile declaration |
+| `Models/R5/SimpleQuantity.cs` | Retained handwritten R5 constraint-profile declaration |
 | `Primitives/` | FHIR primitive wrappers |
 | `ModelMetadata/` | Internal model metadata contracts and generated R5 provider composition |
 | `Serialization/Json/` | FHIR JSON parser and serializer |

@@ -10,7 +10,7 @@
   <ItemGroup>
     <Compile Remove="Runtime\**\*.cs" />
     <Compile Remove="ModelContracts\**\*.cs" />
-    <Compile Remove="ModelSupport\**\*.cs;Models\**\*.cs;Generated\**\*.cs;Types\SimpleQuantity.cs" />
+    <Compile Remove="ModelSupport\**\*.cs;Models\**\*.cs;Generated\**\*.cs" />
     <Compile Remove="artifacts\**\*.cs" />
     <Compile Remove="CodeGen\**\*.cs" />
     <Compile Remove="core\bin\**\*.cs" />
