@@ -45,6 +45,21 @@ jobs:
           if ($packages.Count -ne 1) { throw 'Expected one canonical tool package.' }
           python eng/Test-FhirV7Delivery.py --tool-package $packages[0].FullName --output artifacts/fhir-versions/v7/ci
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Export current delivery and verify external DLL examples
+        shell: pwsh
+        run: |
+          python eng/Export-FhirDelivery.py --output artifacts/delivery/v7
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python eng/Test-FhirDelivery.py --bundle artifacts/delivery/v7 --output artifacts/delivery/v7/verification
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Upload external delivery bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-external-delivery-${{ matrix.os }}
+          path: artifacts/delivery/v7
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Upload V7 platform evidence
         if: always()
         uses: actions/upload-artifact@v4

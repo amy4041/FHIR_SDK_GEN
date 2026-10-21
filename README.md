@@ -1,17 +1,17 @@
 # MyFhirSdk
 
-MyFhirSdk is a .NET SDK with generated FHIR R5 specialization datatypes and Resources. It provides typed resource models, FHIR JSON serialization and parsing, a small REST client, base validation, and an optional implementation-guide validation path.
+MyFhirSdk is a .NET SDK with generated FHIR R4 and R5 specialization datatypes and Resources. It provides typed resource models, version-specific JSON parsing and serialization, REST clients, base validation, and an optional implementation-guide validation path.
 
-The SDK is still in pre-release shape. It is useful for MVP flows and SDK development, but it is not a complete FHIR R5 implementation yet.
+The SDK is still in pre-release shape. It is useful for MVP flows and SDK development, but it is not a complete FHIR implementation yet.
 
 ## Current Scope
 
 - Target framework: `net9.0`
-- FHIR version target: R5
-- Generated FHIR R5 specialization datatypes, Resources, and Resource-owned Backbones
+- FHIR versions: R4 `4.0.1` and R5 `5.0.0`
+- Generated FHIR R4/R5 specialization datatypes, Resources, and Resource-owned Backbones
 - Generated model factories, JSON metadata, and supported validation composition
 - FHIR JSON serializer and parser
-- REST client operations: read, create, update, and search
+- REST client operations: read, create, update, search, and delete
 - Base FHIR validation rules for the supported model surface
 - Optional profile validation framework
 - Initial TW Core Patient validation proof of concept
@@ -37,6 +37,12 @@ The SDK is still in pre-release shape. It is useful for MVP flows and SDK develo
 
 ## Getting Started
 
+For DLL-based SDK usage and generator installation outside this repository, see the
+[V7 delivery guide](docs/fhir_versions/V7_Delivery_Guide.md) and
+[external examples](examples/external/README.md). The exporter builds a fresh handoff bundle;
+SDK NuGet packages have not been published. Current CI and manual acceptance are recorded in
+the [V7 closeout](docs/fhir_versions/V7_Closeout.md).
+
 Install the .NET 9 SDK, then restore and build from the repository root:
 
 ```powershell
@@ -50,10 +56,10 @@ Until NuGet publishing is prepared, reference the SDK project directly from anot
 dotnet add reference path\to\MyFhirSdk\MyFhirSdk.csproj
 ```
 
-The SDK now references `MyFhirSdk.Runtime`, which defines the 14 shared kernel declarations.
-Rebuild consumers and dependent libraries together. Explicit DLL consumers must reference and
-deploy both `MyFhirSdk.dll` and the Runtime implementation DLL; the compiler-only reference
-inside the CodeGen tool is a build asset. No type forwarders are provided.
+The SDK uses Runtime, ModelContracts, ModelSupport and R5 Models; R4 applications additionally
+reference R4 Models. Rebuild consumers and dependent libraries together, and deploy the complete
+publish output. The compiler-only Runtime reference inside the CodeGen tool is a build asset,
+not an implementation DLL. No type forwarders are provided.
 See the [runtime kernel handoff](docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Handoff.md)
 and [consumer migration / rollback operations](docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Operations.md).
 
@@ -67,7 +73,7 @@ dotnet tool restore --add-source artifacts/packages --ignore-failed-sources
 dotnet myfhir-codegen --help
 ```
 
-The repository manifest pins `MyFhirSdk.CodeGen.Tool` version `1.2.0` and command
+The repository manifest pins `MyFhirSdk.CodeGen.Tool` version `1.3.1` and command
 `myfhir-codegen`. The package includes its default model policies, Runtime contract
 descriptor, compiler-only Runtime reference, and the SDK-owned SimpleQuantity auxiliary source; it does not require repository discovery
 when installed. The current package is for repository-local development only; an approved

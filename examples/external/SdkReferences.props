@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <SdkDirectory>$(MSBuildThisFileDirectory)../sdk/</SdkDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MyFhirSdk"><HintPath>$(SdkDirectory)MyFhirSdk.dll</HintPath><Private>true</Private></Reference>
+    <Reference Include="MyFhirSdk.Runtime"><HintPath>$(SdkDirectory)MyFhirSdk.Runtime.dll</HintPath><Private>true</Private></Reference>
+    <Reference Include="MyFhirSdk.ModelContracts"><HintPath>$(SdkDirectory)MyFhirSdk.ModelContracts.dll</HintPath><Private>true</Private></Reference>
+    <Reference Include="MyFhirSdk.ModelSupport"><HintPath>$(SdkDirectory)MyFhirSdk.ModelSupport.dll</HintPath><Private>true</Private></Reference>
+    <Reference Include="MyFhirSdk.R4.Models"><HintPath>$(SdkDirectory)MyFhirSdk.R4.Models.dll</HintPath><Private>true</Private></Reference>
+    <Reference Include="MyFhirSdk.R5.Models"><HintPath>$(SdkDirectory)MyFhirSdk.R5.Models.dll</HintPath><Private>true</Private></Reference>
+  </ItemGroup>
+  <Target Name="CheckDeliveredSdk" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'%(Reference.HintPath)' != '' and !Exists('%(Reference.HintPath)')" Text="Missing delivered SDK assembly: %(Reference.HintPath)" />
+  </Target>
+</Project>

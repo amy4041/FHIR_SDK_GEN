@@ -12,6 +12,8 @@ Version 0.1 — 2026-10-13
 | [R4 support ADR](MyFhirSdk_FHIR_R4_Support_ADR.md) | 範圍、版本邊界、依賴方向、相容性與待定設計 |
 | [Implementation Guide](MyFhirSdk_FHIR_R4_Support_Implementation_Guide.md) | V0–V7 工作包、前置條件、交付內容與開發順序 |
 | [Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md) | 各階段的驗收證據、正向／負面案例與完成定義 |
+| [V7 結案紀錄](V7_Closeout.md) | 已通過的 CI、搬移後的手動驗收與範圍 |
+| [V7 交付指南](V7_Delivery_Guide.md) | 匯出目前產物，於 repository 外使用 SDK／generator |
 
 V0 已建立 baseline runner、R4 input lock 與 [設計決策](V0_Decisions.md)。
 執行結果及 G0 狀態見 [V0 baseline](baselines/v0/README.md)；尚未新增 R4 production 支援。
@@ -21,7 +23,7 @@ namespace／Models assembly 方向由 V0 固定；[V1 selected closure 實驗](b
 V3、[V4 雙版本 generator](baselines/v4/README.md)已提交，使用者確認 CI 通過。
 [V5 完整 R4 Models 與 runtime integration](baselines/v5/README.md)已提交，使用者確認 push CI 通過。
 [V6 R4／R5 Client integration](baselines/v6/README.md)已提交於 `99017ef`，使用者確認 CI 通過；外部伺服器驗收依實際 smoke 結果標示。
-[V7 跨平台交付與 handoff](baselines/v7/README.md)已提交，包含 canonical package 生成、乾淨部署、缺少依賴與 V6 source rollback 驗證；首次 CI 的兩個平台驗證通過，跨平台比較修正後待完整 CI 重跑。
+[V7 跨平台交付與 handoff](baselines/v7/README.md)已完成；修正與 R5 SimpleQuantity 搬移後的 CI 已通過，使用者亦回報搬移後 R4／R5 的 generator 與實際 server smoke 通過。最新結果見 [V7 結案紀錄](V7_Closeout.md)；歷史 baseline 保留原狀。
 V7 首次 CI 的跨平台 rollback 比較遇到 Git CRLF／LF 匯出差異，原因與修正、完整 CI 重跑方式見 [V7 CI rollback fix](V7_CI_Rollback_Fix.md)。
 
 ## 目前基準與目標
@@ -44,11 +46,9 @@ V7 首次 CI 的跨平台 rollback 比較遇到 Git CRLF／LF 匯出差異，原
 [CodeGen README](../../CodeGen/README.md) 與
 [Compatibility matrix](../../CodeGen/Compatibility/GenerationCompatibilityMatrix.cs)。
 
-## 建議先做什麼
+## 下一階段
 
-先完成 V0 baseline／設計決策，再以 V1 小範圍實驗驗證共用 Runtime 與雙版本 context。
-接著完成 provider／composition 契約及 R5 Models 分離，才展開完整 R4 生成。
-Models 分離與 engines 解除 R5 固定依賴需配合進行，不能只搬動檔案。
+V0–V7 已完成。先依交付指南保存來源明確的產物及外部使用範例；SDK／Models NuGet 打包與私人 feed 為後續工作，不將完成本機交付誤稱為已公開發布。
 
 Client 的版本相依 API 必須在 R4 Client 交付前處理；完整 Client／IG package 拆分、
 通用 constraint Profile generator、CLI input 退場、完整 terminology／FHIRPath validation

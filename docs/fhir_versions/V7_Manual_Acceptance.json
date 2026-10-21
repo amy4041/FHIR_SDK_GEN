@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "reportedOn": "2026-10-20",
+  "status": "UserReportedPassed",
+  "reportedAfterRevision": "c7680b73d32f41fbf66ae5c28bf47849996cd650",
+  "testedVersions": ["R4", "R5"],
+  "data": "Synthetic; no real patient data, per user report",
+  "externalServer": "User reported actual FHIR server connection",
+  "testDirectory": "D:\\projects\\SDK_DEMO",
+  "observedSdkExampleOperations": ["parse", "serialize", "validate", "create", "read"],
+  "observationLimit": "Read-only source and generated manifest inspection; not an agent-observed execution log",
+  "agentReranExternalServer": false,
+  "updateSearchDeleteAcceptedByThisRecord": false,
+  "filesSha256": {
+    "SdkDemo/Program.cs": "c263b34e913deac420f8bca919b40596ee62d0e147f15c993ff301b959ed3ddd",
+    "SdkDemo/SdkDemo.csproj": "0df68761e5a53601a7d959c6f8b68e6b3512d235d8891b94bf149838171d9816",
+    "CodeGenDemo/out/r4/Generated/R4/model-generation-manifest.json": "5363245958d9cbdbf1833933d4cd1c9d72bfa46371a93ec3aca9df727ac1db28",
+    "CodeGenDemo/out/r4/Generated/R4/Primitives/primitive-generation-manifest.json": "b612f45f229e6b0b04e36b899db7da781fc1a54ff254ee492880e4ac03834aa2",
+    "CodeGenDemo/out/r5/Generated/R5/model-generation-manifest.json": "f3c484250dbd489aa818d388b06c59faa464e176409f8ea861d978e20cad1e4f",
+    "CodeGenDemo/out/r5/Generated/R5/Primitives/primitive-generation-manifest.json": "17772b433f44806cf91290447fabc07db6c491dba684c95c7efe88bb69b614e6"
+  }
+}
