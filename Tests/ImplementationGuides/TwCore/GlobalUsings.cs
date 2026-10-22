@@ -1,8 +1,10 @@
 global using MyFhirSdk.Core;
 global using MyFhirSdk.ImplementationGuides.TwCore;
-global using MyFhirSdk.Primitives;
-global using MyFhirSdk.Resources;
-global using MyFhirSdk.Types;
+global using MyFhirSdk.R4.Primitives;
+global using MyFhirSdk.R4.Resources;
+global using MyFhirSdk.R4.Types;
+global using MyFhirSdk.ModelMetadata;
+global using MyFhirSdk.ModelMetadata.R4;
 global using MyFhirSdk.Validation;
 global using MyFhirSdk.Validation.Profiles;
 global using Xunit;

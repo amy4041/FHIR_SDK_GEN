@@ -1,5 +1,5 @@
 using MyFhirSdk.Core;
-using MyFhirSdk.Resources;
+using MyFhirSdk.R4.Resources;
 using MyFhirSdk.Validation;
 using MyFhirSdk.Validation.Profiles;
 

@@ -1,11 +1,11 @@
 using MyFhirSdk.ImplementationGuides.TwCore.Validation;
-using MyFhirSdk.Resources;
+using MyFhirSdk.R4.Resources;
 using MyFhirSdk.Validation.Profiles;
 
 namespace MyFhirSdk.ImplementationGuides.TwCore;
 
 /// <summary>
-/// Manual TW Core implementation guide package for the first profile validation POC.
+/// Manual R4 Patient three-rule POC; does not load the official TW Core package.
 /// </summary>
 public sealed class TwCorePackage : IImplementationGuidePackage
 {
@@ -29,7 +29,7 @@ public sealed class TwCorePackage : IImplementationGuidePackage
     public string Name => "TW Core";
 
     /// <inheritdoc />
-    public string FhirVersion => "R4.0.1";
+    public string FhirVersion => "4.0.1";
 
     /// <inheritdoc />
     public IReadOnlyCollection<string> SupportedProfiles => Profiles;

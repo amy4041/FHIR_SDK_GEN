@@ -5,9 +5,10 @@
     <Nullable>enable</Nullable>
     <!-- Exclude non-SDK trees before default globs enumerate their build/cache
          outputs; Compile Remove below retains the explicit ownership boundary. -->
-    <DefaultItemExcludes>$(DefaultItemExcludes);artifacts/**;Tests/**;CodeGen/**;Runtime/**;ModelContracts/**;ModelSupport/**;Models/**;Generated/**;examples/**</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);artifacts/**;Tests/**;CodeGen/**;Runtime/**;ModelContracts/**;ModelSupport/**;Models/**;Generated/**;examples/**;ImplementationGuides/**</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="ImplementationGuides\**\*.cs" />
     <Compile Remove="Runtime\**\*.cs" />
     <Compile Remove="ModelContracts\**\*.cs" />
     <Compile Remove="ModelSupport\**\*.cs;Models\**\*.cs;Generated\**\*.cs" />

@@ -80,7 +80,7 @@ internal static class RealSdkSourceCompiler
         ModelImages[name] = image;
         var kernelFiles = typeof(MyFhirSdk.Core.FhirObject).Assembly.GetExportedTypes()
             .Select(t => "core/" + t.Name.Replace("`1", "", StringComparison.Ordinal) + ".cs").ToHashSet(StringComparer.Ordinal);
-        var handwritten = new[] { "core", "Primitives", "ModelMetadata", "Serialization", "Validation", "Client", "ImplementationGuides" }
+        var handwritten = new[] { "core", "Primitives", "ModelMetadata", "Serialization", "Validation", "Client" }
             .SelectMany(ReadSources).Where(source => !kernelFiles.Contains(source.FileName));
         return Build(name, handwritten.Concat(generated.Where(s => !s.FileName.StartsWith("Generated/R5/", StringComparison.Ordinal))),
             References().Append(MetadataReference.CreateFromImage(image)));

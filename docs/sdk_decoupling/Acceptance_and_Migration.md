@@ -69,7 +69,7 @@ var client = new MyFhirSdk.Client.FhirClient<
     MyFhirSdk.Resources.OperationOutcome>(httpClient, context, options);
 ```
 
-R4 換成 `MyFhirSdk.R4.Resources` 對應型別。D1 已實作 contextual IG framework；以下 TW Core 組合仍是 D2 的目標範例，獨立 R4 TW Core 專案尚未建立，目前舊 R5 POC 不能放入此新路徑：
+R4 換成 `MyFhirSdk.R4.Resources` 對應型別。D1 已實作 contextual IG framework，D2 已建立獨立 R4 TW Core POC 專案；以下組合須額外引用 `MyFhirSdk.ImplementationGuides.TwCore` 與 R4 Models：
 
 ```csharp
 var profileValidator = new ProfileValidator(

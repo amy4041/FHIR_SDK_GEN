@@ -2,6 +2,7 @@ Generated/R5/** text eol=lf
 docs/sdk_decoupling/baselines/** text eol=lf
 eng/Test-SdkDecoupling.py text eol=lf
 eng/Test-SdkDecouplingD1.py text eol=lf
+eng/Test-SdkDecouplingD2.py text eol=lf
 Tests/SdkDecoupling/** text eol=lf
 CodeGen/** text eol=lf
 Tests/CodeGen/Fixtures/FhirPackages/R5/*.approved.json text eol=lf

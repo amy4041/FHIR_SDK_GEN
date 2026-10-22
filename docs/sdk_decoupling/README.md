@@ -1,6 +1,6 @@
 # SDK 版本解耦與 IG 專案化
 
-日期：2026-10-22。狀態：D0 已提交並由使用者確認 CI 通過；D1 contextual IG framework 已實作，範圍、API delta 與本機驗收紀錄見 [D1 實作紀錄](D1_Implementation.md)，獨立 review 與新 CI 待後續確認。D2–D5 尚未實作。D0 結果與限制見 [盤點紀錄](D0_Inventory.md)，使用端示意見 [遷移範例](D0_Migration_Examples.md)。
+日期：2026-10-22。狀態：D0、D1 已提交並由使用者確認 CI 通過；D2 TW Core 獨立專案與 R4 Patient POC 已實作，驗收範圍見 [D2 實作紀錄](D2_Implementation.md)，review 問題已修正，新 CI 待後續確認。D3–D5 尚未實作。[D1 實作紀錄](D1_Implementation.md) 保留 framework 與 CI 修正說明；D0 結果見 [盤點紀錄](D0_Inventory.md)，使用端示意見 [遷移範例](D0_Migration_Examples.md)。
 
 目標：移除共用 SDK 對 R5 Models 的直接及間接依賴，刪除 R5 預設組合與舊版 Client，將 TW Core 移至獨立專案，同時保留 IG 的注入與替換能力。
 

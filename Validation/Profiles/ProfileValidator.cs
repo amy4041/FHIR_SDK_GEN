@@ -159,7 +159,7 @@ public sealed class ProfileValidator
                 continue;
             }
 
-            if (_context is not null && !package.SupportsResource(profileUrl, resource.GetType()))
+            if (!package.SupportsResource(profileUrl, resource.GetType()))
             {
                 AddProfileIssue(resource, profileUrl, package, "PROFILE-RESOURCE-UNSUPPORTED",
                     "The registered profile does not support resource CLR type '" + resource.GetType().FullName + "'.", issues);

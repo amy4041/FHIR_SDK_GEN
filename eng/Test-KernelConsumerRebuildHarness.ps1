@@ -62,8 +62,43 @@ Assert-KernelNeutralProjectDependencies (Join-Path $root 'Models/R5/MyFhirSdk.R5
 $checks.Add('v3-independent-r5-models')
 Assert-KernelNeutralProjectDependencies (Join-Path $root 'Tests/FhirVersions/V3/ProviderConsumer/ProviderConsumer.csproj') $root @('Models/R5/MyFhirSdk.R5.Models.csproj')
 $checks.Add('v3-provider-only-consumer')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'ImplementationGuides/TwCore/MyFhirSdk.ImplementationGuides.TwCore.csproj') $root @(
+    'MyFhirSdk.csproj', 'Models/R4/MyFhirSdk.R4.Models.csproj')
+$checks.Add('d2-r4-ig-sdk-and-r4-only-direct-dependencies')
+$sdkAllowedProjects = @('Runtime/MyFhirSdk.Runtime.csproj', 'ModelContracts/MyFhirSdk.ModelContracts.csproj',
+    'ModelSupport/MyFhirSdk.ModelSupport.csproj', 'Models/R5/MyFhirSdk.R5.Models.csproj')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'MyFhirSdk.csproj') $root $sdkAllowedProjects
+$checks.Add('d2-sdk-approved-projects-without-dll-or-package-dependencies')
+# An evaluated IG graph must reject a direct R5 reference, missing R4, DLL or package additions.
+$igProbe = Join-Path $output 'ig-probe/Probe.csproj'
+New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($igProbe)) -Force | Out-Null
+$igSdk = [Security.SecurityElement]::Escape((Join-Path $root 'MyFhirSdk.csproj'))
+$igR4 = [Security.SecurityElement]::Escape((Join-Path $root 'Models/R4/MyFhirSdk.R4.Models.csproj'))
+$igR5 = [Security.SecurityElement]::Escape((Join-Path $root 'Models/R5/MyFhirSdk.R5.Models.csproj'))
+foreach ($probe in @(
+    @{ name = 'd2-ig-reject-r5'; items = "<ProjectReference Include=`"$igR4`" /><ProjectReference Include=`"$igR5`" />" },
+    @{ name = 'd2-ig-reject-missing-r4'; items = '' },
+    @{ name = 'd2-ig-reject-dll'; items = "<ProjectReference Include=`"$igR4`" /><Reference Include=`"MyFhirSdk.R5.Models`" />" },
+    @{ name = 'd2-ig-reject-package'; items = "<ProjectReference Include=`"$igR4`" /><PackageReference Include=`"Unapproved.Ig`" Version=`"1.0.0`" />" }
+)) {
+    [IO.File]::WriteAllText($igProbe, "<Project Sdk=`"Microsoft.NET.Sdk`"><PropertyGroup><TargetFramework>net9.0</TargetFramework></PropertyGroup><ItemGroup><ProjectReference Include=`"$igSdk`" />$($probe.items)</ItemGroup></Project>")
+    Reject $probe.name { Assert-KernelNeutralProjectDependencies $igProbe $root @('MyFhirSdk.csproj', 'Models/R4/MyFhirSdk.R4.Models.csproj') } 'Neutral project has unapproved'
+}
 # Use evaluated items in an isolated project to prove that SDK, DLL and package
 # dependencies are rejected; do not modify the committed experiment project.
+$sdkProbe = Join-Path $output 'sdk-probe/Probe.csproj'
+New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($sdkProbe)) -Force | Out-Null
+$sdkReferenceItems = ($sdkAllowedProjects | ForEach-Object {
+    '<ProjectReference Include="' + [Security.SecurityElement]::Escape((Join-Path $root $_)) + '" />'
+}) -join ''
+foreach ($probe in @(
+    @{ name = 'd2-sdk-reject-ig-dll'; item = '<Reference Include="MyFhirSdk.ImplementationGuides.TwCore" />' },
+    @{ name = 'd2-sdk-reject-ig-package'; item = '<PackageReference Include="MyFhirSdk.ImplementationGuides.TwCore" Version="1.0.0" />' }
+)) {
+    [IO.File]::WriteAllText($sdkProbe, "<Project Sdk=`"Microsoft.NET.Sdk`"><PropertyGroup><TargetFramework>net9.0</TargetFramework></PropertyGroup><ItemGroup>$sdkReferenceItems$($probe.item)</ItemGroup></Project>")
+    Reject $probe.name { Assert-KernelNeutralProjectDependencies $sdkProbe $root $sdkAllowedProjects } 'Neutral project has unapproved'
+}
+
 $modelProbe = Join-Path $output 'model-probe/Probe.csproj'
 New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($modelProbe)) -Force | Out-Null
 $runtimeProject = [Security.SecurityElement]::Escape((Join-Path $root 'Runtime/MyFhirSdk.Runtime.csproj'))

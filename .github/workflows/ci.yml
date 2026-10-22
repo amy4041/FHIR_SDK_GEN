@@ -14,8 +14,8 @@ env:
   SOLUTION_PATH: MyFhirSdk.sln
 
 jobs:
-  sdk-decoupling-d1:
-    name: D1 contextual IG framework (${{ matrix.os }})
+  sdk-decoupling-d2:
+    name: D2 independent TW Core R4 POC (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -25,6 +25,40 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Verify D evidence failure modes
+        run: python -m unittest discover -s Tests/SdkDecoupling -p "test_*.py" -v
+      - name: Verify current API delta and fresh full regression
+        shell: pwsh
+        run: |
+          dotnet restore MyFhirSdk.sln -p:NuGetAudit=false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python eng/Test-SdkDecouplingD2.py --output artifacts/sdk-decoupling/d2/ci
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sdk-decoupling-d2-${{ matrix.os }}
+          path: artifacts/sdk-decoupling/d2/ci
+          if-no-files-found: error
+
+  sdk-decoupling-d1:
+    name: Historical D1 contextual IG framework (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 464474b190e702231d4b26a7883f1edbebb13ac2
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'

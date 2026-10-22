@@ -184,7 +184,7 @@ public sealed class KernelIntegrationSeamTests
 
     private static IEnumerable<SyntaxTree> SdkSources() =>
         new[] { "core", "Primitives", "ModelMetadata", "Serialization",
-            "Validation", "Client", "ImplementationGuides" }
+            "Validation", "Client" }
             .SelectMany(Sources)
             .Where(tree => !KernelFiles.Any(name => tree.FilePath == $"core/{name}.cs"));
 
