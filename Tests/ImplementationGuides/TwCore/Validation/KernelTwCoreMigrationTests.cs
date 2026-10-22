@@ -15,7 +15,7 @@ public sealed class KernelTwCoreMigrationTests
         var parser = new FhirJsonParser();
         patient = parser.Parse<Patient>(new FhirJsonSerializer().Serialize(patient));
         Assert.NotEqual(typeof(Meta).Assembly, typeof(Identifier).Assembly);
-        var validator = new ProfileValidator(new FhirValidator(), TwCorePackage.Default);
+        var validator = new ProfileValidator((IFhirValidator)new FhirValidator(), TwCorePackage.Default);
         Assert.True(validator.Validate(patient, TwCoreProfiles.Patient).IsValid);
         ((IPrimitiveValueAccessor)patient.Identifier[0].Value!).SetUntypedValue(null);
         patient = parser.Parse<Patient>(new FhirJsonSerializer().Serialize(patient));

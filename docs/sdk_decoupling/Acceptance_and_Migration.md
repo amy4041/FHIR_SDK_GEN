@@ -69,7 +69,7 @@ var client = new MyFhirSdk.Client.FhirClient<
     MyFhirSdk.Resources.OperationOutcome>(httpClient, context, options);
 ```
 
-R4 換成 `MyFhirSdk.R4.Resources` 對應型別。新 IG 組合的預期使用方式如下；這段代表目標設計，TW Core 專案及新 framework 尚未實作：
+R4 換成 `MyFhirSdk.R4.Resources` 對應型別。D1 已實作 contextual IG framework；以下 TW Core 組合仍是 D2 的目標範例，獨立 R4 TW Core 專案尚未建立，目前舊 R5 POC 不能放入此新路徑：
 
 ```csharp
 var profileValidator = new ProfileValidator(

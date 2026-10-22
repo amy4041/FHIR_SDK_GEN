@@ -10,12 +10,16 @@ namespace MyFhirSdk.Validation;
 /// <summary>
 /// Default standalone validator for MVP FHIR resource validation.
 /// </summary>
-public sealed class FhirValidator : IFhirValidator
+public sealed class FhirValidator : IContextualFhirValidator
 {
     private readonly IValidationRuleProvider _ruleProvider;
     private readonly PrimitiveRegistry _primitiveDefinitions;
     private readonly FhirObjectGraphWalker _walker;
     private readonly FhirModelContext? _context;
+
+    /// <inheritdoc />
+    public FhirModelContext Context => _context ?? throw new InvalidOperationException(
+        "An internal rule-only validator has no model context and cannot be composed with an IG.");
 
     /// <summary>
     /// Creates a validator with the default R5 model and primitive rules.

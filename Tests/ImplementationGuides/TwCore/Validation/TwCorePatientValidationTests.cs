@@ -115,7 +115,8 @@ public sealed class TwCorePatientValidationTests
 
     private static ProfileValidator CreateValidator()
     {
-        return new ProfileValidator(new FhirValidator(), TwCorePackage.Default);
+        // D1 legacy R5 POC path; D2 replaces this with the R4 contextual composition.
+        return new ProfileValidator((IFhirValidator)new FhirValidator(), TwCorePackage.Default);
     }
 
     private static void AssertIssue(

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "fromRevision": "f52c64a2b5c4b7db81a254a1286dda626f8c91e7",
+  "fullSdk": {
+    "added": [
+      "TYPE [MyFhirSdk]MyFhirSdk.Validation.IContextualFhirValidator Public, ClassSemanticsMask, Abstract, BeforeFieldInit BASE -",
+      "[MyFhirSdk]MyFhirSdk.ImplementationGuides.TwCore.TwCorePackage METHOD Public, Final, Virtual, HideBySig, VtableLayoutMask SupportsResource(None:[System.Private.CoreLib]System.String profileUrl nullability=NotNull/NotNull req() opt(),None:[System.Private.CoreLib]System.Type resourceType nullability=NotNull/NotNull req() opt()) -> None:[System.Private.CoreLib]System.Boolean  nullability=NotNull/NotNull req() opt()",
+      "[MyFhirSdk]MyFhirSdk.Validation.FhirValidator INTERFACE [MyFhirSdk]MyFhirSdk.Validation.IContextualFhirValidator",
+      "[MyFhirSdk]MyFhirSdk.Validation.FhirValidator METHOD Public, Final, Virtual, HideBySig, VtableLayoutMask, SpecialName get_Context() -> None:[MyFhirSdk]MyFhirSdk.ModelMetadata.FhirModelContext  nullability=NotNull/NotNull req() opt()",
+      "[MyFhirSdk]MyFhirSdk.Validation.FhirValidator PROPERTY [MyFhirSdk]MyFhirSdk.ModelMetadata.FhirModelContext Context() nullability=NotNull/Unknown",
+      "[MyFhirSdk]MyFhirSdk.Validation.IContextualFhirValidator INTERFACE [MyFhirSdk]MyFhirSdk.Validation.IFhirValidator",
+      "[MyFhirSdk]MyFhirSdk.Validation.IContextualFhirValidator METHOD Public, Virtual, HideBySig, VtableLayoutMask, Abstract, SpecialName get_Context() -> None:[MyFhirSdk]MyFhirSdk.ModelMetadata.FhirModelContext  nullability=NotNull/NotNull req() opt()",
+      "[MyFhirSdk]MyFhirSdk.Validation.IContextualFhirValidator PROPERTY [MyFhirSdk]MyFhirSdk.ModelMetadata.FhirModelContext Context() nullability=NotNull/Unknown",
+      "[MyFhirSdk]MyFhirSdk.Validation.Profiles.IImplementationGuidePackage METHOD Public, Virtual, HideBySig, VtableLayoutMask, Abstract SupportsResource(None:[System.Private.CoreLib]System.String profileUrl nullability=NotNull/NotNull req() opt(),None:[System.Private.CoreLib]System.Type resourceType nullability=NotNull/NotNull req() opt()) -> None:[System.Private.CoreLib]System.Boolean  nullability=NotNull/NotNull req() opt()",
+      "[MyFhirSdk]MyFhirSdk.Validation.Profiles.ProfileValidator METHOD Public, HideBySig, SpecialName, RTSpecialName .ctor(None:[MyFhirSdk]MyFhirSdk.Validation.IContextualFhirValidator baseValidator nullability=NotNull/NotNull req() opt(),None:[MyFhirSdk]MyFhirSdk.Validation.Profiles.IImplementationGuidePackage[] packages nullability=NotNull/NotNull[NotNull/NotNull] req() opt())",
+      "[MyFhirSdk]MyFhirSdk.Validation.Profiles.ProfileValidator METHOD Public, HideBySig, SpecialName, RTSpecialName .ctor(None:[MyFhirSdk]MyFhirSdk.Validation.IContextualFhirValidator baseValidator nullability=NotNull/NotNull req() opt(),None:[MyFhirSdk]MyFhirSdk.Validation.Profiles.ProfileValidationOptions options nullability=NotNull/NotNull req() opt(),None:[MyFhirSdk]MyFhirSdk.Validation.Profiles.IImplementationGuidePackage[] packages nullability=NotNull/NotNull[NotNull/NotNull] req() opt())"
+    ],
+    "removed": []
+  },
+  "aggregate": {
+    "added": [
+      "  CONSTRUCTOR Void .ctor(MyFhirSdk.Validation.IContextualFhirValidator, MyFhirSdk.Validation.Profiles.IImplementationGuidePackage[])",
+      "  CONSTRUCTOR Void .ctor(MyFhirSdk.Validation.IContextualFhirValidator, MyFhirSdk.Validation.Profiles.ProfileValidationOptions, MyFhirSdk.Validation.Profiles.IImplementationGuidePackage[])",
+      "  METHOD Boolean SupportsResource(System.String, System.Type)",
+      "  PROPERTY MyFhirSdk.ModelMetadata.FhirModelContext Context",
+      "TYPE interface MyFhirSdk.Validation.IContextualFhirValidator | Base=- | Interfaces=MyFhirSdk.Validation.IFhirValidator",
+      "TYPE sealed class MyFhirSdk.Validation.FhirValidator | Base=System.Object | Interfaces=MyFhirSdk.Validation.IContextualFhirValidator, MyFhirSdk.Validation.IFhirValidator"
+    ],
+    "removed": [
+      "TYPE sealed class MyFhirSdk.Validation.FhirValidator | Base=System.Object | Interfaces=MyFhirSdk.Validation.IFhirValidator"
+    ]
+  }
+}

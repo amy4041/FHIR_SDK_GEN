@@ -41,6 +41,10 @@ public sealed class TwCorePackage : IImplementationGuidePackage
     }
 
     /// <inheritdoc />
+    public bool SupportsResource(string profileUrl, Type resourceType) =>
+        SupportsProfile(profileUrl) && resourceType == typeof(Patient);
+
+    /// <inheritdoc />
     public IEnumerable<IProfileValidationRule> GetRules(
         string profileUrl,
         Type resourceType)

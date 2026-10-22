@@ -214,6 +214,9 @@ public sealed class ProfileValidatorTests
             return SupportedProfiles.Contains(profileUrl, StringComparer.Ordinal);
         }
 
+        public bool SupportsResource(string profileUrl, Type resourceType) =>
+            SupportsProfile(profileUrl) && resourceType == typeof(Patient);
+
         public IEnumerable<IProfileValidationRule> GetRules(
             string profileUrl,
             Type resourceType)

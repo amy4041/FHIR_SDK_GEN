@@ -147,14 +147,18 @@ TYPE sealed class MyFhirSdk.Serialization.Json.FhirJsonSerializer | Base=System.
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(MyFhirSdk.ModelMetadata.FhirModelContext)
   METHOD System.String Serialize[TResource](TResource)
-TYPE sealed class MyFhirSdk.Validation.FhirValidator | Base=System.Object | Interfaces=MyFhirSdk.Validation.IFhirValidator
+TYPE sealed class MyFhirSdk.Validation.FhirValidator | Base=System.Object | Interfaces=MyFhirSdk.Validation.IContextualFhirValidator, MyFhirSdk.Validation.IFhirValidator
   CONSTRUCTOR Void .ctor()
   CONSTRUCTOR Void .ctor(MyFhirSdk.ModelMetadata.FhirModelContext)
   METHOD MyFhirSdk.Validation.ValidationResult Validate(MyFhirSdk.Core.Resource)
+  PROPERTY MyFhirSdk.ModelMetadata.FhirModelContext Context
+TYPE interface MyFhirSdk.Validation.IContextualFhirValidator | Base=- | Interfaces=MyFhirSdk.Validation.IFhirValidator
+  PROPERTY MyFhirSdk.ModelMetadata.FhirModelContext Context
 TYPE interface MyFhirSdk.Validation.IFhirValidator | Base=- | Interfaces=-
   METHOD MyFhirSdk.Validation.ValidationResult Validate(MyFhirSdk.Core.Resource)
 TYPE interface MyFhirSdk.Validation.Profiles.IImplementationGuidePackage | Base=- | Interfaces=-
   METHOD Boolean SupportsProfile(System.String)
+  METHOD Boolean SupportsResource(System.String, System.Type)
   METHOD System.Collections.Generic.IEnumerable`1[MyFhirSdk.Validation.Profiles.IProfileValidationRule] GetRules(System.String, System.Type)
   PROPERTY System.Collections.Generic.IReadOnlyCollection`1[System.String] SupportedProfiles
   PROPERTY System.String FhirVersion
@@ -175,6 +179,8 @@ TYPE sealed class MyFhirSdk.Validation.Profiles.ProfileValidationOptions | Base=
   PROPERTY MyFhirSdk.Validation.Profiles.UnknownProfileBehavior UnknownDeclaredProfileBehavior
   PROPERTY MyFhirSdk.Validation.Profiles.UnknownProfileBehavior UnknownExplicitProfileBehavior
 TYPE sealed class MyFhirSdk.Validation.Profiles.ProfileValidator | Base=System.Object | Interfaces=-
+  CONSTRUCTOR Void .ctor(MyFhirSdk.Validation.IContextualFhirValidator, MyFhirSdk.Validation.Profiles.IImplementationGuidePackage[])
+  CONSTRUCTOR Void .ctor(MyFhirSdk.Validation.IContextualFhirValidator, MyFhirSdk.Validation.Profiles.ProfileValidationOptions, MyFhirSdk.Validation.Profiles.IImplementationGuidePackage[])
   CONSTRUCTOR Void .ctor(MyFhirSdk.Validation.IFhirValidator, MyFhirSdk.Validation.Profiles.IImplementationGuidePackage[])
   CONSTRUCTOR Void .ctor(MyFhirSdk.Validation.IFhirValidator, MyFhirSdk.Validation.Profiles.ProfileValidationOptions, MyFhirSdk.Validation.Profiles.IImplementationGuidePackage[])
   METHOD MyFhirSdk.Validation.ValidationResult Validate(MyFhirSdk.Core.Resource, System.Collections.Generic.IEnumerable`1[System.String])
