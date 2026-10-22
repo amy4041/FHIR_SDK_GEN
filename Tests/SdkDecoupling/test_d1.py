@@ -113,7 +113,11 @@ class D1EvidenceTests(unittest.TestCase):
         yaml = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         jobs = dict(re.findall(r"^  ([\w-]+):\n(.*?)(?=^  [\w-]+:|\Z)", yaml, flags=re.M | re.S))
         k0 = jobs["kernel-migration-baseline"]
-        self.assertIn("DOTNET_INSTALL_DIR: ${{ runner.temp }}/kernel-k0-dotnet", k0)
+        job_env, steps = k0.split("    steps:\n", 1)
+        self.assertNotIn("runner.", job_env)
+        prepare, setup = steps.split("      - name: Setup isolated K0 SDK and build runtime", 1)
+        self.assertIn("Join-Path $env:RUNNER_TEMP 'kernel-k0-dotnet'", prepare)
+        self.assertIn('"DOTNET_INSTALL_DIR=$installDirectory" >> $env:GITHUB_ENV', prepare)
         self.assertIn('DOTNET_MULTILEVEL_LOOKUP: "0"', k0)
         self.assertIn("dotnet-version: '9.0.318'", k0)
         self.assertIn("global-json-file: global.json", k0)

@@ -91,6 +91,8 @@ D1 的 [CI run 39730860885](https://github.com/amy4041/FHIR_SDK_GEN/actions/runs
 
 K0 job 現改用 `runner.temp` 下獨立的 `DOTNET_INSTALL_DIR`，安裝 SDK `9.0.317` 與 `9.0.318`；後者僅提供原始 build runtime `9.0.20`，實際選用 SDK 仍由 `global.json` 固定為 `9.0.317`。建置前由 `KernelBuildRuntime.proj` 在 MSBuild process 中讀取 `System.Environment.Version`，核對並保存 `buildRuntimeComparison`；不符立即失敗。歷史建置關閉 shared compilation，避免使用其他 runtime 啟動的 compiler server。沒有更改原始 DLL hash、SDK source pin 或歷史 snapshots。
 
+GitHub Actions 的 job 層級 `env` 不支援 `runner` context。隔離目錄改由 setup-dotnet 前的 PowerShell step 使用 `$env:RUNNER_TEMP` 組合，再將 `DOTNET_INSTALL_DIR` 寫入 `$env:GITHUB_ENV`，供其後所有 steps 使用；避免 workflow 在解析時出現 `Unrecognized named-value: 'runner'`。
+
 本機驗證輸出使用 `artifacts/kernel-k0-runtime-fixed-verified-network/` 與 `artifacts/kernel-k0-runtime-harness/`；前者為完整 K0 gate，後者含 runtime mismatch 的 failed evidence 測試。新 CI 尚須推送後驗證。
 
 本機環境：Windows、SDK `9.0.317`、Python `3.13.13`。NuGet 還原已完成；官方 PowerShell `7.6.7` zip 經 release asset 的 SHA-256 核對後，放在 `artifacts/tooling/pwsh-d1/expanded/`，沒有系統安裝。透過測試既有的 `MYFHIRSDK_TEST_PWSH` 環境變數指定執行檔。
