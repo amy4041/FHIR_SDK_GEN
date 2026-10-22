@@ -29,6 +29,8 @@ $result.buildUiLanguage = Get-KernelBuildUiLanguage
 Invoke-KernelEvidenceRun -Evidence $result -OutputPath "$output/evidence.json" -Action {
     param($result)
     Start-KernelGate $result 'baselineBuild'
+    $buildRuntime = (Invoke-KernelDotNet -Arguments @('msbuild', "$root/eng/KernelBuildRuntime.proj", '-nologo', '-getProperty:KernelBuildRuntimeVersion') | Out-String).Trim()
+    Assert-KernelBuildRuntime $buildRuntime $result
     $pin = Get-Content (Join-Path $PSScriptRoot 'kernel-migration-baseline.json') -Raw | ConvertFrom-Json
     $baselineBuildProperties = @(Get-KernelBaselineBuildProperties $pin.sourceRevision)
     if ($pin.sourceRevision -notmatch '^[0-9a-f]{40}$') { throw 'Expected immutable full source revision.' }

@@ -345,15 +345,22 @@ jobs:
   kernel-migration-baseline:
     name: Rebuild K0 migration baseline
     runs-on: windows-latest
+    env:
+      # A fixed SDK still rolls forward to newer installed runtime patches.
+      # Keep the historical build host independent of the runner image.
+      DOTNET_INSTALL_DIR: ${{ runner.temp }}/kernel-k0-dotnet
+      DOTNET_MULTILEVEL_LOOKUP: "0"
     steps:
       - name: Checkout fixture and pinned history
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Setup pinned .NET
+      - name: Setup isolated K0 SDK and build runtime
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
+          # 9.0.318 supplies runtime 9.0.20; global.json selects SDK 9.0.317.
+          dotnet-version: '9.0.318'
       - name: Test K0 metadata and locale isolation, fixture pin and failure evidence
         shell: pwsh
         run: ./eng/Test-KernelMigrationHarnessExitCode.ps1

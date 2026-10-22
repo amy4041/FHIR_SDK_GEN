@@ -22,6 +22,21 @@ function ExpectFailure([scriptblock] $Action, [string] $Pattern) {
 function WriteText([string] $Path, [string] $Value) { [IO.File]::WriteAllText($Path, $Value.Replace("`r`n", "`n"), [Text.UTF8Encoding]::new($false)) }
 $pin = Get-Content "$root/eng/kernel-migration-baseline.json" -Raw | ConvertFrom-Json
 
+# Fail early with persisted expected/actual runtime evidence, before rebuilding the pin.
+$runtimeEvidence = New-KernelEvidence -RunRegressionAndSmoke
+Assert-KernelBuildRuntime '9.0.20' $runtimeEvidence
+Assert ($runtimeEvidence.buildRuntimeComparison.actual -ceq '9.0.20') 'Accepted runtime was not recorded.'
+ExpectFailure {
+    Invoke-KernelEvidenceRun $runtimeEvidence "$output/runtime-failure-evidence.json" {
+        param($state)
+        Start-KernelGate $state 'baselineBuild'
+        Assert-KernelBuildRuntime '9.0.21' $state
+    }
+} 'Pinned K0 build runtime mismatch. Expected: 9.0.20; actual: 9.0.21.*'
+$savedRuntime = Get-Content "$output/runtime-failure-evidence.json" -Raw | ConvertFrom-Json
+Assert ($savedRuntime.status -ceq 'failed' -and $savedRuntime.gates.baselineBuild -ceq 'failed' -and
+    $savedRuntime.buildRuntimeComparison.actual -ceq '9.0.21') 'Runtime mismatch did not preserve failed evidence.'
+
 # A change in the live consumer cannot silently redefine the historical consumer.
 $scratchRoot = "$output/fixture-repository"
 New-Item -ItemType Directory -Path "$scratchRoot/$($pin.fixture.directory)", "$scratchRoot/Tests/KernelMigration/Consumer" -Force | Out-Null
@@ -83,6 +98,7 @@ foreach ($full in @($false, $true)) {
 
 # Real, separate parent Git repositories reproduce the P1 trigger without changing the user's HEAD.
 $buildProperties = @(Get-KernelBaselineBuildProperties $pin.sourceRevision)
+Assert ($buildProperties -contains '/p:UseSharedCompilation=false') 'Frozen builds can reuse a compiler server from another runtime.'
 $nuspecHashes = @()
 $implementationHashes = @()
 $unfixedLocaleHashes = @()

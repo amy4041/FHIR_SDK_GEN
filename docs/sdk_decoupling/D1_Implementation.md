@@ -83,6 +83,16 @@ API 改變後，舊 D0 gate 與 V3→V7 API-preservation runners 無法代表目
 
 ## 執行紀錄
 
+### K0 CI 建置 runtime 固定
+
+D1 的 [CI run 39730860885](https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39730860885) 中，Windows／Ubuntu D1 jobs 均已通過，唯一失敗在 K0 歷史 SDK implementation hash。成功與失敗的 runner image 分別為 `20261007.264.1`、`20261018.275.1`；固定 SDK 並未固定實際執行 MSBuild／compiler 的 runtime patch。
+
+本機以相同歷史來源、SDK `9.0.317`、`en-US` 及關閉 compiler server 重建，runtime `9.0.20` 得到原始 `d47a702c5b52277d81f96867ad026b447fc46cfc9e7fcf08d16fd47de1615afc`；改用官方 runtime `9.0.21` 即精確重現 CI 的 `65a5c217e1427f42b55f90f4cba3c53e565ee7a5f62ce8334cc0ffb7253f856f`。原有語系／Git metadata 隔離無法涵蓋 runtime patch 差異。
+
+K0 job 現改用 `runner.temp` 下獨立的 `DOTNET_INSTALL_DIR`，安裝 SDK `9.0.317` 與 `9.0.318`；後者僅提供原始 build runtime `9.0.20`，實際選用 SDK 仍由 `global.json` 固定為 `9.0.317`。建置前由 `KernelBuildRuntime.proj` 在 MSBuild process 中讀取 `System.Environment.Version`，核對並保存 `buildRuntimeComparison`；不符立即失敗。歷史建置關閉 shared compilation，避免使用其他 runtime 啟動的 compiler server。沒有更改原始 DLL hash、SDK source pin 或歷史 snapshots。
+
+本機驗證輸出使用 `artifacts/kernel-k0-runtime-fixed-verified-network/` 與 `artifacts/kernel-k0-runtime-harness/`；前者為完整 K0 gate，後者含 runtime mismatch 的 failed evidence 測試。新 CI 尚須推送後驗證。
+
 本機環境：Windows、SDK `9.0.317`、Python `3.13.13`。NuGet 還原已完成；官方 PowerShell `7.6.7` zip 經 release asset 的 SHA-256 核對後，放在 `artifacts/tooling/pwsh-d1/expanded/`，沒有系統安裝。透過測試既有的 `MYFHIRSDK_TEST_PWSH` 環境變數指定執行檔。
 
 - Review 修正後 D 系列 Python failure-mode tests：23 項通過，包含逐一移除 37 個必要案例、全部遺失、重複／略過／失敗／錯誤 assembly、參數變動及共用建置檔異動的負向驗證；既有 FHIR versions integrity tests：37 項通過。

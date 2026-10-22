@@ -10,6 +10,16 @@ function Export-KernelBaselineSource {
 
 function Get-KernelBuildUiLanguage { 'en-US' }
 
+function Assert-KernelBuildRuntime {
+    param([string] $ActualVersion, [System.Collections.IDictionary] $Evidence)
+    # The immutable SDK DLL was recorded with SDK 9.0.317 running on runtime 9.0.20.
+    # Runtime patches affect compiler output even with identical SDK/source inputs.
+    $Evidence.buildRuntimeComparison = [ordered]@{ expected = '9.0.20'; actual = $ActualVersion }
+    if ($ActualVersion -cne '9.0.20') {
+        throw "Pinned K0 build runtime mismatch. Expected: 9.0.20; actual: $ActualVersion. Use the isolated K0 SDK/runtime installation configured in CI."
+    }
+}
+
 function Invoke-KernelDotNet {
     param([Parameter(Mandatory)] [string[]] $Arguments)
     # WriteCodeFragment localizes a generated AssemblyInfo comment. Its PDB checksum
@@ -118,6 +128,8 @@ function Get-KernelBaselineBuildProperties {
     @(
         '/p:EnableSourceControlManagerQueries=false'
         '/p:EnableSourceLink=false'
+        # Do not reuse a compiler server started under a different runtime.
+        '/p:UseSharedCompilation=false'
         "/p:SourceRevisionId=$SourceRevision"
         "/p:RepositoryCommit=$SourceRevision"
         '/p:RepositoryBranch='

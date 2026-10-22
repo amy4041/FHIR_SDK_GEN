@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- The SDK version and CLI host version do not identify MSBuild's runtime. -->
+    <KernelBuildRuntimeVersion>$([System.Environment]::Version)</KernelBuildRuntimeVersion>
+  </PropertyGroup>
+</Project>

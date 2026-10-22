@@ -109,6 +109,18 @@ class D1EvidenceTests(unittest.TestCase):
         self.assertNotIn("ref: " + d1.D0_REVISION, jobs["sdk-decoupling-d1"])
         self.assertIn("eng/Test-SdkDecouplingD1.py", jobs["sdk-decoupling-d1"])
 
+    def test_k0_build_host_is_isolated_from_runner_runtime_updates(self):
+        yaml = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        jobs = dict(re.findall(r"^  ([\w-]+):\n(.*?)(?=^  [\w-]+:|\Z)", yaml, flags=re.M | re.S))
+        k0 = jobs["kernel-migration-baseline"]
+        self.assertIn("DOTNET_INSTALL_DIR: ${{ runner.temp }}/kernel-k0-dotnet", k0)
+        self.assertIn('DOTNET_MULTILEVEL_LOOKUP: "0"', k0)
+        self.assertIn("dotnet-version: '9.0.318'", k0)
+        self.assertIn("global-json-file: global.json", k0)
+        self.assertEqual("9.0.317", json.loads((ROOT / "global.json").read_text())["sdk"]["version"])
+        probe = ET.parse(ROOT / "eng/KernelBuildRuntime.proj")
+        self.assertEqual("$([System.Environment]::Version)", probe.findtext("PropertyGroup/KernelBuildRuntimeVersion"))
+
 
 if __name__ == "__main__":
     unittest.main()
