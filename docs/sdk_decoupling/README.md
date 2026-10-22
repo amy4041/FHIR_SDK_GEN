@@ -1,6 +1,6 @@
 # SDK 版本解耦與 IG 專案化
 
-日期：2026-10-21。狀態：實作規劃，尚未執行以下程式變更。
+日期：2026-10-22。狀態：D0 來源固定、引用盤點與驗收入口已實作，並修正四項 review 問題；D1–D5 產品變更尚未執行。D0 結果與限制見 [盤點紀錄](D0_Inventory.md)，使用端示意見 [遷移範例](D0_Migration_Examples.md)。
 
 目標：移除共用 SDK 對 R5 Models 的直接及間接依賴，刪除 R5 預設組合與舊版 Client，將 TW Core 移至獨立專案，同時保留 IG 的注入與替換能力。
 
@@ -16,7 +16,7 @@
 
 ## 目前來源
 
-規劃時 HEAD：`f52c64a2b5c4b7db81a254a1286dda626f8c91e7`，訊息為 `feat(delivery): finalize V7 handoff with external R4/R5 examples`。這是 D0 的候選 baseline；D0 需再確認該 revision 的 CI／交付驗證結果，不將先前 `c7680b7` 的 CI 當成此 revision 的證據。
+規劃時 HEAD：`f52c64a2b5c4b7db81a254a1286dda626f8c91e7`，訊息為 `feat(delivery): finalize V7 handoff with external R4/R5 examples`。D0 已確認此 revision 的 [CI 39553734204](https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204) 成功，正式固定為 baseline；來源、API、生成 hashes 與完整 job 連結見 [D0 盤點紀錄](D0_Inventory.md)，未借用先前 `c7680b7` 的 CI。
 
 先前成果見 [V7 結案](../fhir_versions/V7_Closeout.md)、[V7 交付指南](../fhir_versions/V7_Delivery_Guide.md)。使用者先前已完成 R4／R5 generator 與實際 server 的手動 smoke；新 API 遷移後仍需另做對應版本的驗收。
 

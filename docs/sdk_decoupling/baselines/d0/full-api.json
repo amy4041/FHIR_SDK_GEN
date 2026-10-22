@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "revision": "f52c64a2b5c4b7db81a254a1286dda626f8c91e7",
+  "inventoryToolSources": [
+    {
+      "path": "Tests/KernelMigration/Inventory/Inventory.csproj",
+      "bytes": 258,
+      "sha256": "422e809284d1407c58d173c21ee5b082561d270d0a2ce8b3d6254b05eae62bec"
+    },
+    {
+      "path": "Tests/KernelMigration/Inventory/KernelApiInventory.cs",
+      "bytes": 6011,
+      "sha256": "65c5c9b650cd3a6ba84f8d5a1c3e936e2e8b4e01d2d2a49cf99d972f82461b8a"
+    },
+    {
+      "path": "Tests/KernelMigration/Inventory/Program.cs",
+      "bytes": 968,
+      "sha256": "3555b1c62e12a9805aa092613e046a2a714e91aa11a944530d338b617a0d1ae5"
+    }
+  ],
+  "snapshots": [
+    {
+      "path": "full-sdk-api.txt",
+      "bytes": 104290,
+      "sha256": "924be6232dafe14717df4900ec01ca4ceee7d444e2f3abb657ac78c82f22452e"
+    },
+    {
+      "path": "twcore-api.txt",
+      "bytes": 3886,
+      "sha256": "2849be58ce11935a4a83b90a3bef970b0b6c2d9a2450a36b0d8f748f589ba0d1"
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "source": "GitHub REST API actions/runs and actions/runs/39553734204/jobs (per_page=100)",
+  "checkedDate": "2026-10-21",
+  "head_sha": "f52c64a2b5c4b7db81a254a1286dda626f8c91e7",
+  "id": 39553734204,
+  "name": "CI",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-10-21T06:09:48Z",
+  "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204",
+  "jobs": [
+    {
+      "name": "Rebuild K0 migration baseline",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540066"
+    },
+    {
+      "name": "V2 production context and neutral SPI (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540287"
+    },
+    {
+      "name": "V5 full R4 Models and runtime (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540304"
+    },
+    {
+      "name": "V4 R4/R5 generator (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540330"
+    },
+    {
+      "name": "V6 R4/R5 Client integration (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540371"
+    },
+    {
+      "name": "V4 R4/R5 generator (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540380"
+    },
+    {
+      "name": "V1 bounded R4/R5 experiment (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540384"
+    },
+    {
+      "name": "V3 R5 Models migration (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540386"
+    },
+    {
+      "name": "V3 R5 Models migration (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540390"
+    },
+    {
+      "name": "V1 bounded R4/R5 experiment (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540400"
+    },
+    {
+      "name": "V2 production context and neutral SPI (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540403"
+    },
+    {
+      "name": "V6 R4/R5 Client integration (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540425"
+    },
+    {
+      "name": "Build canonical compiler reference asset",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540464"
+    },
+    {
+      "name": "V5 full R4 Models and runtime (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068540545"
+    },
+    {
+      "name": "Rebuild recorded tool upgrade baseline",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119068542044"
+    },
+    {
+      "name": "Build, test and tool smoke (windows)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119069066899"
+    },
+    {
+      "name": "Build, test and tool smoke (linux)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119069066917"
+    },
+    {
+      "name": "V7 canonical R4/R5 delivery (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119069066927"
+    },
+    {
+      "name": "V7 canonical R4/R5 delivery (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119069066984"
+    },
+    {
+      "name": "V7 Windows/Ubuntu delivery acceptance",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119072323716"
+    },
+    {
+      "name": "Compare Windows and Linux tool artifacts",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204/job/119072406702"
+    }
+  ]
+}

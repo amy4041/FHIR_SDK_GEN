@@ -14,6 +14,37 @@ env:
   SOLUTION_PATH: MyFhirSdk.sln
 
 jobs:
+  sdk-decoupling-d0:
+    name: D0 source pin and migration inventory (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Verify evidence failure modes
+        run: python -m unittest discover -s Tests/SdkDecoupling -p "test_*.py" -v
+      - name: Verify D0 pin and record current target gaps
+        run: python eng/Test-SdkDecoupling.py --output artifacts/sdk-decoupling/d0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sdk-decoupling-d0-${{ matrix.os }}
+          path: |
+            artifacts/sdk-decoupling/d0/*.json
+            artifacts/sdk-decoupling/d0/*.txt
+            artifacts/sdk-decoupling/d0/*.log
+          if-no-files-found: error
+
   fhir-v7-delivery:
     name: V7 canonical R4/R5 delivery (${{ matrix.os }})
     needs: compiler-reference-asset
