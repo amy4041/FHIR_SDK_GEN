@@ -24,7 +24,7 @@ public sealed class GeneratedModelIntegrationTests
     [Fact]
     public void DefaultParserUsesGeneratedFactoryForNewlyIntegratedResource()
     {
-        var resource = new FhirJsonParser().Parse<Resource>(
+        var resource = new FhirJsonParser(TestContexts.R5).Parse<Resource>(
             "{\"resourceType\":\"Account\"}");
 
         Assert.IsType<Account>(resource);

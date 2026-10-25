@@ -25,7 +25,6 @@
     <ProjectReference Include="Runtime\MyFhirSdk.Runtime.csproj" />
     <ProjectReference Include="ModelContracts\MyFhirSdk.ModelContracts.csproj" />
     <ProjectReference Include="ModelSupport\MyFhirSdk.ModelSupport.csproj" />
-    <ProjectReference Include="Models\R5\MyFhirSdk.R5.Models.csproj" />
   </ItemGroup>
 
 </Project>

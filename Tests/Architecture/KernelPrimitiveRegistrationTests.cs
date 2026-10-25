@@ -10,7 +10,7 @@ public sealed class KernelPrimitiveRegistrationTests
     {
         Assert.Throws<ArgumentException>(() => new PrimitiveDefinition("external",
             typeof(AccessorOnly), typeof(string), PrimitiveCodecs.String, PrimitiveValidators.String));
-        Assert.Throws<KeyNotFoundException>(() => PrimitiveRegistry.Default.GetRequired(typeof(AccessorOnly)));
+        Assert.Throws<KeyNotFoundException>(() => TestContexts.R5.Primitives.GetRequired(typeof(AccessorOnly)));
     }
 
     [Fact]
@@ -18,7 +18,7 @@ public sealed class KernelPrimitiveRegistrationTests
     {
         Assert.Throws<ArgumentException>(() => new PrimitiveDefinition("external",
             typeof(ExternalPrimitive), typeof(int?), PrimitiveCodecs.String, PrimitiveValidators.String));
-        Assert.Throws<KeyNotFoundException>(() => PrimitiveRegistry.Default.GetRequired(typeof(ExternalPrimitive)));
+        Assert.Throws<KeyNotFoundException>(() => TestContexts.R5.Primitives.GetRequired(typeof(ExternalPrimitive)));
         var definition = new PrimitiveDefinition("external", typeof(ExternalPrimitive), typeof(string),
             PrimitiveCodecs.String, PrimitiveValidators.String);
         var registry = PrimitiveRegistry.Create([definition]);

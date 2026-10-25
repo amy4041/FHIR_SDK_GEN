@@ -218,14 +218,14 @@ public sealed class R4IntegrationTests
         Rejected(new R.Patient { Extension = [new Extension { Url = "https://example.org/a", Value = new MyFhirSdk.Types.Quantity() }] });
         Rejected(new R.Parameters { Parameter = [new R.ParametersParameter { Name = new("v"), Value = new MyFhirSdk.Primitives.FhirString("foreign") }] });
         Assert.Throws<FhirSdkException>(() => new FhirJsonParser(context).Parse<MyFhirSdk.Resources.Patient>("{\"resourceType\":\"Patient\"}"));
-        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer().Serialize(new R.Patient()));
-        Assert.Throws<FhirSdkException>(() => new FhirValidator().Validate(new R.Patient()));
+        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer(TestContexts.R5).Serialize(new R.Patient()));
+        Assert.Throws<FhirSdkException>(() => new FhirValidator(TestContexts.R5).Validate(new R.Patient()));
     }
 
     [Fact]
     public async Task ParallelR4R5ConsumersKeepFactoriesAndPrimitiveRulesIsolated()
     {
-        var r4 = Context(); var r5 = R5ModelContext.Default;
+        var r4 = Context(); var r5 = TestContexts.R5;
         var p4 = new FhirJsonParser(r4); var p5 = new FhirJsonParser(r5);
         var s4 = new FhirJsonSerializer(r4); var s5 = new FhirJsonSerializer(r5);
         await Task.WhenAll(Enumerable.Range(0, 32).Select(_ => Task.Run(() =>
@@ -237,7 +237,7 @@ public sealed class R4IntegrationTests
             Assert.True(new FhirValidator(r4).Validate(a).IsValid);
             Assert.True(new FhirValidator(r5).Validate(b).IsValid);
         })));
-        Assert.IsType<MyFhirSdk.Resources.Patient>(new FhirJsonParser().Parse<Resource>("{\"resourceType\":\"Patient\"}"));
+        Assert.IsType<MyFhirSdk.Resources.Patient>(new FhirJsonParser(TestContexts.R5).Parse<Resource>("{\"resourceType\":\"Patient\"}"));
     }
 
     [Fact]
@@ -275,8 +275,8 @@ public sealed class R4IntegrationTests
         var raw = actual.RootElement.GetProperty("parameter")[0].GetProperty("value" + suffix);
         if (raw.ValueKind == JsonValueKind.String) Assert.Equal(expected.RootElement.GetString(), raw.GetString());
         else Assert.Equal(token, raw.GetRawText());
-        var r5 = new FhirJsonParser().Parse<MyFhirSdk.Resources.Parameters>(json);
-        Assert.Equal(r5Valid, new FhirValidator().Validate(r5).IsValid);
+        var r5 = new FhirJsonParser(TestContexts.R5).Parse<MyFhirSdk.Resources.Parameters>(json);
+        Assert.Equal(r5Valid, new FhirValidator(TestContexts.R5).Validate(r5).IsValid);
     }
 
     [Theory]

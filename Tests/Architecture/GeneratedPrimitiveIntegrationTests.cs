@@ -18,17 +18,17 @@ public sealed class GeneratedPrimitiveIntegrationTests
         Assert.Null(registryType.GetMethod(
             "AddHandwrittenDefinitions",
             privateStatic));
-        Assert.Equal(20, PrimitiveRegistry.Default.Definitions.Count);
+        Assert.Equal(20, TestContexts.R5.Primitives.Definitions.Count);
         Assert.NotEqual(registryType.Assembly, typeof(PrimitiveRegistry).Assembly);
         Assert.Equal(
-            PrimitiveRegistry.Default.Definitions.Count,
-            PrimitiveRegistry.Default.Definitions
+            TestContexts.R5.Primitives.Definitions.Count,
+            TestContexts.R5.Primitives.Definitions
                 .Select(definition => definition.FhirTypeName)
                 .Distinct(StringComparer.Ordinal)
                 .Count());
         Assert.Equal(
-            PrimitiveRegistry.Default.Definitions.Count,
-            PrimitiveRegistry.Default.Definitions
+            TestContexts.R5.Primitives.Definitions.Count,
+            TestContexts.R5.Primitives.Definitions
                 .Select(definition => definition.PrimitiveType)
                 .Distinct()
                 .Count());

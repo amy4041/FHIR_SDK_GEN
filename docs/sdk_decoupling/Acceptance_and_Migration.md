@@ -43,7 +43,7 @@ Windows／Ubuntu 各自驗證上述情境。必要 DLL 移除測試應以非零�
 
 ## 4. 使用端遷移示意
 
-以下既有 context／typed Client 語法已存在；R5ModelContext 不再是必要入口：
+以下 context／typed Client 語法為 D3 的使用方式；R5ModelContext 與無參數 engine 建構子已移除：
 
 ```csharp
 using MyFhirSdk.ModelMetadata;

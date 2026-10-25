@@ -64,7 +64,7 @@ public sealed class ModelMetadataGeneratedRuntimeTests
         {
             public static string CreateResourceType(string fhirTypeName)
             {
-                var provider = R5ModelContext.Default;
+                var provider = new MyFhirSdk.ModelMetadata.FhirModelContext(R5ModelProvider.Metadata, R5ModelProvider.Primitives, R5ModelProvider.Validation);
                 return provider.CreateResource(fhirTypeName)
                     .GetType()
                     .FullName!;
@@ -72,7 +72,7 @@ public sealed class ModelMetadataGeneratedRuntimeTests
 
             public static string RoundTripTaskOpenType()
             {
-                var provider = R5ModelContext.Default;
+                var provider = new MyFhirSdk.ModelMetadata.FhirModelContext(R5ModelProvider.Metadata, R5ModelProvider.Primitives, R5ModelProvider.Validation);
                 var task = new MyFhirSdk.Resources.Task
                 {
                     Status = new FhirCode("requested"),
@@ -98,7 +98,7 @@ public sealed class ModelMetadataGeneratedRuntimeTests
                     Intent = new FhirCode("order")
                 };
                 task.Input.Add(new MyFhirSdk.Resources.TaskInput());
-                var validator = new FhirValidator(R5ModelContext.Default);
+                var validator = new FhirValidator(new MyFhirSdk.ModelMetadata.FhirModelContext(R5ModelProvider.Metadata, R5ModelProvider.Primitives, R5ModelProvider.Validation));
                 return validator.Validate(task).Issues
                     .Select(issue => issue.Path)
                     .OrderBy(path => path, System.StringComparer.Ordinal)
@@ -107,7 +107,7 @@ public sealed class ModelMetadataGeneratedRuntimeTests
 
             public static string ParseEmptyMetaTagType()
             {
-                var provider = R5ModelContext.Default;
+                var provider = new MyFhirSdk.ModelMetadata.FhirModelContext(R5ModelProvider.Metadata, R5ModelProvider.Primitives, R5ModelProvider.Validation);
                 const string json = "{ \"resourceType\": \"Patient\", \"meta\": { \"tag\": [{}] } }";
                 return new FhirJsonParser(provider)
                     .Parse<MyFhirSdk.Resources.Patient>(json)
@@ -125,7 +125,7 @@ public sealed class ModelMetadataGeneratedRuntimeTests
                     Text = new Narrative()
                 };
                 patient.Extension.Add(new Extension());
-                var validator = new FhirValidator(R5ModelContext.Default);
+                var validator = new FhirValidator(new MyFhirSdk.ModelMetadata.FhirModelContext(R5ModelProvider.Metadata, R5ModelProvider.Primitives, R5ModelProvider.Validation));
                 return validator.Validate(patient).Issues
                     .Select(issue => issue.Path)
                     .OrderBy(path => path, System.StringComparer.Ordinal)

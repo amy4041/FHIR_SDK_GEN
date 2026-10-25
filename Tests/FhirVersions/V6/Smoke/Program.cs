@@ -61,7 +61,7 @@ try
             await Exercise<R4.Bundle, R4.OperationOutcome, R4.Patient>(http,
                 new(R4ModelProvider.Metadata, R4ModelProvider.Primitives, R4ModelProvider.Validation), options, auth,
                 bundle => bundle.Entry.Select(e => e.Resource).OfType<Resource>());
-        else await Exercise<R5.Bundle, R5.OperationOutcome, R5.Patient>(http, R5ModelContext.Default, options, auth,
+        else await Exercise<R5.Bundle, R5.OperationOutcome, R5.Patient>(http, new MyFhirSdk.ModelMetadata.FhirModelContext(MyFhirSdk.ModelMetadata.R5.R5ModelProvider.Metadata, MyFhirSdk.ModelMetadata.R5.R5ModelProvider.Primitives, MyFhirSdk.ModelMetadata.R5.R5ModelProvider.Validation), options, auth,
             bundle => bundle.Entry.Select(e => e.Resource).OfType<Resource>());
         evidence["status"] = "Passed";
         evidence["operations"] = new[] { "metadata-version", "create", "read", "update", "search", "delete" };

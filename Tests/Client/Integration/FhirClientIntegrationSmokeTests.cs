@@ -54,8 +54,7 @@ public sealed class FhirClientIntegrationSmokeTests
 
         return new FhirClient(
             httpClient,
-            new FhirJsonSerializer(),
-            new FhirJsonParser(),
+            TestContexts.R5,
             new FhirClientOptions
             {
                 BaseAddress = new Uri(baseUrl!, UriKind.Absolute),

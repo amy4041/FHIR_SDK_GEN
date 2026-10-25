@@ -17,7 +17,7 @@ public sealed class ModelOwnershipReviewTests
     [InlineData(true)]
     public void ForeignEnumerableResourcesCannotBypassOwnershipAtRootOrContained(bool r5)
     {
-        var context = r5 ? R5ModelContext.Default : ModelContextTests.R4();
+        var context = r5 ? TestContexts.R5 : ModelContextTests.R4();
         var foreign = new EnumerableResource();
         Reject(context, foreign, "EnumerableResource");
         var patient = (DomainResource)context.CreateResource("Patient");

@@ -48,7 +48,7 @@ public sealed class KernelIntegrationSeamTests
         KernelReference.Value, ContractsReference.Value, SupportReference.Value));
     private static readonly Lazy<MetadataReference> ModelsReference = new(() => Reference(Models.Value));
     private static readonly Lazy<CSharpCompilation> Sdk = new(() => Compile("K1.Sdk", SdkSources(),
-        KernelReference.Value, ContractsReference.Value, SupportReference.Value, ModelsReference.Value));
+        KernelReference.Value, ContractsReference.Value, SupportReference.Value));
 
     private static MetadataReference Reference(CSharpCompilation compilation)
     {
@@ -167,15 +167,15 @@ public sealed class KernelIntegrationSeamTests
     }
 
     [Fact]
-    public void DefaultEnginesUseSdkOwnedR5AndPrimitiveComposition()
+    public void ExplicitEnginesUseOnlyInjectedModelAndPrimitiveComposition()
     {
-        foreach (var engine in new object[] { new FhirJsonParser(), new FhirJsonSerializer(), new FhirValidator() })
+        foreach (var engine in new object[] { new FhirJsonParser(TestContexts.R5), new FhirJsonSerializer(TestContexts.R5), new FhirValidator(TestContexts.R5) })
         {
             var fields = engine.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
             var registry = Assert.Single(fields, field => field.FieldType == typeof(PrimitiveRegistry));
-            Assert.Same(R5ModelContext.Default.Primitives, registry.GetValue(engine));
+            Assert.Same(TestContexts.R5.Primitives, registry.GetValue(engine));
             var provider = Assert.Single(fields, field => field.Name is "_metadataProvider" or "_ruleProvider");
-            Assert.Same(engine is FhirValidator ? R5ModelContext.Default.Rules : R5ModelContext.Default.Metadata,
+            Assert.Same(engine is FhirValidator ? TestContexts.R5.Rules : TestContexts.R5.Metadata,
                 provider.GetValue(engine));
         }
         Assert.NotEqual(typeof(FhirObject).Assembly, typeof(PrimitiveRegistry).Assembly);

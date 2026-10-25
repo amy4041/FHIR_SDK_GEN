@@ -1,3 +1,5 @@
+using MyFhirSdk.ModelMetadata;
+using MyFhirSdk.ModelMetadata.R5;
 using MyFhirSdk.Core;
 using MyFhirSdk.Primitives;
 using MyFhirSdk.Resources;
@@ -10,8 +12,9 @@ public static class MigrationProbe
 {
     public static Base RoundTrip()
     {
-        var parser = new FhirJsonParser();
-        var serializer = new FhirJsonSerializer();
+        var context = new FhirModelContext(R5ModelProvider.Metadata, R5ModelProvider.Primitives, R5ModelProvider.Validation);
+        var parser = new FhirJsonParser(context);
+        var serializer = new FhirJsonSerializer(context);
         var patient = parser.Parse<Patient>("""{"resourceType":"Patient","id":"k3-consumer","active":true}""");
         Base model = patient;
         if (model is not Resource || patient.Active?.Value != true)

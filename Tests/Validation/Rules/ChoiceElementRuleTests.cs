@@ -11,7 +11,7 @@ public sealed class ChoiceElementRuleTests
             DeceasedDateTime = new FhirDateTime("2026-06-05")
         };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         ValidationAssert.HasIssue(result, "Patient.deceased[x]", ValidationIssueCode.ChoiceElement);
     }
@@ -25,7 +25,7 @@ public sealed class ChoiceElementRuleTests
             MultipleBirthInteger = new FhirInteger(1)
         };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         ValidationAssert.HasIssue(result, "Patient.multipleBirth[x]", ValidationIssueCode.ChoiceElement);
     }
@@ -39,7 +39,7 @@ public sealed class ChoiceElementRuleTests
             DeceasedDateTime = new FhirDateTime("2026-06-05")
         };
 
-        var result = new FhirValidator().Validate(practitioner);
+        var result = new FhirValidator(TestContexts.R5).Validate(practitioner);
 
         ValidationAssert.HasIssue(result, "Practitioner.deceased[x]", ValidationIssueCode.ChoiceElement);
     }
@@ -56,7 +56,7 @@ public sealed class ChoiceElementRuleTests
             }
         ];
 
-        var missingChoiceResult = new FhirValidator().Validate(missingChoiceClaim);
+        var missingChoiceResult = new FhirValidator(TestContexts.R5).Validate(missingChoiceClaim);
 
         ValidationAssert.HasIssue(missingChoiceResult, "Claim.event[0].when[x]", ValidationIssueCode.ChoiceElement);
 
@@ -71,7 +71,7 @@ public sealed class ChoiceElementRuleTests
             }
         ];
 
-        var conflictingChoiceResult = new FhirValidator().Validate(conflictingChoiceClaim);
+        var conflictingChoiceResult = new FhirValidator(TestContexts.R5).Validate(conflictingChoiceClaim);
 
         ValidationAssert.HasIssue(conflictingChoiceResult, "Claim.event[0].when[x]", ValidationIssueCode.ChoiceElement);
     }
@@ -91,7 +91,7 @@ public sealed class ChoiceElementRuleTests
             }
         ];
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.supportingInfo[0].timing[x]", ValidationIssueCode.ChoiceElement);
     }
@@ -111,7 +111,7 @@ public sealed class ChoiceElementRuleTests
             }
         ];
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.supportingInfo[0].value[x]", ValidationIssueCode.ChoiceElement);
     }
@@ -128,7 +128,7 @@ public sealed class ChoiceElementRuleTests
             }
         ];
 
-        var missingChoiceResult = new FhirValidator().Validate(missingChoiceClaim);
+        var missingChoiceResult = new FhirValidator(TestContexts.R5).Validate(missingChoiceClaim);
 
         ValidationAssert.HasIssue(missingChoiceResult, "Claim.diagnosis[0].diagnosis[x]", ValidationIssueCode.ChoiceElement);
 
@@ -143,7 +143,7 @@ public sealed class ChoiceElementRuleTests
             }
         ];
 
-        var conflictingChoiceResult = new FhirValidator().Validate(conflictingChoiceClaim);
+        var conflictingChoiceResult = new FhirValidator(TestContexts.R5).Validate(conflictingChoiceClaim);
 
         ValidationAssert.HasIssue(conflictingChoiceResult, "Claim.diagnosis[0].diagnosis[x]", ValidationIssueCode.ChoiceElement);
     }
@@ -160,7 +160,7 @@ public sealed class ChoiceElementRuleTests
             }
         ];
 
-        var missingChoiceResult = new FhirValidator().Validate(missingChoiceClaim);
+        var missingChoiceResult = new FhirValidator(TestContexts.R5).Validate(missingChoiceClaim);
 
         ValidationAssert.HasIssue(missingChoiceResult, "Claim.procedure[0].procedure[x]", ValidationIssueCode.ChoiceElement);
 
@@ -175,7 +175,7 @@ public sealed class ChoiceElementRuleTests
             }
         ];
 
-        var conflictingChoiceResult = new FhirValidator().Validate(conflictingChoiceClaim);
+        var conflictingChoiceResult = new FhirValidator(TestContexts.R5).Validate(conflictingChoiceClaim);
 
         ValidationAssert.HasIssue(conflictingChoiceResult, "Claim.procedure[0].procedure[x]", ValidationIssueCode.ChoiceElement);
     }
@@ -191,7 +191,7 @@ public sealed class ChoiceElementRuleTests
             LocationReference = new Reference { ReferenceValue = new FhirString("Location/123") }
         };
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.accident.location[x]", ValidationIssueCode.ChoiceElement);
     }
@@ -210,7 +210,7 @@ public sealed class ChoiceElementRuleTests
             }
         ];
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.item[0].serviced[x]", ValidationIssueCode.ChoiceElement);
     }
@@ -230,7 +230,7 @@ public sealed class ChoiceElementRuleTests
             }
         ];
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.item[0].location[x]", ValidationIssueCode.ChoiceElement);
     }

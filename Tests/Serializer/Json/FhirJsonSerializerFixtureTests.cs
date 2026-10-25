@@ -17,7 +17,7 @@ public sealed class FhirJsonSerializerFixtureTests
     [MemberData(nameof(FixtureCases))]
     public void SerializeMatchesFixture(JsonFixtureTestCase testCase)
     {
-        var serializer = new FhirJsonSerializer();
+        var serializer = new FhirJsonSerializer(TestContexts.R5);
 
         var actualJson = serializer.Serialize(testCase.CreateResource());
         var fixturePath = Path.Combine(AppContext.BaseDirectory, "Fixtures", testCase.FixtureFileName);

@@ -50,7 +50,7 @@ public sealed class PhaseCModelGenerationArchitectureTests
     public void DefaultGeneratedProviderRejectsUnregisteredResourceType()
     {
         var exception = Assert.Throws<FhirSdkException>(() =>
-            new FhirJsonParser().Parse<UnregisteredResource>(
+            new FhirJsonParser(TestContexts.R5).Parse<UnregisteredResource>(
                 "{\"resourceType\":\"UnregisteredResource\"}"));
 
         Assert.Contains("is not registered", exception.Message, StringComparison.Ordinal);

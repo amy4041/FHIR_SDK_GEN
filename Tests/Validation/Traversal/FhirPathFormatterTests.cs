@@ -12,7 +12,7 @@ public sealed class FhirPathFormatterTests
                 ReferenceValue = new FhirString("")
             }
         };
-        var validator = new FhirValidator();
+        var validator = new FhirValidator(TestContexts.R5);
 
         var result = validator.Validate(patient);
 

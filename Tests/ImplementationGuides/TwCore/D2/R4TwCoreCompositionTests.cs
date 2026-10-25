@@ -60,12 +60,11 @@ public sealed class R4TwCoreCompositionTests
     [InlineData(true, 0)]
     [InlineData(true, 1)]
     [InlineData(true, 2)]
-    public void LegacyOverloadsRejectR5PatientForEveryProfileSelection(bool withOptions, int selection)
+    public void ContextualOverloadsRejectUnsupportedR4ResourceForEveryProfileSelection(bool withOptions, int selection)
     {
-        IFhirValidator baseValidator = new FhirValidator(new FhirModelContext(
-            R5ModelProvider.Metadata, R5ModelProvider.Primitives, R5ModelProvider.Validation));
-        var validator = LegacyValidator(baseValidator, withOptions);
-        var patient = new MyFhirSdk.Resources.Patient { Meta = new Meta { Profile = [TwCoreProfiles.Patient] } };
+        IContextualFhirValidator baseValidator = new FhirValidator(Context());
+        var validator = ValidatorWithOptions(baseValidator, withOptions);
+        var patient = new Organization { Meta = new Meta { Profile = [TwCoreProfiles.Patient] } };
         var result = selection switch
         {
             0 => validator.Validate(patient, TwCoreProfiles.Patient),
@@ -85,9 +84,9 @@ public sealed class R4TwCoreCompositionTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void LegacyOverloadsStillExecuteRulesForSupportedR4Patient(bool withOptions)
+    public void ContextualOverloadsStillExecuteRulesForSupportedR4Patient(bool withOptions)
     {
-        var validator = LegacyValidator(new FhirValidator(Context()), withOptions);
+        var validator = ValidatorWithOptions(new FhirValidator(Context()), withOptions);
         var missing = validator.Validate(new Patient(), TwCoreProfiles.Patient);
         Assert.Equal("TWCORE-PAT-002", Assert.Single(missing.Issues).RuleId);
         var valid = new Patient { Identifier = [new Identifier
@@ -97,16 +96,13 @@ public sealed class R4TwCoreCompositionTests
         Assert.True(validator.Validate(valid, TwCoreProfiles.Patient).IsValid);
     }
 
-    // Exercise the transition APIs explicitly until D3 removes them.
-#pragma warning disable CS0618
-    private static ProfileValidator LegacyValidator(IFhirValidator baseValidator, bool withOptions) => withOptions
+    private static ProfileValidator ValidatorWithOptions(IContextualFhirValidator baseValidator, bool withOptions) => withOptions
         ? new ProfileValidator(baseValidator, new ProfileValidationOptions
         {
             UnknownExplicitProfileBehavior = UnknownProfileBehavior.Ignore,
             UnknownDeclaredProfileBehavior = UnknownProfileBehavior.Ignore
         }, TwCorePackage.Default)
         : new ProfileValidator(baseValidator, TwCorePackage.Default);
-#pragma warning restore CS0618
 
     [Theory]
     [InlineData(true)]

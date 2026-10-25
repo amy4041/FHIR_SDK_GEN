@@ -218,7 +218,7 @@ public sealed class R5ChoiceOpenTypePolicyTests
                 }
             ]
         };
-        var json = new FhirJsonSerializer().Serialize(patient);
+        var json = new FhirJsonSerializer(TestContexts.R5).Serialize(patient);
 
         Assert.Contains("\"valueString\":\"text\"", json, StringComparison.Ordinal);
         Assert.Contains("\"valueHumanName\":{", json, StringComparison.Ordinal);

@@ -66,7 +66,7 @@ Assert-KernelNeutralProjectDependencies (Join-Path $root 'ImplementationGuides/T
     'MyFhirSdk.csproj', 'Models/R4/MyFhirSdk.R4.Models.csproj')
 $checks.Add('d2-r4-ig-sdk-and-r4-only-direct-dependencies')
 $sdkAllowedProjects = @('Runtime/MyFhirSdk.Runtime.csproj', 'ModelContracts/MyFhirSdk.ModelContracts.csproj',
-    'ModelSupport/MyFhirSdk.ModelSupport.csproj', 'Models/R5/MyFhirSdk.R5.Models.csproj')
+    'ModelSupport/MyFhirSdk.ModelSupport.csproj')
 Assert-KernelNeutralProjectDependencies (Join-Path $root 'MyFhirSdk.csproj') $root $sdkAllowedProjects
 $checks.Add('d2-sdk-approved-projects-without-dll-or-package-dependencies')
 # An evaluated IG graph must reject a direct R5 reference, missing R4, DLL or package additions.

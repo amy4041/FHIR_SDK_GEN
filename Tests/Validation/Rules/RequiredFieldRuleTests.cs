@@ -5,7 +5,7 @@ public sealed class RequiredFieldRuleTests
     [Fact]
     public void ValidateReportsMissingBundleType()
     {
-        var result = new FhirValidator().Validate(new Bundle());
+        var result = new FhirValidator(TestContexts.R5).Validate(new Bundle());
 
         ValidationAssert.HasIssue(result, "Bundle.type", ValidationIssueCode.Required);
     }
@@ -13,7 +13,7 @@ public sealed class RequiredFieldRuleTests
     [Fact]
     public void ValidateReportsMissingCoverageTopLevelFields()
     {
-        var result = new FhirValidator().Validate(new Coverage());
+        var result = new FhirValidator(TestContexts.R5).Validate(new Coverage());
 
         ValidationAssert.HasIssue(result, "Coverage.status", ValidationIssueCode.Required);
         ValidationAssert.HasIssue(result, "Coverage.kind", ValidationIssueCode.Required);
@@ -23,7 +23,7 @@ public sealed class RequiredFieldRuleTests
     [Fact]
     public void ValidateReportsMissingEncounterStatus()
     {
-        var result = new FhirValidator().Validate(new Encounter());
+        var result = new FhirValidator(TestContexts.R5).Validate(new Encounter());
 
         ValidationAssert.HasIssue(result, "Encounter.status", ValidationIssueCode.Required);
     }
@@ -31,7 +31,7 @@ public sealed class RequiredFieldRuleTests
     [Fact]
     public void ValidateReportsMissingClaimTopLevelFields()
     {
-        var result = new FhirValidator().Validate(new Claim());
+        var result = new FhirValidator(TestContexts.R5).Validate(new Claim());
 
         ValidationAssert.HasIssue(result, "Claim.status", ValidationIssueCode.Required);
         ValidationAssert.HasIssue(result, "Claim.type", ValidationIssueCode.Required);
@@ -43,7 +43,7 @@ public sealed class RequiredFieldRuleTests
     [Fact]
     public void ValidateDoesNotRequirePatientOptionalFields()
     {
-        var result = new FhirValidator().Validate(new Patient());
+        var result = new FhirValidator(TestContexts.R5).Validate(new Patient());
 
         Assert.True(result.IsValid);
     }
@@ -51,7 +51,7 @@ public sealed class RequiredFieldRuleTests
     [Fact]
     public void ValidateDoesNotRequireOrganizationOptionalFields()
     {
-        var result = new FhirValidator().Validate(new Organization());
+        var result = new FhirValidator(TestContexts.R5).Validate(new Organization());
 
         Assert.True(result.IsValid);
     }
@@ -59,7 +59,7 @@ public sealed class RequiredFieldRuleTests
     [Fact]
     public void ValidateDoesNotRequirePractitionerOptionalFields()
     {
-        var result = new FhirValidator().Validate(new Practitioner());
+        var result = new FhirValidator(TestContexts.R5).Validate(new Practitioner());
 
         Assert.True(result.IsValid);
     }
@@ -73,7 +73,7 @@ public sealed class RequiredFieldRuleTests
             Link = [new BundleLink()]
         };
 
-        var result = new FhirValidator().Validate(bundle);
+        var result = new FhirValidator(TestContexts.R5).Validate(bundle);
 
         ValidationAssert.HasIssue(result, "Bundle.link[0].relation", ValidationIssueCode.Required);
         ValidationAssert.HasIssue(result, "Bundle.link[0].url", ValidationIssueCode.Required);
@@ -85,7 +85,7 @@ public sealed class RequiredFieldRuleTests
         var coverage = CreateValidCoverage();
         coverage.Class = [new CoverageClass()];
 
-        var result = new FhirValidator().Validate(coverage);
+        var result = new FhirValidator(TestContexts.R5).Validate(coverage);
 
         ValidationAssert.HasIssue(result, "Coverage.class[0].type", ValidationIssueCode.Required);
         ValidationAssert.HasIssue(result, "Coverage.class[0].value", ValidationIssueCode.Required);
@@ -97,7 +97,7 @@ public sealed class RequiredFieldRuleTests
         var coverage = CreateValidCoverage();
         coverage.PaymentBy = [new CoveragePaymentBy()];
 
-        var result = new FhirValidator().Validate(coverage);
+        var result = new FhirValidator(TestContexts.R5).Validate(coverage);
 
         ValidationAssert.HasIssue(result, "Coverage.paymentBy[0].party", ValidationIssueCode.Required);
     }
@@ -111,7 +111,7 @@ public sealed class RequiredFieldRuleTests
             Location = [new EncounterLocation()]
         };
 
-        var result = new FhirValidator().Validate(encounter);
+        var result = new FhirValidator(TestContexts.R5).Validate(encounter);
 
         ValidationAssert.HasIssue(result, "Encounter.location[0].location", ValidationIssueCode.Required);
     }
@@ -122,7 +122,7 @@ public sealed class RequiredFieldRuleTests
         var claim = CreateValidClaim();
         claim.Payee = new ClaimPayee();
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.payee.type", ValidationIssueCode.Required);
     }
@@ -133,7 +133,7 @@ public sealed class RequiredFieldRuleTests
         var claim = CreateValidClaim();
         claim.Event = [new ClaimEvent { WhenDateTime = new FhirDateTime("2026-06-17T10:30:00Z") }];
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.event[0].type", ValidationIssueCode.Required);
     }
@@ -144,7 +144,7 @@ public sealed class RequiredFieldRuleTests
         var claim = CreateValidClaim();
         claim.CareTeam = [new ClaimCareTeam()];
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.careTeam[0].sequence", ValidationIssueCode.Required);
         ValidationAssert.HasIssue(result, "Claim.careTeam[0].provider", ValidationIssueCode.Required);
@@ -156,7 +156,7 @@ public sealed class RequiredFieldRuleTests
         var claim = CreateValidClaim();
         claim.SupportingInfo = [new ClaimSupportingInfo()];
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.supportingInfo[0].sequence", ValidationIssueCode.Required);
         ValidationAssert.HasIssue(result, "Claim.supportingInfo[0].category", ValidationIssueCode.Required);
@@ -174,7 +174,7 @@ public sealed class RequiredFieldRuleTests
             }
         ];
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.diagnosis[0].sequence", ValidationIssueCode.Required);
     }
@@ -191,7 +191,7 @@ public sealed class RequiredFieldRuleTests
             }
         ];
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.procedure[0].sequence", ValidationIssueCode.Required);
     }
@@ -202,7 +202,7 @@ public sealed class RequiredFieldRuleTests
         var claim = CreateValidClaim();
         claim.Insurance = [new ClaimInsurance()];
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.insurance[0].sequence", ValidationIssueCode.Required);
         ValidationAssert.HasIssue(result, "Claim.insurance[0].focal", ValidationIssueCode.Required);
@@ -215,7 +215,7 @@ public sealed class RequiredFieldRuleTests
         var claim = CreateValidClaim();
         claim.Accident = new ClaimAccident();
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.accident.date", ValidationIssueCode.Required);
     }
@@ -226,7 +226,7 @@ public sealed class RequiredFieldRuleTests
         var claim = CreateValidClaim();
         claim.Item = [new ClaimItem()];
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.item[0].sequence", ValidationIssueCode.Required);
     }
@@ -250,7 +250,7 @@ public sealed class RequiredFieldRuleTests
             }
         ];
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.item[0].detail[0].sequence", ValidationIssueCode.Required);
         ValidationAssert.HasIssue(result, "Claim.item[0].detail[0].subDetail[0].sequence", ValidationIssueCode.Required);
@@ -265,7 +265,7 @@ public sealed class RequiredFieldRuleTests
             Entry = [new BundleEntry { Request = new BundleEntryRequest() }]
         };
 
-        var result = new FhirValidator().Validate(bundle);
+        var result = new FhirValidator(TestContexts.R5).Validate(bundle);
 
         ValidationAssert.HasIssue(result, "Bundle.entry[0].request.method", ValidationIssueCode.Required);
         ValidationAssert.HasIssue(result, "Bundle.entry[0].request.url", ValidationIssueCode.Required);
@@ -280,7 +280,7 @@ public sealed class RequiredFieldRuleTests
             Entry = [new BundleEntry { Response = new BundleEntryResponse() }]
         };
 
-        var result = new FhirValidator().Validate(bundle);
+        var result = new FhirValidator(TestContexts.R5).Validate(bundle);
 
         ValidationAssert.HasIssue(result, "Bundle.entry[0].response.status", ValidationIssueCode.Required);
     }

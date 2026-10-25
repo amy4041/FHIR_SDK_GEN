@@ -83,7 +83,8 @@ internal static class RealSdkSourceCompiler
         var handwritten = new[] { "core", "Primitives", "ModelMetadata", "Serialization", "Validation", "Client" }
             .SelectMany(ReadSources).Where(source => !kernelFiles.Contains(source.FileName));
         return Build(name, handwritten.Concat(generated.Where(s => !s.FileName.StartsWith("Generated/R5/", StringComparison.Ordinal))),
-            References().Append(MetadataReference.CreateFromImage(image)));
+            generated.Any(s => !s.FileName.StartsWith("Generated/R5/", StringComparison.Ordinal))
+                ? References().Append(MetadataReference.CreateFromImage(image)) : References());
     }
 
     private static IEnumerable<MetadataReference> References()

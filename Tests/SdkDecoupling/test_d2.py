@@ -126,7 +126,8 @@ class D2EvidenceTests(unittest.TestCase):
         jobs = dict(re.findall(r"^  ([\w-]+):\n(.*?)(?=^  [\w-]+:|\Z)", yaml, flags=re.M | re.S))
         self.assertIn("Historical D1", jobs["sdk-decoupling-d1"])
         self.assertIn("ref: " + d2.D1_REVISION, jobs["sdk-decoupling-d1"])
-        self.assertNotIn("ref:", jobs["sdk-decoupling-d2"])
+        self.assertIn("ref: c2e9098225718c79daf1aed4289d4f806ebab570", jobs["sdk-decoupling-d2"])
+        self.assertNotIn("ref:", jobs["sdk-decoupling-d3"])
         self.assertIn("eng/Test-SdkDecouplingD2.py", jobs["sdk-decoupling-d2"])
 
 

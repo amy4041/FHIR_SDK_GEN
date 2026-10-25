@@ -20,23 +20,18 @@ public sealed class ContextualValidatorContractTests
     }
 
     [Fact]
-    public void OnlyTheTwoLegacyCompositionOverloadsAreObsolete()
+    public void OnlyContextualCompositionOverloadsRemain()
     {
         var constructors = typeof(ProfileValidator).GetConstructors();
-        Assert.Equal(4, constructors.Length);
-        foreach (var constructor in constructors)
-        {
-            var legacy = constructor.GetParameters()[0].ParameterType == typeof(IFhirValidator);
-            var obsolete = constructor.GetCustomAttribute<ObsoleteAttribute>();
-            Assert.Equal(legacy, obsolete is not null);
-            if (legacy) Assert.Contains("removed in D3", obsolete!.Message);
-        }
+        Assert.Equal(2, constructors.Length);
+        Assert.All(constructors, c => Assert.Equal(typeof(IContextualFhirValidator), c.GetParameters()[0].ParameterType));
+        Assert.All(constructors, c => Assert.Null(c.GetCustomAttribute<ObsoleteAttribute>()));
     }
 
     [Fact]
     public void InternalRuleOnlyValidatorCannotPretendToHaveAR5Context()
     {
-        var validator = new FhirValidator(R5ModelMetadataProvider.Default, new FhirObjectGraphWalker());
+        var validator = new FhirValidator(TestContexts.R5.Rules, TestContexts.R5.Primitives, new FhirObjectGraphWalker());
         Assert.Throws<InvalidOperationException>(() => validator.Context);
         Assert.Throws<InvalidOperationException>(() => new ProfileValidator(validator));
     }

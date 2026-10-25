@@ -18,7 +18,7 @@ public sealed class KernelSdkIntegrationTests
     {
         var friends = typeof(MyFhirSdk.Serialization.Json.FhirJsonParser).Assembly.GetCustomAttributes(typeof(InternalsVisibleToAttribute), false)
             .Cast<InternalsVisibleToAttribute>().Select(attribute => attribute.AssemblyName).ToArray();
-        Assert.Equal(["MyFhirSdk.Architecture.Tests"], friends);
+        Assert.Equal(["MyFhirSdk.Architecture.Tests", "MyFhirSdk.Client.Tests"], friends);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public sealed class KernelSdkIntegrationTests
         Assert.Contains("MyFhirSdk.ModelContracts", references);
         Assert.Contains("MyFhirSdk.ModelSupport", references);
         Assert.Contains("MyFhirSdk.Runtime", references);
-        Assert.Single(references, name => name.StartsWith("MyFhirSdk.R5.Models.Integration.", StringComparison.Ordinal));
+        Assert.DoesNotContain(references, name => name.Contains(".Models", StringComparison.Ordinal));
     }
 
     [Fact]

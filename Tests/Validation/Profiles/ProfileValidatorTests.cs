@@ -159,8 +159,9 @@ public sealed class ProfileValidatorTests
         Assert.Same(baseIssue, issue);
     }
 
-    private sealed class RecordingBaseValidator : IFhirValidator
+    private sealed class RecordingBaseValidator : IContextualFhirValidator
     {
+        public MyFhirSdk.ModelMetadata.FhirModelContext Context => TestContexts.R5;
         private readonly ValidationResult _result;
 
         public RecordingBaseValidator()
@@ -201,7 +202,7 @@ public sealed class ProfileValidatorTests
 
         public string Name => "Test Package";
 
-        public string FhirVersion => "R5";
+        public string FhirVersion => "5.0.0";
 
         public IReadOnlyCollection<string> SupportedProfiles { get; }
 

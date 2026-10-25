@@ -107,7 +107,7 @@ public sealed class ModelContextTests
     [Fact]
     public void SameResourceNamesResolveToDistinctTypesAndUnknownFactoriesFail()
     {
-        var r4 = R4(); var r5 = R5ModelContext.Default;
+        var r4 = R4(); var r5 = TestContexts.R5;
         Assert.IsType<R4R.Patient>(r4.CreateResource("Patient"));
         Assert.IsType<R5R.Patient>(r5.CreateResource("Patient"));
         Assert.Throws<FhirSdkException>(() => r4.CreateResource("Organization"));
@@ -146,8 +146,8 @@ public sealed class ModelContextTests
         Assert.Equal(12, patient.Photo.Single().Size!.Value);
         Assert.Contains("\"size\":12", new FhirJsonSerializer(context).Serialize(patient));
         Assert.ThrowsAny<Exception>(() => new FhirJsonParser(context).Parse<R4R.Patient>(r4Json.Replace("12", "\"12\"")));
-        var r5 = new FhirJsonParser().Parse<R5R.Patient>(r4Json.Replace("12", "\"12\""));
-        Assert.Contains("\"size\":\"12\"", new FhirJsonSerializer().Serialize(r5));
+        var r5 = new FhirJsonParser(TestContexts.R5).Parse<R5R.Patient>(r4Json.Replace("12", "\"12\""));
+        Assert.Contains("\"size\":\"12\"", new FhirJsonSerializer(TestContexts.R5).Serialize(r5));
         var invalid = new R4R.Observation { ValueString = new R4P.FhirString("x"), ValueInteger = new R4P.FhirInteger(1) };
         var result = new FhirValidator(context).Validate(invalid);
         Assert.Contains(result.Issues, i => i.Code == ValidationIssueCode.Required && i.Path == "Observation.status");
@@ -177,7 +177,7 @@ public sealed class ModelContextTests
             case "extensionType": p4.Extension.Add(new Extension { Url = "x", Value = new R5T.Quantity() }); p5.Extension.Add(new Extension { Url = "x", Value = new R4T.Quantity() }); break;
             case "extensionPrimitive": p4.Extension.Add(new Extension { Url = "x", Value = new R5P.FhirString("foreign") }); p5.Extension.Add(new Extension { Url = "x", Value = new R4P.FhirString("foreign") }); break;
         }
-        var r4 = R4(); var r5 = R5ModelContext.Default;
+        var r4 = R4(); var r5 = TestContexts.R5;
         Reject(r4, site == "root" ? p5 : p4); Reject(r5, site == "root" ? p4 : p5);
         if (site == "emptyCoding") Assert.IsType<R5T.Coding>(p4.Meta.Tag.Single());
         // Failed operations cannot poison either context.
@@ -207,7 +207,7 @@ public sealed class ModelContextTests
     [Fact]
     public async Task ConcurrentAndInterleavedProductionContextsRemainIndependent()
     {
-        var r4 = R4(); var r5 = R5ModelContext.Default;
+        var r4 = R4(); var r5 = TestContexts.R5;
         var parser4 = new FhirJsonParser(r4); var parser5 = new FhirJsonParser(r5);
         var serializer4 = new FhirJsonSerializer(r4); var serializer5 = new FhirJsonSerializer(r5);
         var validator4 = new FhirValidator(r4); var validator5 = new FhirValidator(r5);

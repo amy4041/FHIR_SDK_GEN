@@ -203,11 +203,11 @@ public sealed class DualVersionExperimentTests
         // V1 recorded the gap; V2 closes it at the production engine boundary.
         var patient = new R5R.Patient { Meta = new Meta() };
         patient.Meta.Tag.Add(new R4T.Coding { Code = new R4P.FhirCode("foreign") });
-        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer().Serialize(patient));
+        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer(TestContexts.R5).Serialize(patient));
         var emptyForeign = new R4T.Coding();
         patient.Meta.Tag[0] = emptyForeign;
-        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer().Serialize(patient));
-        Assert.Throws<FhirSdkException>(() => new FhirValidator().Validate(patient));
+        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer(TestContexts.R5).Serialize(patient));
+        Assert.Throws<FhirSdkException>(() => new FhirValidator(TestContexts.R5).Validate(patient));
         Assert.Throws<FhirSdkException>(() => ExperimentContext.R5().Serialize(patient));
     }
 

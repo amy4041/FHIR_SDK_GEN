@@ -7,7 +7,7 @@ public sealed class PrimitiveFormatRuleTests
     {
         var patient = new Patient { Id = "a/b" };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         ValidationAssert.HasIssue(result, "Patient.id", ValidationIssueCode.PrimitiveFormat);
         var issue = Assert.Single(
@@ -28,7 +28,7 @@ public sealed class PrimitiveFormatRuleTests
             ]
         };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         var issue = Assert.Single(
             result.Issues,
@@ -47,7 +47,7 @@ public sealed class PrimitiveFormatRuleTests
             BirthDate = new FhirDate("2026-99-99")
         };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         ValidationAssert.HasIssue(result, "Patient.birthDate", ValidationIssueCode.PrimitiveFormat);
     }
@@ -60,7 +60,7 @@ public sealed class PrimitiveFormatRuleTests
             Gender = new FhirCode(" female ")
         };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         ValidationAssert.HasIssue(result, "Patient.gender", ValidationIssueCode.PrimitiveFormat);
     }
@@ -76,7 +76,7 @@ public sealed class PrimitiveFormatRuleTests
             }
         };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         ValidationAssert.HasIssue(result, "Patient.managingOrganization.type", ValidationIssueCode.PrimitiveFormat);
     }
@@ -89,7 +89,7 @@ public sealed class PrimitiveFormatRuleTests
             Description = new FhirMarkdown("")
         };
 
-        var result = new FhirValidator().Validate(organization);
+        var result = new FhirValidator(TestContexts.R5).Validate(organization);
 
         ValidationAssert.HasIssue(result, "Organization.description", ValidationIssueCode.PrimitiveFormat);
     }
@@ -108,7 +108,7 @@ public sealed class PrimitiveFormatRuleTests
             ]
         };
 
-        var result = new FhirValidator().Validate(practitioner);
+        var result = new FhirValidator(TestContexts.R5).Validate(practitioner);
 
         ValidationAssert.HasIssue(result, "Practitioner.photo[0].url", ValidationIssueCode.PrimitiveFormat);
     }
@@ -127,7 +127,7 @@ public sealed class PrimitiveFormatRuleTests
             ]
         };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         ValidationAssert.HasIssue(result, "Patient.extension[0].value", ValidationIssueCode.PrimitiveFormat);
     }
@@ -146,7 +146,7 @@ public sealed class PrimitiveFormatRuleTests
             ]
         };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         ValidationAssert.HasIssue(result, "Patient.extension[0].value", ValidationIssueCode.PrimitiveFormat);
     }
@@ -157,7 +157,7 @@ public sealed class PrimitiveFormatRuleTests
         var claim = CreateValidClaim();
         claim.Created = new FhirDateTime("2026-06-05T10:30:00");
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.created", ValidationIssueCode.PrimitiveFormat);
     }
@@ -171,7 +171,7 @@ public sealed class PrimitiveFormatRuleTests
             Timestamp = new FhirInstant("2026-06-05")
         };
 
-        var result = new FhirValidator().Validate(bundle);
+        var result = new FhirValidator(TestContexts.R5).Validate(bundle);
 
         ValidationAssert.HasIssue(result, "Bundle.timestamp", ValidationIssueCode.PrimitiveFormat);
     }
@@ -194,7 +194,7 @@ public sealed class PrimitiveFormatRuleTests
             ]
         };
 
-        var result = new FhirValidator().Validate(bundle);
+        var result = new FhirValidator(TestContexts.R5).Validate(bundle);
 
         ValidationAssert.HasIssue(result, "Bundle.entry[0].search.score", ValidationIssueCode.PrimitiveFormat);
     }
@@ -213,7 +213,7 @@ public sealed class PrimitiveFormatRuleTests
             ]
         };
 
-        var result = new FhirValidator().Validate(practitioner);
+        var result = new FhirValidator(TestContexts.R5).Validate(practitioner);
 
         ValidationAssert.HasIssue(result, "Practitioner.photo[0].size", ValidationIssueCode.PrimitiveFormat);
     }
@@ -232,7 +232,7 @@ public sealed class PrimitiveFormatRuleTests
             }
         ];
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.insurance[0].sequence", ValidationIssueCode.PrimitiveFormat);
     }
@@ -246,7 +246,7 @@ public sealed class PrimitiveFormatRuleTests
             Total = new FhirUnsignedInt(-1)
         };
 
-        var result = new FhirValidator().Validate(bundle);
+        var result = new FhirValidator(TestContexts.R5).Validate(bundle);
 
         ValidationAssert.HasIssue(result, "Bundle.total", ValidationIssueCode.PrimitiveFormat);
     }
@@ -265,7 +265,7 @@ public sealed class PrimitiveFormatRuleTests
             ]
         };
 
-        var result = new FhirValidator().Validate(practitioner);
+        var result = new FhirValidator(TestContexts.R5).Validate(practitioner);
 
         ValidationAssert.HasIssue(result, "Practitioner.photo[0].data", ValidationIssueCode.PrimitiveFormat);
     }
@@ -284,7 +284,7 @@ public sealed class PrimitiveFormatRuleTests
             ]
         };
 
-        var result = new FhirValidator().Validate(practitioner);
+        var result = new FhirValidator(TestContexts.R5).Validate(practitioner);
 
         Assert.True(result.IsValid);
     }
@@ -306,7 +306,7 @@ public sealed class PrimitiveFormatRuleTests
             }
         };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         ValidationAssert.HasIssue(
             result,
@@ -339,7 +339,7 @@ public sealed class PrimitiveFormatRuleTests
             }
         };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         Assert.True(result.IsValid);
     }
@@ -353,7 +353,7 @@ public sealed class PrimitiveFormatRuleTests
             MultipleBirthInteger = new FhirInteger(1)
         };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         Assert.True(result.IsValid);
     }

@@ -16,3 +16,5 @@ global using MyFhirSdk.Validation;
 global using MyFhirSdk.Tests.Client;
 global using MyFhirSdk.Tests.Client.Fakes;
 global using Xunit;
+
+global using FhirClient = MyFhirSdk.Client.FhirClient<MyFhirSdk.Resources.Bundle, MyFhirSdk.Resources.OperationOutcome>;

@@ -72,7 +72,7 @@ public sealed class FhirReleaseGenerationTests : IDisposable
         Assert.Equal("MyFhirSdk.R4.Resources.Patient", resource.GetType().FullName);
         Assert.True(new FhirValidator(context).Validate(resource).IsValid);
         Assert.Contains("\"size\":42", new FhirJsonSerializer(context).Serialize(resource));
-        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer().Serialize(resource));
+        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer(TestContexts.R5).Serialize(resource));
         var observation = context.CreateResource("Observation");
         Assert.Contains(new FhirValidator(context).Validate(observation).Issues, i => i.Path == "Observation.status");
     }

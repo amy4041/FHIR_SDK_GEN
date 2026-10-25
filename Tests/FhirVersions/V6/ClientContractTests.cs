@@ -25,7 +25,7 @@ public sealed class R4ClientTests : ClientContractTests<R4R.Bundle, R4R.Operatio
 }
 public sealed class R5ClientTests : ClientContractTests<R5R.Bundle, R5R.OperationOutcome, R5R.Patient>
 {
-    protected override FhirModelContext Context => R5ModelContext.Default;
+    protected override FhirModelContext Context => TestContexts.R5;
     protected override Resource FirstEntry(R5R.Bundle bundle) => bundle.Entry.First().Resource!;
 }
 

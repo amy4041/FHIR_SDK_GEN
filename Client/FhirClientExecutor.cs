@@ -8,14 +8,14 @@ using MyFhirSdk.Validation;
 
 namespace MyFhirSdk.Client;
 
-// Shared HTTP lifecycle for legacy and context-bound clients. No version-specific model types.
+// Shared HTTP lifecycle for context-bound clients. No version-specific model types.
 internal sealed class FhirClientExecutor(IFhirSerializer serializer, IFhirHttpSender sender,
-    IAuthProvider? auth, IFhirValidator? validator, bool validateBeforeSend)
+    IAuthProvider? auth, IFhirValidator validator, bool validateBeforeSend)
 {
     private readonly IFhirSerializer _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
     private readonly IFhirHttpSender _sender = sender ?? throw new ArgumentNullException(nameof(sender));
     private readonly IAuthProvider _auth = auth ?? NoAuthProvider.Instance;
-    private readonly IFhirValidator _validator = validator ?? new FhirValidator();
+    private readonly IFhirValidator _validator = validator ?? throw new ArgumentNullException(nameof(validator));
 
     internal string Serialize(Resource resource)
     {

@@ -33,17 +33,17 @@ public sealed class ClientCompositionTests
     }
 
     [Fact]
-    public async Task LegacyClientKeepsR5DefaultsAndRejectsForeignReadsBeforeHttp()
+    public async Task ExplicitR5ClientRejectsForeignReadsBeforeHttp()
     {
         using var handler = new ClientContractTests<R5R.Bundle, R5R.OperationOutcome, R5R.Patient>.QueueHandler();
         using var http = new HttpClient(handler);
         handler.Enqueue(HttpStatusCode.OK, "{\"resourceType\":\"Patient\",\"id\":\"p\"}");
-        var client = new FhirClient(http, new FhirJsonSerializer(), new FhirJsonParser(), Options);
+        var client = new FhirClient<R5R.Bundle, R5R.OperationOutcome>(http, TestContexts.R5, Options);
         Assert.IsType<R5R.Patient>(await client.ReadAsync<R5R.Patient>("p"));
         await Assert.ThrowsAsync<FhirSdkException>(() => client.ReadAsync<R4R.Patient>("p"));
         Assert.Single(handler.Requests);
-        Assert.Equal(2, typeof(FhirClient).GetConstructors().Length);
-        Assert.All(typeof(FhirClient).GetMethods().Where(m => m.Name == "SearchAsync"),
+        Assert.Single(typeof(FhirClient<R5R.Bundle, R5R.OperationOutcome>).GetConstructors());
+        Assert.All(typeof(FhirClient<R5R.Bundle, R5R.OperationOutcome>).GetMethods().Where(m => m.Name == "SearchAsync"),
             m => Assert.Equal(typeof(Task<R5R.Bundle>), m.ReturnType));
     }
 
@@ -68,7 +68,7 @@ public sealed class ClientCompositionTests
             return new(HttpStatusCode.OK) { Content = new StringContent("""{"resourceType":"Patient","photo":[{"size":"42"}]}""") };
         };
         var c4 = new FhirClient<R4R.Bundle, R4R.OperationOutcome>(http4, R4Context(), Options);
-        var c5 = new FhirClient<R5R.Bundle, R5R.OperationOutcome>(http5, R5ModelContext.Default, Options);
+        var c5 = new FhirClient<R5R.Bundle, R5R.OperationOutcome>(http5, TestContexts.R5, Options);
         await Task.WhenAll(Enumerable.Range(0, 24).Select(async attempt =>
         {
             var read4 = c4.ReadAsync<R4R.Patient>("p");
@@ -85,7 +85,7 @@ public sealed class ClientCompositionTests
     [Fact]
     public void ClientApiMatchesApprovedSnapshot()
     {
-        var actual = MyFhirSdk.Tests.Architecture.R5ModelPublicApiSnapshot.Create(typeof(FhirClient).Assembly.GetExportedTypes()
+        var actual = MyFhirSdk.Tests.Architecture.R5ModelPublicApiSnapshot.Create(typeof(FhirClient<R5R.Bundle, R5R.OperationOutcome>).Assembly.GetExportedTypes()
             .Where(t => t.Namespace is not null && (t.Namespace == "MyFhirSdk.Client" || t.Namespace.StartsWith("MyFhirSdk.Client.", StringComparison.Ordinal))));
         File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "ActualClientApi.txt"), actual + "\n");
         Assert.Equal(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "ApprovedClientApi.txt")).Replace("\r\n", "\n").TrimEnd(), actual);

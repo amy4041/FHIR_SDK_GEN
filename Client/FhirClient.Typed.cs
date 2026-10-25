@@ -8,6 +8,7 @@ using MyFhirSdk.Client.Responses;
 using MyFhirSdk.Client.Search;
 using MyFhirSdk.Core;
 using MyFhirSdk.ModelMetadata;
+using MyFhirSdk.Serialization;
 using MyFhirSdk.Serialization.Json;
 using MyFhirSdk.Validation;
 
@@ -18,7 +19,7 @@ public sealed class FhirClient<TBundle, TOperationOutcome> : IFhirClient<TBundle
     where TBundle : Resource where TOperationOutcome : Resource
 {
     private readonly FhirClientExecutor _executor;
-    private readonly FhirRequestBuilder _requests;
+    private readonly IFhirRequestBuilder _requests;
     private readonly FhirResponseProcessor _responses;
 
     public FhirClient(HttpClient httpClient, FhirModelContext context, FhirClientOptions options, IAuthProvider? authProvider = null)
@@ -28,7 +29,7 @@ public sealed class FhirClient<TBundle, TOperationOutcome> : IFhirClient<TBundle
         var resolver = new FhirResourceTypeResolver(context);
         if (resolver.GetResourceType<TBundle>() != "Bundle" || resolver.GetResourceType<TOperationOutcome>() != "OperationOutcome")
             throw new ArgumentException("Client type arguments must be this context's Bundle and OperationOutcome.");
-        _requests = new(resolver, new FhirRequestUriBuilder(options.BaseAddress));
+        _requests = new FhirRequestBuilder(resolver, new FhirRequestUriBuilder(options.BaseAddress));
         var parser = new FhirJsonParser(context);
         _responses = new(parser, (response, body) =>
         {
@@ -45,6 +46,17 @@ public sealed class FhirClient<TBundle, TOperationOutcome> : IFhirClient<TBundle
     }
 
     public FhirModelContext Context { get; }
+
+    // The controlled HTTP tests exercise this same executor/processor pipeline with fakes.
+    internal FhirClient(FhirModelContext context, IFhirSerializer serializer, IFhirRequestBuilder requests,
+        IFhirHttpSender sender, FhirResponseProcessor responses, IAuthProvider? authProvider,
+        bool validateBeforeSend, IFhirValidator? validator)
+    {
+        Context = context ?? throw new ArgumentNullException(nameof(context));
+        _requests = requests ?? throw new ArgumentNullException(nameof(requests));
+        _responses = responses ?? throw new ArgumentNullException(nameof(responses));
+        _executor = new(serializer, sender, authProvider, validator ?? new FhirValidator(context), validateBeforeSend);
+    }
 
     public async Task<TResource?> ReadAsync<TResource>(string id, CancellationToken cancellationToken = default) where TResource : Resource
         => await _executor.SendAsync(_requests.BuildReadRequest<TResource>(id), _responses.OptionalAsync<TResource>, cancellationToken).ConfigureAwait(false);

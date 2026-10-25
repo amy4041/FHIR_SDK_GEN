@@ -12,7 +12,7 @@ public sealed class FhirJsonParserFixtureTests
     [MemberData(nameof(FixtureCases))]
     public void ParseMatchesFixture(JsonParserTestCase testCase)
     {
-        var parser = new FhirJsonParser();
+        var parser = new FhirJsonParser(TestContexts.R5);
         var fixturePath = Path.Combine(AppContext.BaseDirectory, "Fixtures", testCase.FixtureFileName);
         var json = File.ReadAllText(fixturePath);
 

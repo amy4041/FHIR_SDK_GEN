@@ -309,17 +309,7 @@ public sealed class PrimitiveRuntimeContractTests
 
     private static object GetDefaultRegistry()
     {
-        var registryType = typeof(MyFhirSdk.Serialization.Json.FhirJsonParser).Assembly.GetType(
-            "MyFhirSdk.Primitives.PrimitiveRegistry",
-            throwOnError: true)!;
-
-        return registryType
-            .GetProperty(
-                "Default",
-                BindingFlags.Static | BindingFlags.NonPublic)
-            ?.GetValue(null)
-            ?? throw new InvalidOperationException(
-                "PrimitiveRegistry.Default was not found.");
+        return TestContexts.R5.Primitives;
     }
 
     private static Array CreateDefinitionArray(params object[] definitions)

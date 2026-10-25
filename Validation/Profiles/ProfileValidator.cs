@@ -11,11 +11,10 @@ public sealed class ProfileValidator
 {
     private const string UnknownProfileRuleId = "PROFILE-UNKNOWN";
 
-    private readonly IFhirValidator _baseValidator;
+    private readonly IContextualFhirValidator _baseValidator;
     private readonly ProfileValidationOptions _options;
-    private readonly IReadOnlyList<IImplementationGuidePackage> _packages;
-    private readonly FhirModelContext? _context;
-    private readonly IReadOnlyDictionary<string, IImplementationGuidePackage>? _profiles;
+    private readonly FhirModelContext _context;
+    private readonly IReadOnlyDictionary<string, IImplementationGuidePackage> _profiles;
 
     /// <summary>Creates a version-checked IG composition with default options.</summary>
     public ProfileValidator(IContextualFhirValidator baseValidator,
@@ -25,31 +24,6 @@ public sealed class ProfileValidator
     /// <summary>Creates a version-checked IG composition with explicit options.</summary>
     public ProfileValidator(IContextualFhirValidator baseValidator, ProfileValidationOptions options,
         params IImplementationGuidePackage[] packages)
-        : this(baseValidator, options, packages, contextual: true) { }
-
-    /// <summary>
-    /// Creates a profile validator with default options.
-    /// </summary>
-    [Obsolete("D1 transition only; removed in D3. Use IContextualFhirValidator for version-checked IG composition.")]
-    public ProfileValidator(
-        IFhirValidator baseValidator,
-        params IImplementationGuidePackage[] packages)
-        : this(baseValidator, ProfileValidationOptions.Default, packages, contextual: false)
-    {
-    }
-
-    /// <summary>
-    /// Creates a profile validator with explicit options.
-    /// </summary>
-    [Obsolete("D1 transition only; removed in D3. Use IContextualFhirValidator for version-checked IG composition.")]
-    public ProfileValidator(
-        IFhirValidator baseValidator,
-        ProfileValidationOptions options,
-        params IImplementationGuidePackage[] packages)
-        : this(baseValidator, options, packages, contextual: false) { }
-
-    private ProfileValidator(IFhirValidator baseValidator, ProfileValidationOptions options,
-        IImplementationGuidePackage[] packages, bool contextual)
     {
         _baseValidator = baseValidator ?? throw new ArgumentNullException(nameof(baseValidator));
         _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -61,10 +35,9 @@ public sealed class ProfileValidator
             throw new ArgumentException("Packages cannot contain null values.", nameof(packages));
         }
 
-        _packages = packages.ToArray();
-        if (!contextual) return;
+        var registeredPackages = packages.ToArray();
 
-        _context = ((IContextualFhirValidator)baseValidator).Context
+        _context = baseValidator.Context
             ?? throw new ArgumentException("The validator must expose its actual model context.", nameof(baseValidator));
         if (!IsBaseVersion(_context.Identity.FhirVersion))
             throw new ArgumentException("The context must use a canonical FHIR base version.", nameof(baseValidator));
@@ -72,7 +45,7 @@ public sealed class ProfileValidator
             throw new ArgumentException("Unknown profile behavior is invalid.", nameof(options));
 
         var profiles = new Dictionary<string, IImplementationGuidePackage>(StringComparer.Ordinal);
-        foreach (var package in _packages)
+        foreach (var package in registeredPackages)
         {
             if (!IsBaseVersion(package.FhirVersion) || package.FhirVersion != _context.Identity.FhirVersion)
                 throw new ArgumentException($"Package '{package.PackageId}' FHIR base version '{package.FhirVersion}' does not match context '{_context.Identity.FhirVersion}'.", nameof(packages));
@@ -141,12 +114,12 @@ public sealed class ProfileValidator
         IReadOnlyList<string> profileUrls,
         UnknownProfileBehavior unknownProfileBehavior)
     {
-        _context?.EnsureOwnership(resource);
+        _context.EnsureOwnership(resource);
         var issues = new List<ValidationIssue>(_baseValidator.Validate(resource).Issues);
 
         foreach (var profileUrl in profileUrls)
         {
-            if (_context is not null && profileUrl.Contains('|'))
+            if (profileUrl.Contains('|'))
             {
                 AddProfileIssue(resource, profileUrl, null, "PROFILE-VERSION-UNSUPPORTED",
                     "Version-qualified profile canonicals are not supported.", issues);
@@ -176,9 +149,7 @@ public sealed class ProfileValidator
 
     private IImplementationGuidePackage? FindPackage(string profileUrl)
     {
-        if (_profiles is not null)
-            return _profiles.TryGetValue(profileUrl, out var package) ? package : null;
-        return _packages.FirstOrDefault(package => package.SupportsProfile(profileUrl));
+        return _profiles.TryGetValue(profileUrl, out var package) ? package : null;
     }
 
     private static void AddProfileIssue(Resource resource, string profile, IImplementationGuidePackage? package,

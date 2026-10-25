@@ -24,4 +24,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../Models/R5/MyFhirSdk.R5.Models.csproj" />
+    <Compile Include="../../Shared/TestContexts.cs" Link="Shared/TestContexts.cs" />
+    <Using Include="MyFhirSdk.Tests.Shared" />
+  </ItemGroup>
 </Project>

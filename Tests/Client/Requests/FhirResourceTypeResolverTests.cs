@@ -5,7 +5,7 @@ public sealed class FhirResourceTypeResolverTests
     [Fact]
     public void GetResourceTypeFromGenericType()
     {
-        var resolver = new FhirResourceTypeResolver();
+        var resolver = new FhirResourceTypeResolver(TestContexts.R5);
 
         var resourceType = resolver.GetResourceType<Patient>();
 
@@ -15,7 +15,7 @@ public sealed class FhirResourceTypeResolverTests
     [Fact]
     public void GetResourceTypeFromResourceInstance()
     {
-        var resolver = new FhirResourceTypeResolver();
+        var resolver = new FhirResourceTypeResolver(TestContexts.R5);
 
         var resourceType = resolver.GetResourceType(new Bundle());
 

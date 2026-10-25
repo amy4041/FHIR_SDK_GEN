@@ -59,7 +59,7 @@ public sealed class KernelClientMigrationTests
         Assert.Empty(handler.Requests);
     }
 
-    private static FhirClient CreateClient(HttpClient http) => new(http, new FhirJsonSerializer(), new FhirJsonParser(),
+    private static FhirClient CreateClient(HttpClient http) => new(http, TestContexts.R5,
         new FhirClientOptions { BaseAddress = new Uri("https://example.test/fhir"), ValidateBeforeSend = true });
 
     private sealed class RecordingHandler : HttpMessageHandler

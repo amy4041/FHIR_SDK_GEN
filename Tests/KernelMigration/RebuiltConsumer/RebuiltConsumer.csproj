@@ -12,6 +12,8 @@
     <Reference Include="MyFhirSdk"><HintPath>$(SdkAssemblyPath)</HintPath></Reference>
     <Reference Include="MyFhirSdk.R5.Models" Condition="'$(ModelsAssemblyPath)' != ''"><HintPath>$(ModelsAssemblyPath)</HintPath></Reference>
     <Reference Include="MyFhirSdk.Runtime"><HintPath>$(RuntimeAssemblyPath)</HintPath></Reference>
+    <Reference Include="MyFhirSdk.ModelContracts"><HintPath>$(ContractsAssemblyPath)</HintPath></Reference>
+    <Reference Include="MyFhirSdk.ModelSupport"><HintPath>$(SupportAssemblyPath)</HintPath></Reference>
   </ItemGroup>
   <Target Name="RequireImplementationAssemblies" BeforeTargets="ResolveReferences">
     <Error Condition="!Exists('$(SdkAssemblyPath)') or !Exists('$(RuntimeAssemblyPath)')" Text="Explicit SDK and Runtime implementation assemblies are required." />

@@ -10,7 +10,7 @@ public sealed class CardinalityRuleTests
             Name = null!
         };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         ValidationAssert.HasIssue(result, "Patient.name", ValidationIssueCode.Cardinality);
     }
@@ -23,7 +23,7 @@ public sealed class CardinalityRuleTests
             Name = [null!]
         };
 
-        var result = new FhirValidator().Validate(patient);
+        var result = new FhirValidator(TestContexts.R5).Validate(patient);
 
         ValidationAssert.HasIssue(result, "Patient.name[0]", ValidationIssueCode.Cardinality);
     }
@@ -47,7 +47,7 @@ public sealed class CardinalityRuleTests
             ]
         };
 
-        var result = new FhirValidator().Validate(claim);
+        var result = new FhirValidator(TestContexts.R5).Validate(claim);
 
         ValidationAssert.HasIssue(result, "Claim.item[0].bodySite[0].site", ValidationIssueCode.Cardinality);
     }
