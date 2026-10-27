@@ -7,8 +7,9 @@
     <Reference Include="MyFhirSdk.Runtime"><HintPath>$(SdkDirectory)MyFhirSdk.Runtime.dll</HintPath><Private>true</Private></Reference>
     <Reference Include="MyFhirSdk.ModelContracts"><HintPath>$(SdkDirectory)MyFhirSdk.ModelContracts.dll</HintPath><Private>true</Private></Reference>
     <Reference Include="MyFhirSdk.ModelSupport"><HintPath>$(SdkDirectory)MyFhirSdk.ModelSupport.dll</HintPath><Private>true</Private></Reference>
-    <Reference Include="MyFhirSdk.R4.Models"><HintPath>$(SdkDirectory)MyFhirSdk.R4.Models.dll</HintPath><Private>true</Private></Reference>
-    <Reference Include="MyFhirSdk.R5.Models"><HintPath>$(SdkDirectory)MyFhirSdk.R5.Models.dll</HintPath><Private>true</Private></Reference>
+    <Reference Include="MyFhirSdk.R4.Models" Condition="'$(UseR4Models)' == 'true'"><HintPath>$(SdkDirectory)MyFhirSdk.R4.Models.dll</HintPath><Private>true</Private></Reference>
+    <Reference Include="MyFhirSdk.R5.Models" Condition="'$(UseR5Models)' == 'true'"><HintPath>$(SdkDirectory)MyFhirSdk.R5.Models.dll</HintPath><Private>true</Private></Reference>
+    <Reference Include="MyFhirSdk.ImplementationGuides.TwCore" Condition="'$(UseTwCore)' == 'true'"><HintPath>$(SdkDirectory)MyFhirSdk.ImplementationGuides.TwCore.dll</HintPath><Private>true</Private></Reference>
   </ItemGroup>
   <Target Name="CheckDeliveredSdk" BeforeTargets="ResolveAssemblyReferences">
     <Error Condition="'%(Reference.HintPath)' != '' and !Exists('%(Reference.HintPath)')" Text="Missing delivered SDK assembly: %(Reference.HintPath)" />

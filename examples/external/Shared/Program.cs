@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Net;
 using MyFhirSdk.Client;
 using MyFhirSdk.Client.Authentication;
@@ -7,19 +8,33 @@ using MyFhirSdk.ModelMetadata;
 using MyFhirSdk.Serialization.Json;
 using MyFhirSdk.Validation;
 
+var releases = new List<object>();
 #if USE_R4
-await Exercise<MyFhirSdk.R4.Resources.Bundle, MyFhirSdk.R4.Resources.OperationOutcome,
+releases.Add(await Exercise<MyFhirSdk.R4.Resources.Bundle, MyFhirSdk.R4.Resources.OperationOutcome,
     MyFhirSdk.R4.Resources.Patient>("R4", new FhirModelContext(
         MyFhirSdk.ModelMetadata.R4.R4ModelProvider.Metadata,
         MyFhirSdk.ModelMetadata.R4.R4ModelProvider.Primitives,
-        MyFhirSdk.ModelMetadata.R4.R4ModelProvider.Validation), "42");
+        MyFhirSdk.ModelMetadata.R4.R4ModelProvider.Validation), "42"));
 #endif
 #if USE_R5
-await Exercise<MyFhirSdk.Resources.Bundle, MyFhirSdk.Resources.OperationOutcome,
-    MyFhirSdk.Resources.Patient>("R5", MyFhirSdk.ModelMetadata.R5.R5ModelContext.Default, "\"42\"");
+releases.Add(await Exercise<MyFhirSdk.Resources.Bundle, MyFhirSdk.Resources.OperationOutcome,
+    MyFhirSdk.Resources.Patient>("R5", new FhirModelContext(
+        MyFhirSdk.ModelMetadata.R5.R5ModelProvider.Metadata,
+        MyFhirSdk.ModelMetadata.R5.R5ModelProvider.Primitives,
+        MyFhirSdk.ModelMetadata.R5.R5ModelProvider.Validation), "\"42\""));
 #endif
 
-static async Task Exercise<TBundle, TOutcome, TPatient>(string release, FhirModelContext context, string size)
+#if USE_IG
+var ig = IgProbe.Run();
+#else
+object? ig = null;
+#endif
+var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name!.StartsWith("MyFhirSdk", StringComparison.Ordinal))
+    .OrderBy(a => a.GetName().Name, StringComparer.Ordinal).Select(a => new { name = a.GetName().Name, identity = a.FullName, path = a.Location,
+        references = a.GetReferencedAssemblies().Select(r => r.Name).Order().ToArray() }).ToArray();
+Console.WriteLine(JsonSerializer.Serialize(new { status = "Passed", releases, ig, assemblies }));
+
+static async Task<object> Exercise<TBundle, TOutcome, TPatient>(string release, FhirModelContext context, string size)
     where TBundle : Resource where TOutcome : Resource where TPatient : Resource
 {
     var json = "{\"resourceType\":\"Patient\",\"id\":\"example\",\"photo\":[{\"size\":" + size + "}]}";
@@ -38,12 +53,14 @@ static async Task Exercise<TBundle, TOutcome, TPatient>(string release, FhirMode
         throw new InvalidOperationException(release + " controlled HTTP read failed.");
     Console.WriteLine(release + ": JSON, validation and controlled HTTP read passed.");
 
+    var result = new { fhirVersion = context.Identity.FhirVersion, modelAssembly = typeof(TPatient).Assembly.GetName().Name,
+        roundTrip = true, validation = true, typedClient = true };
     var endpoint = Environment.GetEnvironmentVariable($"MYFHIRSDK_{release}_INTEGRATION_BASE_URL")?.Trim();
     var id = Environment.GetEnvironmentVariable($"MYFHIRSDK_{release}_PATIENT_ID")?.Trim();
     if (string.IsNullOrEmpty(endpoint) && string.IsNullOrEmpty(id))
     {
         Console.WriteLine(release + ": external server read skipped (no endpoint/Patient ID supplied).");
-        return;
+        return result;
     }
     if (string.IsNullOrEmpty(id) || !Uri.TryCreate(endpoint, UriKind.Absolute, out var baseAddress) ||
         baseAddress.Scheme is not ("http" or "https") || baseAddress.UserInfo.Length != 0 ||
@@ -65,6 +82,7 @@ static async Task Exercise<TBundle, TOutcome, TPatient>(string release, FhirMode
     if (existingPatient is null) throw new InvalidOperationException("External Patient read returned no resource.");
     // Do not print Patient content, endpoint, ID or credentials.
     Console.WriteLine(release + ": external server read passed.");
+    return result;
 }
 
 sealed class ExampleHandler(string json) : HttpMessageHandler

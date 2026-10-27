@@ -127,7 +127,8 @@ class D2EvidenceTests(unittest.TestCase):
         self.assertIn("Historical D1", jobs["sdk-decoupling-d1"])
         self.assertIn("ref: " + d2.D1_REVISION, jobs["sdk-decoupling-d1"])
         self.assertIn("ref: c2e9098225718c79daf1aed4289d4f806ebab570", jobs["sdk-decoupling-d2"])
-        self.assertNotIn("ref:", jobs["sdk-decoupling-d3"])
+        self.assertIn("ref: d47374bf99e91a61848fccf7612e2d571ae4bf67", jobs["sdk-decoupling-d3"])
+        self.assertNotIn("ref:", jobs["sdk-decoupling-d4"])
         self.assertIn("eng/Test-SdkDecouplingD2.py", jobs["sdk-decoupling-d2"])
 
 

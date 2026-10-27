@@ -1,6 +1,6 @@
 # SDK 版本解耦與 IG 專案化
 
-日期：2026-10-22。狀態：D0–D2 已提交並由使用者確認 CI 通過；D3 已移除 R5 defaults／舊 Client 與 SDK 對 R5 Models 的依賴，開發及驗收入口見 [D3 實作紀錄](D3_Implementation.md)，待 code review 與新 CI 確認。D4–D5 尚未實作。[D2 實作紀錄](D2_Implementation.md)、[D1 實作紀錄](D1_Implementation.md) 與 [D0 盤點紀錄](D0_Inventory.md) 保留各階段結果。
+日期：2026-10-25。狀態：D0–D3 已提交並由使用者確認 CI 通過；D4 的正式交付工具、外部模板、目前 gates 與歷史 gate 分工已遷移，入口見 [D4 實作紀錄](D4_Implementation.md)，待 review 與新 CI 確認。D5 尚未實作。[D3 實作紀錄](D3_Implementation.md)、[D2 實作紀錄](D2_Implementation.md)、[D1 實作紀錄](D1_Implementation.md) 與 [D0 盤點紀錄](D0_Inventory.md) 保留各階段結果。
 
 目標：移除共用 SDK 對 R5 Models 的直接及間接依賴，刪除 R5 預設組合與舊版 Client，將 TW Core 移至獨立專案，同時保留 IG 的注入與替換能力。
 
