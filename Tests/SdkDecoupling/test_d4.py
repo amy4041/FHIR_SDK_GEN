@@ -12,6 +12,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 import zipfile
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -213,6 +214,41 @@ class D4EvidenceTests(unittest.TestCase):
             with patch.object(comparison, "validate_leg", side_effect=[fields, changed]):
                 with self.assertRaises(ValueError):
                     comparison.compare(Path("windows"), Path("linux"))
+
+    def test_platform_validation_reads_real_trx_with_relative_and_absolute_artifact_paths(self):
+        artifacts = ROOT / "artifacts"
+        artifacts.mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="d4-relative-path-", dir=artifacts) as tmp:
+            root = Path(tmp)
+            results = root / "neutral-sdk/k3/test-results"
+            results.mkdir(parents=True)
+            assemblies = comparison.gate.d3.regression.EXPECTED_TESTS
+            for assembly in assemblies:
+                run = ET.Element("TestRun", xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010")
+                definitions = ET.SubElement(run, "TestDefinitions")
+                test = ET.SubElement(definitions, "UnitTest", id="case")
+                ET.SubElement(test, "TestMethod", codeBase=assembly + ".dll")
+                rows = ET.SubElement(run, "Results")
+                ET.SubElement(rows, "UnitTestResult", testId="case", testName="fixture", outcome="Passed")
+                summary = ET.SubElement(run, "ResultSummary")
+                ET.SubElement(summary, "Counters", total="1", passed="1", failed="0")
+                ET.ElementTree(run).write(results / (assembly + ".trx"), encoding="utf-8", xml_declaration=True)
+            counts = {"total": len(assemblies), "passed": len(assemblies), "failed": 0, "skipped": 0}
+            platform = {"gate": "D4-platform", "status": "Passed", "os": "Windows", "sourceFingerprint": {}, "testCounts": counts}
+            neutral = {"status": "Passed", "fullyDecoupled": True, "sourceFingerprint": {}, "testCounts": counts}
+            for path, data in ((root / "summary.json", platform), (root / "neutral-sdk/summary.json", neutral)):
+                path.write_text(json.dumps(data), encoding="utf-8")
+            (root / "evidence-files.json").write_text(json.dumps(contract.inventory(root)), encoding="utf-8")
+
+            class RequiredCoverageReached(Exception):
+                pass
+
+            # Stop at the next guard after real nine-assembly TRX parsing and count validation.
+            for argument in (root, Path(os.path.relpath(root, Path.cwd()))):
+                with self.subTest(path=str(argument)), patch.object(comparison.gate.d3, "required_test_evidence",
+                                                                    side_effect=RequiredCoverageReached):
+                    with self.assertRaises(RequiredCoverageReached):
+                        comparison.validate_leg(argument)
 
     def test_ci_pins_history_and_uses_one_canonical_package_for_current_platforms(self):
         yaml = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")

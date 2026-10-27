@@ -34,6 +34,8 @@ def validate_recorded_execution(name, report, manifest, deployed):
 
 
 def validate_leg(root):
+    # CLI artifact arguments may be relative; the shared TRX inventory uses absolute ROOT.
+    root = root.resolve()
     files = delivery.inventory(root)
     files.pop("evidence-files.json", None)
     if files != load(root / "evidence-files.json"):
