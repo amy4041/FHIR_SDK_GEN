@@ -1,71 +1,110 @@
 # MyFhirSdk
 
-MyFhirSdk is a .NET SDK with generated FHIR R4 and R5 specialization datatypes and Resources. It provides typed resource models, version-specific JSON parsing and serialization, REST clients, base validation, and an optional implementation-guide validation path.
+MyFhirSdk is a pre-release .NET 9 SDK for FHIR R4 `4.0.1` and R5 `5.0.0`. It provides generated models, JSON parsing/serialization, base validation, a typed REST client and an injectable profile validation framework. It is not a complete FHIR implementation.
 
-The SDK is still in pre-release shape. It is useful for MVP flows and SDK development, but it is not a complete FHIR implementation yet.
+## Getting started
 
-## Current Scope
-
-- Target framework: `net9.0`
-- FHIR versions: R4 `4.0.1` and R5 `5.0.0`
-- Generated FHIR R4/R5 specialization datatypes, Resources, and Resource-owned Backbones
-- Generated model factories, JSON metadata, and supported validation composition
-- FHIR JSON serializer and parser
-- REST client operations: read, create, update, search, and delete
-- Base FHIR validation rules for the supported model surface
-- Optional profile validation framework
-- Initial TW Core Patient validation proof of concept
-
-## Repository Layout
-
-| Path | Purpose |
-| --- | --- |
-| `MyFhirSdk.csproj` | SDK project |
-| `Runtime/MyFhirSdk.Runtime.csproj` | Runtime kernel project; owns 14 shared declarations with no SDK dependency |
-| `MyFhirSdk.sln` | Solution containing the SDK and test projects |
-| `Generated/R5/Resources/` | Generated FHIR Resource and Resource-owned Backbone declarations |
-| `Generated/R5/Types/` | Generated FHIR complex datatype declarations |
-| `Models/R5/SimpleQuantity.cs` | Retained handwritten R5 constraint-profile declaration |
-| `Primitives/` | FHIR primitive wrappers |
-| `ModelMetadata/` | Internal model metadata contracts and generated R5 provider composition |
-| `Serialization/Json/` | FHIR JSON parser and serializer |
-| `Client/` | REST client, search, authentication, request, and response handling |
-| `Validation/` | Base validation and profile validation framework |
-| `ImplementationGuides/TwCore/` | Initial TW Core profile support |
-| `Tests/` | xUnit test projects and JSON fixtures |
-| `docs/` | Architecture, validation, client, IG, and roadmap notes |
-
-## Getting Started
-
-For DLL-based SDK usage and generator installation outside this repository, see the
-[V7 delivery guide](docs/fhir_versions/V7_Delivery_Guide.md) and
-[external examples](examples/external/README.md). The exporter builds a fresh handoff bundle;
-SDK NuGet packages have not been published. Current CI and manual acceptance are recorded in
-the [V7 closeout](docs/fhir_versions/V7_Closeout.md).
-
-Install the .NET 9 SDK, then restore and build from the repository root:
+Use the .NET SDK pinned in `global.json` (`9.0.317`):
 
 ```powershell
 dotnet restore MyFhirSdk.sln
 dotnet build MyFhirSdk.sln
+dotnet test MyFhirSdk.sln
 ```
 
-Until NuGet publishing is prepared, reference the SDK project directly from another .NET project:
+An application references `MyFhirSdk.csproj` plus only the Models project it uses: `Models/R4/MyFhirSdk.R4.Models.csproj` or `Models/R5/MyFhirSdk.R5.Models.csproj`. Dual applications reference both. DLL consumers use the [current delivery and migration guide](docs/sdk_decoupling/Delivery_and_Migration.md) and [external examples](examples/external/README.md).
+
+The shared SDK depends only on Runtime, ModelContracts and ModelSupport. It has no dependency on R4/R5 Models or a concrete IG. Applications choose the model version by composing an immutable context. Parameterless engines, `R5ModelContext.Default`, non-generic `FhirClient`/`IFhirClient` and the old response handler have been removed. Rebuild applications and dependent libraries together; this is a source and binary breaking change with no type forwarders.
+
+## JSON and base validation
+
+This R5 example requires R5 Models. For R4, use `R4ModelProvider` and the `MyFhirSdk.R4.Resources` namespace.
+
+```csharp
+using MyFhirSdk.ModelMetadata;
+using MyFhirSdk.ModelMetadata.R5;
+using MyFhirSdk.Resources;
+using MyFhirSdk.Serialization.Json;
+using MyFhirSdk.Validation;
+
+var context = new FhirModelContext(
+    R5ModelProvider.Metadata, R5ModelProvider.Primitives, R5ModelProvider.Validation);
+var parser = new FhirJsonParser(context);
+var serializer = new FhirJsonSerializer(context);
+var validator = new FhirValidator(context);
+var patient = parser.Parse<Patient>("""{"resourceType":"Patient","id":"synthetic-example"}""");
+var json = serializer.Serialize(patient);
+var result = validator.Validate(patient);
+```
+
+Use a separate context for each version in a Dual process. Context ownership checks reject a model from another version. Validation traverses the model using the supplied rules; `Validate` returns issues. Client validation before sending can throw `FhirValidationException`.
+
+## Typed REST client
+
+Continue from the R5 context above:
+
+```csharp
+using MyFhirSdk.Client;
+using MyFhirSdk.Client.Configuration;
+
+using var http = new HttpClient();
+var client = new FhirClient<Bundle, OperationOutcome>(http, context,
+    new FhirClientOptions
+    {
+        BaseAddress = new Uri("https://your-r5-server.example/fhir/"),
+        Timeout = TimeSpan.FromSeconds(30),
+        ValidateBeforeSend = true
+    });
+// Execute only against an explicitly selected test environment.
+var existing = await client.ReadAsync<Patient>("synthetic-example");
+```
+
+Read/create/update/search/delete are supported. The type arguments must be the selected context's Bundle and OperationOutcome. The caller owns HttpClient; authentication is supplied through the optional `authProvider` argument. A read returning HTTP 404 produces null.
+
+## Optional TW Core R4 Patient POC
+
+Reference `ImplementationGuides/TwCore/MyFhirSdk.ImplementationGuides.TwCore.csproj` and R4 Models in addition to the SDK:
+
+```csharp
+using MyFhirSdk.ImplementationGuides.TwCore;
+using MyFhirSdk.ModelMetadata;
+using MyFhirSdk.ModelMetadata.R4;
+using MyFhirSdk.R4.Resources;
+using MyFhirSdk.Validation;
+using MyFhirSdk.Validation.Profiles;
+
+var r4Context = new FhirModelContext(
+    R4ModelProvider.Metadata, R4ModelProvider.Primitives, R4ModelProvider.Validation);
+var validator = new ProfileValidator(new FhirValidator(r4Context), TwCorePackage.Default);
+var result = validator.Validate(new Patient(), TwCoreProfiles.Patient);
+```
+
+The independent `MyFhirSdk.ImplementationGuides.TwCore.dll` owns three handwritten Patient rules: identifier must exist, and each identifier must have system and value. It supports R4 `4.0.1` only and is not full official TW Core validation. IG implementations can be replaced through constructor injection without changing the SDK or rebuilding Models. A custom base validator used with profiles implements `IContextualFhirValidator`.
+
+## Delivery and acceptance
 
 ```powershell
-dotnet add reference path\to\MyFhirSdk\MyFhirSdk.csproj
+python eng/Test-SdkDecouplingD5.py --output artifacts/sdk-decoupling/d5/local
 ```
 
-The SDK uses Runtime, ModelContracts, ModelSupport and R5 Models; R4 applications additionally
-reference R4 Models. Rebuild consumers and dependent libraries together, and deploy the complete
-publish output. The compiler-only Runtime reference inside the CodeGen tool is a build asset,
-not an implementation DLL. No type forwarders are provided.
-See the [runtime kernel handoff](docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Handoff.md)
-and [consumer migration / rollback operations](docs/gen/MyFhirSdk_Runtime_Kernel_Extraction_Operations.md).
+Run from a clean committed checkout. This exports current sources, then publishes and executes R4/R5/Dual/R4TwCore consumers outside the repository, checks missing dependencies and IG replacement, and verifies fresh installed-tool repeated generation. Output includes a manifest with file hashes and source identity. Development previews may use `--allow-working-tree`; they leave clean-source acceptance Pending. See the [delivery guide](docs/sdk_decoupling/Delivery_and_Migration.md) for individual export and verify commands.
 
-## Repository-local CodeGen tool
+Current CI runs the D4 Windows/Ubuntu delivery gates and cross-platform comparison, plus D5 offline delivery verification. Historical K/V/D gates run against their pinned sources and contracts. The [D5 record](docs/sdk_decoupling/D5_Implementation.md) distinguishes local verification, clean-source CI and actual server acceptance. Actual server smoke remains Pending until explicitly configured and executed; regular CI does not contact a FHIR server. Historical [V7 records](docs/fhir_versions/V7_Closeout.md) describe the old API and do not establish acceptance for the current API.
 
-Build the compiler-only Runtime reference and pack the pinned local tool with:
+## Repository layout and model generation
+
+| Path | Purpose |
+| --- | --- |
+| `Runtime/` | Shared kernel and model base hierarchy |
+| `ModelContracts/`, `ModelSupport/` | Neutral provider contracts and model execution support |
+| `Models/R4/`, `Models/R5/`, `Generated/R4/`, `Generated/R5/` | Version-owned models, primitives, providers and generated rules |
+| `ModelMetadata/`, `Serialization/`, `Validation/`, `Client/` | SDK context, engines, HTTP and IG framework |
+| `ImplementationGuides/TwCore/` | Independent R4 Patient POC |
+| `CodeGen/` | Repository-local generator and pinned policies |
+| `examples/external/` | DLL-only delivery templates |
+| `Tests/`, `eng/` | Regression suites and acceptance tools |
+
+Build the compiler-only Runtime reference and package the repository-local generator:
 
 ```powershell
 dotnet msbuild eng/MyFhirSdk.CodeGen.Build.proj /t:Pack /p:Configuration=Release
@@ -73,241 +112,6 @@ dotnet tool restore --add-source artifacts/packages --ignore-failed-sources
 dotnet myfhir-codegen --help
 ```
 
-The repository manifest pins `MyFhirSdk.CodeGen.Tool` version `1.3.1` and command
-`myfhir-codegen`. The package includes its default model policies, Runtime contract
-descriptor, compiler-only Runtime reference, and the SDK-owned SimpleQuantity auxiliary source; it does not require repository discovery
-when installed. The current package is for repository-local development only; an approved
-license and matching package metadata are required before any public NuGet release.
+The tool manifest pins `MyFhirSdk.CodeGen.Tool` `1.3.1`. The tool ships policies, the Runtime contract, compiler-only Runtime reference and SimpleQuantity auxiliary source. That reference is a compiler asset, not a runtime implementation DLL. Generated C# alone is not a complete Models DLL; normal applications use delivered Models. See [CodeGen operations](CodeGen/README.md) for generation details.
 
-## Basic JSON Usage
-
-```csharp
-using MyFhirSdk.Primitives;
-using MyFhirSdk.Resources;
-using MyFhirSdk.Serialization.Json;
-using MyFhirSdk.Types;
-
-var patient = new Patient
-{
-    Id = "patient-1",
-    Active = new FhirBoolean(true),
-    BirthDate = new FhirDate("1974-12-25"),
-    Identifier =
-    {
-        new Identifier
-        {
-            System = new FhirUri("http://hospital.example.org/patients"),
-            Value = new FhirString("MRN-12345")
-        }
-    },
-    Name =
-    {
-        new HumanName
-        {
-            Family = new FhirString("Chalmers"),
-            Given =
-            {
-                new FhirString("Peter"),
-                new FhirString("James")
-            }
-        }
-    }
-};
-
-var serializer = new FhirJsonSerializer();
-var json = serializer.Serialize(patient);
-
-var parser = new FhirJsonParser();
-var parsed = parser.Parse<Patient>(json);
-```
-
-The serializer emits the FHIR `resourceType` property and omits empty optional values. The parser validates the incoming `resourceType` against the requested resource type.
-
-## Base Validation
-
-```csharp
-using MyFhirSdk.Resources;
-using MyFhirSdk.Validation;
-
-var patient = new Patient();
-var validator = new FhirValidator();
-
-var result = validator.Validate(patient);
-
-if (!result.IsValid)
-{
-    foreach (var issue in result.Issues)
-    {
-        Console.WriteLine($"{issue.Severity} {issue.Path}: {issue.Message}");
-    }
-}
-```
-
-Base validation is kept separate from implementation-guide and local business rules.
-
-`FhirValidator.Validate(Resource)` is the supported public validation entry point. Primitive
-format validation is included while walking the Resource graph; primitive wrappers do not expose
-`IsValid()` and SDK consumers cannot replace the internal primitive codecs or validators.
-
-## Runtime and Generated Models
-
-The Runtime contract keeps model execution separate from model declarations:
-
-- generated models depend on the public `Core` hierarchy, including `Resource`, `DataType`, and
-  `PrimitiveType<T>`;
-- JSON parsing, serialization, validation traversal, primitive codecs, validators, registries,
-  and model metadata lookup remain Runtime implementation details;
-- primitive wrappers are thin type declarations and must not contain validation algorithms;
-- model-specific R5 factories, datatype/open-type metadata, and supported validation rules are
-  generated under `Generated/R5/ModelMetadata`.
-
-See `docs/gen/MyFhirSdk_Primitive_Generation_Phase_B_Handoff.md` for the fixed primitive matrix,
-generation policy, literal-preservation rules, bootstrap debt, and Phase B acceptance criteria.
-Phase B generated primitive wrappers are committed under `Generated/R5/Primitives`; CodeGen type
-mapping derives from the validated versioned policy rather than a static primitive dictionary.
-See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Handoff.md` for the Phase C consumer contract,
-remaining complex-model ownership, and entry gates.
-See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_C_Implementation_Guide.md` for the completed
-C0-C9 implementation order, gates, artifact layout, testing, and rollback strategy.
-See `CodeGen/README.md` for local-tool build, install, generation, upgrade, rollback, and
-troubleshooting operations. See `docs/gen/MyFhirSdk_R5_Models_Generation_Phase_D_Handoff.md`
-for the completed Phase D dependency seam, compatibility contract, ownership register, release
-gates, and next-phase work.
-
-## TW Core Profile Validation
-
-```csharp
-using MyFhirSdk.ImplementationGuides.TwCore;
-using MyFhirSdk.Primitives;
-using MyFhirSdk.Resources;
-using MyFhirSdk.Types;
-using MyFhirSdk.Validation;
-using MyFhirSdk.Validation.Profiles;
-
-var patient = new Patient
-{
-    Identifier =
-    {
-        new Identifier
-        {
-            System = new FhirUri("https://www.moi.gov.tw/"),
-            Value = new FhirString("A123456789")
-        }
-    }
-};
-
-var profileValidator = new ProfileValidator(
-    new FhirValidator(),
-    TwCorePackage.Default);
-
-var result = profileValidator.Validate(patient, TwCoreProfiles.Patient);
-```
-
-The initial TW Core Patient proof of concept checks that `Patient.identifier` exists and that each identifier has both `system` and `value`.
-
-## REST Client Usage
-
-```csharp
-using MyFhirSdk.Client;
-using MyFhirSdk.Client.Authentication;
-using MyFhirSdk.Client.Configuration;
-using MyFhirSdk.Client.Search;
-using MyFhirSdk.Primitives;
-using MyFhirSdk.Resources;
-using MyFhirSdk.Serialization.Json;
-
-using var httpClient = new HttpClient();
-
-var client = new FhirClient(
-    httpClient,
-    new FhirJsonSerializer(),
-    new FhirJsonParser(),
-    new FhirClientOptions
-    {
-        BaseAddress = new Uri("https://example.org/fhir"),
-        Timeout = TimeSpan.FromSeconds(30),
-        ValidateBeforeSend = true
-    },
-    authProvider: new BearerTokenAuthProvider("token"));
-
-var created = await client.CreateAsync(new Patient
-{
-    Active = new FhirBoolean(true)
-});
-
-var read = await client.ReadAsync<Patient>(created.Id!);
-
-var query = FhirSearchQuery.Create()
-    .Where("name", "Peter")
-    .Count(10);
-
-var bundle = await client.SearchAsync<Patient>(query);
-
-created.Active = new FhirBoolean(false);
-var updated = await client.UpdateAsync(created);
-```
-
-Pass `authProvider: null` or omit the parameter for unauthenticated servers. `ReadAsync` returns `null` when the server responds with `404 Not Found`.
-
-## Tests
-
-Run the full test suite from the repository root:
-
-```powershell
-dotnet test MyFhirSdk.sln
-```
-
-Integration smoke tests are skipped by default. To run the Patient create/read/search/update smoke flow against a FHIR R5 server:
-
-```powershell
-$env:MYFHIRSDK_INTEGRATION_BASE_URL="https://hapi.fhir.org/baseR5"
-dotnet test Tests\Client\MyFhirSdk.Client.Tests.csproj --filter Category=Integration
-```
-
-For servers that require bearer authentication:
-
-```powershell
-$env:MYFHIRSDK_INTEGRATION_BEARER_TOKEN="your-token"
-```
-
-## Continuous Integration
-
-The GitHub Actions workflow at `.github/workflows/ci.yml` runs on push, pull request, and manual dispatch.
-Windows and Ubuntu build/test the SDK and verify installed-tool generation with the same canonical
-Runtime compiler reference and tool package. Fresh generated sources are compiled into an isolated
-SDK, tested and deployed, and compared across platforms. Windows also reconstructs the immutable
-K0 baseline and verifies the restored historical solution for source rollback.
-
-The workflow does not set `MYFHIRSDK_INTEGRATION_BASE_URL`, so integration smoke tests remain skipped in regular CI runs.
-
-## Packaging
-
-Create a local NuGet package:
-
-```powershell
-dotnet pack MyFhirSdk.csproj -c Release
-```
-
-This command creates a local SDK package under `bin/Release`; it does not prepare a complete
-approved SDK/Runtime package feed. Independent Runtime/SDK package metadata, licensing and
-publishing remain release-readiness work. Use project references or verified implementation DLL
-deployment while public release is unapproved. Local CodeGen tool packaging uses the pipeline above.
-
-## Development Commands
-
-```powershell
-dotnet restore MyFhirSdk.sln
-dotnet build MyFhirSdk.sln
-dotnet test MyFhirSdk.sln
-dotnet pack MyFhirSdk.csproj -c Release
-```
-
-## Design Notes
-
-- Base FHIR validation and IG/profile validation are intentionally separate.
-- JSON fixture tests cover serializer and parser behavior end to end.
-- The REST client is designed around replaceable serializer, parser, HTTP sender, response handler, validator, and authentication collaborators.
-- Current IG work starts with TW Core Patient validation and can be extended by adding packages and profile rules under `Validation/Profiles/`.
-- Runtime public/API, accessibility, compiled dependency, primitive registry, codec, provider, and generated-style wrapper boundaries are protected by `Tests/Architecture/`.
-
-See the `docs/` folder for deeper architecture notes and the active roadmap.
+Delivery uses verified implementation DLLs or project references. Public/private NuGet publishing, licensing, full terminology/FHIRPath, official IG compilation and cross-version conversion remain separate work. Exporting a local tool package does not publish it.

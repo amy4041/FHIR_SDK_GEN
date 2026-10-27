@@ -53,36 +53,64 @@ static async Task<object> Exercise<TBundle, TOutcome, TPatient>(string release, 
         throw new InvalidOperationException(release + " controlled HTTP read failed.");
     Console.WriteLine(release + ": JSON, validation and controlled HTTP read passed.");
 
-    var result = new { fhirVersion = context.Identity.FhirVersion, modelAssembly = typeof(TPatient).Assembly.GetName().Name,
-        roundTrip = true, validation = true, typedClient = true };
+    object Result(string status) => new { fhirVersion = context.Identity.FhirVersion, modelAssembly = typeof(TPatient).Assembly.GetName().Name,
+        roundTrip = true, validation = true, typedClient = true,
+        externalServer = new { status, operation = "GET metadata; GET Patient/{id}", versionChecked = status == "Passed" } };
     var endpoint = Environment.GetEnvironmentVariable($"MYFHIRSDK_{release}_INTEGRATION_BASE_URL")?.Trim();
     var id = Environment.GetEnvironmentVariable($"MYFHIRSDK_{release}_PATIENT_ID")?.Trim();
     if (string.IsNullOrEmpty(endpoint) && string.IsNullOrEmpty(id))
     {
         Console.WriteLine(release + ": external server read skipped (no endpoint/Patient ID supplied).");
-        return result;
+        return Result("NotRun");
     }
-    if (string.IsNullOrEmpty(id) || !Uri.TryCreate(endpoint, UriKind.Absolute, out var baseAddress) ||
+    if (string.IsNullOrEmpty(id) || id.Length > 64 || id.Any(c => !char.IsAsciiLetterOrDigit(c) && c is not ('-' or '.')) ||
+        !Uri.TryCreate(endpoint, UriKind.Absolute, out var baseAddress) ||
         baseAddress.Scheme is not ("http" or "https") || baseAddress.UserInfo.Length != 0 ||
         baseAddress.Query.Length != 0 || baseAddress.Fragment.Length != 0)
         throw new ArgumentException($"Set MYFHIRSDK_{release}_INTEGRATION_BASE_URL and MYFHIRSDK_{release}_PATIENT_ID together.");
 
     var token = Environment.GetEnvironmentVariable($"MYFHIRSDK_{release}_INTEGRATION_BEARER_TOKEN");
     IAuthProvider auth = string.IsNullOrWhiteSpace(token) ? new NoAuthProvider() : new BearerTokenAuthProvider(token);
-    using var externalHttp = new HttpClient();
+    // Keep credentials and requests on the explicitly selected endpoint.
+    using var externalHttp = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false })
+        { Timeout = TimeSpan.FromSeconds(30) };
     var externalClient = new FhirClient<TBundle, TOutcome>(externalHttp, context,
         new FhirClientOptions { BaseAddress = baseAddress }, auth);
     TPatient? existingPatient;
-    try { existingPatient = await externalClient.ReadAsync<TPatient>(id); }
+    var failureStage = "MetadataRequest";
+    var failureCode = "RequestFailed";
+    try
+    {
+        var metadataUri = new Uri(baseAddress.AbsoluteUri.TrimEnd('/') + "/metadata");
+        using var metadataRequest = new HttpRequestMessage(HttpMethod.Get, metadataUri);
+        metadataRequest.Headers.Accept.ParseAdd("application/fhir+json");
+        await auth.ApplyAsync(metadataRequest);
+        using var metadataResponse = await externalHttp.SendAsync(metadataRequest);
+        metadataResponse.EnsureSuccessStatusCode();
+        using var metadata = JsonDocument.Parse(await metadataResponse.Content.ReadAsStringAsync());
+        failureStage = "MetadataVersion";
+        failureCode = "VersionMismatch";
+        if (metadata.RootElement.GetProperty("resourceType").GetString() != "CapabilityStatement" ||
+            metadata.RootElement.GetProperty("fhirVersion").GetString() != context.Identity.FhirVersion)
+            throw new InvalidOperationException("Server FHIR version differs from the selected context.");
+        failureStage = "PatientRead";
+        failureCode = "RequestFailed";
+        existingPatient = await externalClient.ReadAsync<TPatient>(id);
+        failureStage = "PatientIdentity";
+        failureCode = existingPatient is null ? "PatientMissing" : "PatientIdMismatch";
+        if (existingPatient?.Id != id)
+            throw new InvalidOperationException("External read returned an unexpected Patient ID.");
+    }
     catch (Exception error)
     {
+        Console.Error.WriteLine("D5_SERVER_FAILURE " + JsonSerializer.Serialize(new { stage = failureStage, code = failureCode }));
         // Keep remote error bodies and request details out of example console logs.
         throw new InvalidOperationException(release + " external read failed (" + error.GetType().Name + ").");
     }
     if (existingPatient is null) throw new InvalidOperationException("External Patient read returned no resource.");
     // Do not print Patient content, endpoint, ID or credentials.
     Console.WriteLine(release + ": external server read passed.");
-    return result;
+    return Result("Passed");
 }
 
 sealed class ExampleHandler(string json) : HttpMessageHandler

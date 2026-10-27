@@ -47,7 +47,9 @@ $env:MYFHIRSDK_R4_PATIENT_ID = 'existing-patient-id'
 dotnet run --project examples/R4/R4Example.csproj -c Release
 ```
 
-R5 使用 `MYFHIRSDK_R5_INTEGRATION_BASE_URL`、`MYFHIRSDK_R5_PATIENT_ID`。如需 bearer token，設定 `MYFHIRSDK_R4_INTEGRATION_BEARER_TOKEN` 或 `MYFHIRSDK_R5_INTEGRATION_BEARER_TOKEN`。程式不輸出 Patient、endpoint、ID 或 token。範例只執行 GET；Patient 必須事先存在。只設定 endpoint 或只設定 ID 會失敗，避免誤以為已完成外部測試。
+R5 使用 `MYFHIRSDK_R5_INTEGRATION_BASE_URL`、`MYFHIRSDK_R5_PATIENT_ID`。如需 bearer token，設定 `MYFHIRSDK_R4_INTEGRATION_BEARER_TOKEN` 或 `MYFHIRSDK_R5_INTEGRATION_BEARER_TOKEN`。程式不輸出 Patient、endpoint、ID 或 token。先確認測試環境與 GET 操作權限，Patient 必須是預先存在的 synthetic data。範例只執行 `GET metadata` 與 `GET Patient/{id}`：先核對 CapabilityStatement.fhirVersion 精確符合所選 context，再核對讀回的 Patient ID。版本不符、redirect 或缺少資源都會失敗。只設定 endpoint 或只設定 ID 也會失敗。
+
+最後一行 JSON 在每個 release 的 `externalServer` 記錄 NotRun／Passed 與 versionChecked。未設定環境時的離線成功不表示實際 server 通過。Repository 端另提供 `eng/Test-FhirDeliveryServer.py`，可對指定 bundle、版本與 synthetic Patient 執行只讀驗收並保留 manifest／assembly hashes；一般 CI 不會自動呼叫它。
 
 R4 使用 `R4ModelProvider` 建立 `FhirModelContext`；R5 使用 `R5ModelProvider.Metadata`、`Primitives`、`Validation` 明確建立 context。不要把某一版本的 CLR model 傳給另一版本 context。呼叫端持有及釋放 HttpClient。
 

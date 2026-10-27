@@ -17,6 +17,17 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def read_manifest(root):
+    # Parse and fingerprint the same bytes, rather than two independent reads.
+    data = (root / "delivery-manifest.json").read_bytes()
+    return json.loads(data.decode("utf-8")), hashlib.sha256(data).hexdigest()
+
+
+def assert_manifest_unchanged(root, expected_hash):
+    if sha(root / "delivery-manifest.json") != expected_hash:
+        raise ValueError("Delivery manifest changed during verification")
+
+
 def inventory(root):
     return {p.relative_to(root).as_posix(): sha(p) for p in sorted(root.rglob("*")) if p.is_file()}
 

@@ -1,5 +1,7 @@
 # 驗收與使用端遷移
 
+目前可執行的交付指令、完整 API 遷移對照、assembly 圖及只讀 server smoke 見 [D5 交付與遷移指南](Delivery_and_Migration.md)。各項實際狀態見 [D5 紀錄](D5_Implementation.md)；沒有 server 環境時，實際驗收保持 Pending。
+
 ## 1. 架構完成條件
 
 - SDK csproj 與傳遞 project graph 不含 R4／R5 Models、TW Core 專案；SDK implementation 的 assembly references 也不含它們。

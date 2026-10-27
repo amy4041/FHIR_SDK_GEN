@@ -45,6 +45,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python eng/Test-SdkDecouplingD4.py --tool-package artifacts/d4-canonical/MyFhirSdk.CodeGen.Tool.1.3.1.nupkg --output artifacts/sdk-decoupling/d4/ci
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify D5 clean-source offline delivery
+        run: python eng/Test-SdkDecouplingD5.py --bundle artifacts/sdk-decoupling/d4/ci/bundle --output artifacts/sdk-decoupling/d5/ci
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sdk-decoupling-d5-${{ matrix.os }}
+          path: artifacts/sdk-decoupling/d5/ci
+          include-hidden-files: true
+          if-no-files-found: warn
       - uses: actions/upload-artifact@v4
         if: always()
         with:
