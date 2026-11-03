@@ -132,9 +132,11 @@ def project_inventory(project):
     Reference.FullPath identifies the MSBuild item, not its DLL; use HintPath.
     """
     paths = {"SdkAssemblyPath": "bin/Release/net9.0/MyFhirSdk.dll",
-             "RuntimeAssemblyPath": "bin/Release/net9.0/MyFhirSdk.Runtime.dll"}
+             "RuntimeAssemblyPath": "bin/Release/net9.0/MyFhirSdk.Runtime.dll",
+             "ContractsAssemblyPath": "bin/Release/net9.0/MyFhirSdk.ModelContracts.dll",
+             "SupportAssemblyPath": "bin/Release/net9.0/MyFhirSdk.ModelSupport.dll"}
     if (ROOT / "Models/R5/MyFhirSdk.R5.Models.csproj").is_file():
-        paths["ModelsAssemblyPath"] = "bin/Release/net9.0/MyFhirSdk.R5.Models.dll"
+        paths["ModelsAssemblyPath"] = "Models/R5/bin/Release/net9.0/MyFhirSdk.R5.Models.dll"
     data = json.loads(run(["dotnet", "msbuild", project, "-p:Configuration=Release",
                            *[f"-p:{name}={ROOT / path}" for name, path in paths.items()],
                            "-getItem:Compile,ProjectReference,Reference", "-getProperty:TargetFramework,AssemblyName"]))
@@ -146,7 +148,7 @@ def project_inventory(project):
     dll_references = []
     for item in data["Items"]["Reference"]:
         hint = item.get("HintPath")
-        if item["Identity"] in {"MyFhirSdk", "MyFhirSdk.Runtime", "MyFhirSdk.R5.Models"} and not hint:
+        if item["Identity"] in {"MyFhirSdk", "MyFhirSdk.Runtime", "MyFhirSdk.R5.Models", "MyFhirSdk.ModelContracts", "MyFhirSdk.ModelSupport"} and not hint:
             raise ValueError(f"Unresolved implementation HintPath in {project}: {item['Identity']}")
         dll_references.append({"identity": item["Identity"],
                                "hintPath": portable((ROOT / project).parent / hint) if hint else None})

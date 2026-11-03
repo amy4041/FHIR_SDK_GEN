@@ -21,7 +21,7 @@ public sealed class ModelMetadataProviderTests
                     "payload",
                     typeof(FakeDataType))
             ]);
-        var parser = new FhirJsonParser(provider);
+        var parser = new FhirJsonParser(provider, TestContexts.R5.Primitives);
 
         var resource = parser.Parse<FakeResource>(
             """
@@ -57,7 +57,7 @@ public sealed class ModelMetadataProviderTests
             ]
         };
 
-        var json = new FhirJsonSerializer(provider).Serialize(resource);
+        var json = new FhirJsonSerializer(provider, TestContexts.R5.Primitives).Serialize(resource);
         var extension = JsonNode.Parse(json)!["extension"]![0]!;
 
         Assert.Equal(
@@ -77,14 +77,14 @@ public sealed class ModelMetadataProviderTests
                     typeof(FakeDataType),
                     "payloadFakeDataType")
             ]);
-        var serializer = new FhirJsonSerializer(provider);
+        var serializer = new FhirJsonSerializer(provider, TestContexts.R5.Primitives);
         var first = new FakeResource
         {
             Payload = new FakeDataType { Code = "open-type" }
         };
 
         var json = serializer.Serialize(first);
-        var parsed = new FhirJsonParser(provider).Parse<FakeResource>(json);
+        var parsed = new FhirJsonParser(provider, TestContexts.R5.Primitives).Parse<FakeResource>(json);
 
         Assert.Contains("\"payloadFakeDataType\"", json, StringComparison.Ordinal);
         Assert.DoesNotContain("\"payload\"", json, StringComparison.Ordinal);
@@ -110,7 +110,7 @@ public sealed class ModelMetadataProviderTests
             ]);
 
         var exception = Assert.Throws<FhirSdkException>(() =>
-            new FhirJsonParser(provider).Parse<FakeResource>(
+            new FhirJsonParser(provider, TestContexts.R5.Primitives).Parse<FakeResource>(
                 """
                 {
                   "resourceType": "FakeResource",
@@ -127,7 +127,7 @@ public sealed class ModelMetadataProviderTests
     {
         var ruleProvider = new FakeValidationRuleProvider();
         var validator = new FhirValidator(
-            ruleProvider,
+            ruleProvider, TestContexts.R5.Primitives,
             new FhirObjectGraphWalker());
 
         var result = validator.Validate(new FakeResource());

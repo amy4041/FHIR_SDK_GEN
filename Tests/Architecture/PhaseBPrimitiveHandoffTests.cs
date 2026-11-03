@@ -86,7 +86,7 @@ public sealed class PhaseBPrimitiveHandoffTests
             PrimitiveValidators.String);
 
         return PrimitiveRegistry.Create(
-            PrimitiveRegistry.Default.Definitions.Append(generatedDefinition));
+            TestContexts.R5.Primitives.Definitions.Append(generatedDefinition));
     }
 
     public sealed class PhaseBGeneratedString : PrimitiveType<string>

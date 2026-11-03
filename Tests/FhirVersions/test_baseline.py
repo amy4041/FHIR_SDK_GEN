@@ -42,7 +42,9 @@ class BaselineIntegrityTests(unittest.TestCase):
                 inventory = baseline.project_inventory(project)
                 references = {r["identity"]: r["hintPath"] for r in inventory["dllReferences"]}
                 self.assertEqual({"MyFhirSdk": "bin/Release/net9.0/MyFhirSdk.dll",
-                                  "MyFhirSdk.R5.Models": "bin/Release/net9.0/MyFhirSdk.R5.Models.dll",
+                                  "MyFhirSdk.R5.Models": "Models/R5/bin/Release/net9.0/MyFhirSdk.R5.Models.dll",
+                                  "MyFhirSdk.ModelContracts": "bin/Release/net9.0/MyFhirSdk.ModelContracts.dll",
+                                  "MyFhirSdk.ModelSupport": "bin/Release/net9.0/MyFhirSdk.ModelSupport.dll",
                                   "MyFhirSdk.Runtime": "bin/Release/net9.0/MyFhirSdk.Runtime.dll"}, references)
                 self.assertEqual(sorted(references.values()), inventory["items"]["Reference"])
                 self.assertEqual("Release", inventory["evaluation"]["Configuration"])

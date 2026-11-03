@@ -6,6 +6,20 @@ param(
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+if ($IsWindows) {
+    # Expected missing-DLL failures must exit without a Windows Error Reporting dialog.
+    if (-not ('MyFhirSdk.Eng.K3ErrorMode' -as [type])) {
+        Add-Type -TypeDefinition @'
+namespace MyFhirSdk.Eng {
+    public static class K3ErrorMode {
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        public static extern uint SetErrorMode(uint mode);
+    }
+}
+'@
+    }
+    [MyFhirSdk.Eng.K3ErrorMode]::SetErrorMode(0x8003) | Out-Null
+}
 . (Join-Path $PSScriptRoot 'KernelMigration.Common.ps1')
 . (Join-Path $PSScriptRoot 'KernelConsumerRebuild.Common.ps1')
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -61,6 +75,7 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
         'ModelSupport/MyFhirSdk.ModelSupport.csproj' = 'production-model-support'
         'Models/R5/MyFhirSdk.R5.Models.csproj' = 'production-r5-models'
         'Models/R4/MyFhirSdk.R4.Models.csproj' = 'production-r4-models'
+        'ImplementationGuides/TwCore/MyFhirSdk.ImplementationGuides.TwCore.csproj' = 'production-r4-ig'
         'Tests/FhirVersions/V6/Smoke/VersionedClientSmoke.csproj' = 'versioned-client-smoke-consumer'
         'Tests/FhirVersions/V7/R4/R4Consumer.csproj' = 'delivery-r4-consumer'
         'Tests/FhirVersions/V7/R5/R5Consumer.csproj' = 'delivery-r5-consumer'
@@ -82,6 +97,11 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
         $dllReferences = @($xml.SelectNodes('//Reference') | ForEach-Object { $_.GetAttribute('Include') })
         $role = if ($project -in $sdkTests) { 'sdk-test-consumer' } elseif ($special.ContainsKey($project)) { $special[$project] } else { throw "Unclassified consumer project: $project" }
         if ($role -eq 'sdk-test-consumer' -and -not @($references | Where-Object { $_ -match '(^|[\\/])MyFhirSdk.csproj$' }).Count) { throw "SDK consumer reference missing: $project" }
+        if ($role -eq 'production-sdk') {
+            Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @(
+                'Runtime/MyFhirSdk.Runtime.csproj', 'ModelContracts/MyFhirSdk.ModelContracts.csproj',
+                'ModelSupport/MyFhirSdk.ModelSupport.csproj')
+        }
         if ($role -eq 'experiment-r4-models') {
             Assert-KernelExperimentModelDependencies -ProjectPath (Join-Path $root $project) -RepositoryRoot $root
         }
@@ -91,6 +111,10 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
         if ($role -eq 'production-model-support') {
             Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @('ModelContracts/MyFhirSdk.ModelContracts.csproj')
         }
+        if ($role -eq 'production-r4-ig') {
+            Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @(
+                'MyFhirSdk.csproj', 'Models/R4/MyFhirSdk.R4.Models.csproj')
+        }
         if ($role -in @('production-r5-models', 'production-r4-models')) {
             Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @(
                 'ModelContracts/MyFhirSdk.ModelContracts.csproj', 'ModelSupport/MyFhirSdk.ModelSupport.csproj')
@@ -99,11 +123,12 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
             Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @('Models/R5/MyFhirSdk.R5.Models.csproj')
         }
         if ($role -eq 'versioned-client-smoke-consumer') {
-            Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @('MyFhirSdk.csproj', 'Models/R4/MyFhirSdk.R4.Models.csproj')
+            Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root @('MyFhirSdk.csproj', 'Models/R4/MyFhirSdk.R4.Models.csproj', 'Models/R5/MyFhirSdk.R5.Models.csproj')
         }
         if ($role -like 'delivery-*-consumer') {
             $dependencies = @('MyFhirSdk.csproj')
             if ($role -ne 'delivery-r5-consumer') { $dependencies += 'Models/R4/MyFhirSdk.R4.Models.csproj' }
+            if ($role -ne 'delivery-r4-consumer') { $dependencies += 'Models/R5/MyFhirSdk.R5.Models.csproj' }
             Assert-KernelNeutralProjectDependencies (Join-Path $root $project) $root $dependencies
         }
         if ($role -eq 'experiment-r4-provider') {
@@ -161,7 +186,7 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
         New-Item -ItemType Directory -Path $destination -Force | Out-Null
         Get-ChildItem "$root/Tests/KernelMigration/$name" -File | Copy-Item -Destination $destination
     }
-    $properties = @("-p:MyFhirSdkTargetFramework=$tfm", "-p:SdkAssemblyPath=$sdk", "-p:RuntimeAssemblyPath=$runtime", "-p:ModelsAssemblyPath=$root/bin/Release/$tfm/MyFhirSdk.R5.Models.dll")
+    $properties = @("-p:MyFhirSdkTargetFramework=$tfm", "-p:SdkAssemblyPath=$sdk", "-p:RuntimeAssemblyPath=$runtime", "-p:ModelsAssemblyPath=$root/Models/R5/bin/Release/$tfm/MyFhirSdk.R5.Models.dll", "-p:ContractsAssemblyPath=$root/bin/Release/$tfm/MyFhirSdk.ModelContracts.dll", "-p:SupportAssemblyPath=$root/bin/Release/$tfm/MyFhirSdk.ModelSupport.dll")
     Invoke-KernelDotNet (@('build', "$output/source/Consumer/Consumer.csproj", '-c', 'Release', '-o', "$output/current-consumer") + $properties)
     Invoke-KernelDotNet (@('build', "$output/source/RebuiltConsumer/RebuiltConsumer.csproj", '-c', 'Release', '-o', "$output/chain-build") + $properties)
     Invoke-KernelDotNet @('build', "$output/source/Inventory/Inventory.csproj", '-c', 'Release', "-p:MyFhirSdkTargetFramework=$tfm", '-o', "$output/inventory-tool")
@@ -234,7 +259,7 @@ Invoke-KernelEvidenceRun -Evidence $evidence -OutputPath "$output/evidence.json"
     Start-KernelGate $evidence 'splitInventory'
     $contracts = "$root/bin/Release/$tfm/MyFhirSdk.ModelContracts.dll"
     $support = "$root/bin/Release/$tfm/MyFhirSdk.ModelSupport.dll"
-    $models = "$root/bin/Release/$tfm/MyFhirSdk.R5.Models.dll"
+    $models = "$root/Models/R5/bin/Release/$tfm/MyFhirSdk.R5.Models.dll"
     Invoke-KernelDotNet @("$output/inventory-tool/Inventory.dll", $sdk, "$output/public-api.txt", $runtime, $contracts, $support, $models)
     Invoke-KernelDotNet @("$output/inventory-tool/Inventory.dll", $sdk, "$output/public-api-repeat.txt", $runtime, $contracts, $support, $models)
     if ((Hash "$output/public-api.txt") -cne (Hash "$output/public-api-repeat.txt")) { throw 'Split API inventory is not deterministic.' }

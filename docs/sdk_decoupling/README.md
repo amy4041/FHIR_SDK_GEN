@@ -1,6 +1,6 @@
 # SDK 版本解耦與 IG 專案化
 
-日期：2026-10-21。狀態：實作規劃，尚未執行以下程式變更。
+日期：2026-10-27。狀態：D0–D4 已提交並由使用者確認 CI 通過，見 [D4 實作紀錄](D4_Implementation.md)。D5 文件與交付／只讀 smoke 入口已實作，本機離線 preview 通過，待 review 與提交後的乾淨來源 CI，見 [D5 實作紀錄](D5_Implementation.md)；目前沒有外部測試環境，實際 server 驗收與 D 系列結案保留 Pending。[D3 實作紀錄](D3_Implementation.md)、[D2 實作紀錄](D2_Implementation.md)、[D1 實作紀錄](D1_Implementation.md) 與 [D0 盤點紀錄](D0_Inventory.md) 保留各階段結果。
 
 目標：移除共用 SDK 對 R5 Models 的直接及間接依賴，刪除 R5 預設組合與舊版 Client，將 TW Core 移至獨立專案，同時保留 IG 的注入與替換能力。
 
@@ -13,10 +13,12 @@
 | [設計決策](Design.md) | 目標依賴、API 移除清單、IG 契約與 TW Core 範圍 |
 | [實作計畫](Implementation_Plan.md) | D0–D5 的工作順序、檔案影響與階段交付 |
 | [驗收與遷移](Acceptance_and_Migration.md) | 架構、功能、部署與 CI 驗收，以及使用端遷移方式 |
+| [目前交付與 API 遷移](Delivery_and_Migration.md) | 實際依賴圖、移除 API 對照、交付指令與只讀 server smoke |
+| [D5 實作紀錄](D5_Implementation.md) | 本機／CI／實際 server 的驗收狀態與待結案條件 |
 
 ## 目前來源
 
-規劃時 HEAD：`f52c64a2b5c4b7db81a254a1286dda626f8c91e7`，訊息為 `feat(delivery): finalize V7 handoff with external R4/R5 examples`。這是 D0 的候選 baseline；D0 需再確認該 revision 的 CI／交付驗證結果，不將先前 `c7680b7` 的 CI 當成此 revision 的證據。
+規劃時 HEAD：`f52c64a2b5c4b7db81a254a1286dda626f8c91e7`，訊息為 `feat(delivery): finalize V7 handoff with external R4/R5 examples`。D0 已確認此 revision 的 [CI 39553734204](https://github.com/amy4041/FHIR_SDK_GEN/actions/runs/39553734204) 成功，正式固定為 baseline；來源、API、生成 hashes 與完整 job 連結見 [D0 盤點紀錄](D0_Inventory.md)，未借用先前 `c7680b7` 的 CI。
 
 先前成果見 [V7 結案](../fhir_versions/V7_Closeout.md)、[V7 交付指南](../fhir_versions/V7_Delivery_Guide.md)。使用者先前已完成 R4／R5 generator 與實際 server 的手動 smoke；新 API 遷移後仍需另做對應版本的驗收。
 

@@ -52,12 +52,12 @@ internal sealed class ExperimentContext
         R4ExperimentComposition.ModelTypes);
 
     internal static ExperimentContext R5() => new("5.0.0", "hl7.fhir.r5.core",
-        typeof(MyFhirSdk.Resources.Patient).Assembly, R5ModelMetadataProvider.Default,
-        PrimitiveRegistry.Default, R5ModelMetadataProvider.Default);
+        typeof(MyFhirSdk.Resources.Patient).Assembly, TestContexts.R5.Metadata,
+        TestContexts.R5.Primitives, TestContexts.R5.Rules);
 
     internal static ExperimentContext MixedForNegativeTest() => new("4.0.1", "hl7.fhir.r4.core",
         typeof(MyFhirSdk.R4.Resources.Patient).Assembly, R4ExperimentComposition.CreateMetadata(),
-        PrimitiveRegistry.Default, R4ExperimentComposition.CreateRules());
+        TestContexts.R5.Primitives, R4ExperimentComposition.CreateRules());
 
     internal Resource CreateResource(string name) => _metadata.GetRequiredResource(name).CreateResource();
 

@@ -17,12 +17,18 @@ tasks.Add(Exercise<MyFhirSdk.R4.Resources.Bundle, MyFhirSdk.R4.Resources.Operati
 #endif
 #if USE_R5
 tasks.Add(Exercise<MyFhirSdk.Resources.Bundle, MyFhirSdk.Resources.OperationOutcome, MyFhirSdk.Resources.Patient>(
-    MyFhirSdk.ModelMetadata.R5.R5ModelContext.Default, "\"42\""));
+    new MyFhirSdk.ModelMetadata.FhirModelContext(MyFhirSdk.ModelMetadata.R5.R5ModelProvider.Metadata, MyFhirSdk.ModelMetadata.R5.R5ModelProvider.Primitives, MyFhirSdk.ModelMetadata.R5.R5ModelProvider.Validation), "\"42\""));
 #endif
 var releases = await Task.WhenAll(tasks);
+#if USE_IG
+var ig = IgProbe.Run();
+#else
+object? ig = null;
+#endif
 var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name!.StartsWith("MyFhirSdk", StringComparison.Ordinal))
-    .OrderBy(a => a.GetName().Name, StringComparer.Ordinal).Select(a => new { name = a.GetName().Name, identity = a.FullName, path = a.Location }).ToArray();
-Console.WriteLine(JsonSerializer.Serialize(new { status = "Passed", releases, assemblies }));
+    .OrderBy(a => a.GetName().Name, StringComparer.Ordinal).Select(a => new { name = a.GetName().Name, identity = a.FullName, path = a.Location,
+        references = a.GetReferencedAssemblies().Select(r => r.Name).Order().ToArray() }).ToArray();
+Console.WriteLine(JsonSerializer.Serialize(new { status = "Passed", releases, ig, assemblies }));
 
 static async Task<object> Exercise<TBundle, TOutcome, TPatient>(FhirModelContext context, string size)
     where TBundle : Resource where TOutcome : Resource where TPatient : Resource

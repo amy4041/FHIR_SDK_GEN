@@ -1,0 +1,68 @@
+{
+  "mode": "read-only-no-execution",
+  "files": [
+    {
+      "path": "CodeGenDemo/out/r4/Generated/R4/model-generation-manifest.json",
+      "bytes": 126623,
+      "sha256": "5363245958d9cbdbf1833933d4cd1c9d72bfa46371a93ec3aca9df727ac1db28",
+      "references": []
+    },
+    {
+      "path": "CodeGenDemo/out/r4/Generated/R4/Primitives/primitive-generation-manifest.json",
+      "bytes": 9039,
+      "sha256": "b612f45f229e6b0b04e36b899db7da781fc1a54ff254ee492880e4ac03834aa2",
+      "references": []
+    },
+    {
+      "path": "CodeGenDemo/out/r4-access-check/Generated/R4/model-generation-manifest.json",
+      "bytes": 126623,
+      "sha256": "5363245958d9cbdbf1833933d4cd1c9d72bfa46371a93ec3aca9df727ac1db28",
+      "references": []
+    },
+    {
+      "path": "CodeGenDemo/out/r5/Generated/R5/model-generation-manifest.json",
+      "bytes": 159404,
+      "sha256": "f3c484250dbd489aa818d388b06c59faa464e176409f8ea861d978e20cad1e4f",
+      "references": []
+    },
+    {
+      "path": "CodeGenDemo/out/r5/Generated/R5/Primitives/primitive-generation-manifest.json",
+      "bytes": 9422,
+      "sha256": "17772b433f44806cf91290447fabc07db6c491dba684c95c7efe88bb69b614e6",
+      "references": []
+    },
+    {
+      "path": "SdkDemo/Program.cs",
+      "bytes": 3805,
+      "sha256": "c263b34e913deac420f8bca919b40596ee62d0e147f15c993ff301b959ed3ddd",
+      "references": [
+        {
+          "line": 3,
+          "kind": "r5-binding"
+        },
+        {
+          "line": 10,
+          "kind": "r5-binding"
+        },
+        {
+          "line": 39,
+          "kind": "r5-context"
+        },
+        {
+          "line": 79,
+          "kind": "r5-binding"
+        },
+        {
+          "line": 80,
+          "kind": "r5-binding"
+        }
+      ]
+    },
+    {
+      "path": "SdkDemo/SdkDemo.csproj",
+      "bytes": 1003,
+      "sha256": "0df68761e5a53601a7d959c6f8b68e6b3512d235d8891b94bf149838171d9816",
+      "references": []
+    }
+  ]
+}

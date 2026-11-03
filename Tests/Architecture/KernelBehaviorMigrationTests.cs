@@ -16,7 +16,7 @@ public sealed class KernelBehaviorMigrationTests
     [MemberData(nameof(PrimitiveRuntimeContractTests.CodecCases), MemberType = typeof(PrimitiveRuntimeContractTests))]
     public void EveryPrimitiveCrossesKernelBoundaryWithValueAndMetadata(Type type, string rawJson)
     {
-        var definition = PrimitiveRegistry.Default.GetRequired(type);
+        var definition = TestContexts.R5.Primitives.GetRequired(type);
         using var raw = JsonDocument.Parse(rawJson);
         var value = definition.Codec.CreatePrimitive(type, raw.RootElement);
         var element = Assert.IsAssignableFrom<Element>(value);
@@ -38,10 +38,10 @@ public sealed class KernelBehaviorMigrationTests
 
         var patient = new Patient();
         patient.Extension.Add(new Extension { Url = "https://example.test/value", Value = (IFhirExtensionValue)value });
-        var serializer = new FhirJsonSerializer();
-        var parser = new FhirJsonParser();
+        var serializer = new FhirJsonSerializer(TestContexts.R5);
+        var parser = new FhirJsonParser(TestContexts.R5);
         var json = serializer.Serialize(patient);
-        var property = R5ModelMetadataProvider.Default.GetRequiredExtensionValuePropertyName(type);
+        var property = TestContexts.R5.Metadata.GetRequiredExtensionValuePropertyName(type);
         var extension = JsonNode.Parse(json)!["extension"]![0]!;
         Assert.True(JsonNode.DeepEquals(JsonNode.Parse(rawJson), extension[property]));
         Assert.Equal("primitive-id", extension["_" + property]!["id"]!.GetValue<string>());
@@ -50,7 +50,7 @@ public sealed class KernelBehaviorMigrationTests
         Assert.Equal(type, parsed.GetType());
         Assert.Equal(original, ((IPrimitiveValueAccessor)parsed).UntypedValue);
         Assert.Equal("origin", Assert.IsType<FhirString>(Assert.Single(parsed.Extension).Value).Value);
-        Assert.True(new FhirValidator().Validate(roundTrip).IsValid);
+        Assert.True(new FhirValidator(TestContexts.R5).Validate(roundTrip).IsValid);
 
         ((IPrimitiveValueAccessor)parsed).SetUntypedValue(null);
         if (literalBacked)
@@ -80,8 +80,8 @@ public sealed class KernelBehaviorMigrationTests
         var types = typeof(Patient).Assembly.GetExportedTypes().Where(type =>
             typeof(Resource).IsAssignableFrom(type) && !type.IsAbstract).OrderBy(type => type.Name).ToArray();
         Assert.Equal(158, types.Length);
-        var parser = new FhirJsonParser();
-        var serializer = new FhirJsonSerializer();
+        var parser = new FhirJsonParser(TestContexts.R5);
+        var serializer = new FhirJsonSerializer(TestContexts.R5);
         foreach (var type in types)
         {
             var json = "{\"resourceType\":\"" + type.Name + "\",\"id\":\"kernel-factory\"}";
@@ -105,7 +105,7 @@ public sealed class KernelBehaviorMigrationTests
              "extension":[{"url":"https://example.test/nested","extension":[{"url":"part","valueString":"nested"}]}],
              "modifierExtension":[{"url":"https://example.test/modifier","valueBoolean":false}]}
             """;
-        var parser = new FhirJsonParser();
+        var parser = new FhirJsonParser(TestContexts.R5);
         var patient = parser.Parse<Patient>(json);
         Assert.IsType<Meta>(patient.Meta);
         Assert.IsType<Narrative>(patient.Text);
@@ -113,8 +113,8 @@ public sealed class KernelBehaviorMigrationTests
         Assert.IsType<Coding>(Assert.Single(patient.Meta.Security));
         Assert.False(Assert.IsType<Patient>(Assert.Single(patient.Contained)).Active!.Value);
         Assert.Equal("nested", Assert.IsType<FhirString>(Assert.Single(Assert.Single(patient.Extension).Extension).Value).Value);
-        Assert.True(new FhirValidator().Validate(patient).IsValid);
-        var serialized = new FhirJsonSerializer().Serialize(patient);
+        Assert.True(new FhirValidator(TestContexts.R5).Validate(patient).IsValid);
+        var serialized = new FhirJsonSerializer(TestContexts.R5).Serialize(patient);
         Assert.True(JsonNode.DeepEquals(JsonNode.Parse(json), JsonNode.Parse(serialized)), serialized);
     }
 
@@ -125,21 +125,21 @@ public sealed class KernelBehaviorMigrationTests
     public void DefaultOpenTypeCompositionPreservesSdkValueThroughRuntimeGraph(string property, string value, Type type)
     {
         var json = "{\"resourceType\":\"Task\",\"status\":\"requested\",\"intent\":\"order\",\"input\":[{\"type\":{\"text\":\"test\"},\"" + property + "\":" + value + "}]}";
-        var resource = new FhirJsonParser().Parse<MyFhirSdk.Resources.Task>(json);
+        var resource = new FhirJsonParser(TestContexts.R5).Parse<MyFhirSdk.Resources.Task>(json);
         Assert.Equal(type, Assert.Single(resource.Input).Value!.GetType());
-        Assert.True(new FhirValidator().Validate(resource).IsValid);
-        Assert.True(JsonNode.DeepEquals(JsonNode.Parse(json), JsonNode.Parse(new FhirJsonSerializer().Serialize(resource))));
+        Assert.True(new FhirValidator(TestContexts.R5).Validate(resource).IsValid);
+        Assert.True(JsonNode.DeepEquals(JsonNode.Parse(json), JsonNode.Parse(new FhirJsonSerializer(TestContexts.R5).Serialize(resource))));
     }
 
     [Fact]
     public void DefaultCompositionDoesNotDiscoverExternalTypes()
     {
-        Assert.Throws<FhirSdkException>(() => new FhirJsonParser().Parse<Resource>("{\"resourceType\":\"ExternalResource\"}"));
-        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer().Serialize(new ExternalResource()));
-        Assert.Throws<FhirSdkException>(() => new FhirValidator().Validate(new ExternalResource()));
+        Assert.Throws<FhirSdkException>(() => new FhirJsonParser(TestContexts.R5).Parse<Resource>("{\"resourceType\":\"ExternalResource\"}"));
+        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer(TestContexts.R5).Serialize(new ExternalResource()));
+        Assert.Throws<FhirSdkException>(() => new FhirValidator(TestContexts.R5).Validate(new ExternalResource()));
         var patient = new Patient();
         patient.Extension.Add(new Extension { Url = "https://example.test/value", Value = new ExternalDatatype { Id = "external" } });
-        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer().Serialize(patient));
+        Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer(TestContexts.R5).Serialize(patient));
     }
 
     private sealed class ExternalResource : Resource { public override string ResourceType => "ExternalResource"; }

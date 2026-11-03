@@ -4,6 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><DefineConstants>$(DefineConstants);USE_R5</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="../../../../Models/R5/MyFhirSdk.R5.Models.csproj" />
     <ProjectReference Include="../../../../MyFhirSdk.csproj" />
     <Compile Include="../Program.cs" Link="Program.cs" />
   </ItemGroup>

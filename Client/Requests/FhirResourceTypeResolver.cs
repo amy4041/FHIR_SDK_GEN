@@ -1,6 +1,5 @@
 using MyFhirSdk.Core;
 using MyFhirSdk.ModelMetadata;
-using MyFhirSdk.ModelMetadata.R5;
 
 namespace MyFhirSdk.Client.Requests;
 
@@ -8,7 +7,6 @@ namespace MyFhirSdk.Client.Requests;
 public sealed class FhirResourceTypeResolver
 {
     private readonly FhirModelContext _context;
-    public FhirResourceTypeResolver() : this(R5ModelContext.Default) { }
     public FhirResourceTypeResolver(FhirModelContext context) => _context = context ?? throw new ArgumentNullException(nameof(context));
     public string GetResourceType<TResource>() where TResource : Resource
         => _context.Metadata.GetRequiredResource(typeof(TResource)).FhirTypeName;

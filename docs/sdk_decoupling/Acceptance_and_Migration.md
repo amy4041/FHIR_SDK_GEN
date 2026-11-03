@@ -1,5 +1,7 @@
 # 驗收與使用端遷移
 
+目前可執行的交付指令、完整 API 遷移對照、assembly 圖及只讀 server smoke 見 [D5 交付與遷移指南](Delivery_and_Migration.md)。各項實際狀態見 [D5 紀錄](D5_Implementation.md)；沒有 server 環境時，實際驗收保持 Pending。
+
 ## 1. 架構完成條件
 
 - SDK csproj 與傳遞 project graph 不含 R4／R5 Models、TW Core 專案；SDK implementation 的 assembly references 也不含它們。
@@ -43,7 +45,7 @@ Windows／Ubuntu 各自驗證上述情境。必要 DLL 移除測試應以非零�
 
 ## 4. 使用端遷移示意
 
-以下既有 context／typed Client 語法已存在；R5ModelContext 不再是必要入口：
+以下 context／typed Client 語法為 D3 的使用方式；R5ModelContext 與無參數 engine 建構子已移除：
 
 ```csharp
 using MyFhirSdk.ModelMetadata;
@@ -69,7 +71,7 @@ var client = new MyFhirSdk.Client.FhirClient<
     MyFhirSdk.Resources.OperationOutcome>(httpClient, context, options);
 ```
 
-R4 換成 `MyFhirSdk.R4.Resources` 對應型別。新 IG 組合的預期使用方式如下；這段代表目標設計，TW Core 專案及新 framework 尚未實作：
+R4 換成 `MyFhirSdk.R4.Resources` 對應型別。D1 已實作 contextual IG framework，D2 已建立獨立 R4 TW Core POC 專案；以下組合須額外引用 `MyFhirSdk.ImplementationGuides.TwCore` 與 R4 Models：
 
 ```csharp
 var profileValidator = new ProfileValidator(

@@ -242,7 +242,7 @@ public sealed class R5ValidationCapabilityPolicyTests
     [Fact]
     public void ExistingValidatorBehaviorCoversTheApprovedExecutableBaseline()
     {
-        var validator = new FhirValidator();
+        var validator = new FhirValidator(TestContexts.R5);
         var bundleResult = validator.Validate(new Bundle());
         var patient = new Patient
         {

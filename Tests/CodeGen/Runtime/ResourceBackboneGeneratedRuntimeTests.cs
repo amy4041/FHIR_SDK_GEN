@@ -111,7 +111,7 @@ public sealed class ResourceBackboneGeneratedRuntimeTests
         var contained = Assert.IsAssignableFrom<IList>(
             typeof(DomainResource).GetProperty(nameof(DomainResource.Contained))!.GetValue(patient));
         contained.Add(new MyFhirSdk.Resources.Organization { Name = new FhirString("Example") });
-        var serializer = new FhirJsonSerializer();
+        var serializer = new FhirJsonSerializer(TestContexts.R5);
 
         Assert.Throws<FhirSdkException>(() => serializer.Serialize(patient));
         var firstJson = "{\"resourceType\":\"Patient\"}";
@@ -120,7 +120,7 @@ public sealed class ResourceBackboneGeneratedRuntimeTests
             .Single(method => method.Name == nameof(FhirJsonParser.Parse) && method.IsGenericMethod)
             .MakeGenericMethod(patientType);
         var exception = Assert.Throws<TargetInvocationException>(() =>
-            parseMethod.Invoke(new FhirJsonParser(), [firstJson]));
+            parseMethod.Invoke(new FhirJsonParser(TestContexts.R5), [firstJson]));
         var metadataError = Assert.IsType<FhirSdkException>(exception.InnerException);
         Assert.Contains("is not registered", metadataError.Message, StringComparison.Ordinal);
     }

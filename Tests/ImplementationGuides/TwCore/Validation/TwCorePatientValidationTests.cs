@@ -7,7 +7,7 @@ public sealed class TwCorePatientValidationTests
     {
         var patient = new Patient();
 
-        var baseResult = new FhirValidator().Validate(patient);
+        var baseResult = new FhirValidator(CreateContext()).Validate(patient);
         var profileResult = CreateValidator().Validate(patient, TwCoreProfiles.Patient);
 
         Assert.True(baseResult.IsValid);
@@ -115,8 +115,11 @@ public sealed class TwCorePatientValidationTests
 
     private static ProfileValidator CreateValidator()
     {
-        return new ProfileValidator(new FhirValidator(), TwCorePackage.Default);
+        return new ProfileValidator(new FhirValidator(CreateContext()), TwCorePackage.Default);
     }
+
+    internal static FhirModelContext CreateContext() => new(
+        R4ModelProvider.Metadata, R4ModelProvider.Primitives, R4ModelProvider.Validation);
 
     private static void AssertIssue(
         ValidationIssue issue,

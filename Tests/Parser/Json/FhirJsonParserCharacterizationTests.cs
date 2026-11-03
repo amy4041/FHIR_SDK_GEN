@@ -44,7 +44,7 @@ public sealed class FhirJsonParserCharacterizationTests
             }
             """;
 
-        var resource = new FhirJsonParser().Parse<Resource>(json);
+        var resource = new FhirJsonParser(TestContexts.R5).Parse<Resource>(json);
 
         var patient = Assert.IsType<Patient>(resource);
         Assert.Equal("patient-1", patient.Id);
@@ -62,7 +62,7 @@ public sealed class FhirJsonParserCharacterizationTests
             }
             """;
 
-        var patient = new FhirJsonParser().Parse<Patient>(json);
+        var patient = new FhirJsonParser(TestContexts.R5).Parse<Patient>(json);
 
         Assert.NotNull(patient.Active);
         Assert.Null(patient.Active.Value);
@@ -84,7 +84,7 @@ public sealed class FhirJsonParserCharacterizationTests
             """;
 
         var exception = Assert.Throws<FhirSdkException>(
-            () => new FhirJsonParser().Parse<Practitioner>(json));
+            () => new FhirJsonParser(TestContexts.R5).Parse<Practitioner>(json));
 
         Assert.Contains(
             "FHIR integer64 values must be JSON strings.",
@@ -107,7 +107,7 @@ public sealed class FhirJsonParserCharacterizationTests
             """;
 
         var exception = Assert.Throws<FhirSdkException>(
-            () => new FhirJsonParser().Parse<Practitioner>(json));
+            () => new FhirJsonParser(TestContexts.R5).Parse<Practitioner>(json));
 
         Assert.Contains(
             "FHIR decimal values must be JSON numbers.",
@@ -122,7 +122,7 @@ public sealed class FhirJsonParserCharacterizationTests
         string expectedMessage)
     {
         var exception = Assert.Throws<FhirSdkException>(
-            () => new FhirJsonParser().Parse<Patient>(json));
+            () => new FhirJsonParser(TestContexts.R5).Parse<Patient>(json));
 
         Assert.Contains(
             expectedMessage,

@@ -4,6 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="../../../../Models/R5/MyFhirSdk.R5.Models.csproj" />
     <ProjectReference Include="../../../../MyFhirSdk.csproj" />
     <ProjectReference Include="../../../../Models/R4/MyFhirSdk.R4.Models.csproj" />
   </ItemGroup>

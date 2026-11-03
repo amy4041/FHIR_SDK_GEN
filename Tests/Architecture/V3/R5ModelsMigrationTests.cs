@@ -39,11 +39,11 @@ public sealed class R5ModelsMigrationTests
         Assert.Equal(850, types.Count);
         Assert.True(types.SetEquals(R5ModelProvider.Metadata.ModelTypes));
         Assert.All(R5ModelProvider.Primitives.Definitions, p => Assert.Same(models, p.PrimitiveType.Assembly));
-        Assert.Equal(R5ModelProvider.Identity, R5ModelContext.Default.Identity);
+        Assert.Equal(R5ModelProvider.Identity, TestContexts.R5.Identity);
         foreach (var resource in R5ModelProvider.Metadata.Resources)
         {
             Assert.Equal(resource.ResourceType, resource.Factory().GetType());
-            Assert.Equal(resource.ResourceType, R5ModelContext.Default.CreateResource(resource.FhirTypeName).GetType());
+            Assert.Equal(resource.ResourceType, TestContexts.R5.CreateResource(resource.FhirTypeName).GetType());
         }
         Assert.All(R5ModelProvider.Validation.Rules, rule => Assert.True(
             rule.AppliesTo.Assembly == models || rule.AppliesTo.Assembly == typeof(FhirObject).Assembly));
