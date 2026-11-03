@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "fhirVersion": "4.0.1",
+  "scope": {
+    "definitionDerivation": "specialization",
+    "definitionKinds": [
+      "complex-type",
+      "resource"
+    ],
+    "externalDefinitionsSource": "r4-model-ownership-policy.json",
+    "choiceIdentitySuffix": "[x]",
+    "cardinalityMax": "1"
+  },
+  "classification": {
+    "ordinaryChoice": "closed-snapshot-alternative-set",
+    "openTypeChoice": "approved-complete-r4-datatype-alternative-set",
+    "openTypeAlternativeSetSource": "Extension.value[x]-snapshot",
+    "openTypeElementIds": [
+      "ElementDefinition.defaultValue[x]",
+      "ElementDefinition.example.value[x]",
+      "ElementDefinition.fixed[x]",
+      "ElementDefinition.pattern[x]",
+      "Extension.value[x]",
+      "Parameters.parameter.value[x]",
+      "Task.input.value[x]",
+      "Task.output.value[x]"
+    ],
+    "unapprovedAlternativeSetMatchDisposition": "fail-before-render"
+  },
+  "ordinaryChoiceRepresentation": {
+    "publicShape": "one-nullable-property-per-alternative",
+    "aggregatePropertyAllowed": false,
+    "choiceStemSource": "element-name-with-choice-suffix-removed",
+    "propertyNamePattern": "{ChoiceStemCSharpName}{FhirTypeCSharpSuffix}",
+    "choiceStemConverter": "CSharpNameConverter.ConvertPropertyName",
+    "alternativeSuffixSource": "exact-fhir-type-code",
+    "alternativeSuffixConverter": "CSharpNameConverter.ConvertTypeName",
+    "clrTypeSource": "validated-type-mapper",
+    "jsonNamePattern": "{ChoiceStemFhirName}{FhirTypeCSharpSuffix}",
+    "primitiveMetadataJsonNamePattern": "_{ChoiceStemFhirName}{FhirTypeCSharpSuffix}",
+    "allAlternativePropertiesNullable": true,
+    "setterClearsOtherAlternatives": false,
+    "alternativeOrder": "structure-definition-snapshot-order"
+  },
+  "openTypeRepresentation": {
+    "publicShape": "one-nullable-polymorphic-property",
+    "generatedClrType": "MyFhirSdk.Core.DataType",
+    "bootstrapOverrides": [
+      {
+        "elementId": "Extension.value[x]",
+        "declaringClrType": "MyFhirSdk.Core.Extension",
+        "propertyName": "Value",
+        "clrType": "MyFhirSdk.Core.IFhirExtensionValue",
+        "reason": "preserve-c0-002-public-api-and-runtime-dispatch-contract"
+      }
+    ],
+    "propertyNameSource": "choice-stem-via-csharp-name-converter",
+    "jsonNameSource": "runtime-concrete-fhir-type-metadata",
+    "jsonNamePattern": "{ChoiceStemFhirName}{ConcreteFhirTypeCSharpSuffix}",
+    "metadataKey": "declaring-clr-type-and-element-id-and-concrete-fhir-type",
+    "clrTypeNameHeuristicsAllowed": false,
+    "allAlternativesMustRemainInIr": true
+  },
+  "cardinalityAndValidation": {
+    "ordinaryMinZero": "at-most-one-alternative",
+    "ordinaryMinOne": "exactly-one-alternative",
+    "openTypeMinZero": "optional-single-property",
+    "openTypeMinOne": "required-single-property",
+    "validationPathSource": "original-choice-name-including-[x]",
+    "validationMetadataRequired": true
+  },
+  "unsupportedAlternativeRules": {
+    "primitiveSupportSource": "primitive-generation-policy.json",
+    "preserveOfficialAlternativeInIr": true,
+    "fallbackClrTypesAllowed": false,
+    "omitAlternativeAllowed": false,
+    "unresolvedAlternativeDisposition": "diagnostic-before-render",
+    "separateRuntimePolicyApprovalRequired": true
+  },
+  "collisionRules": {
+    "checkChoiceMembersWithDeclaredInheritedAndSyntheticMembers": true,
+    "checkJsonNamesWithinDeclaringType": true,
+    "automaticNumericSuffixesAllowed": false,
+    "unapprovedCollisionDisposition": "fail-before-render",
+    "diagnosticOrdering": "ordinal-element-identity-then-fhir-type-code"
+  },
+  "approvedR4Inventory": {
+    "source": "eng/FhirV5Inventory.py (locked R4 package; differential direct elements, snapshot effective elements)",
+    "generatedDefinitions": 182,
+    "generatedResourceDefinitions": 146,
+    "generatedDatatypeDefinitions": 36,
+    "directElements": 4712,
+    "effectiveElementsExcludingRoots": 7373,
+    "directRequiredElements": 770,
+    "directConstraints": 96,
+    "directBindings": 1022,
+    "directBindingStrengths": {
+      "example": 454,
+      "extensible": 147,
+      "preferred": 60,
+      "required": 361
+    },
+    "directChoices": 185,
+    "directChoiceAlternatives": 937,
+    "ordinaryChoices": 178,
+    "openChoices": 7,
+    "requiredOrdinaryChoices": 45,
+    "requiredOpenChoices": 3,
+    "directFixedValues": 0,
+    "directPatternValues": 0,
+    "directSlicing": 0,
+    "finiteCollectionMaxima": 0
+  }
+}

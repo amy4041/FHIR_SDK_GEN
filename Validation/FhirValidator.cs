@@ -1,5 +1,5 @@
 using MyFhirSdk.Core;
-using MyFhirSdk.ModelMetadata.R5;
+using MyFhirSdk.ModelMetadata;
 using MyFhirSdk.Primitives;
 using MyFhirSdk.Validation.Rules;
 using MyFhirSdk.Validation.Traversal;
@@ -9,28 +9,22 @@ namespace MyFhirSdk.Validation;
 /// <summary>
 /// Default standalone validator for MVP FHIR resource validation.
 /// </summary>
-public sealed class FhirValidator : IFhirValidator
+public sealed class FhirValidator : IContextualFhirValidator
 {
     private readonly IValidationRuleProvider _ruleProvider;
     private readonly PrimitiveRegistry _primitiveDefinitions;
     private readonly FhirObjectGraphWalker _walker;
+    private readonly FhirModelContext? _context;
 
-    /// <summary>
-    /// Creates a validator with the default R5 model and primitive rules.
-    /// </summary>
-    public FhirValidator()
-        : this(
-            R5ModelMetadataProvider.Default,
-            PrimitiveRegistry.Default,
-            new FhirObjectGraphWalker())
-    {
-    }
+    /// <inheritdoc />
+    public FhirModelContext Context => _context ?? throw new InvalidOperationException(
+        "An internal rule-only validator has no model context and cannot be composed with an IG.");
 
-    internal FhirValidator(
-        IValidationRuleProvider ruleProvider,
-        FhirObjectGraphWalker walker)
-        : this(ruleProvider, PrimitiveRegistry.Default, walker)
+    public FhirValidator(FhirModelContext context)
+        : this((context ?? throw new ArgumentNullException(nameof(context))).Rules,
+            context.Primitives, new FhirObjectGraphWalker())
     {
+        _context = context;
     }
 
     internal FhirValidator(
@@ -48,6 +42,7 @@ public sealed class FhirValidator : IFhirValidator
     public ValidationResult Validate(Resource resource)
     {
         ArgumentNullException.ThrowIfNull(resource);
+        _context?.EnsureOwnership(resource);
 
         var issues = new List<ValidationIssue>();
 

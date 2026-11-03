@@ -1,0 +1,200 @@
+TYPE abstract class MyFhirSdk.Core.BackboneElement | Base=MyFhirSdk.Core.Element | Interfaces=-
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] ModifierExtension
+TYPE abstract class MyFhirSdk.Core.BackboneType | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] ModifierExtension
+TYPE abstract class MyFhirSdk.Core.Base | Base=MyFhirSdk.Core.FhirObject | Interfaces=-
+TYPE abstract class MyFhirSdk.Core.DataType | Base=MyFhirSdk.Core.Element | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+TYPE abstract class MyFhirSdk.Core.DomainResource | Base=MyFhirSdk.Core.Resource | Interfaces=-
+  PROPERTY MyFhirSdk.Core.Narrative Text
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] Extension
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] ModifierExtension
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Resource] Contained
+TYPE abstract class MyFhirSdk.Core.Element | Base=MyFhirSdk.Core.Base | Interfaces=-
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.Extension] Extension
+  PROPERTY System.String Id
+TYPE sealed class MyFhirSdk.Core.Extension | Base=MyFhirSdk.Core.Element | Interfaces=-
+  CONSTRUCTOR Void .ctor()
+  PROPERTY MyFhirSdk.Core.IFhirExtensionValue Value
+  PROPERTY System.String Url
+TYPE abstract class MyFhirSdk.Core.FhirObject | Base=System.Object | Interfaces=-
+TYPE interface MyFhirSdk.Core.IFhirExtensionValue | Base=- | Interfaces=-
+TYPE interface MyFhirSdk.Core.IPrimitiveValueAccessor | Base=- | Interfaces=-
+  METHOD Void SetUntypedValue(System.Object)
+  PROPERTY System.Object UntypedValue
+  PROPERTY System.Type ValueType
+TYPE sealed class MyFhirSdk.Core.Meta | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.DataType] Security
+  PROPERTY System.Collections.Generic.IList`1[MyFhirSdk.Core.DataType] Tag
+  PROPERTY System.Collections.Generic.IList`1[System.String] Profile
+  PROPERTY System.Nullable`1[System.DateTimeOffset] LastUpdated
+  PROPERTY System.String Source
+  PROPERTY System.String VersionId
+TYPE sealed class MyFhirSdk.Core.Narrative | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue
+  CONSTRUCTOR Void .ctor()
+  PROPERTY System.String Div
+  PROPERTY System.String Status
+TYPE abstract class MyFhirSdk.Core.PrimitiveType`1 | Base=MyFhirSdk.Core.DataType | Interfaces=MyFhirSdk.Core.IFhirExtensionValue, MyFhirSdk.Core.IPrimitiveValueAccessor
+  METHOD System.String ToString()
+  PROPERTY Boolean HasValue
+  PROPERTY T Value
+TYPE abstract class MyFhirSdk.Core.Resource | Base=MyFhirSdk.Core.Base | Interfaces=-
+  PROPERTY MyFhirSdk.Core.Meta Meta
+  PROPERTY System.String Id
+  PROPERTY System.String ImplicitRules
+  PROPERTY System.String Language
+  PROPERTY System.String ResourceType
+TYPE sealed class MyFhirSdk.ModelContracts.DeclaredDataTypeDefinition | Base=System.Object | Interfaces=System.IEquatable<MyFhirSdk.ModelContracts.DeclaredDataTypeDefinition>
+  CONSTRUCTOR Void .ctor(System.Type, System.String, System.Type)
+  METHOD Boolean Equals(MyFhirSdk.ModelContracts.DeclaredDataTypeDefinition)
+  METHOD Boolean Equals(System.Object)
+  METHOD Int32 GetHashCode()
+  METHOD MyFhirSdk.ModelContracts.DeclaredDataTypeDefinition <Clone>$()
+  METHOD System.String ToString()
+  METHOD Void Deconstruct(System.Type ByRef, System.String ByRef, System.Type ByRef)
+  PROPERTY System.String PropertyName
+  PROPERTY System.Type ConcreteType
+  PROPERTY System.Type DeclaringType
+TYPE sealed class MyFhirSdk.ModelContracts.ExtensionValueDefinition | Base=System.Object | Interfaces=System.IEquatable<MyFhirSdk.ModelContracts.ExtensionValueDefinition>
+  CONSTRUCTOR Void .ctor(System.Type, System.String, Boolean)
+  METHOD Boolean Equals(MyFhirSdk.ModelContracts.ExtensionValueDefinition)
+  METHOD Boolean Equals(System.Object)
+  METHOD Int32 GetHashCode()
+  METHOD MyFhirSdk.ModelContracts.ExtensionValueDefinition <Clone>$()
+  METHOD System.String ToString()
+  METHOD Void Deconstruct(System.Type ByRef, System.String ByRef, Boolean ByRef)
+  PROPERTY Boolean IsParserTarget
+  PROPERTY System.String PropertyName
+  PROPERTY System.Type ValueType
+TYPE interface MyFhirSdk.ModelContracts.IPrimitiveCodec | Base=- | Interfaces=-
+  METHOD Boolean HasRawValue(System.Object)
+  METHOD System.Object CreatePrimitive(System.Type, System.Nullable`1[System.Text.Json.JsonElement])
+  METHOD Void WriteRawValue(System.Text.Json.Utf8JsonWriter, System.Object, Boolean)
+TYPE interface MyFhirSdk.ModelContracts.IPrimitiveValidator | Base=- | Interfaces=-
+  METHOD Boolean IsValid(System.Object)
+  METHOD Boolean IsValidValue(System.Object)
+TYPE sealed class MyFhirSdk.ModelContracts.ModelCapabilities | Base=System.Object | Interfaces=System.IEquatable<MyFhirSdk.ModelContracts.ModelCapabilities>
+  CONSTRUCTOR Void .ctor(Boolean, Boolean, Boolean, Boolean, Boolean)
+  METHOD Boolean Equals(MyFhirSdk.ModelContracts.ModelCapabilities)
+  METHOD Boolean Equals(System.Object)
+  METHOD Int32 GetHashCode()
+  METHOD MyFhirSdk.ModelContracts.ModelCapabilities <Clone>$()
+  METHOD System.String ToString()
+  METHOD Void Deconstruct(Boolean ByRef, Boolean ByRef, Boolean ByRef, Boolean ByRef, Boolean ByRef)
+  PROPERTY Boolean CompleteResourceSet
+  PROPERTY Boolean InvariantValidation
+  PROPERTY Boolean PrimitiveValidation
+  PROPERTY Boolean ProfileValidation
+  PROPERTY Boolean RequiredAndChoiceValidation
+TYPE sealed class MyFhirSdk.ModelContracts.ModelIdentity | Base=System.Object | Interfaces=System.IEquatable<MyFhirSdk.ModelContracts.ModelIdentity>
+  CONSTRUCTOR Void .ctor(System.String, System.String, System.String, System.String, System.String)
+  METHOD Boolean Equals(MyFhirSdk.ModelContracts.ModelIdentity)
+  METHOD Boolean Equals(System.Object)
+  METHOD Int32 GetHashCode()
+  METHOD MyFhirSdk.ModelContracts.ModelIdentity <Clone>$()
+  METHOD System.String ToString()
+  PROPERTY System.String FhirVersion
+  PROPERTY System.String ModelId
+  PROPERTY System.String PackageId
+  PROPERTY System.String PackageVersion
+  PROPERTY System.String PolicyId
+TYPE enum MyFhirSdk.ModelContracts.ModelIssueCode | Base=System.Enum | Interfaces=System.IComparable, System.IConvertible, System.IFormattable, System.ISpanFormattable
+  FIELD Int32 value__
+  FIELD MyFhirSdk.ModelContracts.ModelIssueCode Cardinality
+  FIELD MyFhirSdk.ModelContracts.ModelIssueCode ChoiceElement
+  FIELD MyFhirSdk.ModelContracts.ModelIssueCode PrimitiveFormat
+  FIELD MyFhirSdk.ModelContracts.ModelIssueCode Profile
+  FIELD MyFhirSdk.ModelContracts.ModelIssueCode Required
+TYPE enum MyFhirSdk.ModelContracts.ModelIssueSeverity | Base=System.Enum | Interfaces=System.IComparable, System.IConvertible, System.IFormattable, System.ISpanFormattable
+  FIELD Int32 value__
+  FIELD MyFhirSdk.ModelContracts.ModelIssueSeverity Error
+  FIELD MyFhirSdk.ModelContracts.ModelIssueSeverity Information
+  FIELD MyFhirSdk.ModelContracts.ModelIssueSeverity Warning
+TYPE sealed class MyFhirSdk.ModelContracts.ModelMetadataDefinition | Base=System.Object | Interfaces=-
+  CONSTRUCTOR Void .ctor(MyFhirSdk.ModelContracts.ModelIdentity, System.Collections.Generic.IEnumerable`1[System.Type], System.Collections.Generic.IEnumerable`1[MyFhirSdk.ModelContracts.ResourceDefinition], System.Collections.Generic.IEnumerable`1[System.Type], System.Collections.Generic.IEnumerable`1[MyFhirSdk.ModelContracts.DeclaredDataTypeDefinition], System.Collections.Generic.IEnumerable`1[MyFhirSdk.ModelContracts.ExtensionValueDefinition], System.Collections.Generic.IEnumerable`1[MyFhirSdk.ModelContracts.OpenTypeDefinition])
+  PROPERTY MyFhirSdk.ModelContracts.ModelIdentity Identity
+  PROPERTY System.Collections.Generic.IReadOnlyList`1[MyFhirSdk.ModelContracts.DeclaredDataTypeDefinition] DeclaredDataTypes
+  PROPERTY System.Collections.Generic.IReadOnlyList`1[MyFhirSdk.ModelContracts.ExtensionValueDefinition] ExtensionValues
+  PROPERTY System.Collections.Generic.IReadOnlyList`1[MyFhirSdk.ModelContracts.OpenTypeDefinition] OpenTypes
+  PROPERTY System.Collections.Generic.IReadOnlyList`1[MyFhirSdk.ModelContracts.ResourceDefinition] Resources
+  PROPERTY System.Collections.Generic.IReadOnlyList`1[System.Type] ConcreteDataTypes
+  PROPERTY System.Collections.Generic.IReadOnlyList`1[System.Type] ModelTypes
+TYPE sealed class MyFhirSdk.ModelContracts.ModelValidationIssue | Base=System.Object | Interfaces=System.IEquatable<MyFhirSdk.ModelContracts.ModelValidationIssue>
+  CONSTRUCTOR Void .ctor(System.String, System.String, MyFhirSdk.ModelContracts.ModelIssueCode, MyFhirSdk.ModelContracts.ModelIssueSeverity, System.String)
+  METHOD Boolean Equals(MyFhirSdk.ModelContracts.ModelValidationIssue)
+  METHOD Boolean Equals(System.Object)
+  METHOD Int32 GetHashCode()
+  METHOD MyFhirSdk.ModelContracts.ModelValidationIssue <Clone>$()
+  METHOD System.String ToString()
+  METHOD Void Deconstruct(System.String ByRef, System.String ByRef, MyFhirSdk.ModelContracts.ModelIssueCode ByRef, MyFhirSdk.ModelContracts.ModelIssueSeverity ByRef, System.String ByRef)
+  PROPERTY MyFhirSdk.ModelContracts.ModelIssueCode Code
+  PROPERTY MyFhirSdk.ModelContracts.ModelIssueSeverity Severity
+  PROPERTY System.String Message
+  PROPERTY System.String Path
+  PROPERTY System.String RuleId
+TYPE sealed class MyFhirSdk.ModelContracts.ModelValidationNode | Base=System.Object | Interfaces=System.IEquatable<MyFhirSdk.ModelContracts.ModelValidationNode>
+  CONSTRUCTOR Void .ctor(MyFhirSdk.Core.FhirObject, System.String)
+  METHOD Boolean Equals(MyFhirSdk.ModelContracts.ModelValidationNode)
+  METHOD Boolean Equals(System.Object)
+  METHOD Int32 GetHashCode()
+  METHOD MyFhirSdk.ModelContracts.ModelValidationNode <Clone>$()
+  METHOD System.String ToString()
+  METHOD Void Deconstruct(MyFhirSdk.Core.FhirObject ByRef, System.String ByRef)
+  PROPERTY MyFhirSdk.Core.FhirObject Value
+  PROPERTY System.String Path
+TYPE sealed class MyFhirSdk.ModelContracts.OpenTypeDefinition | Base=System.Object | Interfaces=System.IEquatable<MyFhirSdk.ModelContracts.OpenTypeDefinition>
+  CONSTRUCTOR Void .ctor(System.Type, System.String, System.Type, System.String)
+  METHOD Boolean Equals(MyFhirSdk.ModelContracts.OpenTypeDefinition)
+  METHOD Boolean Equals(System.Object)
+  METHOD Int32 GetHashCode()
+  METHOD MyFhirSdk.ModelContracts.OpenTypeDefinition <Clone>$()
+  METHOD System.String ToString()
+  METHOD Void Deconstruct(System.Type ByRef, System.String ByRef, System.Type ByRef, System.String ByRef)
+  PROPERTY System.String JsonPropertyName
+  PROPERTY System.String PropertyName
+  PROPERTY System.Type DeclaringType
+  PROPERTY System.Type ValueType
+TYPE sealed class MyFhirSdk.ModelContracts.PrimitiveDefinition | Base=System.Object | Interfaces=System.IEquatable<MyFhirSdk.ModelContracts.PrimitiveDefinition>
+  CONSTRUCTOR Void .ctor(System.String, System.Type, System.Type, MyFhirSdk.ModelContracts.IPrimitiveCodec, MyFhirSdk.ModelContracts.IPrimitiveValidator)
+  METHOD Boolean Equals(MyFhirSdk.ModelContracts.PrimitiveDefinition)
+  METHOD Boolean Equals(System.Object)
+  METHOD Int32 GetHashCode()
+  METHOD MyFhirSdk.ModelContracts.PrimitiveDefinition <Clone>$()
+  METHOD System.String ToString()
+  METHOD Void Deconstruct(System.String ByRef, System.Type ByRef, System.Type ByRef, MyFhirSdk.ModelContracts.IPrimitiveCodec ByRef, MyFhirSdk.ModelContracts.IPrimitiveValidator ByRef)
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveCodec Codec
+  PROPERTY MyFhirSdk.ModelContracts.IPrimitiveValidator Validator
+  PROPERTY System.String FhirTypeName
+  PROPERTY System.Type PrimitiveType
+  PROPERTY System.Type ValueType
+TYPE sealed class MyFhirSdk.ModelContracts.PrimitiveProviderDefinition | Base=System.Object | Interfaces=-
+  CONSTRUCTOR Void .ctor(MyFhirSdk.ModelContracts.ModelIdentity, System.Collections.Generic.IEnumerable`1[MyFhirSdk.ModelContracts.PrimitiveDefinition])
+  PROPERTY MyFhirSdk.ModelContracts.ModelIdentity Identity
+  PROPERTY System.Collections.Generic.IReadOnlyList`1[MyFhirSdk.ModelContracts.PrimitiveDefinition] Definitions
+TYPE sealed class MyFhirSdk.ModelContracts.ResourceDefinition | Base=System.Object | Interfaces=System.IEquatable<MyFhirSdk.ModelContracts.ResourceDefinition>
+  CONSTRUCTOR Void .ctor(System.String, System.Type, System.Func`1[MyFhirSdk.Core.Resource])
+  METHOD Boolean Equals(MyFhirSdk.ModelContracts.ResourceDefinition)
+  METHOD Boolean Equals(System.Object)
+  METHOD Int32 GetHashCode()
+  METHOD MyFhirSdk.ModelContracts.ResourceDefinition <Clone>$()
+  METHOD System.String ToString()
+  METHOD Void Deconstruct(System.String ByRef, System.Type ByRef, System.Func`1[MyFhirSdk.Core.Resource] ByRef)
+  PROPERTY System.Func`1[MyFhirSdk.Core.Resource] Factory
+  PROPERTY System.String FhirTypeName
+  PROPERTY System.Type ResourceType
+TYPE sealed class MyFhirSdk.ModelContracts.ValidationProviderDefinition | Base=System.Object | Interfaces=-
+  CONSTRUCTOR Void .ctor(MyFhirSdk.ModelContracts.ModelIdentity, MyFhirSdk.ModelContracts.ModelCapabilities, System.Collections.Generic.IEnumerable`1[MyFhirSdk.ModelContracts.ValidationRuleDefinition])
+  PROPERTY MyFhirSdk.ModelContracts.ModelCapabilities Capabilities
+  PROPERTY MyFhirSdk.ModelContracts.ModelIdentity Identity
+  PROPERTY System.Collections.Generic.IReadOnlyList`1[MyFhirSdk.ModelContracts.ValidationRuleDefinition] Rules
+TYPE sealed class MyFhirSdk.ModelContracts.ValidationRuleDefinition | Base=System.Object | Interfaces=System.IEquatable<MyFhirSdk.ModelContracts.ValidationRuleDefinition>
+  CONSTRUCTOR Void .ctor(System.Type, System.String, System.Func`2[MyFhirSdk.ModelContracts.ModelValidationNode,System.Collections.Generic.IReadOnlyList`1[MyFhirSdk.ModelContracts.ModelValidationIssue]])
+  METHOD Boolean Equals(MyFhirSdk.ModelContracts.ValidationRuleDefinition)
+  METHOD Boolean Equals(System.Object)
+  METHOD Int32 GetHashCode()
+  METHOD MyFhirSdk.ModelContracts.ValidationRuleDefinition <Clone>$()
+  METHOD System.String ToString()
+  METHOD Void Deconstruct(System.Type ByRef, System.String ByRef, System.Func`2[MyFhirSdk.ModelContracts.ModelValidationNode,System.Collections.Generic.IReadOnlyList`1[MyFhirSdk.ModelContracts.ModelValidationIssue]] ByRef)
+  PROPERTY System.Func`2[MyFhirSdk.ModelContracts.ModelValidationNode,System.Collections.Generic.IReadOnlyList`1[MyFhirSdk.ModelContracts.ModelValidationIssue]] Evaluate
+  PROPERTY System.String RuleId
+  PROPERTY System.Type AppliesTo

@@ -1,0 +1,57 @@
+[
+  {
+    "path": "approved-api-inventory.json",
+    "sha256": "da4349bd808b149e184f439e732a3d6d4a7764d176820b45139bd28f5dda21f6",
+    "bytes": 349
+  },
+  {
+    "path": "consumer-findings.json",
+    "sha256": "f1af0cb8dfc355a5ba3ff8b17611b5ae8244d669fc1ec4524d6bb4d378710f25",
+    "bytes": 48496
+  },
+  {
+    "path": "policy-inventory.json",
+    "sha256": "fc2c31ddde08c8c4c150ae74921aba4ba9f6fcbf0592c487c54bc67831106bea",
+    "bytes": 2972
+  },
+  {
+    "path": "prior-failed-run.json",
+    "sha256": "ff35d0ed18852c47e1f11300aa6f09159ebcffd7addf9a950e178c8c293191e9",
+    "bytes": 6261
+  },
+  {
+    "path": "project-inventory.json",
+    "sha256": "3aea78887945cdcb15493407a8678733c89ccb30c05486603b70e34c99250358",
+    "bytes": 98718
+  },
+  {
+    "path": "public-types.txt",
+    "sha256": "b91d5895f2160811d1a94feaa86fb5b228882bdbdc9613e7890232f34c3f5737",
+    "bytes": 148266
+  },
+  {
+    "path": "r4-definitions.json",
+    "sha256": "f39eed31565363eb486427cc56c3698792d9f26e5a8372d1606534cdf7e9e948",
+    "bytes": 612993
+  },
+  {
+    "path": "r5-definitions.json",
+    "sha256": "987be22cd10cac9032d5e7627b332d6dec4dc68966ea2d703b7cc460d72c3d73",
+    "bytes": 289150
+  },
+  {
+    "path": "r5-generated-inventory.json",
+    "sha256": "91814f832a7030ded2febae43bfa34d520ce00b9e50fcc5777d1160c016487f2",
+    "bytes": 166919
+  },
+  {
+    "path": "source-inventory.json",
+    "sha256": "59ac5b6994e8777d23927b765a53c6da0826061eaffc4b19bfa294d5fa895414",
+    "bytes": 268974
+  },
+  {
+    "path": "summary.json",
+    "sha256": "78438dedd3985f65bdf5dbe119f83a52bbffe25562da7851cb2fa36a3dbab36e",
+    "bytes": 6257
+  }
+]

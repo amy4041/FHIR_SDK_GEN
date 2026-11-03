@@ -12,9 +12,19 @@ Version 0.1 — 2026-10-13
 | [R4 support ADR](MyFhirSdk_FHIR_R4_Support_ADR.md) | 範圍、版本邊界、依賴方向、相容性與待定設計 |
 | [Implementation Guide](MyFhirSdk_FHIR_R4_Support_Implementation_Guide.md) | V0–V7 工作包、前置條件、交付內容與開發順序 |
 | [Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md) | 各階段的驗收證據、正向／負面案例與完成定義 |
+| [V7 結案紀錄](V7_Closeout.md) | 已通過的 CI、搬移後的手動驗收與範圍 |
+| [V7 交付指南](V7_Delivery_Guide.md) | 匯出目前產物，於 repository 外使用 SDK／generator |
 
-文件狀態為開發規劃；尚未新增 R4 production 支援，也沒有已通過的 R4 驗收證據。
-使用者已要求依討論準備文件；具體 SPI、namespace、專案配置及版本遷移細節仍由 V0／V1 收斂。
+V0 已建立 baseline runner、R4 input lock 與 [設計決策](V0_Decisions.md)。
+執行結果及 G0 狀態見 [V0 baseline](baselines/v0/README.md)；尚未新增 R4 production 支援。
+namespace／Models assembly 方向由 V0 固定；[V1 selected closure 實驗](baselines/v1/README.md)已提交，使用者確認 push CI 通過。
+[V2 context／SPI](baselines/v2/README.md)已提交並由使用者確認 CI 通過；
+[V3 R5 Models 分離](baselines/v3/README.md)將模型與 provider 編譯至獨立 assembly，共用實作由 ModelSupport 擁有。
+V3、[V4 雙版本 generator](baselines/v4/README.md)已提交，使用者確認 CI 通過。
+[V5 完整 R4 Models 與 runtime integration](baselines/v5/README.md)已提交，使用者確認 push CI 通過。
+[V6 R4／R5 Client integration](baselines/v6/README.md)已提交於 `99017ef`，使用者確認 CI 通過；外部伺服器驗收依實際 smoke 結果標示。
+[V7 跨平台交付與 handoff](baselines/v7/README.md)已完成；修正與 R5 SimpleQuantity 搬移後的 CI 已通過，使用者亦回報搬移後 R4／R5 的 generator 與實際 server smoke 通過。最新結果見 [V7 結案紀錄](V7_Closeout.md)；歷史 baseline 保留原狀。
+V7 首次 CI 的跨平台 rollback 比較遇到 Git CRLF／LF 匯出差異，原因與修正、完整 CI 重跑方式見 [V7 CI rollback fix](V7_CI_Rollback_Fix.md)。
 
 ## 目前基準與目標
 
@@ -24,10 +34,10 @@ Version 0.1 — 2026-10-13
 
 | 維度 | 目前已實作 | 本階段目標 |
 | --- | --- | --- |
-| FHIR | R5 `5.0.0` | 新增 R4 `4.0.1`，保留 R5 `5.0.0` |
+| FHIR | R5 `5.0.0`／R4 `4.0.1` Models、engines 與明確 context 的 typed Client | 外部 Client smoke 與 V7 正式交付分別驗收 |
 | Repository | Runtime、SDK、Generator 同 repository | 保持同 repository，以專案與契約劃分責任 |
-| Generator | 同一工具，但多處固定 R5 | 共用 pipeline，各版本使用明確設定、policy 與輸出 |
-| Models | R5 models 與 composition 編譯於 `MyFhirSdk.dll` | R4、R5 Models 獨立 assembly 與型別身分 |
+| Generator | Tool `1.3.1`，共用 pipeline，各版本固定 policies 與資產 | G4 雙版本生成；G5 實際編譯當次生成來源 |
+| Models | `MyFhirSdk.R4.Models.dll`／`MyFhirSdk.R5.Models.dll` 各自擁有模型與 provider | 維持單一 compile owner，無 SDK 反向依賴 |
 | Engines | Parser／Serializer／Validator 在 SDK，預設 R5 | 使用明確版本 context；獨立 engines assembly 視實作需要 |
 | Runtime | 最小 kernel，含 bootstrap types | 優先共用，先驗證 bootstrap 與跨版本邊界 |
 | 工具鏈 | SDK `9.0.317`／`net9.0` | 此工作不順帶升級 TFM |
@@ -36,11 +46,9 @@ Version 0.1 — 2026-10-13
 [CodeGen README](../../CodeGen/README.md) 與
 [Compatibility matrix](../../CodeGen/Compatibility/GenerationCompatibilityMatrix.cs)。
 
-## 建議先做什麼
+## 下一階段
 
-先完成 V0 baseline／設計決策，再以 V1 小範圍實驗驗證共用 Runtime 與雙版本 context。
-接著完成 provider／composition 契約及 R5 Models 分離，才展開完整 R4 生成。
-Models 分離與 engines 解除 R5 固定依賴需配合進行，不能只搬動檔案。
+V0–V7 已完成。先依交付指南保存來源明確的產物及外部使用範例；SDK／Models NuGet 打包與私人 feed 為後續工作，不將完成本機交付誤稱為已公開發布。
 
 Client 的版本相依 API 必須在 R4 Client 交付前處理；完整 Client／IG package 拆分、
 通用 constraint Profile generator、CLI input 退場、完整 terminology／FHIRPath validation

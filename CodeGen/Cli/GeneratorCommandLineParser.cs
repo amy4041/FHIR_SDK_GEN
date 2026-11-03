@@ -21,11 +21,11 @@ public sealed class GeneratorCommandLineParser
         "Command: myfhir-codegen\n\n" +
         """
         Usage:
-          # Primitive batch mode (.tgz preferred; flat directory supported; --policy required)
+          # Primitive batch mode (.tgz preferred; flat directory supported; packaged release policy by default)
           dotnet myfhir-codegen \
             --mode primitive \
             --input <package.tgz|definitions-directory> \
-            --policy <policy-path> \
+            [--policy <policy-path>] \
             --output <path> \
             --fhir-version <version> \
             --package-id <package-id> \
@@ -33,7 +33,7 @@ public sealed class GeneratorCommandLineParser
             [--runtime-contract <file>] \
             [--runtime-reference <file> ...]
 
-          # Phase C R5 model batch mode (omit --canonical for full scope)
+          # R4/R5 model batch mode (omit --canonical for full scope)
           dotnet myfhir-codegen \
             --mode model \
             --input <package.tgz> \
@@ -104,7 +104,7 @@ public sealed class GeneratorCommandLineParser
         return Invalid("Required option '--mode' was not provided.");
     }
 
-    private static CommandLineParseResult ParsePrimitive(
+    private CommandLineParseResult ParsePrimitive(
         IReadOnlyList<string> args,
         ToolAssetOverrides assetOverrides)
     {
@@ -157,7 +157,6 @@ public sealed class GeneratorCommandLineParser
         var required = new[]
         {
             ("--input", inputPath),
-            ("--policy", policyPath),
             ("--output", outputPath),
             ("--fhir-version", fhirVersion),
             ("--package-id", packageId),
@@ -169,6 +168,8 @@ public sealed class GeneratorCommandLineParser
             return Invalid($"Required option '{missing.Item1}' was not provided.");
         }
 
+        if (fhirVersion is not ("4.0.1" or "5.0.0")) return Invalid($"Unsupported FHIR version '{fhirVersion}'. Expected 4.0.1 or 5.0.0.");
+        policyPath ??= _assetResolver.ResolveModelPolicies(assetOverrides, null, fhirVersion!).PrimitivePolicyPath;
         var input = PrimitiveDefinitionInput.Resolve(inputPath!);
         if (!input.IsSuccess || input.Value is null)
         {
@@ -223,9 +224,10 @@ public sealed class GeneratorCommandLineParser
         var missing = required.FirstOrDefault(x => string.IsNullOrWhiteSpace(x.Item2));
         if (missing != default) return Invalid($"Required option '{missing.Item1}' was not provided.");
 
+        if (fhirVersion is not ("4.0.1" or "5.0.0")) return Invalid($"Unsupported FHIR version '{fhirVersion}'. Expected 4.0.1 or 5.0.0.");
         var policies = _assetResolver.ResolveModelPolicies(
             assetOverrides,
-            primitivePolicy);
+            primitivePolicy, fhirVersion!);
         return new CommandLineParseResult(null, false, null,
             new ModelGenerationOptions(
                 input!, output!, packageId!, packageVersion!, fhirVersion!,

@@ -1,0 +1,97 @@
+[
+  {
+    "assembly": "MyFhirSdk.ImplementationGuides.TwCore.Tests",
+    "trx": "artifacts/fhir-versions/v7/verified/rollback-test-results/rollback-v6_net9.0_20261019181454.trx",
+    "sha256": "7426131b4e31f42c48dcfee799739757adbaede28b11c40e6d0554eb1f15e45e",
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "skips": []
+  },
+  {
+    "assembly": "MyFhirSdk.Validation.Tests",
+    "trx": "artifacts/fhir-versions/v7/verified/rollback-test-results/rollback-v6_net9.0_20261019181455.trx",
+    "sha256": "733d3e26867bcb39cd274fda723136594d68beb0b7d122e97e15710fb564de05",
+    "total": 74,
+    "passed": 74,
+    "failed": 0,
+    "skipped": 0,
+    "skips": []
+  },
+  {
+    "assembly": "MyFhirSdk.Parser.Json.Tests",
+    "trx": "artifacts/fhir-versions/v7/verified/rollback-test-results/rollback-v6_net9.0_20261019181456.trx",
+    "sha256": "a227a7d8e6dc08f47225560708d1be1923588c593b0d5ac5a682df2c082646b4",
+    "total": 22,
+    "passed": 22,
+    "failed": 0,
+    "skipped": 0,
+    "skips": []
+  },
+  {
+    "assembly": "MyFhirSdk.Client.Tests",
+    "trx": "artifacts/fhir-versions/v7/verified/rollback-test-results/rollback-v6_net9.0_20261019181457.trx",
+    "sha256": "9c0672157ea496f6f8b2369b55065b3e35fc7d03ea7df43106deb52fea438191",
+    "total": 50,
+    "passed": 49,
+    "failed": 0,
+    "skipped": 1,
+    "skips": [
+      {
+        "test": "MyFhirSdk.Tests.Client.FhirClientIntegrationSmokeTests.PatientCrudSearchSmokeFlow",
+        "reason": "Set MYFHIRSDK_INTEGRATION_BASE_URL to run integration smoke tests."
+      }
+    ]
+  },
+  {
+    "assembly": "MyFhirSdk.Serialization.Json.Tests",
+    "trx": "artifacts/fhir-versions/v7/verified/rollback-test-results/rollback-v6_net9.0_20261019181458.trx",
+    "sha256": "ac0e7a52992acebd87ffa16ba44fc42bb865fb9b9abb3998ce409c432ea1a58c",
+    "total": 15,
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "skips": []
+  },
+  {
+    "assembly": "MyFhirSdk.FhirVersions.V6.Tests",
+    "trx": "artifacts/fhir-versions/v7/verified/rollback-test-results/rollback-v6_net9.0_20261019181459.trx",
+    "sha256": "1a9f091d5a49444e54746d0c1a7e7304b6b9d8b04f9a69c184a2a15f64f717fa",
+    "total": 92,
+    "passed": 92,
+    "failed": 0,
+    "skipped": 0,
+    "skips": []
+  },
+  {
+    "assembly": "MyFhirSdk.FhirVersions.V5.Tests",
+    "trx": "artifacts/fhir-versions/v7/verified/rollback-test-results/rollback-v6_net9.0_20261019181500.trx",
+    "sha256": "2a11bbdb752bbd54365858361067f974feed6fb6a9ef78a71db63a22941e5c34",
+    "total": 81,
+    "passed": 81,
+    "failed": 0,
+    "skipped": 0,
+    "skips": []
+  },
+  {
+    "assembly": "MyFhirSdk.Architecture.Tests",
+    "trx": "artifacts/fhir-versions/v7/verified/rollback-test-results/rollback-v6_net9.0_20261019181513.trx",
+    "sha256": "e8d48e052cbf7ec6b995dc3ebe1822f024f2707004cae1ede1929ff20aeb236c",
+    "total": 243,
+    "passed": 243,
+    "failed": 0,
+    "skipped": 0,
+    "skips": []
+  },
+  {
+    "assembly": "MyFhirSdk.CodeGen.Tests",
+    "trx": "artifacts/fhir-versions/v7/verified/rollback-test-results/rollback-v6_net9.0_20261019181556.trx",
+    "sha256": "225c17e8060a77eea95ca5f8ff7dab892f92f97de17c7d118167f6880514e295",
+    "total": 584,
+    "passed": 584,
+    "failed": 0,
+    "skipped": 0,
+    "skips": []
+  }
+]

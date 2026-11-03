@@ -1,0 +1,326 @@
+[
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.PrimitiveJsonTokenKindsAreEnforced(suffix: \"Integer\", token: \"\\\"1\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4DecimalLiteralValidationDoesNotAcceptMalformedNumbers(literal: \"NaN\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.PrimitiveJsonTokenKindsAreEnforced(suffix: \"Decimal\", token: \"\\\"1.2\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalAdaptersStillRejectMalformedValues(suffix: \"Base64Binary\", token: \"\\\"aGVs *bG8=\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4DecimalLiteralValidationDoesNotAcceptMalformedNumbers(literal: \"01\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Decimal\", token: \"1.2300\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.UnknownAbstractAndR5OnlyResourcesAreRejected(name: \"DomainResource\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalAdaptersStillRejectMalformedValues(suffix: \"Code\", token: \"\\\"alpha  beta\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalDifferencesPreserveTheWireLiteralAndR5Behavior(suffix: \"Code\", token: \"\\\"alpha beta\\\"\", r5Valid: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Uuid\", token: \"\\\"urn:uuid:550e8400-e29b-41d4-a716-446655440000\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4DecimalLiteralValidationDoesNotAcceptMalformedNumbers(literal: \"+1\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.InvalidPrimitiveLexicalValuesProduceFormatIssues(suffix: \"Uuid\", token: \"\\\"invalid\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Markdown\", token: \"\\\"**hello**\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalAdaptersStillRejectMalformedValues(suffix: \"Base64Binary\", token: \"\\\"====\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.UnequalAndMetadataOnlyPrimitiveArraysKeepTheirPositions(fields: \"\\\"_given\\\":[{\\\"extension\\\":[{\\\"url\\\":\\\"https://exa\"···, count: 1)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.InvalidPrimitiveLexicalValuesProduceFormatIssues(suffix: \"Code\", token: \"\\\" leading\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.UnknownAbstractAndR5OnlyResourcesAreRejected(name: \"FutureResource\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.InvalidPrimitiveLexicalValuesProduceFormatIssues(suffix: \"Id\", token: \"\\\"bad id\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Canonical\", token: \"\\\"https://example.org/StructureDefinition/a|1.0\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalDifferencesPreserveTheWireLiteralAndR5Behavior(suffix: \"Code\", token: \"\\\"alpha\\\\tbeta\\\"\", r5Valid: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.InvalidPrimitiveLexicalValuesProduceFormatIssues(suffix: \"Instant\", token: \"\\\"2024-01-01\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"String\", token: \"\\\"hello\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.PrimitiveJsonTokenKindsAreEnforced(suffix: \"UnsignedInt\", token: \"\\\"1\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.InvalidPrimitiveLexicalValuesProduceFormatIssues(suffix: \"Oid\", token: \"\\\"1.2.3\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalAdaptersStillRejectMalformedValues(suffix: \"DateTime\", token: \"\\\"2024-02-29T10:20:30.1234567890\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalAdaptersStillRejectMalformedValues(suffix: \"DateTime\", token: \"\\\"0000-02-29T10:20:30.1234567890Z\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalDifferencesPreserveTheWireLiteralAndR5Behavior(suffix: \"Time\", token: \"\\\"10:20:30.1234567890\\\"\", r5Valid: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.CrossVersionRootsContainedExtensionsAndOpenValuesFailEarly",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalDifferencesPreserveTheWireLiteralAndR5Behavior(suffix: \"Decimal\", token: \"1234567890123456789\", r5Valid: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Time\", token: \"\\\"10:20:30\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.InvalidPrimitiveLexicalValuesProduceFormatIssues(suffix: \"UnsignedInt\", token: \"-1\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.PrimitiveJsonTokenKindsAreEnforced(suffix: \"Boolean\", token: \"\\\"true\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalAdaptersStillRejectMalformedValues(suffix: \"Base64Binary\", token: \"\\\"\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Boolean\", token: \"true\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.InvalidPrimitiveLexicalValuesProduceFormatIssues(suffix: \"PositiveInt\", token: \"0\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalAdaptersStillRejectMalformedValues(suffix: \"Code\", token: \"\\\"alpha beta\\\\n\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalAdaptersStillRejectMalformedValues(suffix: \"Base64Binary\", token: \"\\\"aGVsbG8\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Base64Binary\", token: \"\\\"aGVsbG8=\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Date\", token: \"\\\"2024-02-29\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalDifferencesPreserveTheWireLiteralAndR5Behavior(suffix: \"Decimal\", token: \"123456789012345678\", r5Valid: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalDifferencesPreserveTheWireLiteralAndR5Behavior(suffix: \"Base64Binary\", token: \"\\\"aGVsbG8=\\\"\", r5Valid: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4ApiMatchesApprovedSnapshot",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.OpenComplexTypesAndNestedResourcesUseTheR4Factories",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.ProviderInventoryAndValidationCapabilitiesAreExplicitAndExecutable",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalDifferencesPreserveTheWireLiteralAndR5Behavior(suffix: \"DateTime\", token: \"\\\"2024-02-29T10:20:30.1234567890Z\\\"\", r5Valid: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.RequiredChoiceAndCollectionRulesUseFreshGeneratedComposition",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"UnsignedInt\", token: \"0\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Uri\", token: \"\\\"urn:example:one\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalDifferencesPreserveTheWireLiteralAndR5Behavior(suffix: \"Instant\", token: \"\\\"2024-02-29T10:20:30.123456789Z\\\"\", r5Valid: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.UnknownAbstractAndR5OnlyResourcesAreRejected(name: \"ActorDefinition\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Id\", token: \"\\\"abc-123\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Instant\", token: \"\\\"2024-02-29T10:20:30Z\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.PrimitiveJsonTokenKindsAreEnforced(suffix: \"String\", token: \"1\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4DecimalLiteralValidationDoesNotAcceptMalformedNumbers(literal: \"1e\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Code\", token: \"\\\"final\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.BootstrapBackboneContainedAndPrimitiveArrayMetadataRoundTrip",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalDifferencesPreserveTheWireLiteralAndR5Behavior(suffix: \"Base64Binary\", token: \"\\\"aGVs bG8=\\\"\", r5Valid: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalAdaptersStillRejectMalformedValues(suffix: \"Instant\", token: \"\\\"2024-02-29T10:20:30.1234567890+14:01\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Integer\", token: \"-12\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4DecimalLiteralValidationDoesNotAcceptMalformedNumbers(literal: \"1e1x\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4DecimalLiteralValidationDoesNotAcceptMalformedNumbers(literal: \"1.\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"DateTime\", token: \"\\\"2024-02-29T10:20:30+08:00\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Url\", token: \"\\\"https://example.org/a\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalDifferencesPreserveTheWireLiteralAndR5Behavior(suffix: \"Instant\", token: \"\\\"2024-02-29T10:20:30.1234567890+08:00\\\"\", r5Valid: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"PositiveInt\", token: \"1\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.ParallelR4R5ConsumersKeepFactoriesAndPrimitiveRulesIsolated",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.InvalidPrimitiveLexicalValuesProduceFormatIssues(suffix: \"DateTime\", token: \"\\\"2024-02-30\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.InvalidPrimitiveLexicalValuesProduceFormatIssues(suffix: \"Date\", token: \"\\\"2023-02-29\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.InvalidPrimitiveLexicalValuesProduceFormatIssues(suffix: \"Base64Binary\", token: \"\\\"***\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.InvalidPrimitiveLexicalValuesProduceFormatIssues(suffix: \"Time\", token: \"\\\"25:00:00\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.UnknownAbstractAndR5OnlyResourcesAreRejected(name: \"Resource\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalDifferencesPreserveTheWireLiteralAndR5Behavior(suffix: \"DateTime\", token: \"\\\"2024-02-29T10:20:30.123456789Z\\\"\", r5Valid: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.CompleteProviderOwnsEveryDeclarationAndConcreteResourceFactory",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.UnequalAndMetadataOnlyPrimitiveArraysKeepTheirPositions(fields: \"\\\"given\\\":[\\\"Ada\\\",\\\"Bob\\\"],\\\"_given\\\":[{\\\"id\\\":\\\"\"···, count: 2)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalAdaptersStillRejectMalformedValues(suffix: \"Time\", token: \"\\\"10:20:30.1234567890x\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalDifferencesPreserveTheWireLiteralAndR5Behavior(suffix: \"Decimal\", token: \"0.123456789012345678\", r5Valid: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.EveryR4PrimitiveRunsThroughOpenTypeCodecAndValidator(suffix: \"Oid\", token: \"\\\"urn:oid:1.2.3\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalAdaptersStillRejectMalformedValues(suffix: \"Time\", token: \"\\\"25:20:30.1234567890\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalAdaptersStillRejectMalformedValues(suffix: \"DateTime\", token: \"\\\"2024-02-30T10:20:30.1234567890Z\\\"\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.UnequalAndMetadataOnlyPrimitiveArraysKeepTheirPositions(fields: \"\\\"given\\\":[\\\"Ada\\\"],\\\"_given\\\":[null,{\\\"id\\\":\\\"ext\"···, count: 2)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.FhirVersions.V5.R4IntegrationTests.R4LexicalDifferencesPreserveTheWireLiteralAndR5Behavior(suffix: \"Time\", token: \"\\\"10:20:30.123456789\\\"\", r5Valid: True)",
+    "outcome": "Passed"
+  }
+]

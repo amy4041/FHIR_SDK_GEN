@@ -14,20 +14,22 @@ public sealed class ModelMetadataGenerationPipeline
     private readonly ModelMetadataIrBuilder _metadataBuilder;
     private readonly ModelMetadataRenderer _metadataRenderer;
     private readonly ValidationCompositionRenderer _validationRenderer;
-    private readonly CompositionStructureValidator _structureValidator = new();
+    private readonly CompositionStructureValidator _structureValidator;
+    private readonly FhirReleaseConfiguration _release;
 
     public ModelMetadataGenerationPipeline(
         RuntimeContractView runtimeContract,
-        RoslynCompilationValidator compilationValidator)
+        RoslynCompilationValidator compilationValidator,
+        FhirReleaseConfiguration? release = null)
         : this(
             new ResourceBackboneGenerationPipeline(
                 new ComplexDatatypeRenderer(),
                 new ResourceBackboneRenderer(),
                 compilationValidator),
             new ModelMetadataIrBuilder(runtimeContract),
-            new ModelMetadataRenderer(),
-            new ValidationCompositionRenderer(),
-            compilationValidator)
+            new ModelMetadataRenderer(release),
+            new ValidationCompositionRenderer(release),
+            compilationValidator, release)
     {
     }
 
@@ -36,8 +38,11 @@ public sealed class ModelMetadataGenerationPipeline
         ModelMetadataIrBuilder metadataBuilder,
         ModelMetadataRenderer metadataRenderer,
         ValidationCompositionRenderer validationRenderer,
-        RoslynCompilationValidator compilationValidator)
+        RoslynCompilationValidator compilationValidator,
+        FhirReleaseConfiguration? release = null)
     {
+        _release = release ?? FhirReleaseConfiguration.R5;
+        _structureValidator = new(_release);
         ArgumentNullException.ThrowIfNull(modelPipeline);
         ArgumentNullException.ThrowIfNull(metadataBuilder);
         ArgumentNullException.ThrowIfNull(metadataRenderer);
@@ -70,10 +75,10 @@ public sealed class ModelMetadataGenerationPipeline
             metadataSources =
             [
                 new GeneratedSource(
-                    ModelMetadataRenderer.ArtifactPath,
+                    _release.MetadataPath,
                     _metadataRenderer.Render(metadata)),
                 new GeneratedSource(
-                    ValidationCompositionRenderer.ArtifactPath,
+                    _release.ValidationPath,
                     _validationRenderer.Render(metadata))
             ];
         }

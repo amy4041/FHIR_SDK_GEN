@@ -3,10 +3,17 @@
     <TargetFramework>$(MyFhirSdkTargetFramework)</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- Exclude non-SDK trees before default globs enumerate their build/cache
+         outputs; Compile Remove below retains the explicit ownership boundary. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);artifacts/**;Tests/**;CodeGen/**;Runtime/**;ModelContracts/**;ModelSupport/**;Models/**;Generated/**;examples/**;ImplementationGuides/**</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="ImplementationGuides\**\*.cs" />
     <Compile Remove="Runtime\**\*.cs" />
+    <Compile Remove="ModelContracts\**\*.cs" />
+    <Compile Remove="ModelSupport\**\*.cs;Models\**\*.cs;Generated\**\*.cs" />
     <Compile Remove="artifacts\**\*.cs" />
+    <Compile Remove="examples\**\*.cs" />
     <Compile Remove="CodeGen\**\*.cs" />
     <Compile Remove="core\bin\**\*.cs" />
     <Compile Remove="core\obj\**\*.cs" />
@@ -16,6 +23,8 @@
   <ItemGroup>
     <Compile Remove="@(RuntimeKernelSource)" />
     <ProjectReference Include="Runtime\MyFhirSdk.Runtime.csproj" />
+    <ProjectReference Include="ModelContracts\MyFhirSdk.ModelContracts.csproj" />
+    <ProjectReference Include="ModelSupport\MyFhirSdk.ModelSupport.csproj" />
   </ItemGroup>
 
 </Project>

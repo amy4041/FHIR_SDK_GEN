@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(MyFhirSdkTargetFramework)</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../ModelSupport/MyFhirSdk.ModelSupport.csproj" />
+    <ProjectReference Include="../../ModelContracts/MyFhirSdk.ModelContracts.csproj" />
+    <Compile Include="../../Generated/R4/**/*.cs" Link="Generated/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

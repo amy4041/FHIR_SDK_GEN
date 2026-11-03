@@ -85,7 +85,7 @@ public sealed class FhirRequestBuilderTests
     private static FhirRequestBuilder CreateBuilder()
     {
         return new FhirRequestBuilder(
-            new FhirResourceTypeResolver(),
+            new FhirResourceTypeResolver(TestContexts.R5),
             new FhirRequestUriBuilder(new Uri("https://example.org/fhir")));
     }
 

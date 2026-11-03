@@ -1,0 +1,18 @@
+[
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V3.ModelSupportApiSnapshotTests.SharedSupportPublicSurfaceMatchesApprovedSnapshot",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V3.R5ModelsMigrationTests.ProviderInventoryOwnsAllModelTypesAndDefaultContextUsesTheirFactories",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V3.R5ModelsMigrationTests.R5ModelsAndSupportHaveNoSdkOrEngineReferenceOrFriendAccess",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V3.R5ModelsMigrationTests.EvaluatedSdkModelsAndSupportHaveDisjointSourcesAndOneGeneratedOwner",
+    "outcome": "Passed"
+  }
+]

@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "gate": "G0",
+  "status": "Failed",
+  "r4ProductionSupport": false,
+  "sourceRevision": "ca0c27f81adb729657da8ddab61c71c70e113984",
+  "branch": "feature/fhir-r4-v0",
+  "workingTreeDirty": true,
+  "createdAtUtc": "2026-10-13T07:19:24.575449+00:00",
+  "sdkVersion": "9.0.317",
+  "os": "Windows",
+  "architecture": "AMD64",
+  "pythonVersion": "3.13.13",
+  "targetFramework": "net9.0",
+  "configuration": "Release",
+  "sourceFingerprint": {
+    "algorithm": "sha256-path-and-bytes-v1",
+    "fileCount": 1423,
+    "sha256": "60ae74cbb295a448eb4de80a1b65d2c550347f48230e35324a8393c6c67adcda"
+  },
+  "runnerSha256": "ac5a8be28c985cbbf1b116e01ab5b30dc73388fd1adb20ea578931a248c8e0e0",
+  "powershellVersion": "7.5.0",
+  "decisionsSha256": "56c1dde602985ea965c67c9ecc929ac97636d9b974c9bff70250a7de401d3656",
+  "r4Input": {
+    "sha256": "b090bf929e1f665cf2c91583720849695bc38d2892a7c5037c56cb00817fb091",
+    "archiveBytes": 4531911,
+    "structureDefinitions": 655,
+    "byKindAndDerivation": {
+      "complex-type/None": 1,
+      "complex-type/constraint": 398,
+      "complex-type/specialization": 40,
+      "logical/None": 4,
+      "logical/specialization": 1,
+      "primitive-type/specialization": 20,
+      "resource/None": 1,
+      "resource/constraint": 43,
+      "resource/specialization": 147
+    },
+    "byDisposition": {
+      "excluded-from-base-models": 447,
+      "model-generation-candidate-requires-V4-policy": 202,
+      "runtime-bootstrap-candidate-requires-V1": 5,
+      "version-specific-auxiliary-required": 1
+    }
+  },
+  "r5Input": {
+    "sha256": "74b27cd1bfce9e80eaceac431edf230b0945a443564fbf5512f82e5fa50a80d4",
+    "archiveBytes": 17057450,
+    "structureDefinitions": 307,
+    "byKindAndDerivation": {
+      "complex-type/None": 1,
+      "complex-type/constraint": 3,
+      "complex-type/specialization": 47,
+      "logical/None": 10,
+      "primitive-type/specialization": 21,
+      "resource/constraint": 63,
+      "resource/specialization": 162
+    },
+    "byDisposition": {
+      "excluded-from-base-models": 76,
+      "model-generation-candidate-requires-V4-policy": 223,
+      "runtime-bootstrap-candidate-requires-V1": 7,
+      "version-specific-auxiliary-required": 1
+    }
+  },
+  "tool": {
+    "packageId": "MyFhirSdk.CodeGen.Tool",
+    "version": "1.2.0",
+    "sha256": "21bfd5d4aeac8873aec3df4a79353f3043d4598bc1a31d3860b27d0d57b37508",
+    "descriptorSha256": "75ce3d0aebb6c0e69ce18919b3b3bb6387faed1eee588e5838716d2abf365d99",
+    "compilerReferenceSha256": "8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71",
+    "contract": "runtime-kernel-v2"
+  },
+  "inventoryToolNuGetAudit": false,
+  "publicApiSha256": "925db0ae7963250c8d6602536d6e71d6ba09f51bd3681c858a8214429ea33c66",
+  "implementationHashes": {
+    "MyFhirSdk.dll": "1d84427865ff1623afde1e8922463686f5b197ade79b7fa076ba05b1dee53b50",
+    "MyFhirSdk.Runtime.dll": "3adf69db64a6ba1b63f4671d4c7279de7abaa0c83bf558833cda3ce7838e8de3"
+  },
+  "externalClientSmoke": {
+    "endpointConfigured": false,
+    "endpointSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "environmentVariable": "MYFHIRSDK_INTEGRATION_BASE_URL"
+  },
+  "regression": [
+    {
+      "assembly": "MyFhirSdk.Validation.Tests",
+      "trx": "artifacts/fhir-versions/v0/verified-2/regression/A90408_65-0A90408-01_2026-10-13_15_20_51.trx",
+      "sha256": "06a4fd59272819513b4360f97aa272c6dc59ed275f6b51a01a4d6da2bbc2de70",
+      "total": 74,
+      "passed": 74,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Client.Tests",
+      "trx": "artifacts/fhir-versions/v0/verified-2/regression/A90408_65-0A90408-01_2026-10-13_15_20_51[1].trx",
+      "sha256": "d0a5cb0700fffedb42e735a2be47748c9b5279348302f4c31761f16ac45b8335",
+      "total": 45,
+      "passed": 44,
+      "failed": 0,
+      "skipped": 1,
+      "skips": [
+        {
+          "test": "MyFhirSdk.Tests.Client.FhirClientIntegrationSmokeTests.PatientCrudSearchSmokeFlow",
+          "reason": "Set MYFHIRSDK_INTEGRATION_BASE_URL to run integration smoke tests."
+        }
+      ]
+    },
+    {
+      "assembly": "MyFhirSdk.ImplementationGuides.TwCore.Tests",
+      "trx": "artifacts/fhir-versions/v0/verified-2/regression/A90408_65-0A90408-01_2026-10-13_15_20_52.trx",
+      "sha256": "bed2c28be145d31636a8715f7a56935538c0a37797301b97229ebbcb4fd8de38",
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Parser.Json.Tests",
+      "trx": "artifacts/fhir-versions/v0/verified-2/regression/A90408_65-0A90408-01_2026-10-13_15_20_52[1].trx",
+      "sha256": "e19fa9170ffd5afdc3992fcb0bf73861ec8fe9ada52bcac727f9a408ec16411a",
+      "total": 22,
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Serialization.Json.Tests",
+      "trx": "artifacts/fhir-versions/v0/verified-2/regression/A90408_65-0A90408-01_2026-10-13_15_20_52[2].trx",
+      "sha256": "56819b2ef0f3724a252e90673921c5495db5ce38e05b2b6f3ac0a9cdf77d5137",
+      "total": 15,
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Architecture.Tests",
+      "trx": "artifacts/fhir-versions/v0/verified-2/regression/A90408_65-0A90408-01_2026-10-13_15_20_52[3].trx",
+      "sha256": "aabfa3433f90e314f9be5c37bd86b8bef1b1a7ff6d524de681c68f3119d673e6",
+      "total": 189,
+      "passed": 189,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.CodeGen.Tests",
+      "trx": "artifacts/fhir-versions/v0/verified-2/regression/A90408_65-0A90408-01_2026-10-13_15_20_54.trx",
+      "sha256": "4c0835cbeaad49792fb3b83ccb87de3aabeac754250f72bc62157aeadd0eb4ab",
+      "total": 568,
+      "passed": 567,
+      "failed": 1,
+      "skipped": 0,
+      "skips": []
+    }
+  ],
+  "testCounts": {
+    "total": 923,
+    "passed": 921,
+    "failed": 1,
+    "skipped": 1
+  },
+  "error": "Regression failed; see regression.log and per-assembly results"
+}

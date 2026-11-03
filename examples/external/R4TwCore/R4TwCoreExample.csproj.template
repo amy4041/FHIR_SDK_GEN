@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseR4Models>true</UseR4Models>
+    <UseTwCore>true</UseTwCore>
+    <DefineConstants>$(DefineConstants);USE_R4;USE_IG</DefineConstants>
+  </PropertyGroup>
+  <Import Project="../SdkReferences.props" />
+  <ItemGroup>
+    <Compile Include="../Shared/Program.cs" Link="Program.cs" />
+    <Compile Include="../Shared/IgProbe.cs" Link="IgProbe.cs" />
+  </ItemGroup>
+</Project>

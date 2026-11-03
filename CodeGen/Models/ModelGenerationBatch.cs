@@ -14,7 +14,7 @@ public sealed class ModelGenerationBatch
         Manifest = manifest;
         Artifacts = new ReadOnlyCollection<GeneratedArtifact>(Sources
             .Select(x => new GeneratedArtifact(x.FileName, x.Source))
-            .Append(new GeneratedArtifact(ModelGenerationManifestModel.FileName, renderedManifest))
+            .Append(new GeneratedArtifact(Generation.FhirReleaseConfiguration.ForVersion(manifest.FhirVersion).GeneratedRoot + "/model-generation-manifest.json", renderedManifest))
             .OrderBy(x => x.FileName, StringComparer.Ordinal)
             .ToArray());
     }

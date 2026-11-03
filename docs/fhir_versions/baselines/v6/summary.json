@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "gate": "G6",
+  "status": "Passed",
+  "scope": "Client implementation and controlled HTTP acceptance",
+  "deliveryGate": "G7 Pending",
+  "modelBaselineRevision": "9aee18656326a175b92d7b9fded1379188d64a4e",
+  "preservedModelSources": {
+    "R4": 677,
+    "R5": 852
+  },
+  "sourceRevision": "9aee18656326a175b92d7b9fded1379188d64a4e",
+  "sourceFingerprint": {
+    "algorithm": "sha256-path-and-bytes-v1",
+    "fileCount": 2245,
+    "sha256": "ea29be2abdf3af0032cd625440a8cf9a433d837123f1b8d3e0a1783c8551db63"
+  },
+  "createdAtUtc": "2026-10-19T08:06:32.943689+00:00",
+  "os": "Windows",
+  "sdkVersion": "9.0.317",
+  "testCounts": {
+    "total": 1171,
+    "passed": 1170,
+    "failed": 0,
+    "skipped": 1
+  },
+  "runtimeContract": {
+    "descriptorSha256": "422ac582a75724ea3ecc275131b3f190b3b19d9571aa857925960edc9b23c2f2",
+    "compilerReferenceSha256": "8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71"
+  },
+  "toolVersion": "1.3.1",
+  "toolPackageSha256": "6a9bd18ffe936cbdf291ac1032a36b40a4f031ddbf9774373a6f1d1be21209b9",
+  "preservedGeneratedSources": 852,
+  "rollbackRegression": {
+    "status": "Passed",
+    "currentAssemblies": 9,
+    "historicalAssemblies": 7,
+    "harnessChecks": 16,
+    "evidenceSha256": "9eb92ac4c7e946b1238eb595d21baa49ef630660c9727fa30de4cb6d0ce90cca"
+  },
+  "freshClientIntegration": {
+    "outsideCheckout": true,
+    "reusedBinObj": false,
+    "reusedCommittedGeneratedSources": false,
+    "testsPassed": 92,
+    "generatedInputsUnchanged": true,
+    "clientApiSnapshotSha256": "7da0d7f75f1b461279feb88043bf0b41aefb061105bce3b0ab842c727de2a52f",
+    "testedImplementationHashes": {
+      "MyFhirSdk.dll": "de5b62d36826685dc012aa53d845e665bf91f54330671ae1a67815eaac7b4475",
+      "MyFhirSdk.Runtime.dll": "98b019312159b559ced60389da327fff32794d280ee0a6b3773c2f775f5657e9",
+      "MyFhirSdk.ModelContracts.dll": "578013a47b779ba27105ec04aedf8b5a17d1f6bbd246924da1c88ba5885a2431",
+      "MyFhirSdk.ModelSupport.dll": "1678955ab33afa234c1796800bd37150ffecacdb6abfeb3fcbeb2d5d24c96b0e",
+      "MyFhirSdk.R4.Models.dll": "83838ae0dffa916a74d05cfe45f87ea07da12fa43be7c450579e253d5f1463e9",
+      "MyFhirSdk.R5.Models.dll": "0abef43039b494ca1791636f74b2a66dece4c303a98780330cbd74d4482ce27a"
+    }
+  },
+  "externalSmokes": {
+    "R4": {
+      "release": "R4",
+      "expectedFhirVersion": "4.0.1",
+      "status": "Skipped",
+      "reason": "Set MYFHIRSDK_R4_INTEGRATION_BASE_URL to run this release's external server smoke."
+    },
+    "R5": {
+      "release": "R5",
+      "expectedFhirVersion": "5.0.0",
+      "status": "Skipped",
+      "reason": "Set MYFHIRSDK_R5_INTEGRATION_BASE_URL to run this release's external server smoke."
+    }
+  },
+  "externalServerAcceptance": "Pending",
+  "r4ClientImplementationAccepted": true
+}

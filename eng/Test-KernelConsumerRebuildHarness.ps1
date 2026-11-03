@@ -47,6 +47,71 @@ $checks.Add('repository-wide-discovery-and-output-exclusions')
 Reject 'unknown-business-consumer' { Assert-KernelConsumerProjectSet $projects @('MyFhirSdk.csproj', 'Tests/Probe/Probe.csproj') } 'Unclassified consumer project: Apps/BusinessConsumer'
 Reject 'missing-known-project' { Assert-KernelConsumerProjectSet @('MyFhirSdk.csproj') @('MyFhirSdk.csproj', 'Tests/Probe/Probe.csproj') } 'Missing consumer project:'
 
+$experimentProject = Join-Path $root 'Tests/FhirVersions/V1/Models/MyFhirSdk.R4.V1.Models.csproj'
+Assert-KernelExperimentModelDependencies -ProjectPath $experimentProject -RepositoryRoot $root
+$checks.Add('v1-runtime-only-models-dependency')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'ModelContracts/MyFhirSdk.ModelContracts.csproj') $root @('Runtime/MyFhirSdk.Runtime.csproj')
+$checks.Add('v2-runtime-only-neutral-contracts')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'Tests/FhirVersions/V2/Provider/MyFhirSdk.R4.V2.Provider.csproj') $root @(
+    'ModelContracts/MyFhirSdk.ModelContracts.csproj', 'Tests/FhirVersions/V1/Models/MyFhirSdk.R4.V1.Models.csproj')
+$checks.Add('v2-provider-without-sdk-or-engines')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'ModelSupport/MyFhirSdk.ModelSupport.csproj') $root @('ModelContracts/MyFhirSdk.ModelContracts.csproj')
+$checks.Add('v3-shared-support-without-sdk-or-models')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'Models/R5/MyFhirSdk.R5.Models.csproj') $root @(
+    'ModelContracts/MyFhirSdk.ModelContracts.csproj', 'ModelSupport/MyFhirSdk.ModelSupport.csproj')
+$checks.Add('v3-independent-r5-models')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'Tests/FhirVersions/V3/ProviderConsumer/ProviderConsumer.csproj') $root @('Models/R5/MyFhirSdk.R5.Models.csproj')
+$checks.Add('v3-provider-only-consumer')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'ImplementationGuides/TwCore/MyFhirSdk.ImplementationGuides.TwCore.csproj') $root @(
+    'MyFhirSdk.csproj', 'Models/R4/MyFhirSdk.R4.Models.csproj')
+$checks.Add('d2-r4-ig-sdk-and-r4-only-direct-dependencies')
+$sdkAllowedProjects = @('Runtime/MyFhirSdk.Runtime.csproj', 'ModelContracts/MyFhirSdk.ModelContracts.csproj',
+    'ModelSupport/MyFhirSdk.ModelSupport.csproj')
+Assert-KernelNeutralProjectDependencies (Join-Path $root 'MyFhirSdk.csproj') $root $sdkAllowedProjects
+$checks.Add('d2-sdk-approved-projects-without-dll-or-package-dependencies')
+# An evaluated IG graph must reject a direct R5 reference, missing R4, DLL or package additions.
+$igProbe = Join-Path $output 'ig-probe/Probe.csproj'
+New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($igProbe)) -Force | Out-Null
+$igSdk = [Security.SecurityElement]::Escape((Join-Path $root 'MyFhirSdk.csproj'))
+$igR4 = [Security.SecurityElement]::Escape((Join-Path $root 'Models/R4/MyFhirSdk.R4.Models.csproj'))
+$igR5 = [Security.SecurityElement]::Escape((Join-Path $root 'Models/R5/MyFhirSdk.R5.Models.csproj'))
+foreach ($probe in @(
+    @{ name = 'd2-ig-reject-r5'; items = "<ProjectReference Include=`"$igR4`" /><ProjectReference Include=`"$igR5`" />" },
+    @{ name = 'd2-ig-reject-missing-r4'; items = '' },
+    @{ name = 'd2-ig-reject-dll'; items = "<ProjectReference Include=`"$igR4`" /><Reference Include=`"MyFhirSdk.R5.Models`" />" },
+    @{ name = 'd2-ig-reject-package'; items = "<ProjectReference Include=`"$igR4`" /><PackageReference Include=`"Unapproved.Ig`" Version=`"1.0.0`" />" }
+)) {
+    [IO.File]::WriteAllText($igProbe, "<Project Sdk=`"Microsoft.NET.Sdk`"><PropertyGroup><TargetFramework>net9.0</TargetFramework></PropertyGroup><ItemGroup><ProjectReference Include=`"$igSdk`" />$($probe.items)</ItemGroup></Project>")
+    Reject $probe.name { Assert-KernelNeutralProjectDependencies $igProbe $root @('MyFhirSdk.csproj', 'Models/R4/MyFhirSdk.R4.Models.csproj') } 'Neutral project has unapproved'
+}
+# Use evaluated items in an isolated project to prove that SDK, DLL and package
+# dependencies are rejected; do not modify the committed experiment project.
+$sdkProbe = Join-Path $output 'sdk-probe/Probe.csproj'
+New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($sdkProbe)) -Force | Out-Null
+$sdkReferenceItems = ($sdkAllowedProjects | ForEach-Object {
+    '<ProjectReference Include="' + [Security.SecurityElement]::Escape((Join-Path $root $_)) + '" />'
+}) -join ''
+foreach ($probe in @(
+    @{ name = 'd2-sdk-reject-ig-dll'; item = '<Reference Include="MyFhirSdk.ImplementationGuides.TwCore" />' },
+    @{ name = 'd2-sdk-reject-ig-package'; item = '<PackageReference Include="MyFhirSdk.ImplementationGuides.TwCore" Version="1.0.0" />' }
+)) {
+    [IO.File]::WriteAllText($sdkProbe, "<Project Sdk=`"Microsoft.NET.Sdk`"><PropertyGroup><TargetFramework>net9.0</TargetFramework></PropertyGroup><ItemGroup>$sdkReferenceItems$($probe.item)</ItemGroup></Project>")
+    Reject $probe.name { Assert-KernelNeutralProjectDependencies $sdkProbe $root $sdkAllowedProjects } 'Neutral project has unapproved'
+}
+
+$modelProbe = Join-Path $output 'model-probe/Probe.csproj'
+New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($modelProbe)) -Force | Out-Null
+$runtimeProject = [Security.SecurityElement]::Escape((Join-Path $root 'Runtime/MyFhirSdk.Runtime.csproj'))
+$sdkProject = [Security.SecurityElement]::Escape((Join-Path $root 'MyFhirSdk.csproj'))
+foreach ($probe in @(
+    @{ name = 'v1-models-sdk-project-dependency'; item = "<ProjectReference Include=`"$sdkProject`" />" },
+    @{ name = 'v1-models-explicit-dll-dependency'; item = '<Reference Include="MyFhirSdk" />' },
+    @{ name = 'v1-models-package-dependency'; item = '<PackageReference Include="Probe.Package" Version="1.0.0" />' }
+)) {
+    [IO.File]::WriteAllText($modelProbe, "<Project Sdk=`"Microsoft.NET.Sdk`"><PropertyGroup><TargetFramework>net9.0</TargetFramework></PropertyGroup><ItemGroup><ProjectReference Include=`"$runtimeProject`" />$($probe.item)</ItemGroup></Project>")
+    Reject $probe.name { Assert-KernelExperimentModelDependencies -ProjectPath $modelProbe -RepositoryRoot $root } 'Experiment Models must reference only Runtime'
+}
+
 $expected = @('MyFhirSdk.CodeGen.Tests.dll', 'MyFhirSdk.Client.Tests.dll')
 $good = "$output/good"
 WriteReport $good 'codegen' $expected[0] -CodeBase 'C:\fresh\output\MyFhirSdk.CodeGen.Tests.dll'

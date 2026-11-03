@@ -81,15 +81,16 @@ public sealed class ComplexDatatypeGeneratedRuntimeTests
             new FhirDateTime("2020-01-01T00:00:00Z"));
         var container = Assert.IsAssignableFrom<Resource>(Activator.CreateInstance(containerType));
         containerType.GetProperty("Value")!.SetValue(container, period);
-        var serializer = new FhirJsonSerializer();
+        var serializer = new FhirJsonSerializer(TestContexts.R5);
 
-        var firstJson = serializer.Serialize(container);
+        Assert.Throws<FhirSdkException>(() => serializer.Serialize(container));
+        var firstJson = "{\"resourceType\":\"GeneratedDatatypeContainer\"}";
         var parseMethod = typeof(FhirJsonParser)
             .GetMethods(BindingFlags.Instance | BindingFlags.Public)
             .Single(method => method.Name == nameof(FhirJsonParser.Parse) && method.IsGenericMethod)
             .MakeGenericMethod(containerType);
         var exception = Assert.Throws<TargetInvocationException>(() =>
-            parseMethod.Invoke(new FhirJsonParser(), [firstJson]));
+            parseMethod.Invoke(new FhirJsonParser(TestContexts.R5), [firstJson]));
         var metadataError = Assert.IsType<FhirSdkException>(exception.InnerException);
         Assert.Contains("is not registered", metadataError.Message, StringComparison.Ordinal);
     }

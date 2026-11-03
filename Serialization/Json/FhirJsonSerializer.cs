@@ -3,7 +3,6 @@ using System.Text;
 using System.Text.Json;
 using MyFhirSdk.Core;
 using MyFhirSdk.ModelMetadata;
-using MyFhirSdk.ModelMetadata.R5;
 using MyFhirSdk.Primitives;
 
 namespace MyFhirSdk.Serialization.Json;
@@ -20,15 +19,12 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
 
     private readonly IModelMetadataProvider _metadataProvider;
     private readonly PrimitiveRegistry _primitiveDefinitions;
+    private readonly FhirModelContext? _context;
 
-    public FhirJsonSerializer()
-        : this(R5ModelMetadataProvider.Default, PrimitiveRegistry.Default)
+    public FhirJsonSerializer(FhirModelContext context)
+        : this((context ?? throw new ArgumentNullException(nameof(context))).Metadata, context.Primitives)
     {
-    }
-
-    internal FhirJsonSerializer(IModelMetadataProvider metadataProvider)
-        : this(metadataProvider, PrimitiveRegistry.Default)
-    {
+        _context = context;
     }
 
     internal FhirJsonSerializer(
@@ -45,6 +41,7 @@ public sealed partial class FhirJsonSerializer : IFhirSerializer
         where TResource : Resource
     {
         ArgumentNullException.ThrowIfNull(resource);
+        _context?.EnsureOwnership(resource);
 
         using var stream = new MemoryStream();
         using var writer = new Utf8JsonWriter(stream, WriterOptions);

@@ -15,7 +15,7 @@ public sealed class ProgramTests
     public void Main_SdkReferenceOverride_IsRejectedAndPreservesOutput(string mode)
     {
         using var directory = new TestDirectory();
-        var sdk = typeof(MyFhirSdk.Primitives.FhirString).Assembly.Location;
+        var sdk = typeof(MyFhirSdk.Serialization.Json.FhirJsonParser).Assembly.Location;
         var root = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(Path.Combine(
             AppContext.BaseDirectory, "Policy", "runtime-contract.json")))!;
         root["runtimeAssembly"]!["name"] = "MyFhirSdk";

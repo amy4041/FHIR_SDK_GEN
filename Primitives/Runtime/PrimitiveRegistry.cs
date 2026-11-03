@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 
 namespace MyFhirSdk.Primitives;
 
-internal sealed partial class PrimitiveRegistry
+internal sealed class PrimitiveRegistry
 {
     private readonly IReadOnlyDictionary<string, IPrimitiveDefinition> _byFhirTypeName;
     private readonly IReadOnlyDictionary<Type, IPrimitiveDefinition> _byPrimitiveType;
@@ -17,8 +17,6 @@ internal sealed partial class PrimitiveRegistry
         _byPrimitiveType = new ReadOnlyDictionary<Type, IPrimitiveDefinition>(
             definitions.ToDictionary(definition => definition.PrimitiveType));
     }
-
-    internal static PrimitiveRegistry Default { get; } = Create(CreateDefinitions());
 
     internal IReadOnlyList<IPrimitiveDefinition> Definitions { get; }
 
@@ -80,26 +78,4 @@ internal sealed partial class PrimitiveRegistry
                 $"Primitive wrapper type '{primitiveType.FullName}' is not registered.");
     }
 
-    private static IPrimitiveDefinition[] CreateDefinitions()
-    {
-        var definitions = new List<IPrimitiveDefinition>();
-        AddGeneratedDefinitions(definitions);
-        return definitions.ToArray();
-    }
-
-    static partial void AddGeneratedDefinitions(
-        List<IPrimitiveDefinition> definitions);
-
-    private static IPrimitiveDefinition Define<TPrimitive, TValue>(
-        string fhirTypeName,
-        IPrimitiveCodec codec,
-        IPrimitiveValidator validator)
-    {
-        return new PrimitiveDefinition(
-            fhirTypeName,
-            typeof(TPrimitive),
-            typeof(TValue),
-            codec,
-            validator);
-    }
 }

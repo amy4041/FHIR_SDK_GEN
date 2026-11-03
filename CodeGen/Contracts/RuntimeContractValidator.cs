@@ -116,7 +116,7 @@ public sealed partial class RuntimeContractValidator
         }
         var source = sources[0];
         if (source is null || source.LogicalName != "SimpleQuantity.cs" ||
-            source.ClrType != "MyFhirSdk.Types.SimpleQuantity" || source.Normalization != "utf8-lf")
+            source.ClrType is not ("MyFhirSdk.Types.SimpleQuantity" or "MyFhirSdk.R4.Types.SimpleQuantity") || source.Normalization != "utf8-lf")
         {
             AddInvalid(diagnostics, sourceFile, "Invalid compiler source identity or normalization.");
             return;

@@ -1,3 +1,5 @@
+using MyFhirSdk.ModelMetadata;
+using MyFhirSdk.ModelMetadata.R5;
 using MyFhirSdk.Core;
 using MyFhirSdk.Primitives;
 using MyFhirSdk.Resources;
@@ -7,8 +9,9 @@ PrimitiveType<bool?> primitive = new FhirBoolean { Value = true };
 if (primitive.Value != true) throw new Exception("Primitive read failed.");
 primitive.Value = false;
 if (primitive.Value != false) throw new Exception("Primitive write failed.");
-var parser = new FhirJsonParser();
-var serializer = new FhirJsonSerializer();
+var context = new FhirModelContext(R5ModelProvider.Metadata, R5ModelProvider.Primitives, R5ModelProvider.Validation);
+var parser = new FhirJsonParser(context);
+var serializer = new FhirJsonSerializer(context);
 var patient = parser.Parse<Patient>("""{"resourceType":"Patient","id":"k0-consumer","active":true}""");
 Base model = patient;
 if (model is not Resource || patient.Active?.Value != true)

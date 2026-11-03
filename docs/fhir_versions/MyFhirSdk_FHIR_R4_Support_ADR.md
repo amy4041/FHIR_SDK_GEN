@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-- 狀態：Draft；依使用者討論方向提出，production 實作尚未開始。
+- 狀態：V0–V6 已提交並由使用者確認 CI 通過；[V7 delivery](baselines/v7/README.md) 已實作各平台驗收與跨平台 comparator，新增 CI 待提交執行；外部 server smoke 依實際設定標示。
 - 目標版本：R4 `4.0.1` 與 R5 `5.0.0`；R4B 不包含在本階段範圍。
 - 決策責任：Architecture、Runtime、Models、Serialization、Validation、CodeGen、Compatibility 維護者。
 - 實作及證據：[Implementation Guide](MyFhirSdk_FHIR_R4_Support_Implementation_Guide.md)、[Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md)。
@@ -56,7 +56,7 @@ FHIR 型別名稱可能出現在兩個版本，cache／lookup key 必須包含�
 輸出批次包含 namespace／destination contract，不只 package 身分；錯誤組合在寫檔前拒絕。
 
 保留 exact compatibility policy，新增經測試的精確組合，不能把 `4.x` 或任意 package 放行。
-現行 tool `1.2.0` 沒有 R4 支援；新 tool、schema、policy 與 descriptor 版本由 V4 根據契約變更決定。
+V4 tool `1.3.0` 提供 R4／R5 明確設定；各版本 policy／descriptor 分開，沿用 schema 2 descriptor 與 schema 3 manifest。
 Runtime API 未變更時不必為 R4 人為重建 reference；若 compiler contract 改變，需原子更新
 canonical reference、descriptor、matrix、manifests 與 snapshots。
 
@@ -82,7 +82,8 @@ asset 是可接受的過渡方式，但要有版本／hash／compile ownership�
 
 Engine 指 Parser、Serializer、Validator。共用處理流程，由不可變的版本 context 提供
 FHIR／package identity、model metadata／factory、primitive definitions／codecs、validation rules
-及能力清單。API 名稱由 V2 固定，這裡不先宣告已存在的 `FhirContext` 類別。
+及能力清單。V2 API 名稱固定為 `MyFhirSdk.ModelMetadata.FhirModelContext`，
+中立 DTO／codec／validator／validation signatures 由 `MyFhirSdk.ModelContracts.dll` 擁有。
 
 Context 的各元件必須屬於同一版本，建立時驗證一致性；registry/cache 必須依 context 隔離。
 不把兩套同名 primitive wrappers 合併至現有單一 registry。相同 CLR／JSON 行為的 codec 可共用，
@@ -108,8 +109,11 @@ primitive、open type 及 Extension 同樣受檢查。誤用不得靜默依另�
 
 ### 3.5 目標依賴方向
 
-下圖是邏輯責任與允許的依賴，不代表每個框都必須成為獨立 DLL。中立 contracts 可位於 Runtime
-或獨立小型 assembly，V2 固定 ownership。Models 指向該契約，engines 也只透過契約取得版本資訊。
+下圖是邏輯責任與允許的依賴，不代表每個框都必須成為獨立 DLL。V2 固定中立 contracts 位於
+`MyFhirSdk.ModelContracts.dll`，只引用 Runtime。版本 provider 指向該契約，engines 透過 context 使用版本資訊；
+V3 的 R5 Models／provider 位於 `MyFhirSdk.R5.Models`，只引用 Contracts／ModelSupport；
+共用 codec／rule implementations 位於 `MyFhirSdk.ModelSupport`，只引用 Contracts（及其 Runtime 相依）。
+SDK 只負責 default R5 context 組裝與 engines；Models／ModelSupport 不引用 SDK，不建立 production friend access。
 
 ```mermaid
 flowchart TD

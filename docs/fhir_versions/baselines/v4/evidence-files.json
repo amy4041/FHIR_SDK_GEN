@@ -1,0 +1,19 @@
+{
+  "context-summary.json": "32e3120c60abffe8f3d30c3346881c946ad710782320a780f81e130654dbc982",
+  "migration-summary.json": "7d53a18394f2d16f60712bc32b0a0766cdb0a08fbe5555b01a419a4b68581982",
+  "R4-combined-hashes.json": "119e9a9a3123f9d4f04be2c1b369b08575d21ede484ae5db9440c643202838e2",
+  "R4-model-hashes.json": "c24f8180a5eaa21c893bbeada8b95b1f12eb00ac5d1230e2fdeed9aac6160ec9",
+  "R4-primitive-hashes.json": "9f8ff75666ab4515b19f75c068193c236122ec23d7cabf06fa075eaf11d1f9e7",
+  "R5-combined-hashes.json": "740d12079f13c3d5864299c63350ee4212fed6f2bbca874b27880d16c7a825f8",
+  "R5-model-hashes.json": "8239ebd0007b354ff332222fda44b35ee7afb0810deca7b37f703fbc5638d3a8",
+  "R5-primitive-hashes.json": "1c77ffc4dfbc7ca4a2e8fbdb390875470a66ecf97a0b890f8f098a7ca274b7bf",
+  "README.md": "b963a87ff374aa2635ab04fd87301f539cc832756f0a1be07464ede3ffaaba53",
+  "source-inventory.json": "95d043a09541c7f7c6b13d86daa2905fd37a06d9329931679ecb1d1cef13c931",
+  "summary.json": "1557f084fa2280bbc71337669fc481af59d57b34fc4cc4103f74a945dc6efc40",
+  "tool-1.3.0/cli-help-1.3.0.txt": "c09031b1401c554bc67b3dfcde0e9d3aec0d78402b6d2d9d9ed877ff02a1a057",
+  "tool-1.3.0/directory-artifact-hashes-1.3.0.txt": "3c3a10fa033112d566bb3cbb2345ea5d88b7847b8d289cf94956031c12fe92a4",
+  "tool-1.3.0/directory-artifact-inventory-1.3.0.txt": "43a2d6884c69048916f89f2b659947b5da378673d3ff4bde18404c6f7926f3d1",
+  "tool-1.3.0/directory-manifest-1.3.0.json": "04275bc01b133bb04db34924dd3a476858ee7e8d00a3e039b582551b9cd75f41",
+  "tool-1.3.0/package-primitive-fixture-contract.txt": "09a9407faa6e9da5822d28188c4599bc75b6ad315f8cd9ac1cc1f3531cd1e5e3",
+  "v4-test-cases.json": "01eef9867fe3d33f9f7ad488633a1e493c1884f4c88292f59f8bc35ca147c9d0"
+}

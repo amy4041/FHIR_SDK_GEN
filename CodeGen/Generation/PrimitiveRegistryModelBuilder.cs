@@ -27,7 +27,7 @@ public sealed class PrimitiveRegistryModelBuilder
 
         if (!string.Equals(
                 coverage.Policy.PrimitiveNamespace,
-                PrimitiveWrapperModelBuilder.SupportedPrimitiveNamespace,
+                FhirReleaseConfiguration.ForVersion(coverage.Policy.FhirVersion).PrimitiveNamespace,
                 StringComparison.Ordinal))
         {
             return Failure(
@@ -86,7 +86,7 @@ public sealed class PrimitiveRegistryModelBuilder
 
         return new GenerationResult<PrimitiveRegistryCompositionModel?>(
             new PrimitiveRegistryCompositionModel(
-                PrimitiveWrapperModelBuilder.SupportedPrimitiveNamespace,
+                FhirReleaseConfiguration.ForVersion(coverage.Policy.FhirVersion).PrimitiveNamespace,
                 entries.OrderBy(
                     entry => entry.FhirTypeName,
                     StringComparer.Ordinal)),

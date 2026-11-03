@@ -1,0 +1,139 @@
+TYPE public interface MyFhirSdk.Client.Abstractions.IFhirClient | Base=- | Interfaces=-
+  METHOD public System.Threading.Tasks.Task<MyFhirSdk.Resources.Bundle> SearchAsync<TResource>(MyFhirSdk.Client.Search.FhirSearchQuery query, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+  METHOD public System.Threading.Tasks.Task<MyFhirSdk.Resources.Bundle> SearchAsync<TResource>(System.String query, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+  METHOD public System.Threading.Tasks.Task<TResource> CreateAsync<TResource>(TResource resource, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+  METHOD public System.Threading.Tasks.Task<TResource> UpdateAsync<TResource>(TResource resource, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+  METHOD public System.Threading.Tasks.Task<TResource?> ReadAsync<TResource>(System.String id, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+TYPE public interface MyFhirSdk.Client.Abstractions.IFhirClient`2 | Base=- | Interfaces=-
+  METHOD public System.Threading.Tasks.Task<TBundle> SearchAsync<TResource>(MyFhirSdk.Client.Search.FhirSearchQuery query, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+  METHOD public System.Threading.Tasks.Task<TBundle> SearchAsync<TResource>(System.String query, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+  METHOD public System.Threading.Tasks.Task<TOperationOutcome?> DeleteAsync<TResource>(System.String id, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+  METHOD public System.Threading.Tasks.Task<TResource> CreateAsync<TResource>(TResource resource, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+  METHOD public System.Threading.Tasks.Task<TResource> UpdateAsync<TResource>(TResource resource, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+  METHOD public System.Threading.Tasks.Task<TResource?> ReadAsync<TResource>(System.String id, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+TYPE public interface MyFhirSdk.Client.Abstractions.IFhirHttpSender | Base=- | Interfaces=-
+  METHOD public System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage> SendAsync(System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+TYPE public interface MyFhirSdk.Client.Abstractions.IFhirRequestBuilder | Base=- | Interfaces=-
+  METHOD public System.Net.Http.HttpRequestMessage BuildCreateRequest<TResource>(TResource resource, System.String json) | dispatch=abstract
+  METHOD public System.Net.Http.HttpRequestMessage BuildReadRequest<TResource>(System.String id) | dispatch=abstract
+  METHOD public System.Net.Http.HttpRequestMessage BuildSearchRequest<TResource>(MyFhirSdk.Client.Search.FhirSearchQuery query) | dispatch=abstract
+  METHOD public System.Net.Http.HttpRequestMessage BuildSearchRequest<TResource>(System.String query) | dispatch=abstract
+  METHOD public System.Net.Http.HttpRequestMessage BuildUpdateRequest<TResource>(TResource resource, System.String json) | dispatch=abstract
+TYPE public interface MyFhirSdk.Client.Abstractions.IFhirResponseHandler | Base=- | Interfaces=-
+  METHOD public System.Threading.Tasks.Task<MyFhirSdk.Resources.Bundle> HandleBundleAsync(System.Net.Http.HttpResponseMessage response, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+  METHOD public System.Threading.Tasks.Task<TResource> HandleRequiredResourceAsync<TResource>(System.Net.Http.HttpResponseMessage response, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+  METHOD public System.Threading.Tasks.Task<TResource?> HandleOptionalResourceAsync<TResource>(System.Net.Http.HttpResponseMessage response, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+TYPE public sealed class MyFhirSdk.Client.Authentication.BearerTokenAuthProvider | Base=System.Object | Interfaces=MyFhirSdk.Client.Authentication.IAuthProvider
+  CONSTRUCTOR public .ctor(System.String token)
+  METHOD public System.Threading.Tasks.Task ApplyAsync(System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+TYPE public interface MyFhirSdk.Client.Authentication.IAuthProvider | Base=- | Interfaces=-
+  METHOD public System.Threading.Tasks.Task ApplyAsync(System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken = null) | dispatch=abstract
+TYPE public sealed class MyFhirSdk.Client.Authentication.NoAuthProvider | Base=System.Object | Interfaces=MyFhirSdk.Client.Authentication.IAuthProvider
+  CONSTRUCTOR public .ctor()
+  METHOD public System.Threading.Tasks.Task ApplyAsync(System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+  PROPERTY MyFhirSdk.Client.Authentication.NoAuthProvider Instance | get=public | set=- | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Client.Configuration.FhirClientOptions | Base=System.Object | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  PROPERTY System.Boolean ValidateBeforeSend | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.TimeSpan Timeout | get=public | set=public | dispatch=none | JsonName=-
+  PROPERTY System.Uri BaseAddress | get=public | set=public | dispatch=none | JsonName=-
+TYPE public class MyFhirSdk.Client.Exceptions.FhirClientException | Base=MyFhirSdk.Core.FhirSdkException | Interfaces=System.Runtime.Serialization.ISerializable
+  CONSTRUCTOR public .ctor()
+  CONSTRUCTOR public .ctor(System.String message)
+  CONSTRUCTOR public .ctor(System.String message, System.Exception innerException)
+  METHOD public MyFhirSdk.Client.Exceptions.FhirHttpException FromResponse(System.Net.Http.HttpResponseMessage response, System.String? responseBody) | dispatch=none
+TYPE public sealed class MyFhirSdk.Client.Exceptions.FhirHttpException | Base=MyFhirSdk.Client.Exceptions.FhirClientException | Interfaces=System.Runtime.Serialization.ISerializable
+  CONSTRUCTOR public .ctor(System.Net.HttpStatusCode statusCode, System.String? reasonPhrase, System.String? responseBody, System.Net.Http.HttpMethod? method, System.Uri? requestUri)
+  PROPERTY System.Net.Http.HttpMethod? Method | get=public | set=- | dispatch=none | JsonName=-
+  PROPERTY System.Net.HttpStatusCode StatusCode | get=public | set=- | dispatch=none | JsonName=-
+  PROPERTY System.String? ReasonPhrase | get=public | set=- | dispatch=none | JsonName=-
+  PROPERTY System.String? ResponseBody | get=public | set=- | dispatch=none | JsonName=-
+  PROPERTY System.Uri? RequestUri | get=public | set=- | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Client.Exceptions.FhirHttpException`1 | Base=MyFhirSdk.Client.Exceptions.FhirClientException | Interfaces=System.Runtime.Serialization.ISerializable
+  CONSTRUCTOR public .ctor(MyFhirSdk.Client.Exceptions.FhirHttpException httpError, TOperationOutcome? operationOutcome)
+  PROPERTY MyFhirSdk.Client.Exceptions.FhirHttpException HttpError | get=public | set=- | dispatch=none | JsonName=-
+  PROPERTY System.Net.Http.HttpMethod? Method | get=public | set=- | dispatch=none | JsonName=-
+  PROPERTY System.Net.HttpStatusCode StatusCode | get=public | set=- | dispatch=none | JsonName=-
+  PROPERTY System.String? ReasonPhrase | get=public | set=- | dispatch=none | JsonName=-
+  PROPERTY System.String? ResponseBody | get=public | set=- | dispatch=none | JsonName=-
+  PROPERTY System.Uri? RequestUri | get=public | set=- | dispatch=none | JsonName=-
+  PROPERTY TOperationOutcome? OperationOutcome | get=public | set=- | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Client.Exceptions.FhirInvalidResponseException | Base=MyFhirSdk.Client.Exceptions.FhirClientException | Interfaces=System.Runtime.Serialization.ISerializable
+  CONSTRUCTOR public .ctor(System.String message)
+  CONSTRUCTOR public .ctor(System.String message, System.Exception innerException)
+TYPE public sealed class MyFhirSdk.Client.Exceptions.FhirValidationException | Base=MyFhirSdk.Client.Exceptions.FhirClientException | Interfaces=System.Runtime.Serialization.ISerializable
+  CONSTRUCTOR public .ctor(MyFhirSdk.Validation.ValidationResult result)
+  PROPERTY MyFhirSdk.Validation.ValidationResult Result | get=public | set=- | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Client.FhirClient | Base=System.Object | Interfaces=MyFhirSdk.Client.Abstractions.IFhirClient
+  CONSTRUCTOR public .ctor(MyFhirSdk.Serialization.IFhirSerializer serializer, MyFhirSdk.Client.Abstractions.IFhirRequestBuilder requestBuilder, MyFhirSdk.Client.Abstractions.IFhirHttpSender httpSender, MyFhirSdk.Client.Abstractions.IFhirResponseHandler responseHandler, MyFhirSdk.Client.Authentication.IAuthProvider? authProvider = null, System.Boolean validateBeforeSend = false, MyFhirSdk.Validation.IFhirValidator? validator = null)
+  CONSTRUCTOR public .ctor(System.Net.Http.HttpClient httpClient, MyFhirSdk.Serialization.IFhirSerializer serializer, MyFhirSdk.Serialization.IFhirParser parser, MyFhirSdk.Client.Configuration.FhirClientOptions options, MyFhirSdk.Client.Authentication.IAuthProvider? authProvider = null, MyFhirSdk.Validation.IFhirValidator? validator = null)
+  METHOD public System.Threading.Tasks.Task<MyFhirSdk.Resources.Bundle> SearchAsync<TResource>(MyFhirSdk.Client.Search.FhirSearchQuery query, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+  METHOD public System.Threading.Tasks.Task<MyFhirSdk.Resources.Bundle> SearchAsync<TResource>(System.String query, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+  METHOD public System.Threading.Tasks.Task<TResource> CreateAsync<TResource>(TResource resource, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+  METHOD public System.Threading.Tasks.Task<TResource> UpdateAsync<TResource>(TResource resource, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+  METHOD public System.Threading.Tasks.Task<TResource?> ReadAsync<TResource>(System.String id, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+TYPE public sealed class MyFhirSdk.Client.FhirClient`2 | Base=System.Object | Interfaces=MyFhirSdk.Client.Abstractions.IFhirClient<TBundle, TOperationOutcome>
+  CONSTRUCTOR public .ctor(System.Net.Http.HttpClient httpClient, MyFhirSdk.ModelMetadata.FhirModelContext context, MyFhirSdk.Client.Configuration.FhirClientOptions options, MyFhirSdk.Client.Authentication.IAuthProvider? authProvider = null)
+  METHOD public System.Threading.Tasks.Task<TBundle> SearchAsync<TResource>(MyFhirSdk.Client.Search.FhirSearchQuery query, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+  METHOD public System.Threading.Tasks.Task<TBundle> SearchAsync<TResource>(System.String query, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+  METHOD public System.Threading.Tasks.Task<TOperationOutcome?> DeleteAsync<TResource>(System.String id, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+  METHOD public System.Threading.Tasks.Task<TResource> CreateAsync<TResource>(TResource resource, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+  METHOD public System.Threading.Tasks.Task<TResource> UpdateAsync<TResource>(TResource resource, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+  METHOD public System.Threading.Tasks.Task<TResource?> ReadAsync<TResource>(System.String id, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+  PROPERTY MyFhirSdk.ModelMetadata.FhirModelContext Context | get=public | set=- | dispatch=none | JsonName=-
+TYPE public static class MyFhirSdk.Client.Http.FhirHttpConstants | Base=System.Object | Interfaces=-
+  FIELD public const System.String FhirJsonMediaType
+  FIELD public const System.String PreferHeaderName
+  FIELD public const System.String PreferReturnRepresentation
+TYPE public static class MyFhirSdk.Client.Http.FhirHttpContent | Base=System.Object | Interfaces=-
+  METHOD public System.Net.Http.HttpContent CreateJson(System.String json) | dispatch=none
+TYPE public static class MyFhirSdk.Client.Http.FhirHttpHeaders | Base=System.Object | Interfaces=-
+  METHOD public System.Void AddFhirJsonAccept(System.Net.Http.HttpRequestMessage request) | dispatch=none
+  METHOD public System.Void AddReturnRepresentationPrefer(System.Net.Http.HttpRequestMessage request) | dispatch=none
+  PROPERTY System.Net.Http.Headers.MediaTypeWithQualityHeaderValue FhirJson | get=public | set=- | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Client.Http.FhirHttpSender | Base=System.Object | Interfaces=MyFhirSdk.Client.Abstractions.IFhirHttpSender
+  CONSTRUCTOR public .ctor(System.Net.Http.HttpClient httpClient)
+  METHOD public System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage> SendAsync(System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+TYPE public sealed class MyFhirSdk.Client.Requests.FhirRequestBuilder | Base=System.Object | Interfaces=MyFhirSdk.Client.Abstractions.IFhirRequestBuilder
+  CONSTRUCTOR public .ctor(MyFhirSdk.Client.Requests.FhirResourceTypeResolver resourceTypeResolver, MyFhirSdk.Client.Requests.FhirRequestUriBuilder uriBuilder)
+  METHOD public System.Net.Http.HttpRequestMessage BuildCreateRequest<TResource>(TResource resource, System.String json) | dispatch=virtual
+  METHOD public System.Net.Http.HttpRequestMessage BuildReadRequest<TResource>(System.String id) | dispatch=virtual
+  METHOD public System.Net.Http.HttpRequestMessage BuildSearchRequest<TResource>(MyFhirSdk.Client.Search.FhirSearchQuery query) | dispatch=virtual
+  METHOD public System.Net.Http.HttpRequestMessage BuildSearchRequest<TResource>(System.String query) | dispatch=virtual
+  METHOD public System.Net.Http.HttpRequestMessage BuildUpdateRequest<TResource>(TResource resource, System.String json) | dispatch=virtual
+TYPE public sealed class MyFhirSdk.Client.Requests.FhirRequestUriBuilder | Base=System.Object | Interfaces=-
+  CONSTRUCTOR public .ctor(System.Uri baseAddress)
+  METHOD public System.Uri BuildResourceInstanceUri(System.String resourceType, System.String id) | dispatch=none
+  METHOD public System.Uri BuildResourceTypeUri(System.String resourceType) | dispatch=none
+  METHOD public System.Uri BuildSearchUri(System.String resourceType, System.String? query) | dispatch=none
+TYPE public sealed class MyFhirSdk.Client.Requests.FhirResourceTypeResolver | Base=System.Object | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  CONSTRUCTOR public .ctor(MyFhirSdk.ModelMetadata.FhirModelContext context)
+  METHOD public System.String GetResourceType(MyFhirSdk.Core.Resource resource) | dispatch=none
+  METHOD public System.String GetResourceType<TResource>() | dispatch=none
+TYPE public sealed class MyFhirSdk.Client.Responses.FhirResponseHandler | Base=System.Object | Interfaces=MyFhirSdk.Client.Abstractions.IFhirResponseHandler
+  CONSTRUCTOR public .ctor(MyFhirSdk.Serialization.IFhirParser parser)
+  METHOD public System.Threading.Tasks.Task<MyFhirSdk.Resources.Bundle> HandleBundleAsync(System.Net.Http.HttpResponseMessage response, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+  METHOD public System.Threading.Tasks.Task<TResource> HandleRequiredResourceAsync<TResource>(System.Net.Http.HttpResponseMessage response, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+  METHOD public System.Threading.Tasks.Task<TResource?> HandleOptionalResourceAsync<TResource>(System.Net.Http.HttpResponseMessage response, System.Threading.CancellationToken cancellationToken = null) | dispatch=virtual
+TYPE public sealed class MyFhirSdk.Client.Search.FhirSearchParameter | Base=System.Object | Interfaces=-
+  CONSTRUCTOR public .ctor(System.String name, System.String value)
+  METHOD public System.String ToQueryString() | dispatch=none
+  METHOD public System.String ToString() | dispatch=override
+  PROPERTY System.String Name | get=public | set=- | dispatch=none | JsonName=-
+  PROPERTY System.String Value | get=public | set=- | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Client.Search.FhirSearchQuery | Base=System.Object | Interfaces=-
+  METHOD public MyFhirSdk.Client.Search.FhirSearchQuery Add(System.String name, System.String value) | dispatch=none
+  METHOD public MyFhirSdk.Client.Search.FhirSearchQuery Count(System.Int32 count) | dispatch=none
+  METHOD public MyFhirSdk.Client.Search.FhirSearchQuery Create() | dispatch=none
+  METHOD public MyFhirSdk.Client.Search.FhirSearchQuery Sort(System.String field) | dispatch=none
+  METHOD public MyFhirSdk.Client.Search.FhirSearchQuery Where(System.String name, System.String value) | dispatch=none
+  METHOD public System.String ToQueryString() | dispatch=none
+  METHOD public System.String ToString() | dispatch=override
+  PROPERTY System.Collections.Generic.IReadOnlyList<MyFhirSdk.Client.Search.FhirSearchParameter> Parameters | get=public | set=- | dispatch=none | JsonName=-
+TYPE public sealed class MyFhirSdk.Client.Search.FhirSearchQueryBuilder | Base=System.Object | Interfaces=-
+  CONSTRUCTOR public .ctor()
+  METHOD public MyFhirSdk.Client.Search.FhirSearchQuery Build() | dispatch=none
+  METHOD public MyFhirSdk.Client.Search.FhirSearchQueryBuilder Count(System.Int32 count) | dispatch=none
+  METHOD public MyFhirSdk.Client.Search.FhirSearchQueryBuilder Sort(System.String field) | dispatch=none
+  METHOD public MyFhirSdk.Client.Search.FhirSearchQueryBuilder Where(System.String name, System.String value) | dispatch=none

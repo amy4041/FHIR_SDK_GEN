@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "gate": "G4",
+  "status": "Passed",
+  "completeR4Support": false,
+  "sourceRevision": "9aee18656326a175b92d7b9fded1379188d64a4e",
+  "sourceFingerprint": {
+    "algorithm": "sha256-path-and-bytes-v1",
+    "fileCount": 2245,
+    "sha256": "ea29be2abdf3af0032cd625440a8cf9a433d837123f1b8d3e0a1783c8551db63"
+  },
+  "createdAtUtc": "2026-10-19T08:06:32.943689+00:00",
+  "os": "Windows",
+  "sdkVersion": "9.0.317",
+  "testCounts": {
+    "total": 1171,
+    "passed": 1170,
+    "failed": 0,
+    "skipped": 1
+  },
+  "runtimeContract": {
+    "descriptorSha256": "422ac582a75724ea3ecc275131b3f190b3b19d9571aa857925960edc9b23c2f2",
+    "compilerReferenceSha256": "8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71"
+  },
+  "testedImplementationHashes": {
+    "MyFhirSdk.dll": "0ec256f55fbbea51a072991efa15f614ebeefbe60ead4ffcdcd59ff29dd1327f",
+    "MyFhirSdk.Runtime.dll": "b40e16f6559ce1c7dd54663df65995446f35b90276a131404336b219f27b2650",
+    "MyFhirSdk.ModelContracts.dll": "d7860a2e3b84b498883b53ac6715b09bfbe72613126e87a906bd13a970512604",
+    "MyFhirSdk.ModelSupport.dll": "41c69151daa1b37e1884ccb4c489e8b332025d40536f8c9ae1a074ed95f69988",
+    "MyFhirSdk.R5.Models.dll": "55a1c87119c43872ff5df2c0177d627af75513cb5aa02defa60641b9be32bbeb",
+    "MyFhirSdk.R4.V1.Models.dll": "12ceb0e16db2554279eb267313789b46bf5e23442ab469710e2cb1a7b8d1a6bf",
+    "MyFhirSdk.R4.V2.Provider.dll": "a1e7a2a8b75a8a3ef925ab7db13a9c5f884aa63b2c8a8f2cf895e2bea77d1dba"
+  },
+  "preservedGeneratedSources": 852,
+  "toolVersion": "1.3.1",
+  "toolPackageSha256": "6a9bd18ffe936cbdf291ac1032a36b40a4f031ddbf9774373a6f1d1be21209b9",
+  "v4Tests": 16,
+  "installedTool": {
+    "outsideCheckout": true,
+    "freshNuGetCache": true,
+    "localFeedOnly": true,
+    "releases": {
+      "R4": {
+        "fhirVersion": "4.0.1",
+        "packageSha256": "b090bf929e1f665cf2c91583720849695bc38d2892a7c5037c56cb00817fb091",
+        "modelSources": 657,
+        "primitiveSources": 20,
+        "modelSourceBytes": 1769801,
+        "primitiveSourceBytes": 13110,
+        "deterministic": true,
+        "combinedOutputComplete": true,
+        "foreignAuxiliaryClrIdentityRejected": true
+      },
+      "R5": {
+        "fhirVersion": "5.0.0",
+        "packageSha256": "74b27cd1bfce9e80eaceac431edf230b0945a443564fbf5512f82e5fa50a80d4",
+        "modelSources": 831,
+        "primitiveSources": 21,
+        "modelSourceBytes": 2274505,
+        "primitiveSourceBytes": 13834,
+        "deterministic": true,
+        "combinedOutputComplete": true,
+        "foreignAuxiliaryClrIdentityRejected": true
+      }
+    },
+    "status": "Passed"
+  },
+  "negativeOutputPreserved": true
+}

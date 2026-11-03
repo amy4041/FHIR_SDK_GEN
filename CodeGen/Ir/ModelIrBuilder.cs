@@ -304,8 +304,8 @@ public sealed class ModelIrBuilder
             }
 
             var artifactPath = category == ModelIrCategory.Resource
-                ? $"Generated/R5/Resources/{name.Name}/{name.Name}.g.cs"
-                : $"Generated/R5/Types/{name.Name}.g.cs";
+                ? $"{Generation.FhirReleaseConfiguration.ForVersion(policy.FhirVersion).GeneratedRoot}/Resources/{name.Name}/{name.Name}.g.cs"
+                : $"{Generation.FhirReleaseConfiguration.ForVersion(policy.FhirVersion).GeneratedRoot}/Types/{name.Name}.g.cs";
             drafts.Add(new DeclarationDraft(
                 CreateSource(node),
                 category,
@@ -356,8 +356,8 @@ public sealed class ModelIrBuilder
                     ? policy.BackboneNamespace
                     : policy.DatatypeNamespace;
                 var componentArtifactPath = isResourceBackbone
-                    ? $"Generated/R5/Resources/{name.Name}/{backboneName}.g.cs"
-                    : $"Generated/R5/Types/{name.Name}/{backboneName}.g.cs";
+                    ? $"{Generation.FhirReleaseConfiguration.ForVersion(policy.FhirVersion).GeneratedRoot}/Resources/{name.Name}/{backboneName}.g.cs"
+                    : $"{Generation.FhirReleaseConfiguration.ForVersion(policy.FhirVersion).GeneratedRoot}/Types/{name.Name}/{backboneName}.g.cs";
                 var componentBase = isResourceBackbone
                     ? CreateSyntheticTypeReference(
                         "BackboneElement",
@@ -969,11 +969,20 @@ public sealed class ModelIrBuilder
             return null;
         }
 
+        var clrBase = $"{mapping.Namespace}.{mapping.TypeName}";
+        // R4 official datatype roots use shared abstract bridges to implement IFhirExtensionValue.
+        if (graph.PackageIdentity.FhirVersion == "4.0.1" && node.Kind == "complex-type")
+            clrBase = target.FhirTypeName switch
+            {
+                "Element" => "MyFhirSdk.Core.DataType",
+                "BackboneElement" => "MyFhirSdk.Core.BackboneType",
+                _ => clrBase
+            };
         return new ModelTypeReferenceIr(
             target.FhirTypeName,
             target.Canonical,
             null,
-            $"{mapping.Namespace}.{mapping.TypeName}",
+            clrBase,
             target.InventoryItem.IsAbstract,
             target.Disposition == DefinitionDependencyNodeDisposition.ExternalHandwritten,
             false,

@@ -16,7 +16,7 @@ public sealed class PrimitiveWrapperModelBuilder
 
         if (!string.Equals(
                 coverage.Policy.PrimitiveNamespace,
-                SupportedPrimitiveNamespace,
+                Generation.FhirReleaseConfiguration.ForVersion(coverage.Policy.FhirVersion).PrimitiveNamespace,
                 StringComparison.Ordinal))
         {
             return Failure(
@@ -62,7 +62,7 @@ public sealed class PrimitiveWrapperModelBuilder
             match.Definition.FhirTypeName,
             match.Definition.Canonical,
             match.Definition.FhirVersion,
-            SupportedPrimitiveNamespace,
+            FhirReleaseConfiguration.ForVersion(match.Definition.FhirVersion).PrimitiveNamespace,
             policy.WrapperName!,
             policy.ClrValueType!,
             NormalizeDocumentation(

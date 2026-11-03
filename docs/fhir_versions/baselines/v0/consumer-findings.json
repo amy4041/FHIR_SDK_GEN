@@ -1,0 +1,1452 @@
+[
+  {
+    "path": "Client/Abstractions/IFhirClient.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Client/Abstractions/IFhirResponseHandler.cs",
+    "line": 2,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Client/FhirClient.cs",
+    "line": 10,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Client/FhirClient.cs",
+    "line": 70,
+    "text": "_validator = validator ?? new FhirValidator();"
+  },
+  {
+    "path": "Client/Responses/FhirResponseHandler.cs",
+    "line": 5,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "CodeGen/Assets/ModelCompilerSourceAsset.cs",
+    "line": 11,
+    "text": "public const string LogicalName = \"SimpleQuantity.cs\";"
+  },
+  {
+    "path": "CodeGen/Assets/ModelCompilerSourceAsset.cs",
+    "line": 38,
+    "text": "return new GeneratedSource(\"CompilerSources/SimpleQuantity.cs\", source);"
+  },
+  {
+    "path": "CodeGen/Assets/ToolAssetResolver.cs",
+    "line": 52,
+    "text": "Path.Combine(_toolRoot, \"Assets\", \"CompilerSources\", \"SimpleQuantity.cs\"));"
+  },
+  {
+    "path": "CodeGen/Cli/GeneratorCommandLineParser.cs",
+    "line": 47,
+    "text": "[--compiler-source <SimpleQuantity.cs>] [--runtime-reference <file> ...] \\"
+  },
+  {
+    "path": "CodeGen/Contracts/RuntimeContractValidator.cs",
+    "line": 114,
+    "text": "AddInvalid(diagnostics, sourceFile, \"compilerSources must contain exactly one SimpleQuantity.cs asset.\");"
+  },
+  {
+    "path": "CodeGen/Contracts/RuntimeContractValidator.cs",
+    "line": 118,
+    "text": "if (source is null || source.LogicalName != \"SimpleQuantity.cs\" ||"
+  },
+  {
+    "path": "CodeGen/Contracts/RuntimeContractValidator.cs",
+    "line": 119,
+    "text": "source.ClrType != \"MyFhirSdk.Types.SimpleQuantity\" || source.Normalization != \"utf8-lf\")"
+  },
+  {
+    "path": "CodeGen/Generation/ModelGenerationPipeline.cs",
+    "line": 76,
+    "text": "$\"Compiler source 'SimpleQuantity.cs': {exception.Message}\", \"<asset:SimpleQuantity.cs>\")]);"
+  },
+  {
+    "path": "CodeGen/Generation/ModelGenerationPipeline.cs",
+    "line": 151,
+    "text": "member.TypeAlternatives.Any(type => type.ClrType == \"MyFhirSdk.Types.SimpleQuantity\"))))"
+  },
+  {
+    "path": "CodeGen/Mapping/DefinitionTypeMappingView.cs",
+    "line": 9,
+    "text": "private const string ResourceNamespace = \"MyFhirSdk.Resources\";"
+  },
+  {
+    "path": "CodeGen/MyFhirSdk.CodeGen.csproj",
+    "line": 29,
+    "text": "<None Include=\"..\\Types\\SimpleQuantity.cs\" Link=\"Assets\\CompilerSources\\SimpleQuantity.cs\" CopyToOutputDirectory=\"PreserveNewest\" />"
+  },
+  {
+    "path": "CodeGen/Policy/r5-backbone-policy.json",
+    "line": 12,
+    "text": "\"namespace\": \"MyFhirSdk.Resources\","
+  },
+  {
+    "path": "CodeGen/Policy/r5-model-naming-policy.json",
+    "line": 27,
+    "text": "\"namespace\": \"MyFhirSdk.Resources\","
+  },
+  {
+    "path": "CodeGen/Policy/r5-model-naming-policy.json",
+    "line": 48,
+    "text": "\"namespace\": \"MyFhirSdk.Resources\","
+  },
+  {
+    "path": "CodeGen/Policy/r5-model-naming-policy.json",
+    "line": 99,
+    "text": "\"profileCanonical\": \"http://hl7.org/fhir/StructureDefinition/SimpleQuantity\","
+  },
+  {
+    "path": "CodeGen/Policy/r5-model-naming-policy.json",
+    "line": 100,
+    "text": "\"clrType\": \"MyFhirSdk.Types.SimpleQuantity\","
+  },
+  {
+    "path": "CodeGen/Policy/runtime-contract.json",
+    "line": 222,
+    "text": "\"logicalName\": \"SimpleQuantity.cs\","
+  },
+  {
+    "path": "CodeGen/Policy/runtime-contract.json",
+    "line": 224,
+    "text": "\"clrType\": \"MyFhirSdk.Types.SimpleQuantity\","
+  },
+  {
+    "path": "ImplementationGuides/TwCore/TwCorePackage.cs",
+    "line": 2,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "ImplementationGuides/TwCore/Validation/TwCorePatientRules.cs",
+    "line": 2,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Serialization/Json/FhirJsonParser.cs",
+    "line": 18,
+    "text": ": this(R5ModelMetadataProvider.Default, PrimitiveRegistry.Default)"
+  },
+  {
+    "path": "Serialization/Json/FhirJsonParser.cs",
+    "line": 23,
+    "text": ": this(metadataProvider, PrimitiveRegistry.Default)"
+  },
+  {
+    "path": "Serialization/Json/FhirJsonSerializer.cs",
+    "line": 25,
+    "text": ": this(R5ModelMetadataProvider.Default, PrimitiveRegistry.Default)"
+  },
+  {
+    "path": "Serialization/Json/FhirJsonSerializer.cs",
+    "line": 30,
+    "text": ": this(metadataProvider, PrimitiveRegistry.Default)"
+  },
+  {
+    "path": "Tests/Architecture/GeneratedModelIntegrationTests.cs",
+    "line": 2,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Architecture/GeneratedModelIntegrationTests.cs",
+    "line": 27,
+    "text": "var resource = new FhirJsonParser().Parse<Resource>("
+  },
+  {
+    "path": "Tests/Architecture/GeneratedPrimitiveIntegrationTests.cs",
+    "line": 21,
+    "text": "Assert.Equal(20, PrimitiveRegistry.Default.Definitions.Count);"
+  },
+  {
+    "path": "Tests/Architecture/GeneratedPrimitiveIntegrationTests.cs",
+    "line": 23,
+    "text": "PrimitiveRegistry.Default.Definitions.Count,"
+  },
+  {
+    "path": "Tests/Architecture/GeneratedPrimitiveIntegrationTests.cs",
+    "line": 24,
+    "text": "PrimitiveRegistry.Default.Definitions"
+  },
+  {
+    "path": "Tests/Architecture/GeneratedPrimitiveIntegrationTests.cs",
+    "line": 29,
+    "text": "PrimitiveRegistry.Default.Definitions.Count,"
+  },
+  {
+    "path": "Tests/Architecture/GeneratedPrimitiveIntegrationTests.cs",
+    "line": 30,
+    "text": "PrimitiveRegistry.Default.Definitions"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 6,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 19,
+    "text": "var definition = PrimitiveRegistry.Default.GetRequired(type);"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 41,
+    "text": "var serializer = new FhirJsonSerializer();"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 42,
+    "text": "var parser = new FhirJsonParser();"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 44,
+    "text": "var property = R5ModelMetadataProvider.Default.GetRequiredExtensionValuePropertyName(type);"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 53,
+    "text": "Assert.True(new FhirValidator().Validate(roundTrip).IsValid);"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 83,
+    "text": "var parser = new FhirJsonParser();"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 84,
+    "text": "var serializer = new FhirJsonSerializer();"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 108,
+    "text": "var parser = new FhirJsonParser();"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 116,
+    "text": "Assert.True(new FhirValidator().Validate(patient).IsValid);"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 117,
+    "text": "var serialized = new FhirJsonSerializer().Serialize(patient);"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 128,
+    "text": "var resource = new FhirJsonParser().Parse<MyFhirSdk.Resources.Task>(json);"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 130,
+    "text": "Assert.True(new FhirValidator().Validate(resource).IsValid);"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 131,
+    "text": "Assert.True(JsonNode.DeepEquals(JsonNode.Parse(json), JsonNode.Parse(new FhirJsonSerializer().Serialize(resource))));"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 137,
+    "text": "Assert.Throws<FhirSdkException>(() => new FhirJsonParser().Parse<Resource>(\"{\\\"resourceType\\\":\\\"ExternalResource\\\"}\"));"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 138,
+    "text": "var externalJson = new FhirJsonSerializer().Serialize(new ExternalResource());"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 139,
+    "text": "Assert.Throws<FhirSdkException>(() => new FhirJsonParser().Parse<Resource>(externalJson));"
+  },
+  {
+    "path": "Tests/Architecture/KernelBehaviorMigrationTests.cs",
+    "line": 142,
+    "text": "Assert.Throws<FhirSdkException>(() => new FhirJsonSerializer().Serialize(patient));"
+  },
+  {
+    "path": "Tests/Architecture/KernelIntegrationSeamTests.cs",
+    "line": 36,
+    "text": "var generatorAssembly = Assembly.LoadFrom(Path.Combine(AppContext.BaseDirectory,"
+  },
+  {
+    "path": "Tests/Architecture/KernelIntegrationSeamTests.cs",
+    "line": 62,
+    "text": "[InlineData(\"MyFhirSdk.Resources.Patient\")]"
+  },
+  {
+    "path": "Tests/Architecture/KernelIntegrationSeamTests.cs",
+    "line": 77,
+    "text": "public void GeneratedModelsRequireSdkOwnedSimpleQuantitySource()"
+  },
+  {
+    "path": "Tests/Architecture/KernelIntegrationSeamTests.cs",
+    "line": 91,
+    "text": "Assert.Contains(\"SimpleQuantity\", error.GetMessage());"
+  },
+  {
+    "path": "Tests/Architecture/KernelIntegrationSeamTests.cs",
+    "line": 94,
+    "text": "Assert.Empty(Errors(compilation.AddSyntaxTrees(Read(\"Types/SimpleQuantity.cs\"))));"
+  },
+  {
+    "path": "Tests/Architecture/KernelIntegrationSeamTests.cs",
+    "line": 145,
+    "text": "foreach (var engine in new object[] { new FhirJsonParser(), new FhirJsonSerializer(), new FhirValidator() })"
+  },
+  {
+    "path": "Tests/Architecture/KernelIntegrationSeamTests.cs",
+    "line": 149,
+    "text": "Assert.Same(PrimitiveRegistry.Default, registry.GetValue(engine));"
+  },
+  {
+    "path": "Tests/Architecture/KernelIntegrationSeamTests.cs",
+    "line": 151,
+    "text": "Assert.Same(R5ModelMetadataProvider.Default, provider.GetValue(engine));"
+  },
+  {
+    "path": "Tests/Architecture/KernelPrimitiveAlignmentMigrationTests.cs",
+    "line": 4,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Architecture/KernelPrimitiveAlignmentMigrationTests.cs",
+    "line": 19,
+    "text": "var parser = new FhirJsonParser();"
+  },
+  {
+    "path": "Tests/Architecture/KernelPrimitiveAlignmentMigrationTests.cs",
+    "line": 31,
+    "text": "var serialized = new FhirJsonSerializer().Serialize(patient);"
+  },
+  {
+    "path": "Tests/Architecture/KernelPrimitiveAlignmentMigrationTests.cs",
+    "line": 41,
+    "text": "var issue = Assert.Single(new FhirValidator().Validate(again).Issues);"
+  },
+  {
+    "path": "Tests/Architecture/KernelPrimitiveAlignmentMigrationTests.cs",
+    "line": 51,
+    "text": "var parser = new FhirJsonParser();"
+  },
+  {
+    "path": "Tests/Architecture/KernelPrimitiveAlignmentMigrationTests.cs",
+    "line": 58,
+    "text": "var roundTrip = parser.Parse<Patient>(new FhirJsonSerializer().Serialize(patient));"
+  },
+  {
+    "path": "Tests/Architecture/KernelPrimitiveRegistrationTests.cs",
+    "line": 13,
+    "text": "Assert.Throws<KeyNotFoundException>(() => PrimitiveRegistry.Default.GetRequired(typeof(AccessorOnly)));"
+  },
+  {
+    "path": "Tests/Architecture/KernelPrimitiveRegistrationTests.cs",
+    "line": 21,
+    "text": "Assert.Throws<KeyNotFoundException>(() => PrimitiveRegistry.Default.GetRequired(typeof(ExternalPrimitive)));"
+  },
+  {
+    "path": "Tests/Architecture/ModelMetadataProviderTests.cs",
+    "line": 24,
+    "text": "var parser = new FhirJsonParser(provider);"
+  },
+  {
+    "path": "Tests/Architecture/ModelMetadataProviderTests.cs",
+    "line": 60,
+    "text": "var json = new FhirJsonSerializer(provider).Serialize(resource);"
+  },
+  {
+    "path": "Tests/Architecture/ModelMetadataProviderTests.cs",
+    "line": 80,
+    "text": "var serializer = new FhirJsonSerializer(provider);"
+  },
+  {
+    "path": "Tests/Architecture/ModelMetadataProviderTests.cs",
+    "line": 87,
+    "text": "var parsed = new FhirJsonParser(provider).Parse<FakeResource>(json);"
+  },
+  {
+    "path": "Tests/Architecture/ModelMetadataProviderTests.cs",
+    "line": 113,
+    "text": "new FhirJsonParser(provider).Parse<FakeResource>("
+  },
+  {
+    "path": "Tests/Architecture/ModelMetadataProviderTests.cs",
+    "line": 129,
+    "text": "var validator = new FhirValidator("
+  },
+  {
+    "path": "Tests/Architecture/PhaseBPrimitiveHandoffTests.cs",
+    "line": 19,
+    "text": "var serializer = new FhirJsonSerializer("
+  },
+  {
+    "path": "Tests/Architecture/PhaseBPrimitiveHandoffTests.cs",
+    "line": 22,
+    "text": "var parser = new FhirJsonParser("
+  },
+  {
+    "path": "Tests/Architecture/PhaseBPrimitiveHandoffTests.cs",
+    "line": 25,
+    "text": "var validator = new FhirValidator("
+  },
+  {
+    "path": "Tests/Architecture/PhaseBPrimitiveHandoffTests.cs",
+    "line": 49,
+    "text": "var validator = new FhirValidator("
+  },
+  {
+    "path": "Tests/Architecture/PhaseBPrimitiveHandoffTests.cs",
+    "line": 89,
+    "text": "PrimitiveRegistry.Default.Definitions.Append(generatedDefinition));"
+  },
+  {
+    "path": "Tests/Architecture/PhaseCModelGenerationArchitectureTests.cs",
+    "line": 53,
+    "text": "new FhirJsonParser().Parse<UnregisteredResource>("
+  },
+  {
+    "path": "Tests/Architecture/PrimitiveRuntimeContractTests.cs",
+    "line": 322,
+    "text": "\"PrimitiveRegistry.Default was not found.\");"
+  },
+  {
+    "path": "Tests/Architecture/R5ModelPublicApiSnapshot.cs",
+    "line": 56,
+    "text": "return type.Namespace is \"MyFhirSdk.Types\" or \"MyFhirSdk.Resources\" ||"
+  },
+  {
+    "path": "Tests/Architecture/R5ModelPublicApiSnapshotTests.cs",
+    "line": 15,
+    "text": "R5ModelPublicApiSnapshot.GetSurfaceTypes(typeof(MyFhirSdk.Resources.Patient).Assembly));"
+  },
+  {
+    "path": "Tests/Architecture/R5ModelPublicApiSnapshotTests.cs",
+    "line": 39,
+    "text": "typeof(MyFhirSdk.Resources.Patient).Assembly);"
+  },
+  {
+    "path": "Tests/Architecture/R5ModelPublicApiSnapshotTests.cs",
+    "line": 47,
+    "text": "types.Count(type => type.Namespace == \"MyFhirSdk.Resources\"));"
+  },
+  {
+    "path": "Tests/Architecture/R5ModelPublicApiSnapshotTests.cs",
+    "line": 57,
+    "text": "typeof(MyFhirSdk.Resources.Patient).Assembly);"
+  },
+  {
+    "path": "Tests/Architecture/R5ModelPublicApiSnapshotTests.cs",
+    "line": 68,
+    "text": "R5ModelPublicApiSnapshot.GetSurfaceTypes(typeof(MyFhirSdk.Resources.Patient).Assembly));"
+  },
+  {
+    "path": "Tests/Architecture/RuntimeModelDependencyTests.cs",
+    "line": 5,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Architecture/RuntimeModelDependencyTests.cs",
+    "line": 26,
+    "text": "\"MyFhirSdk.Resources\","
+  },
+  {
+    "path": "Tests/Client/GlobalUsings.cs",
+    "line": 13,
+    "text": "global using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Client/Integration/FhirClientIntegrationSmokeTests.cs",
+    "line": 57,
+    "text": "new FhirJsonSerializer(),"
+  },
+  {
+    "path": "Tests/Client/Integration/FhirClientIntegrationSmokeTests.cs",
+    "line": 58,
+    "text": "new FhirJsonParser(),"
+  },
+  {
+    "path": "Tests/Client/KernelClientMigrationTests.cs",
+    "line": 62,
+    "text": "private static FhirClient CreateClient(HttpClient http) => new(http, new FhirJsonSerializer(), new FhirJsonParser(),"
+  },
+  {
+    "path": "Tests/CodeGen/Assets/ToolAssetResolverTests.cs",
+    "line": 29,
+    "text": "Assert.Equal(Path.Combine(toolRoot, \"Assets\", \"CompilerSources\", \"SimpleQuantity.cs\"),"
+  },
+  {
+    "path": "Tests/CodeGen/Assets/ToolAssetResolverTests.cs",
+    "line": 59,
+    "text": "Path.Combine(_root, \"external\", \"SimpleQuantity.cs\"));"
+  },
+  {
+    "path": "Tests/CodeGen/Cli/GeneratorCommandLineParserTests.cs",
+    "line": 17,
+    "text": "\"--compiler-source\", \"external/SimpleQuantity.cs\"]);"
+  },
+  {
+    "path": "Tests/CodeGen/Cli/GeneratorCommandLineParserTests.cs",
+    "line": 19,
+    "text": "Assert.Equal(\"external/SimpleQuantity.cs\", result.AssetOverrides!.CompilerSourcePath);"
+  },
+  {
+    "path": "Tests/CodeGen/Cli/GeneratorCommandLineParserTests.cs",
+    "line": 24,
+    "text": "var primitive = _parser.Parse([\"--mode\", \"primitive\", \"--compiler-source\", \"SimpleQuantity.cs\"]);"
+  },
+  {
+    "path": "Tests/CodeGen/CodeGenTestRuntime.cs",
+    "line": 41,
+    "text": "member.TypeAlternatives.Any(type => type.ClrType == \"MyFhirSdk.Types.SimpleQuantity\"))))"
+  },
+  {
+    "path": "Tests/CodeGen/Contracts/RuntimeContractLoaderTests.cs",
+    "line": 69,
+    "text": "symbol.ClrType.StartsWith(\"MyFhirSdk.Resources.\", StringComparison.Ordinal));"
+  },
+  {
+    "path": "Tests/CodeGen/Contracts/RuntimeContractLoaderTests.cs",
+    "line": 70,
+    "text": "Assert.DoesNotContain(view.Symbols, symbol => symbol.ClrType.Contains(\"SimpleQuantity\", StringComparison.Ordinal));"
+  },
+  {
+    "path": "Tests/CodeGen/Contracts/RuntimeContractLoaderTests.cs",
+    "line": 74,
+    "text": "[InlineData(\"logicalName\", \"../SimpleQuantity.cs\")]"
+  },
+  {
+    "path": "Tests/CodeGen/Contracts/RuntimeContractLoaderTests.cs",
+    "line": 75,
+    "text": "[InlineData(\"clrType\", \"MyFhirSdk.Core.SimpleQuantity\")]"
+  },
+  {
+    "path": "Tests/CodeGen/Fixtures/FhirPackages/R5/structuredefinition-reconnaissance.approved.json",
+    "line": 673,
+    "text": "\"package/StructureDefinition-SimpleQuantity.json\""
+  },
+  {
+    "path": "Tests/CodeGen/Generation/ModelGenerationPipelineTests.cs",
+    "line": 21,
+    "text": "var path = Path.Combine(_root, \"SimpleQuantity.cs\");"
+  },
+  {
+    "path": "Tests/CodeGen/Generation/ModelGenerationPipelineTests.cs",
+    "line": 22,
+    "text": "if (fault == \"hash\") await File.WriteAllTextAsync(path, \"public class SimpleQuantity {}\");"
+  },
+  {
+    "path": "Tests/CodeGen/Generation/ModelMetadataGenerationPipelineTests.cs",
+    "line": 28,
+    "text": "\"static () => new global::MyFhirSdk.Resources.Patient()\","
+  },
+  {
+    "path": "Tests/CodeGen/Generation/ModelMetadataGenerationPipelineTests.cs",
+    "line": 57,
+    "text": "\"static () => new global::MyFhirSdk.Resources.Patient()\","
+  },
+  {
+    "path": "Tests/CodeGen/Generation/ModelMetadataGenerationPipelineTests.cs",
+    "line": 62,
+    "text": "\"ChoiceElementRule<global::MyFhirSdk.Resources.Patient>.AtMostOne(\\\"deceased[x]\\\"\","
+  },
+  {
+    "path": "Tests/CodeGen/Graph/R5DefinitionDependencyGraphTests.cs",
+    "line": 51,
+    "text": "AssertMapping(mappingView, \"Patient\", \"Patient\", \"MyFhirSdk.Resources\");"
+  },
+  {
+    "path": "Tests/CodeGen/Ir/ModelIrBuilderTests.cs",
+    "line": 168,
+    "text": "\"MyFhirSdk.Resources.ParametersParameter\","
+  },
+  {
+    "path": "Tests/CodeGen/Ir/R5ModelIrTests.cs",
+    "line": 66,
+    "text": "Assert.Equal(\"MyFhirSdk.Resources\", policy.ResourceNamespace);"
+  },
+  {
+    "path": "Tests/CodeGen/Metadata/ModelMetadataIrBuilderTests.cs",
+    "line": 68,
+    "text": "item.ClrType == \"MyFhirSdk.Resources.Patient\");"
+  },
+  {
+    "path": "Tests/CodeGen/Metadata/ModelMetadataIrBuilderTests.cs",
+    "line": 114,
+    "text": "item.FullyQualifiedName == \"MyFhirSdk.Resources.TaskInput\");"
+  },
+  {
+    "path": "Tests/CodeGen/Packaging/CodeGenToolPackageTests.cs",
+    "line": 36,
+    "text": "if (entry.FullName == ToolRoot + \"Assets/CompilerSources/SimpleQuantity.cs\")"
+  },
+  {
+    "path": "Tests/CodeGen/Packaging/CodeGenToolPackageTests.cs",
+    "line": 47,
+    "text": "var externalSource = Path.Combine(directory.Path, \"SimpleQuantity.cs\");"
+  },
+  {
+    "path": "Tests/CodeGen/Packaging/CodeGenToolPackageTests.cs",
+    "line": 68,
+    "text": "Assert.Contains(\"Assets/CompilerSources/SimpleQuantity.cs|\" + MyFhirSdk.CodeGen.Assets.ModelCompilerSourceAsset.Sha256,"
+  },
+  {
+    "path": "Tests/CodeGen/Packaging/CodeGenToolPackageTests.cs",
+    "line": 184,
+    "text": "Assert.Equal(\"SimpleQuantity.cs\", compilerSource.GetProperty(\"logicalName\").GetString());"
+  },
+  {
+    "path": "Tests/CodeGen/Packaging/CodeGenToolPackageTests.cs",
+    "line": 185,
+    "text": "var sourceHash = NormalizedTextSha256(ReadBytes(package, ToolRoot + \"Assets/CompilerSources/SimpleQuantity.cs\"));"
+  },
+  {
+    "path": "Tests/CodeGen/Packaging/CodeGenToolPackageTests.cs",
+    "line": 380,
+    "text": "environment[\"NUGET_PACKAGES\"]!, \"SimpleQuantity.cs\", SearchOption.AllDirectories));"
+  },
+  {
+    "path": "Tests/CodeGen/Packaging/CodeGenToolPackageTests.cs",
+    "line": 381,
+    "text": "var externalSource = Path.Combine(directory.Path, \"external\", \"SimpleQuantity.cs\");"
+  },
+  {
+    "path": "Tests/CodeGen/Packaging/CodeGenToolPackageTests.cs",
+    "line": 419,
+    "text": "path != ToolRoot + \"Assets/CompilerSources/SimpleQuantity.cs\");"
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5BackbonePolicyTests.cs",
+    "line": 32,
+    "text": "Assert.Equal(\"MyFhirSdk.Resources\", shape.GetProperty(\"namespace\").GetString());"
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5BackbonePolicyTests.cs",
+    "line": 103,
+    "text": ".Select(name => $\"MyFhirSdk.Resources.{name}\")"
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5BackbonePolicyTests.cs",
+    "line": 163,
+    "text": "var currentBackbones = typeof(MyFhirSdk.Resources.Patient).Assembly"
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5BackbonePolicyTests.cs",
+    "line": 166,
+    "text": "type.Namespace == \"MyFhirSdk.Resources\" &&"
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5BackbonePolicyTests.cs",
+    "line": 246,
+    "text": "$\"{node.ElementId}=MyFhirSdk.Resources.\" +"
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5ChoiceOpenTypePolicyTests.cs",
+    "line": 8,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5ChoiceOpenTypePolicyTests.cs",
+    "line": 217,
+    "text": "Value = new SimpleQuantity { Value = new FhirDecimal(1m) }"
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5ChoiceOpenTypePolicyTests.cs",
+    "line": 221,
+    "text": "var json = new FhirJsonSerializer().Serialize(patient);"
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5ModelNamingPolicyTests.cs",
+    "line": 53,
+    "text": "\"MyFhirSdk.Resources\","
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5ModelNamingPolicyTests.cs",
+    "line": 61,
+    "text": "\"MyFhirSdk.Resources\","
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5ModelNamingPolicyTests.cs",
+    "line": 205,
+    "text": "public void ProfileTypeOverride_PreservesSimpleQuantityPublicContract()"
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5ModelNamingPolicyTests.cs",
+    "line": 213,
+    "text": "\"http://hl7.org/fhir/StructureDefinition/SimpleQuantity\","
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5ModelNamingPolicyTests.cs",
+    "line": 216,
+    "text": "\"MyFhirSdk.Types.SimpleQuantity\","
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5ModelOwnershipPolicyTests.cs",
+    "line": 7,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5ValidationCapabilityPolicyTests.cs",
+    "line": 7,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/CodeGen/Policy/R5ValidationCapabilityPolicyTests.cs",
+    "line": 245,
+    "text": "var validator = new FhirValidator();"
+  },
+  {
+    "path": "Tests/CodeGen/PrimitivePolicyTestContext.cs",
+    "line": 38,
+    "text": "\"SimpleQuantity\","
+  },
+  {
+    "path": "Tests/CodeGen/Rendering/ResourceBackboneRendererTests.cs",
+    "line": 52,
+    "text": "Assert.Equal(\"MyFhirSdk.Resources\", contact.Namespace);"
+  },
+  {
+    "path": "Tests/CodeGen/Rendering/ResourceBackboneRendererTests.cs",
+    "line": 76,
+    "text": "public async Task Render_ProfileNarrowedQuantity_PreservesSimpleQuantityClrType()"
+  },
+  {
+    "path": "Tests/CodeGen/Rendering/ResourceBackboneRendererTests.cs",
+    "line": 84,
+    "text": "Assert.Contains(\"public SimpleQuantity? Quantity { get; set; }\", source, StringComparison.Ordinal);"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ComplexDatatypeGeneratedRuntimeTests.cs",
+    "line": 84,
+    "text": "var serializer = new FhirJsonSerializer();"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ComplexDatatypeGeneratedRuntimeTests.cs",
+    "line": 92,
+    "text": "parseMethod.Invoke(new FhirJsonParser(), [firstJson]));"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/KernelSdkIntegrationTests.cs",
+    "line": 28,
+    "text": "var real = File.ReadAllText(Path.Combine(RealSdkSourceCompiler.RepositoryRoot(), \"Types\", \"SimpleQuantity.cs\"))"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/KernelSdkIntegrationTests.cs",
+    "line": 40,
+    "text": "source.Source.Replace(\"SimpleQuantity : Quantity\", \"SimpleQuantity : object\")));"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs",
+    "line": 37,
+    "text": "Assert.Equal(\"MyFhirSdk.Resources.Observation\", observationType);"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs",
+    "line": 77,
+    "text": "var task = new MyFhirSdk.Resources.Task"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs",
+    "line": 82,
+    "text": "task.Input.Add(new MyFhirSdk.Resources.TaskInput"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs",
+    "line": 87,
+    "text": "var serializer = new FhirJsonSerializer(provider);"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs",
+    "line": 89,
+    "text": "var parsed = new FhirJsonParser(provider)"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs",
+    "line": 90,
+    "text": ".Parse<MyFhirSdk.Resources.Task>(json);"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs",
+    "line": 96,
+    "text": "var task = new MyFhirSdk.Resources.Task"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs",
+    "line": 101,
+    "text": "task.Input.Add(new MyFhirSdk.Resources.TaskInput());"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs",
+    "line": 102,
+    "text": "var validator = new FhirValidator("
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs",
+    "line": 115,
+    "text": "return new FhirJsonParser(provider)"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs",
+    "line": 116,
+    "text": ".Parse<MyFhirSdk.Resources.Patient>(json)"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs",
+    "line": 126,
+    "text": "var patient = new MyFhirSdk.Resources.Patient"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ModelMetadataGeneratedRuntimeTests.cs",
+    "line": 131,
+    "text": "var validator = new FhirValidator("
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/RealSdkSourceCompiler.cs",
+    "line": 74,
+    "text": "var assembly = Assembly.LoadFrom(Path.Combine(AppContext.BaseDirectory, \"K1Analyzers\","
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ResourceBackboneGeneratedRuntimeTests.cs",
+    "line": 30,
+    "text": "var existingTypes = typeof(MyFhirSdk.Resources.Patient).Assembly"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ResourceBackboneGeneratedRuntimeTests.cs",
+    "line": 32,
+    "text": ".Where(type => type.Namespace == \"MyFhirSdk.Resources\")"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ResourceBackboneGeneratedRuntimeTests.cs",
+    "line": 38,
+    "text": "declaration.Namespace == \"MyFhirSdk.Resources\"),"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ResourceBackboneGeneratedRuntimeTests.cs",
+    "line": 87,
+    "text": "typeof(MyFhirSdk.Resources.Patient),"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ResourceBackboneGeneratedRuntimeTests.cs",
+    "line": 88,
+    "text": "typeof(MyFhirSdk.Resources.PatientContact),"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ResourceBackboneGeneratedRuntimeTests.cs",
+    "line": 89,
+    "text": "typeof(MyFhirSdk.Resources.PatientCommunication)"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ResourceBackboneGeneratedRuntimeTests.cs",
+    "line": 107,
+    "text": "var patientType = assembly.GetType(\"MyFhirSdk.Resources.Patient\", throwOnError: true)!;"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ResourceBackboneGeneratedRuntimeTests.cs",
+    "line": 113,
+    "text": "contained.Add(new MyFhirSdk.Resources.Organization { Name = new FhirString(\"Example\") });"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ResourceBackboneGeneratedRuntimeTests.cs",
+    "line": 114,
+    "text": "var serializer = new FhirJsonSerializer();"
+  },
+  {
+    "path": "Tests/CodeGen/Runtime/ResourceBackboneGeneratedRuntimeTests.cs",
+    "line": 122,
+    "text": "parseMethod.Invoke(new FhirJsonParser(), [firstJson]));"
+  },
+  {
+    "path": "Tests/ImplementationGuides/TwCore/GlobalUsings.cs",
+    "line": 4,
+    "text": "global using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/ImplementationGuides/TwCore/Validation/KernelTwCoreMigrationTests.cs",
+    "line": 15,
+    "text": "var parser = new FhirJsonParser();"
+  },
+  {
+    "path": "Tests/ImplementationGuides/TwCore/Validation/KernelTwCoreMigrationTests.cs",
+    "line": 16,
+    "text": "patient = parser.Parse<Patient>(new FhirJsonSerializer().Serialize(patient));"
+  },
+  {
+    "path": "Tests/ImplementationGuides/TwCore/Validation/KernelTwCoreMigrationTests.cs",
+    "line": 18,
+    "text": "var validator = new ProfileValidator(new FhirValidator(), TwCorePackage.Default);"
+  },
+  {
+    "path": "Tests/ImplementationGuides/TwCore/Validation/KernelTwCoreMigrationTests.cs",
+    "line": 21,
+    "text": "patient = parser.Parse<Patient>(new FhirJsonSerializer().Serialize(patient));"
+  },
+  {
+    "path": "Tests/ImplementationGuides/TwCore/Validation/KernelTwCoreMigrationTests.cs",
+    "line": 22,
+    "text": "Assert.True(new FhirValidator().Validate(patient).IsValid);"
+  },
+  {
+    "path": "Tests/ImplementationGuides/TwCore/Validation/TwCorePatientValidationTests.cs",
+    "line": 10,
+    "text": "var baseResult = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/ImplementationGuides/TwCore/Validation/TwCorePatientValidationTests.cs",
+    "line": 118,
+    "text": "return new ProfileValidator(new FhirValidator(), TwCorePackage.Default);"
+  },
+  {
+    "path": "Tests/KernelMigration/BaselineConsumer/v1/Program.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/KernelMigration/BaselineConsumer/v1/Program.cs",
+    "line": 10,
+    "text": "var parser = new FhirJsonParser();"
+  },
+  {
+    "path": "Tests/KernelMigration/BaselineConsumer/v1/Program.cs",
+    "line": 11,
+    "text": "var serializer = new FhirJsonSerializer();"
+  },
+  {
+    "path": "Tests/KernelMigration/Consumer/Program.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/KernelMigration/Consumer/Program.cs",
+    "line": 10,
+    "text": "var parser = new FhirJsonParser();"
+  },
+  {
+    "path": "Tests/KernelMigration/Consumer/Program.cs",
+    "line": 11,
+    "text": "var serializer = new FhirJsonSerializer();"
+  },
+  {
+    "path": "Tests/KernelMigration/RebuiltConsumer/Program.cs",
+    "line": 29,
+    "text": "Require(type.AssemblyQualifiedName!.Contains(\", MyFhirSdk.Runtime,\"), \"Unexpected assembly-qualified identity.\");"
+  },
+  {
+    "path": "Tests/KernelMigration/RebuiltConsumer/Program.cs",
+    "line": 30,
+    "text": "Require(Type.GetType(type.AssemblyQualifiedName, throwOnError: true) == type, \"Reflection identity resolution failed.\");"
+  },
+  {
+    "path": "Tests/KernelMigration/RebuiltLibrary/MigrationProbe.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/KernelMigration/RebuiltLibrary/MigrationProbe.cs",
+    "line": 13,
+    "text": "var parser = new FhirJsonParser();"
+  },
+  {
+    "path": "Tests/KernelMigration/RebuiltLibrary/MigrationProbe.cs",
+    "line": 14,
+    "text": "var serializer = new FhirJsonSerializer();"
+  },
+  {
+    "path": "Tests/Parser/Json/BasicRules/BasicRulesJsonParserTestCases.cs",
+    "line": 2,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Parser/Json/Elements/ElementJsonParserTestCases.cs",
+    "line": 2,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Parser/Json/Elements/ExtensionValueNewPrimitiveJsonParserTestCases.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Parser/Json/Elements/ExtensionValueQuantityJsonParserTestCases.cs",
+    "line": 2,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Parser/Json/Elements/PrimitiveArrayAlignmentJsonParserTestCases.cs",
+    "line": 2,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Parser/Json/FhirJsonParserCharacterizationTests.cs",
+    "line": 2,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Parser/Json/FhirJsonParserCharacterizationTests.cs",
+    "line": 47,
+    "text": "var resource = new FhirJsonParser().Parse<Resource>(json);"
+  },
+  {
+    "path": "Tests/Parser/Json/FhirJsonParserCharacterizationTests.cs",
+    "line": 65,
+    "text": "var patient = new FhirJsonParser().Parse<Patient>(json);"
+  },
+  {
+    "path": "Tests/Parser/Json/FhirJsonParserCharacterizationTests.cs",
+    "line": 87,
+    "text": "() => new FhirJsonParser().Parse<Practitioner>(json));"
+  },
+  {
+    "path": "Tests/Parser/Json/FhirJsonParserCharacterizationTests.cs",
+    "line": 110,
+    "text": "() => new FhirJsonParser().Parse<Practitioner>(json));"
+  },
+  {
+    "path": "Tests/Parser/Json/FhirJsonParserCharacterizationTests.cs",
+    "line": 125,
+    "text": "() => new FhirJsonParser().Parse<Patient>(json));"
+  },
+  {
+    "path": "Tests/Parser/Json/FhirJsonParserFixtureTests.cs",
+    "line": 15,
+    "text": "var parser = new FhirJsonParser();"
+  },
+  {
+    "path": "Tests/Parser/Json/Primitives/PractitionerPrimitiveJsonParserTestCases.cs",
+    "line": 2,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Parser/Json/Primitives/PrimitiveJsonParserTestCases.cs",
+    "line": 2,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Parser/Json/Resources/MvpResourceJsonParserTestCases.cs",
+    "line": 1,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Parser/Json/Resources/PatientJsonParserTestCases.cs",
+    "line": 1,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Serializer/Json/BasicRules/BasicRulesJsonTestCases.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Serializer/Json/Elements/ElementJsonTestCases.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Serializer/Json/Elements/ExtensionValueNewPrimitiveJsonTestCases.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Serializer/Json/Elements/ExtensionValueQuantityJsonTestCases.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Serializer/Json/Elements/ExtensionValueQuantityJsonTestCases.cs",
+    "line": 26,
+    "text": "Value = new SimpleQuantity"
+  },
+  {
+    "path": "Tests/Serializer/Json/Elements/PrimitiveArrayAlignmentJsonTestCases.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Serializer/Json/FhirJsonSerializerFixtureTests.cs",
+    "line": 20,
+    "text": "var serializer = new FhirJsonSerializer();"
+  },
+  {
+    "path": "Tests/Serializer/Json/Primitives/PractitionerPrimitiveJsonTestCases.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Serializer/Json/Primitives/PrimitiveJsonTestCases.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Serializer/Json/Resources/MvpResourceJsonTestCases.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Serializer/Json/Resources/MvpResourceJsonTestCases.cs",
+    "line": 126,
+    "text": "Quantity = new SimpleQuantity"
+  },
+  {
+    "path": "Tests/Serializer/Json/Resources/PatientJsonTestCases.cs",
+    "line": 3,
+    "text": "using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Validation/FhirValidatorTests.cs",
+    "line": 8,
+    "text": "var validator = new FhirValidator();"
+  },
+  {
+    "path": "Tests/Validation/FhirValidatorTests.cs",
+    "line": 16,
+    "text": "var validator = new FhirValidator();"
+  },
+  {
+    "path": "Tests/Validation/GlobalUsings.cs",
+    "line": 3,
+    "text": "global using MyFhirSdk.Resources;"
+  },
+  {
+    "path": "Tests/Validation/Rules/CardinalityRuleTests.cs",
+    "line": 13,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/CardinalityRuleTests.cs",
+    "line": 26,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/CardinalityRuleTests.cs",
+    "line": 50,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 14,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 28,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 42,
+    "text": "var result = new FhirValidator().Validate(practitioner);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 59,
+    "text": "var missingChoiceResult = new FhirValidator().Validate(missingChoiceClaim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 74,
+    "text": "var conflictingChoiceResult = new FhirValidator().Validate(conflictingChoiceClaim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 94,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 114,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 131,
+    "text": "var missingChoiceResult = new FhirValidator().Validate(missingChoiceClaim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 146,
+    "text": "var conflictingChoiceResult = new FhirValidator().Validate(conflictingChoiceClaim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 163,
+    "text": "var missingChoiceResult = new FhirValidator().Validate(missingChoiceClaim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 178,
+    "text": "var conflictingChoiceResult = new FhirValidator().Validate(conflictingChoiceClaim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 194,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 213,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/ChoiceElementRuleTests.cs",
+    "line": 233,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 10,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 31,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 50,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 63,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 79,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 92,
+    "text": "var result = new FhirValidator().Validate(organization);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 111,
+    "text": "var result = new FhirValidator().Validate(practitioner);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 130,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 149,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 160,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 174,
+    "text": "var result = new FhirValidator().Validate(bundle);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 197,
+    "text": "var result = new FhirValidator().Validate(bundle);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 216,
+    "text": "var result = new FhirValidator().Validate(practitioner);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 235,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 249,
+    "text": "var result = new FhirValidator().Validate(bundle);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 268,
+    "text": "var result = new FhirValidator().Validate(practitioner);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 287,
+    "text": "var result = new FhirValidator().Validate(practitioner);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 309,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 342,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/PrimitiveFormatRuleTests.cs",
+    "line": 356,
+    "text": "var result = new FhirValidator().Validate(patient);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 8,
+    "text": "var result = new FhirValidator().Validate(new Bundle());"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 16,
+    "text": "var result = new FhirValidator().Validate(new Coverage());"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 26,
+    "text": "var result = new FhirValidator().Validate(new Encounter());"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 34,
+    "text": "var result = new FhirValidator().Validate(new Claim());"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 46,
+    "text": "var result = new FhirValidator().Validate(new Patient());"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 54,
+    "text": "var result = new FhirValidator().Validate(new Organization());"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 62,
+    "text": "var result = new FhirValidator().Validate(new Practitioner());"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 76,
+    "text": "var result = new FhirValidator().Validate(bundle);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 88,
+    "text": "var result = new FhirValidator().Validate(coverage);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 100,
+    "text": "var result = new FhirValidator().Validate(coverage);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 114,
+    "text": "var result = new FhirValidator().Validate(encounter);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 125,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 136,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 147,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 159,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 177,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 194,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 205,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 218,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 229,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 253,
+    "text": "var result = new FhirValidator().Validate(claim);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 268,
+    "text": "var result = new FhirValidator().Validate(bundle);"
+  },
+  {
+    "path": "Tests/Validation/Rules/RequiredFieldRuleTests.cs",
+    "line": 283,
+    "text": "var result = new FhirValidator().Validate(bundle);"
+  },
+  {
+    "path": "Tests/Validation/Traversal/FhirObjectGraphWalkerTests.cs",
+    "line": 18,
+    "text": "var validator = new FhirValidator();"
+  },
+  {
+    "path": "Tests/Validation/Traversal/FhirObjectGraphWalkerTests.cs",
+    "line": 34,
+    "text": "var validator = new FhirValidator();"
+  },
+  {
+    "path": "Tests/Validation/Traversal/FhirPathFormatterTests.cs",
+    "line": 15,
+    "text": "var validator = new FhirValidator();"
+  },
+  {
+    "path": "Types/SimpleQuantity.cs",
+    "line": 4,
+    "text": "/// FHIR R5 SimpleQuantity profile of Quantity where comparator is not used."
+  },
+  {
+    "path": "Types/SimpleQuantity.cs",
+    "line": 6,
+    "text": "public sealed class SimpleQuantity : Quantity"
+  },
+  {
+    "path": "Validation/FhirValidator.cs",
+    "line": 23,
+    "text": "R5ModelMetadataProvider.Default,"
+  },
+  {
+    "path": "Validation/FhirValidator.cs",
+    "line": 24,
+    "text": "PrimitiveRegistry.Default,"
+  },
+  {
+    "path": "Validation/FhirValidator.cs",
+    "line": 32,
+    "text": ": this(ruleProvider, PrimitiveRegistry.Default, walker)"
+  }
+]

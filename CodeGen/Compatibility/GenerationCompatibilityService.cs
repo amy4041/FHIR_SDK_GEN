@@ -109,7 +109,14 @@ public sealed class GenerationCompatibilityService
             GenerationCompatibilityMatrix.RuntimeContractVersion,
             GeneratorDiagnosticCodes.IncompatibleRuntimeContractVersion,
             diagnostics);
+        if (compatibility.FhirPackage.FhirVersion is not ("4.0.1" or "5.0.0"))
+            return Failure([Diagnostic(GeneratorDiagnosticCodes.IncompatibleFhirPackage, "fhir-version", compatibility.FhirPackage.FhirVersion, "4.0.1 or 5.0.0")]);
+        var release = Generation.FhirReleaseConfiguration.ForVersion(compatibility.FhirPackage.FhirVersion);
+        Compare("approved-fhir-package-id", compatibility.FhirPackage.Id, release.PackageId, GeneratorDiagnosticCodes.IncompatibleFhirPackage, diagnostics);
+        Compare("approved-fhir-package-version", compatibility.FhirPackage.Version, release.FhirVersion, GeneratorDiagnosticCodes.IncompatibleFhirPackage, diagnostics);
+        Compare("primitive-namespace", policyResult.Value.PrimitiveNamespace, release.PrimitiveNamespace, GeneratorDiagnosticCodes.IncompatiblePrimitivePolicy, diagnostics);
         var compilerSource = _contract.CompilerSources.Single();
+        var expectedSource = ModelCompilerSourceAsset.ExpectedIdentity(release);
         Compare("runtime-assembly-name", _contract.RuntimeAssembly.Name, GenerationCompatibilityMatrix.RuntimeAssemblyName,
             GeneratorDiagnosticCodes.RuntimeReferenceIdentityMismatch, diagnostics);
         Compare("runtime-assembly-version", _contract.RuntimeAssembly.Version, GenerationCompatibilityMatrix.RuntimeAssemblyVersion,
@@ -120,9 +127,15 @@ public sealed class GenerationCompatibilityService
             GeneratorDiagnosticCodes.RuntimeReferenceHashMismatch, diagnostics);
         Compare("resolved-compiler-reference-sha256", _references.ReferenceSha256, GenerationCompatibilityMatrix.CompilerReferenceSha256,
             GeneratorDiagnosticCodes.RuntimeReferenceHashMismatch, diagnostics);
-        Compare("compiler-source-version", compilerSource.Version, ModelCompilerSourceAsset.Version,
+        Compare("compiler-source-logical-name", compilerSource.LogicalName, expectedSource.LogicalName,
             GeneratorDiagnosticCodes.PackagedAssetCorrupt, diagnostics);
-        Compare("compiler-source-sha256", compilerSource.Sha256, ModelCompilerSourceAsset.Sha256,
+        Compare("compiler-source-clr-type", compilerSource.ClrType, expectedSource.ClrType,
+            GeneratorDiagnosticCodes.PackagedAssetCorrupt, diagnostics);
+        Compare("compiler-source-normalization", compilerSource.Normalization, expectedSource.Normalization,
+            GeneratorDiagnosticCodes.PackagedAssetCorrupt, diagnostics);
+        Compare("compiler-source-version", compilerSource.Version, expectedSource.Version,
+            GeneratorDiagnosticCodes.PackagedAssetCorrupt, diagnostics);
+        Compare("compiler-source-sha256", compilerSource.Sha256, expectedSource.Sha256,
             GeneratorDiagnosticCodes.PackagedAssetCorrupt, diagnostics);
         Compare(
             "runtime-reference-contract-sha256",

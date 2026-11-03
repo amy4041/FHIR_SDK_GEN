@@ -6,8 +6,7 @@ namespace MyFhirSdk.CodeGen.Mapping;
 
 public sealed class DefinitionTypeMappingView
 {
-    private const string ResourceNamespace = "MyFhirSdk.Resources";
-    private const string TypeNamespace = "MyFhirSdk.Types";
+
 
     private readonly IReadOnlyDictionary<string, DefinitionTypeMapping> _mappings;
 
@@ -27,7 +26,7 @@ public sealed class DefinitionTypeMappingView
             .Where(node => node.Disposition is
                 DefinitionDependencyNodeDisposition.GeneratedModel or
                 DefinitionDependencyNodeDisposition.ExternalHandwritten)
-            .Select(CreateMapping)
+            .Select(node => CreateMapping(node, Generation.FhirReleaseConfiguration.ForVersion(graph.PackageIdentity.FhirVersion)))
             .OrderBy(mapping => mapping.FhirTypeName, StringComparer.Ordinal));
     }
 
@@ -39,7 +38,7 @@ public sealed class DefinitionTypeMappingView
         return _mappings.TryGetValue(fhirTypeName, out mapping);
     }
 
-    private static DefinitionTypeMapping CreateMapping(DefinitionDependencyNode node)
+    private static DefinitionTypeMapping CreateMapping(DefinitionDependencyNode node, Generation.FhirReleaseConfiguration release)
     {
         if (node.Disposition == DefinitionDependencyNodeDisposition.ExternalHandwritten)
         {
@@ -61,8 +60,8 @@ public sealed class DefinitionTypeMappingView
             node.FhirTypeName,
             node.FhirTypeName,
             string.Equals(node.Kind, "resource", StringComparison.Ordinal)
-                ? ResourceNamespace
-                : TypeNamespace);
+                ? release.ResourceNamespace
+                : release.TypeNamespace);
     }
 }
 

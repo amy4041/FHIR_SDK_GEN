@@ -3,8 +3,10 @@ README.md
 [Content_Types].xml
 _rels/.rels
 package/services/metadata/core-properties/<generated>.psmdcp
+tools/<tfm>/any/Assets/CompilerSources/R4/SimpleQuantity.cs
 tools/<tfm>/any/Assets/CompilerSources/SimpleQuantity.cs
 tools/<tfm>/any/Assets/RuntimeReferences/<tfm>/MyFhirSdk.Runtime.dll
+tools/<tfm>/any/Contracts/R4/runtime-contract.json
 tools/<tfm>/any/Contracts/runtime-contract.json
 tools/<tfm>/any/DotnetToolSettings.xml
 tools/<tfm>/any/Microsoft.CodeAnalysis.CSharp.dll
@@ -13,6 +15,12 @@ tools/<tfm>/any/MyFhirSdk.CodeGen.deps.json
 tools/<tfm>/any/MyFhirSdk.CodeGen.dll
 tools/<tfm>/any/MyFhirSdk.CodeGen.pdb
 tools/<tfm>/any/MyFhirSdk.CodeGen.runtimeconfig.json
+tools/<tfm>/any/Policy/R4/primitive-generation-policy.json
+tools/<tfm>/any/Policy/R4/r4-backbone-policy.json
+tools/<tfm>/any/Policy/R4/r4-choice-open-type-policy.json
+tools/<tfm>/any/Policy/R4/r4-model-naming-policy.json
+tools/<tfm>/any/Policy/R4/r4-model-ownership-policy.json
+tools/<tfm>/any/Policy/R4/r4-validation-capability-policy.json
 tools/<tfm>/any/Policy/primitive-generation-policy.json
 tools/<tfm>/any/Policy/r5-backbone-policy.json
 tools/<tfm>/any/Policy/r5-choice-open-type-policy.json

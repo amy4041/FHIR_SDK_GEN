@@ -15,21 +15,10 @@ internal interface IPrimitiveDefinition
     IPrimitiveValidator Validator { get; }
 }
 
-internal interface IPrimitiveCodec
+internal interface IPrimitiveCodec : ModelContracts.IPrimitiveCodec
 {
-    object CreatePrimitive(Type primitiveType, JsonElement? rawElement);
-
-    bool HasRawValue(object primitive);
-
-    void WriteRawValue(
-        Utf8JsonWriter writer,
-        object primitive,
-        bool writeNullWhenMissing);
 }
 
-internal interface IPrimitiveValidator
+internal interface IPrimitiveValidator : ModelContracts.IPrimitiveValidator
 {
-    bool IsValid(object primitive);
-
-    bool IsValidValue(object? value);
 }

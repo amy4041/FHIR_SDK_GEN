@@ -1,0 +1,41 @@
+using MyFhirSdk.Core;
+namespace MyFhirSdk.ModelSupport;
+internal static class PrimitiveValueAccess
+{
+    internal static IPrimitiveValueAccessor GetAccessor(object primitive)
+    {
+        return primitive as IPrimitiveValueAccessor
+            ?? throw new ArgumentException(
+                $"'{primitive.GetType().FullName}' is not a FHIR primitive.",
+                nameof(primitive));
+    }
+
+    internal static bool IsPrimitiveType(Type type)
+    {
+        return FindPrimitiveBaseType(type) is not null;
+    }
+
+    internal static Type GetDeclaredValueType(Type primitiveType)
+    {
+        var baseType = FindPrimitiveBaseType(primitiveType)
+            ?? throw new ArgumentException(
+                $"'{primitiveType.FullName}' does not derive from PrimitiveType<T>.",
+                nameof(primitiveType));
+
+        return baseType.GetGenericArguments()[0];
+    }
+
+    private static Type? FindPrimitiveBaseType(Type type)
+    {
+        for (var current = type; current is not null; current = current.BaseType)
+        {
+            if (current.IsGenericType &&
+                current.GetGenericTypeDefinition() == typeof(PrimitiveType<>))
+            {
+                return current;
+            }
+        }
+
+        return null;
+    }
+}

@@ -1,0 +1,2446 @@
+{
+  "schemaVersion": 1,
+  "experiment": "V1-selected-closure",
+  "productionR4Support": false,
+  "package": {
+    "schemaVersion": 1,
+    "packageId": "hl7.fhir.r4.core",
+    "packageVersion": "4.0.1",
+    "fhirVersions": [
+      "4.0.1"
+    ],
+    "packageType": "Core",
+    "metadataPackageType": "fhir.core",
+    "license": "CC0-1.0",
+    "source": "https://hl7.org/fhir/R4/hl7.fhir.r4.core.tgz",
+    "sha256": "b090bf929e1f665cf2c91583720849695bc38d2892a7c5037c56cb00817fb091",
+    "archivePath": "Tests/CodeGen/Fixtures/FhirPackages/R4/hl7.fhir.r4.core-4.0.1.tgz",
+    "archiveRoot": "package",
+    "ciInputPolicy": "offline"
+  },
+  "seeds": [
+    "Patient",
+    "Observation",
+    "Attachment"
+  ],
+  "definitions": [
+    {
+      "id": "Address",
+      "sha256": "49c580b7d2046e0ea7aba1ac0fcb1369ae0a92790414baae8fffcc483a769e21",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Age",
+      "sha256": "05d6aba194959cc1cda1eebf592f45649dec833fe41cc2741f23f76b10a97907",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Annotation",
+      "sha256": "e181043a206c383b05ef74d6914457fbc0eb77a28fd6856e1d720aa33a4b48ce",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Attachment",
+      "sha256": "acce838cf4c297dead66ec243b92ebfda68b8a76ea0603e10c9963feceb9f969",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "BackboneElement",
+      "sha256": "919bf12de10bcc0b4e0b65ed6234e82b0d14a829eef21355e74e642f8ffd3260",
+      "kind": "complex-type",
+      "disposition": "runtime-bootstrap"
+    },
+    {
+      "id": "CodeableConcept",
+      "sha256": "94004b63149919705cb814f0cc13dcf801d8bab7e00b4e3a337427acda675ba9",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Coding",
+      "sha256": "ebe5ecf63d818acf7bc855b34e50a1f3a798a4ae440987a554f44a331827156c",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "ContactDetail",
+      "sha256": "54c1c1a9ee2c4dfd933e55b0a9ceda3a09e9e1d3f1fb330ce70b7bf226357fd2",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "ContactPoint",
+      "sha256": "8bdcd8869d41e0f443823b31b3e504e194850da3f875b55d07427caa1ae74abc",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Contributor",
+      "sha256": "69cab99d244480bbbf43c4b07b3a4d84b112743e8ad76ebc074366d4d388ac56",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Count",
+      "sha256": "2e3541670b9e8aae8bfb0d132ad4ecef589e27f9f4b87fc972164e09808b6a41",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "DataRequirement",
+      "sha256": "546d27ce903a4c6ed5eb9dcda30a57a92dab515b4a42f86bd3a58d53820f75ff",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Distance",
+      "sha256": "8ecb08dc37542bfdde410b82183a285e06939b608eb2968459bc75ae46f28633",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "DomainResource",
+      "sha256": "a18458dabb37be1bf98e937a2c434115d806c691f44cf8bee12c38bcd98412f8",
+      "kind": "resource",
+      "disposition": "runtime-bootstrap"
+    },
+    {
+      "id": "Dosage",
+      "sha256": "f11860657943794630125742cdeb8120b7261e450f6daf4ec6489114ea3c807e",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Duration",
+      "sha256": "0347d05e26ffbda49adbb7aca672a43737b1252949f2460c9cac04a24ce43c9a",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Element",
+      "sha256": "20830570772422ddaa06acb709ff8462f00c3ce8bc24c104d118710faacd1654",
+      "kind": "complex-type",
+      "disposition": "runtime-bootstrap"
+    },
+    {
+      "id": "Expression",
+      "sha256": "28bf1228896b1c3844e1b52865832d413cb15a5effbf30ef18ec2786a7af278f",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Extension",
+      "sha256": "9470f0873f62573d729dc78255d20cfb9ad59014621a1686c67071b570fbc8fc",
+      "kind": "complex-type",
+      "disposition": "runtime-bootstrap"
+    },
+    {
+      "id": "HumanName",
+      "sha256": "39abf369c7aa8082203f017f77fbee1c078b9d0ecff6da0d1f8b1986dec207e3",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Identifier",
+      "sha256": "b5227053428f8a15e96effc2155b6a41a8e7850ca0c73f18a8332d22393ccf3f",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Meta",
+      "sha256": "04af4f73dacb7bf3c3a3c1fd53a716273b3eaeafb9c93a4db2eb17fec8fcdc87",
+      "kind": "complex-type",
+      "disposition": "runtime-bootstrap"
+    },
+    {
+      "id": "Money",
+      "sha256": "e4a9f4060aaa7120e88373ed9894e3ecf0e4108dae96a1e63edf07bc4f18c7ba",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Narrative",
+      "sha256": "e8aa46de26f2e1c39a9e7f0ff9e69979e4fe6aea54340fb301849ae0ab2614b6",
+      "kind": "complex-type",
+      "disposition": "runtime-bootstrap"
+    },
+    {
+      "id": "Observation",
+      "sha256": "037032dfe299064946ecfc195e4b8b921f6fef6b31e9dc571131bf7fc138e633",
+      "kind": "resource",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "ParameterDefinition",
+      "sha256": "224296176174149fb5e9d96ace192a3cca1ba974bc2a3917660dc8cc299909bb",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Patient",
+      "sha256": "7f157a56ade5c6a9d4c8d13d676a0069a585412578f6a93f794baf9e8d0a4bd4",
+      "kind": "resource",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Period",
+      "sha256": "7a9029144ac3d53491b1b0861ed2b4a504fcb9c210c96f6a25d21f537825ce93",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Quantity",
+      "sha256": "5473f2536e80c5cd5e2b052c8e9d0f51957a5733f4337c5ed000079a3c33e8a8",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Range",
+      "sha256": "dd0bff7dc67bdbbc45c25afb837370bf885ecd9a0b4c39826d8af18d61938ce0",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Ratio",
+      "sha256": "1a1e5c31d17691dd4ebfe7e14a1f105e4921ab58ec963cd354ae2bfe36e70377",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Reference",
+      "sha256": "413f80a8107b637af28bfc0e1c1147d125dfe2938e7655086c353a9aea1c5048",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "RelatedArtifact",
+      "sha256": "2081e3770c34f0dc9918e18127ea92179e7104b84cb75681ce539a95a4c4460a",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Resource",
+      "sha256": "20e855671ff358a8cfcfb22bec37efe602eaba3e30716d8cf03ee44dffac22bc",
+      "kind": "resource",
+      "disposition": "runtime-bootstrap"
+    },
+    {
+      "id": "SampledData",
+      "sha256": "160d2f1023cb32aaccbdc56a3ef6217f4f651acc0b3f7acdba2d43eaf6daab63",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "Signature",
+      "sha256": "19d9773ded5fb73e6c60a2c2024064aec4f02649b08de5c2f5083272c34a78e6",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "SimpleQuantity",
+      "sha256": "08b636c5d7793cb282b5a71c7d7fd70ca463ade2e4ad505e045fb875492386fe",
+      "kind": "complex-type",
+      "disposition": "version-auxiliary"
+    },
+    {
+      "id": "Timing",
+      "sha256": "c227e277f92adc8975d7939f6db995f8352ca6bd806d45983c2dc8a93ea8e10c",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "TriggerDefinition",
+      "sha256": "35a63fa188db5132bbbb0093ddddd275cdb50a300311ee1585b2f052ce42e370",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "UsageContext",
+      "sha256": "0c400ad9baf3f494ecdaca5cef10acda95fef24242759754169d37174c3fcc0e",
+      "kind": "complex-type",
+      "disposition": "generated-model"
+    },
+    {
+      "id": "base64Binary",
+      "sha256": "a51c3c6dccf8c42f810b9c6183300570453ef25a09eb4c8a86aca74d97f0722c",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "boolean",
+      "sha256": "2adcef348bede84379faa940e0fefa5c4056f792f900c46ef8afe48194b4959d",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "canonical",
+      "sha256": "59afa21ad1aa393e0fd74a51c5a5de851624a8ab4068c9a4f2552551a82d5083",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "code",
+      "sha256": "2f19cdb6b72bfe4e64ce5cce1ce7fd39dc610f21303d546de006dd9cc681610d",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "date",
+      "sha256": "527c6349dfd44b3f5a5c3e378c2d65b8f9ab28e1167d69e00cf8f9e9cb17ae3b",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "dateTime",
+      "sha256": "b79f31bb66eb49e19c7f832691856db9cde5c0263fbb9dd0c3975be228119afd",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "decimal",
+      "sha256": "e9ed0a0e9d1eefb1656c1dceec8f228ff1a164960e872fc821603f80bda2f90f",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "id",
+      "sha256": "ed5981e3d0bf1fdd30b9278fc1d74cc68e3303525fd91c376afd21f6b3189a07",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "instant",
+      "sha256": "35751ce500aa816e3025dd92590d7d92f4df38747929c42b46c7a9f369e21e0a",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "integer",
+      "sha256": "2ae1359fb47f1368afad5b2cf7ac0c4c6f40f6feee05efab5270cd3147452d9c",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "markdown",
+      "sha256": "0fac500d984ff46c66bfb1f1d9bf77ae643ba42d23dd88a70ee19ed5310424f6",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "oid",
+      "sha256": "8582ac15fb991f083a0b9f3ec5dec0588ac1f4cdeefb75b7612406a69dc10da7",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "positiveInt",
+      "sha256": "051835bd0c6cf35da72f39b327d79e6f933b2b20832cc7ea2a88a1bc9ac9b4f0",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "string",
+      "sha256": "0c389d669772f8a7b6c59fb07265ac9263a3808cd4968e3ab012e55f6b677091",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "time",
+      "sha256": "8c7be8d87141914ad939783aae3ccd49b9df6740b63020910645ff76aac471d9",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "unsignedInt",
+      "sha256": "cf89bf6727805cc6081dcabb8e4b466f38c80b27af1cc50ca38e117e90476a07",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "uri",
+      "sha256": "3753c4fca85112c45f05684de7f63c645a5d5c7fc57320c43a5faa308c53420e",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "url",
+      "sha256": "26d08df23b54d1a61f4db7a447d03339224cc390314d8e4b5ba753f7cc3fb318",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "uuid",
+      "sha256": "d192dd8d6e47877bd933e04acc48f321f7c9db8d8eea0a9aefd878ef261749b9",
+      "kind": "primitive-type",
+      "disposition": "common-primitive-prototype"
+    },
+    {
+      "id": "xhtml",
+      "sha256": "bd854b3a64c2df1102ed77fb4473584c0ff9472ced77e64d384cb00e0ccb4e83",
+      "kind": "primitive-type",
+      "disposition": "xhtml-via-Narrative"
+    }
+  ],
+  "dependencyEdges": [
+    {
+      "from": "Address",
+      "to": "Element"
+    },
+    {
+      "from": "Address",
+      "to": "Extension"
+    },
+    {
+      "from": "Address",
+      "to": "Period"
+    },
+    {
+      "from": "Address",
+      "to": "code"
+    },
+    {
+      "from": "Address",
+      "to": "string"
+    },
+    {
+      "from": "Age",
+      "to": "Extension"
+    },
+    {
+      "from": "Age",
+      "to": "Quantity"
+    },
+    {
+      "from": "Age",
+      "to": "code"
+    },
+    {
+      "from": "Age",
+      "to": "decimal"
+    },
+    {
+      "from": "Age",
+      "to": "string"
+    },
+    {
+      "from": "Age",
+      "to": "uri"
+    },
+    {
+      "from": "Annotation",
+      "to": "Element"
+    },
+    {
+      "from": "Annotation",
+      "to": "Extension"
+    },
+    {
+      "from": "Annotation",
+      "to": "Reference"
+    },
+    {
+      "from": "Annotation",
+      "to": "dateTime"
+    },
+    {
+      "from": "Annotation",
+      "to": "markdown"
+    },
+    {
+      "from": "Annotation",
+      "to": "string"
+    },
+    {
+      "from": "Attachment",
+      "to": "Element"
+    },
+    {
+      "from": "Attachment",
+      "to": "Extension"
+    },
+    {
+      "from": "Attachment",
+      "to": "base64Binary"
+    },
+    {
+      "from": "Attachment",
+      "to": "code"
+    },
+    {
+      "from": "Attachment",
+      "to": "dateTime"
+    },
+    {
+      "from": "Attachment",
+      "to": "string"
+    },
+    {
+      "from": "Attachment",
+      "to": "unsignedInt"
+    },
+    {
+      "from": "Attachment",
+      "to": "url"
+    },
+    {
+      "from": "BackboneElement",
+      "to": "Element"
+    },
+    {
+      "from": "BackboneElement",
+      "to": "Extension"
+    },
+    {
+      "from": "BackboneElement",
+      "to": "string"
+    },
+    {
+      "from": "CodeableConcept",
+      "to": "Coding"
+    },
+    {
+      "from": "CodeableConcept",
+      "to": "Element"
+    },
+    {
+      "from": "CodeableConcept",
+      "to": "Extension"
+    },
+    {
+      "from": "CodeableConcept",
+      "to": "string"
+    },
+    {
+      "from": "Coding",
+      "to": "Element"
+    },
+    {
+      "from": "Coding",
+      "to": "Extension"
+    },
+    {
+      "from": "Coding",
+      "to": "boolean"
+    },
+    {
+      "from": "Coding",
+      "to": "code"
+    },
+    {
+      "from": "Coding",
+      "to": "string"
+    },
+    {
+      "from": "Coding",
+      "to": "uri"
+    },
+    {
+      "from": "ContactDetail",
+      "to": "ContactPoint"
+    },
+    {
+      "from": "ContactDetail",
+      "to": "Element"
+    },
+    {
+      "from": "ContactDetail",
+      "to": "Extension"
+    },
+    {
+      "from": "ContactDetail",
+      "to": "string"
+    },
+    {
+      "from": "ContactPoint",
+      "to": "Element"
+    },
+    {
+      "from": "ContactPoint",
+      "to": "Extension"
+    },
+    {
+      "from": "ContactPoint",
+      "to": "Period"
+    },
+    {
+      "from": "ContactPoint",
+      "to": "code"
+    },
+    {
+      "from": "ContactPoint",
+      "to": "positiveInt"
+    },
+    {
+      "from": "ContactPoint",
+      "to": "string"
+    },
+    {
+      "from": "Contributor",
+      "to": "ContactDetail"
+    },
+    {
+      "from": "Contributor",
+      "to": "Element"
+    },
+    {
+      "from": "Contributor",
+      "to": "Extension"
+    },
+    {
+      "from": "Contributor",
+      "to": "code"
+    },
+    {
+      "from": "Contributor",
+      "to": "string"
+    },
+    {
+      "from": "Count",
+      "to": "Extension"
+    },
+    {
+      "from": "Count",
+      "to": "Quantity"
+    },
+    {
+      "from": "Count",
+      "to": "code"
+    },
+    {
+      "from": "Count",
+      "to": "decimal"
+    },
+    {
+      "from": "Count",
+      "to": "string"
+    },
+    {
+      "from": "Count",
+      "to": "uri"
+    },
+    {
+      "from": "DataRequirement",
+      "to": "CodeableConcept"
+    },
+    {
+      "from": "DataRequirement",
+      "to": "Coding"
+    },
+    {
+      "from": "DataRequirement",
+      "to": "Duration"
+    },
+    {
+      "from": "DataRequirement",
+      "to": "Element"
+    },
+    {
+      "from": "DataRequirement",
+      "to": "Extension"
+    },
+    {
+      "from": "DataRequirement",
+      "to": "Period"
+    },
+    {
+      "from": "DataRequirement",
+      "to": "Reference"
+    },
+    {
+      "from": "DataRequirement",
+      "to": "canonical"
+    },
+    {
+      "from": "DataRequirement",
+      "to": "code"
+    },
+    {
+      "from": "DataRequirement",
+      "to": "dateTime"
+    },
+    {
+      "from": "DataRequirement",
+      "to": "positiveInt"
+    },
+    {
+      "from": "DataRequirement",
+      "to": "string"
+    },
+    {
+      "from": "Distance",
+      "to": "Extension"
+    },
+    {
+      "from": "Distance",
+      "to": "Quantity"
+    },
+    {
+      "from": "Distance",
+      "to": "code"
+    },
+    {
+      "from": "Distance",
+      "to": "decimal"
+    },
+    {
+      "from": "Distance",
+      "to": "string"
+    },
+    {
+      "from": "Distance",
+      "to": "uri"
+    },
+    {
+      "from": "DomainResource",
+      "to": "Extension"
+    },
+    {
+      "from": "DomainResource",
+      "to": "Meta"
+    },
+    {
+      "from": "DomainResource",
+      "to": "Narrative"
+    },
+    {
+      "from": "DomainResource",
+      "to": "Resource"
+    },
+    {
+      "from": "DomainResource",
+      "to": "code"
+    },
+    {
+      "from": "DomainResource",
+      "to": "string"
+    },
+    {
+      "from": "DomainResource",
+      "to": "uri"
+    },
+    {
+      "from": "Dosage",
+      "to": "BackboneElement"
+    },
+    {
+      "from": "Dosage",
+      "to": "CodeableConcept"
+    },
+    {
+      "from": "Dosage",
+      "to": "Element"
+    },
+    {
+      "from": "Dosage",
+      "to": "Extension"
+    },
+    {
+      "from": "Dosage",
+      "to": "Quantity"
+    },
+    {
+      "from": "Dosage",
+      "to": "Range"
+    },
+    {
+      "from": "Dosage",
+      "to": "Ratio"
+    },
+    {
+      "from": "Dosage",
+      "to": "SimpleQuantity"
+    },
+    {
+      "from": "Dosage",
+      "to": "Timing"
+    },
+    {
+      "from": "Dosage",
+      "to": "boolean"
+    },
+    {
+      "from": "Dosage",
+      "to": "integer"
+    },
+    {
+      "from": "Dosage",
+      "to": "string"
+    },
+    {
+      "from": "Duration",
+      "to": "Extension"
+    },
+    {
+      "from": "Duration",
+      "to": "Quantity"
+    },
+    {
+      "from": "Duration",
+      "to": "code"
+    },
+    {
+      "from": "Duration",
+      "to": "decimal"
+    },
+    {
+      "from": "Duration",
+      "to": "string"
+    },
+    {
+      "from": "Duration",
+      "to": "uri"
+    },
+    {
+      "from": "Element",
+      "to": "Extension"
+    },
+    {
+      "from": "Element",
+      "to": "string"
+    },
+    {
+      "from": "Expression",
+      "to": "Element"
+    },
+    {
+      "from": "Expression",
+      "to": "Extension"
+    },
+    {
+      "from": "Expression",
+      "to": "code"
+    },
+    {
+      "from": "Expression",
+      "to": "id"
+    },
+    {
+      "from": "Expression",
+      "to": "string"
+    },
+    {
+      "from": "Expression",
+      "to": "uri"
+    },
+    {
+      "from": "Extension",
+      "to": "Address"
+    },
+    {
+      "from": "Extension",
+      "to": "Age"
+    },
+    {
+      "from": "Extension",
+      "to": "Annotation"
+    },
+    {
+      "from": "Extension",
+      "to": "Attachment"
+    },
+    {
+      "from": "Extension",
+      "to": "CodeableConcept"
+    },
+    {
+      "from": "Extension",
+      "to": "Coding"
+    },
+    {
+      "from": "Extension",
+      "to": "ContactDetail"
+    },
+    {
+      "from": "Extension",
+      "to": "ContactPoint"
+    },
+    {
+      "from": "Extension",
+      "to": "Contributor"
+    },
+    {
+      "from": "Extension",
+      "to": "Count"
+    },
+    {
+      "from": "Extension",
+      "to": "DataRequirement"
+    },
+    {
+      "from": "Extension",
+      "to": "Distance"
+    },
+    {
+      "from": "Extension",
+      "to": "Dosage"
+    },
+    {
+      "from": "Extension",
+      "to": "Duration"
+    },
+    {
+      "from": "Extension",
+      "to": "Element"
+    },
+    {
+      "from": "Extension",
+      "to": "Expression"
+    },
+    {
+      "from": "Extension",
+      "to": "Extension"
+    },
+    {
+      "from": "Extension",
+      "to": "HumanName"
+    },
+    {
+      "from": "Extension",
+      "to": "Identifier"
+    },
+    {
+      "from": "Extension",
+      "to": "Meta"
+    },
+    {
+      "from": "Extension",
+      "to": "Money"
+    },
+    {
+      "from": "Extension",
+      "to": "ParameterDefinition"
+    },
+    {
+      "from": "Extension",
+      "to": "Period"
+    },
+    {
+      "from": "Extension",
+      "to": "Quantity"
+    },
+    {
+      "from": "Extension",
+      "to": "Range"
+    },
+    {
+      "from": "Extension",
+      "to": "Ratio"
+    },
+    {
+      "from": "Extension",
+      "to": "Reference"
+    },
+    {
+      "from": "Extension",
+      "to": "RelatedArtifact"
+    },
+    {
+      "from": "Extension",
+      "to": "SampledData"
+    },
+    {
+      "from": "Extension",
+      "to": "Signature"
+    },
+    {
+      "from": "Extension",
+      "to": "Timing"
+    },
+    {
+      "from": "Extension",
+      "to": "TriggerDefinition"
+    },
+    {
+      "from": "Extension",
+      "to": "UsageContext"
+    },
+    {
+      "from": "Extension",
+      "to": "base64Binary"
+    },
+    {
+      "from": "Extension",
+      "to": "boolean"
+    },
+    {
+      "from": "Extension",
+      "to": "canonical"
+    },
+    {
+      "from": "Extension",
+      "to": "code"
+    },
+    {
+      "from": "Extension",
+      "to": "date"
+    },
+    {
+      "from": "Extension",
+      "to": "dateTime"
+    },
+    {
+      "from": "Extension",
+      "to": "decimal"
+    },
+    {
+      "from": "Extension",
+      "to": "id"
+    },
+    {
+      "from": "Extension",
+      "to": "instant"
+    },
+    {
+      "from": "Extension",
+      "to": "integer"
+    },
+    {
+      "from": "Extension",
+      "to": "markdown"
+    },
+    {
+      "from": "Extension",
+      "to": "oid"
+    },
+    {
+      "from": "Extension",
+      "to": "positiveInt"
+    },
+    {
+      "from": "Extension",
+      "to": "string"
+    },
+    {
+      "from": "Extension",
+      "to": "time"
+    },
+    {
+      "from": "Extension",
+      "to": "unsignedInt"
+    },
+    {
+      "from": "Extension",
+      "to": "uri"
+    },
+    {
+      "from": "Extension",
+      "to": "url"
+    },
+    {
+      "from": "Extension",
+      "to": "uuid"
+    },
+    {
+      "from": "HumanName",
+      "to": "Element"
+    },
+    {
+      "from": "HumanName",
+      "to": "Extension"
+    },
+    {
+      "from": "HumanName",
+      "to": "Period"
+    },
+    {
+      "from": "HumanName",
+      "to": "code"
+    },
+    {
+      "from": "HumanName",
+      "to": "string"
+    },
+    {
+      "from": "Identifier",
+      "to": "CodeableConcept"
+    },
+    {
+      "from": "Identifier",
+      "to": "Element"
+    },
+    {
+      "from": "Identifier",
+      "to": "Extension"
+    },
+    {
+      "from": "Identifier",
+      "to": "Period"
+    },
+    {
+      "from": "Identifier",
+      "to": "Reference"
+    },
+    {
+      "from": "Identifier",
+      "to": "code"
+    },
+    {
+      "from": "Identifier",
+      "to": "string"
+    },
+    {
+      "from": "Identifier",
+      "to": "uri"
+    },
+    {
+      "from": "Meta",
+      "to": "Coding"
+    },
+    {
+      "from": "Meta",
+      "to": "Element"
+    },
+    {
+      "from": "Meta",
+      "to": "Extension"
+    },
+    {
+      "from": "Meta",
+      "to": "canonical"
+    },
+    {
+      "from": "Meta",
+      "to": "id"
+    },
+    {
+      "from": "Meta",
+      "to": "instant"
+    },
+    {
+      "from": "Meta",
+      "to": "string"
+    },
+    {
+      "from": "Meta",
+      "to": "uri"
+    },
+    {
+      "from": "Money",
+      "to": "Element"
+    },
+    {
+      "from": "Money",
+      "to": "Extension"
+    },
+    {
+      "from": "Money",
+      "to": "code"
+    },
+    {
+      "from": "Money",
+      "to": "decimal"
+    },
+    {
+      "from": "Money",
+      "to": "string"
+    },
+    {
+      "from": "Narrative",
+      "to": "Element"
+    },
+    {
+      "from": "Narrative",
+      "to": "Extension"
+    },
+    {
+      "from": "Narrative",
+      "to": "code"
+    },
+    {
+      "from": "Narrative",
+      "to": "string"
+    },
+    {
+      "from": "Narrative",
+      "to": "xhtml"
+    },
+    {
+      "from": "Observation",
+      "to": "Annotation"
+    },
+    {
+      "from": "Observation",
+      "to": "BackboneElement"
+    },
+    {
+      "from": "Observation",
+      "to": "CodeableConcept"
+    },
+    {
+      "from": "Observation",
+      "to": "DomainResource"
+    },
+    {
+      "from": "Observation",
+      "to": "Extension"
+    },
+    {
+      "from": "Observation",
+      "to": "Identifier"
+    },
+    {
+      "from": "Observation",
+      "to": "Meta"
+    },
+    {
+      "from": "Observation",
+      "to": "Narrative"
+    },
+    {
+      "from": "Observation",
+      "to": "Period"
+    },
+    {
+      "from": "Observation",
+      "to": "Quantity"
+    },
+    {
+      "from": "Observation",
+      "to": "Range"
+    },
+    {
+      "from": "Observation",
+      "to": "Ratio"
+    },
+    {
+      "from": "Observation",
+      "to": "Reference"
+    },
+    {
+      "from": "Observation",
+      "to": "Resource"
+    },
+    {
+      "from": "Observation",
+      "to": "SampledData"
+    },
+    {
+      "from": "Observation",
+      "to": "SimpleQuantity"
+    },
+    {
+      "from": "Observation",
+      "to": "Timing"
+    },
+    {
+      "from": "Observation",
+      "to": "boolean"
+    },
+    {
+      "from": "Observation",
+      "to": "code"
+    },
+    {
+      "from": "Observation",
+      "to": "dateTime"
+    },
+    {
+      "from": "Observation",
+      "to": "instant"
+    },
+    {
+      "from": "Observation",
+      "to": "integer"
+    },
+    {
+      "from": "Observation",
+      "to": "string"
+    },
+    {
+      "from": "Observation",
+      "to": "time"
+    },
+    {
+      "from": "Observation",
+      "to": "uri"
+    },
+    {
+      "from": "ParameterDefinition",
+      "to": "Element"
+    },
+    {
+      "from": "ParameterDefinition",
+      "to": "Extension"
+    },
+    {
+      "from": "ParameterDefinition",
+      "to": "canonical"
+    },
+    {
+      "from": "ParameterDefinition",
+      "to": "code"
+    },
+    {
+      "from": "ParameterDefinition",
+      "to": "integer"
+    },
+    {
+      "from": "ParameterDefinition",
+      "to": "string"
+    },
+    {
+      "from": "Patient",
+      "to": "Address"
+    },
+    {
+      "from": "Patient",
+      "to": "Attachment"
+    },
+    {
+      "from": "Patient",
+      "to": "BackboneElement"
+    },
+    {
+      "from": "Patient",
+      "to": "CodeableConcept"
+    },
+    {
+      "from": "Patient",
+      "to": "ContactPoint"
+    },
+    {
+      "from": "Patient",
+      "to": "DomainResource"
+    },
+    {
+      "from": "Patient",
+      "to": "Extension"
+    },
+    {
+      "from": "Patient",
+      "to": "HumanName"
+    },
+    {
+      "from": "Patient",
+      "to": "Identifier"
+    },
+    {
+      "from": "Patient",
+      "to": "Meta"
+    },
+    {
+      "from": "Patient",
+      "to": "Narrative"
+    },
+    {
+      "from": "Patient",
+      "to": "Period"
+    },
+    {
+      "from": "Patient",
+      "to": "Reference"
+    },
+    {
+      "from": "Patient",
+      "to": "Resource"
+    },
+    {
+      "from": "Patient",
+      "to": "boolean"
+    },
+    {
+      "from": "Patient",
+      "to": "code"
+    },
+    {
+      "from": "Patient",
+      "to": "date"
+    },
+    {
+      "from": "Patient",
+      "to": "dateTime"
+    },
+    {
+      "from": "Patient",
+      "to": "integer"
+    },
+    {
+      "from": "Patient",
+      "to": "string"
+    },
+    {
+      "from": "Patient",
+      "to": "uri"
+    },
+    {
+      "from": "Period",
+      "to": "Element"
+    },
+    {
+      "from": "Period",
+      "to": "Extension"
+    },
+    {
+      "from": "Period",
+      "to": "dateTime"
+    },
+    {
+      "from": "Period",
+      "to": "string"
+    },
+    {
+      "from": "Quantity",
+      "to": "Element"
+    },
+    {
+      "from": "Quantity",
+      "to": "Extension"
+    },
+    {
+      "from": "Quantity",
+      "to": "code"
+    },
+    {
+      "from": "Quantity",
+      "to": "decimal"
+    },
+    {
+      "from": "Quantity",
+      "to": "string"
+    },
+    {
+      "from": "Quantity",
+      "to": "uri"
+    },
+    {
+      "from": "Range",
+      "to": "Element"
+    },
+    {
+      "from": "Range",
+      "to": "Extension"
+    },
+    {
+      "from": "Range",
+      "to": "Quantity"
+    },
+    {
+      "from": "Range",
+      "to": "SimpleQuantity"
+    },
+    {
+      "from": "Range",
+      "to": "string"
+    },
+    {
+      "from": "Ratio",
+      "to": "Element"
+    },
+    {
+      "from": "Ratio",
+      "to": "Extension"
+    },
+    {
+      "from": "Ratio",
+      "to": "Quantity"
+    },
+    {
+      "from": "Ratio",
+      "to": "string"
+    },
+    {
+      "from": "Reference",
+      "to": "Element"
+    },
+    {
+      "from": "Reference",
+      "to": "Extension"
+    },
+    {
+      "from": "Reference",
+      "to": "Identifier"
+    },
+    {
+      "from": "Reference",
+      "to": "string"
+    },
+    {
+      "from": "Reference",
+      "to": "uri"
+    },
+    {
+      "from": "RelatedArtifact",
+      "to": "Attachment"
+    },
+    {
+      "from": "RelatedArtifact",
+      "to": "Element"
+    },
+    {
+      "from": "RelatedArtifact",
+      "to": "Extension"
+    },
+    {
+      "from": "RelatedArtifact",
+      "to": "canonical"
+    },
+    {
+      "from": "RelatedArtifact",
+      "to": "code"
+    },
+    {
+      "from": "RelatedArtifact",
+      "to": "markdown"
+    },
+    {
+      "from": "RelatedArtifact",
+      "to": "string"
+    },
+    {
+      "from": "RelatedArtifact",
+      "to": "url"
+    },
+    {
+      "from": "Resource",
+      "to": "Meta"
+    },
+    {
+      "from": "Resource",
+      "to": "code"
+    },
+    {
+      "from": "Resource",
+      "to": "string"
+    },
+    {
+      "from": "Resource",
+      "to": "uri"
+    },
+    {
+      "from": "SampledData",
+      "to": "Element"
+    },
+    {
+      "from": "SampledData",
+      "to": "Extension"
+    },
+    {
+      "from": "SampledData",
+      "to": "Quantity"
+    },
+    {
+      "from": "SampledData",
+      "to": "SimpleQuantity"
+    },
+    {
+      "from": "SampledData",
+      "to": "decimal"
+    },
+    {
+      "from": "SampledData",
+      "to": "positiveInt"
+    },
+    {
+      "from": "SampledData",
+      "to": "string"
+    },
+    {
+      "from": "Signature",
+      "to": "Coding"
+    },
+    {
+      "from": "Signature",
+      "to": "Element"
+    },
+    {
+      "from": "Signature",
+      "to": "Extension"
+    },
+    {
+      "from": "Signature",
+      "to": "Reference"
+    },
+    {
+      "from": "Signature",
+      "to": "base64Binary"
+    },
+    {
+      "from": "Signature",
+      "to": "code"
+    },
+    {
+      "from": "Signature",
+      "to": "instant"
+    },
+    {
+      "from": "Signature",
+      "to": "string"
+    },
+    {
+      "from": "SimpleQuantity",
+      "to": "Extension"
+    },
+    {
+      "from": "SimpleQuantity",
+      "to": "Quantity"
+    },
+    {
+      "from": "SimpleQuantity",
+      "to": "code"
+    },
+    {
+      "from": "SimpleQuantity",
+      "to": "decimal"
+    },
+    {
+      "from": "SimpleQuantity",
+      "to": "string"
+    },
+    {
+      "from": "SimpleQuantity",
+      "to": "uri"
+    },
+    {
+      "from": "Timing",
+      "to": "BackboneElement"
+    },
+    {
+      "from": "Timing",
+      "to": "CodeableConcept"
+    },
+    {
+      "from": "Timing",
+      "to": "Duration"
+    },
+    {
+      "from": "Timing",
+      "to": "Element"
+    },
+    {
+      "from": "Timing",
+      "to": "Extension"
+    },
+    {
+      "from": "Timing",
+      "to": "Period"
+    },
+    {
+      "from": "Timing",
+      "to": "Range"
+    },
+    {
+      "from": "Timing",
+      "to": "code"
+    },
+    {
+      "from": "Timing",
+      "to": "dateTime"
+    },
+    {
+      "from": "Timing",
+      "to": "decimal"
+    },
+    {
+      "from": "Timing",
+      "to": "positiveInt"
+    },
+    {
+      "from": "Timing",
+      "to": "string"
+    },
+    {
+      "from": "Timing",
+      "to": "time"
+    },
+    {
+      "from": "Timing",
+      "to": "unsignedInt"
+    },
+    {
+      "from": "TriggerDefinition",
+      "to": "DataRequirement"
+    },
+    {
+      "from": "TriggerDefinition",
+      "to": "Element"
+    },
+    {
+      "from": "TriggerDefinition",
+      "to": "Expression"
+    },
+    {
+      "from": "TriggerDefinition",
+      "to": "Extension"
+    },
+    {
+      "from": "TriggerDefinition",
+      "to": "Reference"
+    },
+    {
+      "from": "TriggerDefinition",
+      "to": "Timing"
+    },
+    {
+      "from": "TriggerDefinition",
+      "to": "code"
+    },
+    {
+      "from": "TriggerDefinition",
+      "to": "date"
+    },
+    {
+      "from": "TriggerDefinition",
+      "to": "dateTime"
+    },
+    {
+      "from": "TriggerDefinition",
+      "to": "string"
+    },
+    {
+      "from": "UsageContext",
+      "to": "CodeableConcept"
+    },
+    {
+      "from": "UsageContext",
+      "to": "Coding"
+    },
+    {
+      "from": "UsageContext",
+      "to": "Element"
+    },
+    {
+      "from": "UsageContext",
+      "to": "Extension"
+    },
+    {
+      "from": "UsageContext",
+      "to": "Quantity"
+    },
+    {
+      "from": "UsageContext",
+      "to": "Range"
+    },
+    {
+      "from": "UsageContext",
+      "to": "Reference"
+    },
+    {
+      "from": "UsageContext",
+      "to": "string"
+    },
+    {
+      "from": "base64Binary",
+      "to": "Element"
+    },
+    {
+      "from": "base64Binary",
+      "to": "Extension"
+    },
+    {
+      "from": "base64Binary",
+      "to": "string"
+    },
+    {
+      "from": "boolean",
+      "to": "Element"
+    },
+    {
+      "from": "boolean",
+      "to": "Extension"
+    },
+    {
+      "from": "boolean",
+      "to": "string"
+    },
+    {
+      "from": "canonical",
+      "to": "Extension"
+    },
+    {
+      "from": "canonical",
+      "to": "string"
+    },
+    {
+      "from": "canonical",
+      "to": "uri"
+    },
+    {
+      "from": "code",
+      "to": "Extension"
+    },
+    {
+      "from": "code",
+      "to": "string"
+    },
+    {
+      "from": "date",
+      "to": "Element"
+    },
+    {
+      "from": "date",
+      "to": "Extension"
+    },
+    {
+      "from": "date",
+      "to": "string"
+    },
+    {
+      "from": "dateTime",
+      "to": "Element"
+    },
+    {
+      "from": "dateTime",
+      "to": "Extension"
+    },
+    {
+      "from": "dateTime",
+      "to": "string"
+    },
+    {
+      "from": "decimal",
+      "to": "Element"
+    },
+    {
+      "from": "decimal",
+      "to": "Extension"
+    },
+    {
+      "from": "decimal",
+      "to": "string"
+    },
+    {
+      "from": "id",
+      "to": "Extension"
+    },
+    {
+      "from": "id",
+      "to": "string"
+    },
+    {
+      "from": "instant",
+      "to": "Element"
+    },
+    {
+      "from": "instant",
+      "to": "Extension"
+    },
+    {
+      "from": "instant",
+      "to": "string"
+    },
+    {
+      "from": "integer",
+      "to": "Element"
+    },
+    {
+      "from": "integer",
+      "to": "Extension"
+    },
+    {
+      "from": "integer",
+      "to": "string"
+    },
+    {
+      "from": "markdown",
+      "to": "Extension"
+    },
+    {
+      "from": "markdown",
+      "to": "string"
+    },
+    {
+      "from": "oid",
+      "to": "Extension"
+    },
+    {
+      "from": "oid",
+      "to": "string"
+    },
+    {
+      "from": "oid",
+      "to": "uri"
+    },
+    {
+      "from": "positiveInt",
+      "to": "Extension"
+    },
+    {
+      "from": "positiveInt",
+      "to": "integer"
+    },
+    {
+      "from": "positiveInt",
+      "to": "string"
+    },
+    {
+      "from": "string",
+      "to": "Element"
+    },
+    {
+      "from": "string",
+      "to": "Extension"
+    },
+    {
+      "from": "string",
+      "to": "string"
+    },
+    {
+      "from": "time",
+      "to": "Element"
+    },
+    {
+      "from": "time",
+      "to": "Extension"
+    },
+    {
+      "from": "time",
+      "to": "string"
+    },
+    {
+      "from": "unsignedInt",
+      "to": "Extension"
+    },
+    {
+      "from": "unsignedInt",
+      "to": "integer"
+    },
+    {
+      "from": "unsignedInt",
+      "to": "string"
+    },
+    {
+      "from": "uri",
+      "to": "Element"
+    },
+    {
+      "from": "uri",
+      "to": "Extension"
+    },
+    {
+      "from": "uri",
+      "to": "string"
+    },
+    {
+      "from": "url",
+      "to": "Extension"
+    },
+    {
+      "from": "url",
+      "to": "string"
+    },
+    {
+      "from": "url",
+      "to": "uri"
+    },
+    {
+      "from": "uuid",
+      "to": "Extension"
+    },
+    {
+      "from": "uuid",
+      "to": "string"
+    },
+    {
+      "from": "uuid",
+      "to": "uri"
+    }
+  ],
+  "primitiveTemplatePolicy": {
+    "path": "CodeGen/Policy/primitive-generation-policy.json",
+    "sha256": "3f3739d24c9cbf149746ce066fedd556c5f076d9e48b9d04d6e28302e638856b"
+  },
+  "primitiveTemplates": [
+    {
+      "path": "Generated/R5/Primitives/FhirBase64Binary.g.cs",
+      "sha256": "62a4eb0383d1e9f26d0aa5b40cdc1497d9edbf6f3c615ecf070c149e3f8a7d5c"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirBoolean.g.cs",
+      "sha256": "6b0c4058ceab034d9301268f8a8afcf6d4c3ac3d5c77634d720900d1997195ce"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirCanonical.g.cs",
+      "sha256": "e15a758dd3bc057079144d6b10062bdc0f9d2e7369b45debb886f76ef967b227"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirCode.g.cs",
+      "sha256": "167eb23c30a4daadce808eb2e6b9d7208bb9c814121fbf88f69bda0026859d28"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirDate.g.cs",
+      "sha256": "0c8e10fffd52f04d15ff62a10f750bd20fbbf306838dfee0ba86d42f5ce401e1"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirDateTime.g.cs",
+      "sha256": "e3b42c0b3c8ee9a4687cafc4c67a797d7b1c190890620d34dffd0be593abd82b"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirDecimal.g.cs",
+      "sha256": "1b478af131ca567545bab532b552f3562cdd311674b152814710ae04c82d8ebb"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirId.g.cs",
+      "sha256": "3a1b6c551274b598ee2a389383aed60d59255bf6e6fdb0953adde7670019aefd"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirInstant.g.cs",
+      "sha256": "4224ec1fc1937fb9fc2de201b5141a91530a36ddb2e419e8201e72ffef903d8f"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirInteger.g.cs",
+      "sha256": "06ba8f5b0366d432ff55fe393f584c7629156cdd04c1ae40b022eda835f5fec5"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirMarkdown.g.cs",
+      "sha256": "a7e3554930c3131a92d4bdd6ec1a8837baee3e873270b195ae1c7ff39e672b2a"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirOid.g.cs",
+      "sha256": "c314ead68e12cc301d8676e9ed43d0fdb468b430f1bc3be0edb33ef2bbac1fd0"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirPositiveInt.g.cs",
+      "sha256": "6b48bc14fb3f808437dfa67e326b06cadb535f1aa27f2bce9d6b554552a53a19"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirString.g.cs",
+      "sha256": "c8ea43ae96bf9f08bef58bbd04f6052a5837c5e5c0e40d437e4f429950c15629"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirTime.g.cs",
+      "sha256": "16b0937efbd606f1d9d21ac658825701c611afef23288d2b5fc0bfe6ed5ccb2f"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirUnsignedInt.g.cs",
+      "sha256": "bf09db155a2c5ca58665b5cc1378a74b83002ebe2fdb4d610a1123b2e4223b83"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirUri.g.cs",
+      "sha256": "7352385bb7602d3a251fe1269528aa3cb2f5182b26d6322fe46ca0fb63a4cb97"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirUrl.g.cs",
+      "sha256": "9ab06927f0fa127b1f297b74daff790b349a47b875b52a003d3ae43002faf1db"
+    },
+    {
+      "path": "Generated/R5/Primitives/FhirUuid.g.cs",
+      "sha256": "d79094610f6d46b14ab9c39fa720dc93767990a97631f5b234db109c33a47fcc"
+    }
+  ],
+  "abstractBridgeAdaptations": [
+    {
+      "definition": "Address",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Annotation",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Attachment",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "CodeableConcept",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Coding",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "ContactDetail",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "ContactPoint",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Contributor",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "DataRequirement",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Dosage",
+      "officialBase": "BackboneElement",
+      "runtimeBase": "BackboneType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Expression",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "HumanName",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Identifier",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Money",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "ParameterDefinition",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Period",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Quantity",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Range",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Ratio",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Reference",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "RelatedArtifact",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "SampledData",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Signature",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "Timing",
+      "officialBase": "BackboneElement",
+      "runtimeBase": "BackboneType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "TriggerDefinition",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    },
+    {
+      "definition": "UsageContext",
+      "officialBase": "Element",
+      "runtimeBase": "DataType",
+      "reason": "Shared abstract bridge supplies the Extension value marker; verify V1 JSON shape"
+    }
+  ],
+  "unsupported": [
+    "xhtml primitive wrapper; shared Narrative.Div is a raw string"
+  ],
+  "deferred": [
+    "terminology",
+    "FHIRPath invariants",
+    "fixed/pattern",
+    "targetProfile enforcement",
+    "general constraint generator"
+  ],
+  "sources": [
+    {
+      "path": "Tests/Architecture/V1/Generated/R4ExperimentComposition.g.cs",
+      "sha256": "56cf9e060754e8b4537c86148e5081b705b791a9b1e926799816c3ff4a2313d9"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirBase64Binary.g.cs",
+      "sha256": "abe26cd5720a6f6324b74a7803add9c4c9766267f7b7b1b2bb8066581d6a6382"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirBoolean.g.cs",
+      "sha256": "fe123005f448bdf0a9d21464c0dc4423760f71089927a22859f77b706c2d1689"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirCanonical.g.cs",
+      "sha256": "28db2d766f10c0745168c5fb00fbc6aa9f5d0e009682d1d15e94e2a943a72536"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirCode.g.cs",
+      "sha256": "0914df8ff1c11eeb996c33dcf7d711fd6cd67c0d0f797221ef777aa166858a52"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirDate.g.cs",
+      "sha256": "a7f8360cb11ebbc7f6d8f5dcc40c37e3689ff78956e7f40c884326cc5f1fd2f5"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirDateTime.g.cs",
+      "sha256": "411dd69ab1aeed174ad70c9845675518d83b80fef8dd2057537b0ceae324b9de"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirDecimal.g.cs",
+      "sha256": "b19238add8f741f1e448d427d9d09b16f627f5ae0f0475fad747a9d39363fd38"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirId.g.cs",
+      "sha256": "a4b22f26a20c29b453865826fe30a2205d10f68704780d89f8db3c86a12f5788"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirInstant.g.cs",
+      "sha256": "03ee005be61711cf4496c3b366fad656caec863c19fd0b8b393e0db28e53b993"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirInteger.g.cs",
+      "sha256": "2ca4767c41b1ee6f422dd608ab2925a4f67f7c0405afa19cbfcccfeaedb3a494"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirMarkdown.g.cs",
+      "sha256": "e0e67ce8020abbb9f8469bff98332d84b1d2b228e97229ac563b6bcdcb167fc8"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirOid.g.cs",
+      "sha256": "b06871716819c30a8471bc735a6e53c95e06ea784df1db579feeb7ca980072df"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirPositiveInt.g.cs",
+      "sha256": "5d7f2e92bb128771115ff78c065eaa4c49df17cf6f5e9d6754930716f6089c94"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirString.g.cs",
+      "sha256": "a953756a518aefbfd587e24318a5c71394a34a96f7fc15d54b0702953902ffb8"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirTime.g.cs",
+      "sha256": "8a5c85deffa6f175ffc277b3ccde61258e8227621aaf2fbb7d999d89e21fc489"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirUnsignedInt.g.cs",
+      "sha256": "37598c353057de58260e8b905d83e97db193fe7a4685836e0e6196d7a64f0556"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirUri.g.cs",
+      "sha256": "c9015bd521ce12fea10304c290daa65e3369e830e48829773bd6ec3d57623ea5"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirUrl.g.cs",
+      "sha256": "d05867d27b766dbd43f25d2ee3fa19ed592f88c99f1190a34f1d85e42b4ab418"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Primitives/FhirUuid.g.cs",
+      "sha256": "f9f24eae7dd01803a0e5126f98b09219ecbc784a0040a8211305ebb6727e3fb1"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Resources/Observation.g.cs",
+      "sha256": "fcce1afc4c71884fc36e2e7e85329a8cd17daac2080adc9afa470aae611ce394"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Resources/ObservationComponent.g.cs",
+      "sha256": "efce3e4e6e7b3887897ef52bb9ee37785005f006b7ee606f8c397ad66c955bfd"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Resources/ObservationReferenceRange.g.cs",
+      "sha256": "789cbd9ee4d4573df8f590ae60c18dbfc480362bd6778c4e2e306947a8945db0"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Resources/Patient.g.cs",
+      "sha256": "219145f829fc05eab066306acefb370ae5b2d927f3655f5388222a01cad6f8e0"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Resources/PatientCommunication.g.cs",
+      "sha256": "0ad0f4874ae8a11ebd561c6b9f11a963f4adc7b2121b11315f9cdaab5755156e"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Resources/PatientContact.g.cs",
+      "sha256": "ef52235165478a6f17111bd09421226b7af1aea48b45502d8ca97202b3a302e6"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Resources/PatientLink.g.cs",
+      "sha256": "1275707cdf08a9af9f16aa824c04a9c32f127ece42fd3a06e9bafdd4f44d8091"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Address.g.cs",
+      "sha256": "77f972933a949a36d9f772841902d82a95107504a1986d5551d0566198ac5261"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Age.g.cs",
+      "sha256": "7a45791382d3556de56094056852098c9baeee135f952c81f4e0a4b94ae22ad0"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Annotation.g.cs",
+      "sha256": "9094dace003362b7d6b62b5414e3c851e88005694a77c2cd23578cac25b7d70b"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Attachment.g.cs",
+      "sha256": "ffaf27c812a89f15fa1170f769e5819a4d661e0b504c79fa98bced22fe2d129a"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/CodeableConcept.g.cs",
+      "sha256": "761bb2f77517cf01985cb21c0bd4d0e3012b36c06858a3fee799d706b62d4de4"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Coding.g.cs",
+      "sha256": "c95b29f4ab0af0ecaf8a2401dcce695184592079615ef74c0c11f92aa5d5d9db"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/ContactDetail.g.cs",
+      "sha256": "beccc741d0b93d0e54f8236a670180499e6bc6402727a821a8ac60a1a30b169c"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/ContactPoint.g.cs",
+      "sha256": "24c2897f216bc03e09a7d93b68cfb8e98d00f1c556b89f8ab2a2e3060e784fd6"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Contributor.g.cs",
+      "sha256": "a83d0ce2df38a8af7c07e1f1ff82ad871bdadf3ce12daed43e9243532894560a"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Count.g.cs",
+      "sha256": "7e5c99601257e3cb5a880017ffc5f2b8db773733496ceb1fd0e93daf57156699"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/DataRequirement.g.cs",
+      "sha256": "851507f668f578ab5259984b83249f07554fdfe8e3f4ba0fb6808cf77afe2852"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/DataRequirementCodeFilter.g.cs",
+      "sha256": "9855746cdba2d3c0dc81100f8a87d734488ffc2bffdf1bbc54663ebd88123ac5"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/DataRequirementDateFilter.g.cs",
+      "sha256": "a00301566810e0a1bf0397d081b5b21c66c2d470cff4344a6f72fe1e289b32a0"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/DataRequirementSort.g.cs",
+      "sha256": "1ff76c75a0380a671b23bcb004a1b58ef647e1bef9e3eedb0796641eaf9405d2"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Distance.g.cs",
+      "sha256": "5cbfdef59b994146070b9d698c4ff67ecc3a3c819faba88c5e0ce6f12eda69ed"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Dosage.g.cs",
+      "sha256": "316afc35387e837d875ca32c39a63de21bf6863983e90c60de0d7bcdf2043200"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/DosageDoseAndRate.g.cs",
+      "sha256": "da165c5f488752241a5fc8163b694fc6de06b3b6b0b15e1f3bfd589b7dde9c6d"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Duration.g.cs",
+      "sha256": "aa8356e556ad130b444fc3665a6373f581c57bc1f4766bf221013198e7cef13f"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Expression.g.cs",
+      "sha256": "bdfcbad96ac0ea9b93d4737aacf34c8dc1bfc2e5aafaf4113ab9d462be1b3c10"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/HumanName.g.cs",
+      "sha256": "fba9942540a7b5a4b84bce1b570cf65c10b1a2a41d85e9d891606e2ccdf35bb6"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Identifier.g.cs",
+      "sha256": "60dada467e6cbd478f494d773ed5b2279586e07df3dbbd49411a3f70a5349a80"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Money.g.cs",
+      "sha256": "dde23a32f9fdd380caa5c889a821314674e61d17c5fd6093947ec392457f3813"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/ParameterDefinition.g.cs",
+      "sha256": "b7ecbb88f7b2394fb30876f959999bdd99553c87711aeea5f994f703bc34cd7a"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Period.g.cs",
+      "sha256": "a14f8bf60f29054e867973fbb5900931fca6da484255b3f660e3e03dd5eeea22"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Quantity.g.cs",
+      "sha256": "117a09f255ff12bb6625f374d49d8f1cb69fbd92af9d5d977e1dd9af7ab530db"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Range.g.cs",
+      "sha256": "5364b0db2cf336cd1cac51277ac948f6d3cf6c88f96f81273ac1ae1c98258599"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Ratio.g.cs",
+      "sha256": "30d77efe5542bb161301ecd1cbadf80270db81eb1678f000974ba426036f24ec"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Reference.g.cs",
+      "sha256": "dc185461ca125aa369e447203a9c81c4bb658c370d5b956259f6654a360ea15e"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/RelatedArtifact.g.cs",
+      "sha256": "0b029682db6e20c9a60b1d3d0b307210c4a59d70bb910233b5da95c091bf64a6"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/SampledData.g.cs",
+      "sha256": "1a3775d66003c8ab16990e5e805ca81949dbbbdef7010cc71adaf712a09d90c5"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Signature.g.cs",
+      "sha256": "1aede85140b6e4953dd620a67f3236674cc6682b4159b0b9c0ced825394e4594"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/SimpleQuantity.g.cs",
+      "sha256": "881e9b22c0ae93a8cd352fb02d56e9c7849729d2e41a08f4d666f949c36678f0"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/Timing.g.cs",
+      "sha256": "d7dee6e175d74977f11529cb8815bdfc46f3f056445d812554122c9c7f20326e"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/TimingRepeat.g.cs",
+      "sha256": "3c193f769e2dde3786a68948185d265ea690af722cd51cd6822a2d560cb88863"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/TriggerDefinition.g.cs",
+      "sha256": "09bd27f9ccf47c7d492e8553cfb84794086c94082884fbd774ecd15ad987d544"
+    },
+    {
+      "path": "Tests/FhirVersions/V1/Models/Generated/Types/UsageContext.g.cs",
+      "sha256": "9d10bbcf47c47a9a716a63579c81b1466713afce2b4be9bbde842fc513518209"
+    }
+  ]
+}

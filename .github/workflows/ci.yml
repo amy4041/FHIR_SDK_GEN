@@ -14,18 +14,749 @@ env:
   SOLUTION_PATH: MyFhirSdk.sln
 
 jobs:
+  sdk-decoupling-d4:
+    name: D4 current delivery and rollback (${{ matrix.os }})
+    needs: compiler-reference-asset
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/download-artifact@v4
+        with:
+          name: canonical-tool-package
+          path: artifacts/d4-canonical
+      - name: Verify D evidence failure modes
+        run: python -m unittest discover -s Tests/SdkDecoupling -p "test_*.py" -v
+      - name: Verify current API delta and fresh full regression
+        shell: pwsh
+        run: |
+          dotnet restore MyFhirSdk.sln -p:NuGetAudit=false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python eng/Test-SdkDecouplingD4.py --tool-package artifacts/d4-canonical/MyFhirSdk.CodeGen.Tool.1.3.1.nupkg --output artifacts/sdk-decoupling/d4/ci
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify D5 clean-source offline delivery
+        run: python eng/Test-SdkDecouplingD5.py --bundle artifacts/sdk-decoupling/d4/ci/bundle --output artifacts/sdk-decoupling/d5/ci
+      - uses: actions/upload-artifact@v4
+        if: always()
+        id: artifact_upload_01
+        continue-on-error: true
+        with:
+          name: sdk-decoupling-d5-${{ matrix.os }}
+          path: artifacts/sdk-decoupling/d5/ci
+          include-hidden-files: true
+          if-no-files-found: warn
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_01.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_01.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-decoupling-d5-${{ matrix.os }}
+          path: artifacts/sdk-decoupling/d5/ci
+          include-hidden-files: true
+          if-no-files-found: warn
+          overwrite: true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        id: artifact_upload_02
+        continue-on-error: true
+        with:
+          name: sdk-decoupling-d4-${{ matrix.os }}
+          path: artifacts/sdk-decoupling/d4/ci
+          include-hidden-files: true
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_02.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_02.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-decoupling-d4-${{ matrix.os }}
+          path: artifacts/sdk-decoupling/d4/ci
+          include-hidden-files: true
+          if-no-files-found: error
+          overwrite: true
+
+  sdk-decoupling-d4-compare:
+    name: D4 Windows/Ubuntu delivery acceptance
+    needs: sdk-decoupling-d4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdk-decoupling-d4-windows-latest
+          path: artifacts/d4-windows
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdk-decoupling-d4-ubuntu-latest
+          path: artifacts/d4-linux
+      - name: Compare current delivery evidence
+        run: python eng/Compare-SdkDecouplingD4.py --windows artifacts/d4-windows --linux artifacts/d4-linux --output artifacts/d4-comparison/summary.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        id: artifact_upload_03
+        continue-on-error: true
+        with:
+          name: sdk-decoupling-d4-comparison
+          path: artifacts/d4-comparison
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_03.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_03.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-decoupling-d4-comparison
+          path: artifacts/d4-comparison
+          if-no-files-found: error
+          overwrite: true
+
+  sdk-decoupling-d3:
+    name: Historical D3 neutral SDK and explicit composition (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: d47374bf99e91a61848fccf7612e2d571ae4bf67
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Verify D evidence failure modes
+        run: python -m unittest discover -s Tests/SdkDecoupling -p "test_*.py" -v
+      - name: Verify current API delta and fresh full regression
+        shell: pwsh
+        run: |
+          dotnet restore MyFhirSdk.sln -p:NuGetAudit=false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python eng/Test-SdkDecouplingD3.py --output artifacts/sdk-decoupling/d3/ci
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        id: artifact_upload_04
+        continue-on-error: true
+        with:
+          name: sdk-decoupling-d3-${{ matrix.os }}
+          path: artifacts/sdk-decoupling/d3/ci
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_04.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_04.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-decoupling-d3-${{ matrix.os }}
+          path: artifacts/sdk-decoupling/d3/ci
+          if-no-files-found: error
+          overwrite: true
+
+  sdk-decoupling-d2:
+    name: Historical D2 independent TW Core R4 POC (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: c2e9098225718c79daf1aed4289d4f806ebab570
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Verify D evidence failure modes
+        run: python -m unittest discover -s Tests/SdkDecoupling -p "test_*.py" -v
+      - name: Verify current API delta and fresh full regression
+        shell: pwsh
+        run: |
+          dotnet restore MyFhirSdk.sln -p:NuGetAudit=false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python eng/Test-SdkDecouplingD2.py --output artifacts/sdk-decoupling/d2/ci
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        id: artifact_upload_05
+        continue-on-error: true
+        with:
+          name: sdk-decoupling-d2-${{ matrix.os }}
+          path: artifacts/sdk-decoupling/d2/ci
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_05.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_05.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-decoupling-d2-${{ matrix.os }}
+          path: artifacts/sdk-decoupling/d2/ci
+          if-no-files-found: error
+          overwrite: true
+
+  sdk-decoupling-d1:
+    name: Historical D1 contextual IG framework (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 464474b190e702231d4b26a7883f1edbebb13ac2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Verify D evidence failure modes
+        run: python -m unittest discover -s Tests/SdkDecoupling -p "test_*.py" -v
+      - name: Verify current API delta and fresh full regression
+        shell: pwsh
+        run: |
+          dotnet restore MyFhirSdk.sln -p:NuGetAudit=false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python eng/Test-SdkDecouplingD1.py --output artifacts/sdk-decoupling/d1/ci
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        id: artifact_upload_06
+        continue-on-error: true
+        with:
+          name: sdk-decoupling-d1-${{ matrix.os }}
+          path: artifacts/sdk-decoupling/d1/ci
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_06.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_06.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-decoupling-d1-${{ matrix.os }}
+          path: artifacts/sdk-decoupling/d1/ci
+          if-no-files-found: error
+          overwrite: true
+
+  sdk-decoupling-d0:
+    name: Historical D0 source pin (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 447e7f141c5edf1e803b3d6c85c3bfca9778c5de
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Verify evidence failure modes
+        run: python -m unittest discover -s Tests/SdkDecoupling -p "test_*.py" -v
+      - name: Verify D0 pin and record current target gaps
+        run: python eng/Test-SdkDecoupling.py --output artifacts/sdk-decoupling/d0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        id: artifact_upload_07
+        continue-on-error: true
+        with:
+          name: sdk-decoupling-d0-${{ matrix.os }}
+          path: |
+            artifacts/sdk-decoupling/d0/*.json
+            artifacts/sdk-decoupling/d0/*.txt
+            artifacts/sdk-decoupling/d0/*.log
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_07.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_07.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-decoupling-d0-${{ matrix.os }}
+          path: |
+            artifacts/sdk-decoupling/d0/*.json
+            artifacts/sdk-decoupling/d0/*.txt
+            artifacts/sdk-decoupling/d0/*.log
+          if-no-files-found: error
+          overwrite: true
+
+  fhir-v7-delivery:
+    name: Historical V7 canonical R4/R5 delivery (${{ matrix.os }})
+    needs: compiler-reference-asset
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 447e7f141c5edf1e803b3d6c85c3bfca9778c5de
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: canonical-tool-package
+          path: artifacts/v7-canonical
+      - name: Restore solution
+        run: dotnet restore MyFhirSdk.sln
+      - name: Verify canonical generation, clean deployment and V6 rollback
+        shell: pwsh
+        run: |
+          $packages = @(Get-ChildItem artifacts/v7-canonical -Recurse -Filter '*.nupkg')
+          if ($packages.Count -ne 1) { throw 'Expected one canonical tool package.' }
+          python eng/Test-FhirV7Delivery.py --tool-package $packages[0].FullName --output artifacts/fhir-versions/v7/ci
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Export current delivery and verify external DLL examples
+        shell: pwsh
+        run: |
+          python eng/Export-FhirDelivery.py --output artifacts/delivery/v7
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python eng/Test-FhirDelivery.py --bundle artifacts/delivery/v7 --output artifacts/delivery/v7/verification
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Upload external delivery bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        id: artifact_upload_08
+        continue-on-error: true
+        with:
+          name: fhir-external-delivery-${{ matrix.os }}
+          path: artifacts/delivery/v7
+          include-hidden-files: true
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_08.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_08.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-external-delivery-${{ matrix.os }}
+          path: artifacts/delivery/v7
+          include-hidden-files: true
+          if-no-files-found: error
+          overwrite: true
+
+      - name: Upload V7 platform evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        id: artifact_upload_09
+        continue-on-error: true
+        with:
+          name: fhir-v7-${{ matrix.os }}
+          path: artifacts/fhir-versions/v7/ci
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_09.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_09.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-v7-${{ matrix.os }}
+          path: artifacts/fhir-versions/v7/ci
+          if-no-files-found: error
+          overwrite: true
+
+  fhir-v7-compare:
+    name: Historical V7 Windows/Ubuntu delivery acceptance
+    needs: fhir-v7-delivery
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 447e7f141c5edf1e803b3d6c85c3bfca9778c5de
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: fhir-v7-windows-latest
+          path: artifacts/v7-windows
+      - uses: actions/download-artifact@v4
+        with:
+          name: fhir-v7-ubuntu-latest
+          path: artifacts/v7-linux
+      - name: Compare canonical input, generated bytes and accepted platform evidence
+        run: python eng/Compare-FhirV7Delivery.py --windows artifacts/v7-windows --linux artifacts/v7-linux --output artifacts/v7-comparison/summary.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        id: artifact_upload_10
+        continue-on-error: true
+        with:
+          name: fhir-v7-cross-platform
+          path: artifacts/v7-comparison
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_10.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_10.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-v7-cross-platform
+          path: artifacts/v7-comparison
+          if-no-files-found: error
+          overwrite: true
+
+  fhir-v6-client:
+    name: Historical V6 R4/R5 Client integration (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 447e7f141c5edf1e803b3d6c85c3bfca9778c5de
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Restore solution
+        run: dotnet restore MyFhirSdk.sln
+      - name: Verify fresh typed clients, HTTP behavior and external smoke status
+        shell: pwsh
+        run: python eng/Test-FhirV6Client.py --output artifacts/fhir-versions/v6/ci
+      - name: Upload V6 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        id: artifact_upload_11
+        continue-on-error: true
+        with:
+          name: fhir-v6-${{ matrix.os }}
+          path: artifacts/fhir-versions/v6/ci
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_11.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_11.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-v6-${{ matrix.os }}
+          path: artifacts/fhir-versions/v6/ci
+          if-no-files-found: error
+          overwrite: true
+
+  fhir-v5-integration:
+    name: Historical V5 full R4 Models and runtime (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 447e7f141c5edf1e803b3d6c85c3bfca9778c5de
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Restore solution
+        run: dotnet restore MyFhirSdk.sln
+      - name: Verify full R4 inventory and fresh R4/R5 runtime integration
+        shell: pwsh
+        run: python eng/Test-FhirV5Integration.py --output artifacts/fhir-versions/v5/ci
+      - name: Upload V5 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        id: artifact_upload_12
+        continue-on-error: true
+        with:
+          name: fhir-v5-${{ matrix.os }}
+          path: artifacts/fhir-versions/v5/ci
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_12.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_12.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-v5-${{ matrix.os }}
+          path: artifacts/fhir-versions/v5/ci
+          if-no-files-found: error
+          overwrite: true
+
+  fhir-v4-generator:
+    name: Historical V4 R4/R5 generator (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 447e7f141c5edf1e803b3d6c85c3bfca9778c5de
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Restore solution
+        run: dotnet restore MyFhirSdk.sln
+      - name: Verify release generation, fresh regression and installed tool isolation
+        shell: pwsh
+        run: python eng/Test-FhirV4Generator.py --output artifacts/fhir-versions/v4/ci
+      - name: Upload V4 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        id: artifact_upload_13
+        continue-on-error: true
+        with:
+          name: fhir-v4-${{ matrix.os }}
+          path: artifacts/fhir-versions/v4/ci
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_13.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_13.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-v4-${{ matrix.os }}
+          path: artifacts/fhir-versions/v4/ci
+          if-no-files-found: error
+          overwrite: true
+
+  fhir-v3-migration:
+    name: Historical V3 R5 Models migration (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 447e7f141c5edf1e803b3d6c85c3bfca9778c5de
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Restore solution
+        run: dotnet restore MyFhirSdk.sln
+      - name: Verify model source preservation and fresh migration regression
+        shell: pwsh
+        run: python eng/Test-FhirV3Migration.py --output artifacts/fhir-versions/v3/ci
+      - name: Upload V3 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        id: artifact_upload_14
+        continue-on-error: true
+        with:
+          name: fhir-v3-${{ matrix.os }}
+          path: artifacts/fhir-versions/v3/ci
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_14.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_14.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-v3-${{ matrix.os }}
+          path: artifacts/fhir-versions/v3/ci
+          if-no-files-found: error
+          overwrite: true
+
+  fhir-v2-context:
+    name: V2 production context and neutral SPI (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Restore solution
+        run: dotnet restore MyFhirSdk.sln
+      - name: Verify fixture, SPI and fresh regression
+        shell: pwsh
+        run: python eng/Test-FhirV2Context.py --output artifacts/fhir-versions/v2/ci
+      - name: Upload V2 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        id: artifact_upload_15
+        continue-on-error: true
+        with:
+          name: fhir-v2-${{ matrix.os }}
+          path: artifacts/fhir-versions/v2/ci
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_15.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_15.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-v2-${{ matrix.os }}
+          path: artifacts/fhir-versions/v2/ci
+          if-no-files-found: error
+          overwrite: true
+
+  fhir-v1-experiment:
+    name: V1 bounded R4/R5 experiment (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Restore solution
+        run: dotnet restore MyFhirSdk.sln
+      - name: Verify closure and run fresh experiment/regression
+        shell: pwsh
+        run: python eng/Test-FhirV1Experiment.py --output artifacts/fhir-versions/v1/ci
+      - name: Upload V1 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        id: artifact_upload_16
+        continue-on-error: true
+        with:
+          name: fhir-v1-${{ matrix.os }}
+          path: artifacts/fhir-versions/v1/ci
+          if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_16.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_16.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-v1-${{ matrix.os }}
+          path: artifacts/fhir-versions/v1/ci
+          if-no-files-found: error
+          overwrite: true
+
   kernel-migration-baseline:
     name: Rebuild K0 migration baseline
     runs-on: windows-latest
+    env:
+      DOTNET_MULTILEVEL_LOOKUP: "0"
     steps:
       - name: Checkout fixture and pinned history
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Setup pinned .NET
+      - name: Prepare isolated K0 installation directory
+        shell: pwsh
+        run: |
+          # Job-level env cannot use runner context; resolve the path on the runner.
+          $installDirectory = Join-Path $env:RUNNER_TEMP 'kernel-k0-dotnet'
+          "DOTNET_INSTALL_DIR=$installDirectory" >> $env:GITHUB_ENV
+      - name: Setup isolated K0 SDK and build runtime
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
+          # 9.0.318 supplies runtime 9.0.20; global.json selects SDK 9.0.317.
+          dotnet-version: '9.0.318'
       - name: Test K0 metadata and locale isolation, fixture pin and failure evidence
         shell: pwsh
         run: ./eng/Test-KernelMigrationHarnessExitCode.ps1
@@ -40,6 +771,33 @@ jobs:
         run: ./eng/Test-KernelSourceRollbackHarness.ps1
       - name: Upload K0 evidence and reproducible binaries
         if: always()
+        uses: actions/upload-artifact@v4
+        id: artifact_upload_17
+        continue-on-error: true
+        with:
+          name: kernel-k0-evidence
+          path: |
+            artifacts/kernel-k0/*.txt
+            artifacts/kernel-k0/*.json
+            artifacts/kernel-k0/old-consumer
+            artifacts/kernel-k0/current-consumer
+            artifacts/kernel-k0/test-results
+            artifacts/kernel-k0/primitive-equivalence
+            artifacts/kernel-k0/smoke
+            artifacts/kernel-k0-harness-tests/*.json
+            artifacts/kernel-k7/rollback/*.json
+            artifacts/kernel-k7/rollback/*.log
+            artifacts/kernel-k7/rollback/test-results
+            artifacts/kernel-k7/rollback/current-test-results
+            artifacts/kernel-k7/rollback-harness
+          if-no-files-found: warn
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_17.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_17.outcome == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
           name: kernel-k0-evidence
@@ -58,6 +816,7 @@ jobs:
             artifacts/kernel-k7/rollback/current-test-results
             artifacts/kernel-k7/rollback-harness
           if-no-files-found: warn
+          overwrite: true
 
   compiler-reference-asset:
     name: Build canonical compiler reference asset
@@ -101,22 +860,54 @@ jobs:
 
       - name: Upload compiler reference asset
         uses: actions/upload-artifact@v4
+        id: artifact_upload_18
+        continue-on-error: true
         with:
           name: compiler-reference-asset
           path: |
             artifacts/compiler-reference
             artifacts/toolchain
           if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_18.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_18.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiler-reference-asset
+          path: |
+            artifacts/compiler-reference
+            artifacts/toolchain
+          if-no-files-found: error
+          overwrite: true
 
       - name: Pack canonical tool
         run: dotnet msbuild eng/MyFhirSdk.CodeGen.Build.proj /t:Pack /p:Configuration=Release
 
       - name: Upload canonical tool
         uses: actions/upload-artifact@v4
+        id: artifact_upload_19
+        continue-on-error: true
         with:
           name: canonical-tool-package
           path: artifacts/packages/*.nupkg
           if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_19.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_19.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-tool-package
+          path: artifacts/packages/*.nupkg
+          if-no-files-found: error
+          overwrite: true
 
   baseline-tool-package:
     name: Rebuild recorded tool upgrade baseline
@@ -184,10 +975,25 @@ jobs:
 
       - name: Upload real baseline package
         uses: actions/upload-artifact@v4
+        id: artifact_upload_20
+        continue-on-error: true
         with:
           name: baseline-tool-package
           path: artifacts/baseline-package/*.nupkg
           if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_20.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_20.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: baseline-tool-package
+          path: artifacts/baseline-package/*.nupkg
+          if-no-files-found: error
+          overwrite: true
 
   build-test-tool-smoke:
     name: Build, test and tool smoke (${{ matrix.id }})
@@ -255,12 +1061,29 @@ jobs:
       - name: Upload K3 rebuild and deployment evidence
         if: always()
         uses: actions/upload-artifact@v4
+        id: artifact_upload_21
+        continue-on-error: true
         with:
           name: kernel-k3-${{ matrix.id }}
           path: |
             artifacts/kernel-k3
             artifacts/kernel-k3-harness
           if-no-files-found: warn
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_21.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_21.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-k3-${{ matrix.id }}
+          path: |
+            artifacts/kernel-k3
+            artifacts/kernel-k3-harness
+          if-no-files-found: warn
+          overwrite: true
 
       - name: Pack local tool
         run: dotnet pack CodeGen/MyFhirSdk.CodeGen.csproj --configuration Release --no-build --no-restore -p:RuntimeReferenceAssetPath="${{ steps.contract.outputs.runtime-reference }}" --output artifacts/d7/package
@@ -360,12 +1183,29 @@ jobs:
       - name: Upload D7 evidence
         if: always()
         uses: actions/upload-artifact@v4
+        id: artifact_upload_22
+        continue-on-error: true
         with:
           name: d7-tool-${{ matrix.id }}
           path: |
             artifacts/d7
             !artifacts/d7/generated-sdk-harness/*/**
           if-no-files-found: warn
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_22.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_22.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: d7-tool-${{ matrix.id }}
+          path: |
+            artifacts/d7
+            !artifacts/d7/generated-sdk-harness/*/**
+          if-no-files-found: warn
+          overwrite: true
 
   cross-platform-drift:
     name: Compare Windows and Linux tool artifacts
@@ -409,7 +1249,7 @@ jobs:
           foreach ($pair in @(@($windowsSdk, $windows), @($linuxSdk, $linux))) {
             $sdk = $pair[0]; $smoke = $pair[1]
             if ($sdk.status -cne 'passed' -or $sdk.modelsCli -cne 'passed' -or $sdk.sdkComposition -cne 'passed' -or
-                $sdk.generatedSourceCount -ne 852 -or $sdk.regressionProjects.Count -ne 7 -or
+                $sdk.generatedSourceCount -ne 852 -or $sdk.regressionProjects.Count -ne 9 -or
                 $sdk.regressionCounts.failed -ne 0 -or $sdk.regressionCounts.passed -le 0 -or
                 @($sdk.gates.PSObject.Properties | Where-Object { $_.Value -cne 'passed' }).Count) {
               throw 'Fresh generated SDK build/runtime evidence is incomplete.'
@@ -446,7 +1286,22 @@ jobs:
 
       - name: Upload cross-platform report
         uses: actions/upload-artifact@v4
+        id: artifact_upload_23
+        continue-on-error: true
         with:
           name: d7-cross-platform-drift
           path: artifacts/cross/*cross-platform-drift.json
           if-no-files-found: error
+      # FinalizeArtifact can reset after the blob upload; retry the same artifact once.
+      - name: Wait before retrying artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_23.outcome == 'failure' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 15
+      - name: Retry artifact upload
+        if: ${{ !cancelled() && steps.artifact_upload_23.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: d7-cross-platform-drift
+          path: artifacts/cross/*cross-platform-drift.json
+          if-no-files-found: error
+          overwrite: true

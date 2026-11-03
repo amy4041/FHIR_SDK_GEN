@@ -295,12 +295,13 @@ public sealed class FhirClientTests
         IFhirValidator? validator = null)
     {
         return new FhirClient(
+            TestContexts.R5,
             serializer ?? new FakeFhirSerializer(),
             new FhirRequestBuilder(
-                new FhirResourceTypeResolver(),
+                new FhirResourceTypeResolver(TestContexts.R5),
                 new FhirRequestUriBuilder(new Uri("https://example.org/fhir"))),
             sender,
-            new FhirResponseHandler(parser),
+            new FhirResponseProcessor(parser),
             authProvider,
             validateBeforeSend,
             validator);

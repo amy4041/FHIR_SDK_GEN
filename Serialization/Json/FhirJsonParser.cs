@@ -1,7 +1,6 @@
 using System.Text.Json;
 using MyFhirSdk.Core;
 using MyFhirSdk.ModelMetadata;
-using MyFhirSdk.ModelMetadata.R5;
 using MyFhirSdk.Primitives;
 
 namespace MyFhirSdk.Serialization.Json;
@@ -13,15 +12,12 @@ public sealed partial class FhirJsonParser : IFhirParser
 {
     private readonly IModelMetadataProvider _metadataProvider;
     private readonly PrimitiveRegistry _primitiveDefinitions;
+    private readonly FhirModelContext? _context;
 
-    public FhirJsonParser()
-        : this(R5ModelMetadataProvider.Default, PrimitiveRegistry.Default)
+    public FhirJsonParser(FhirModelContext context)
+        : this((context ?? throw new ArgumentNullException(nameof(context))).Metadata, context.Primitives)
     {
-    }
-
-    internal FhirJsonParser(IModelMetadataProvider metadataProvider)
-        : this(metadataProvider, PrimitiveRegistry.Default)
-    {
+        _context = context;
     }
 
     internal FhirJsonParser(
@@ -41,6 +37,7 @@ public sealed partial class FhirJsonParser : IFhirParser
 
         using var document = JsonDocument.Parse(json);
         var resource = ReadResource(document.RootElement, typeof(TResource));
+        _context?.EnsureOwnership(resource);
 
         return (TResource)resource;
     }

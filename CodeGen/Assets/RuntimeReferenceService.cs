@@ -188,14 +188,14 @@ public sealed class RuntimeReferenceService
                     path,
                     RuntimeReferenceKind.TrustedPlatform,
                     includeSha256: false);
-                // TPA includes host application dependencies. Neither deployed SDK assembly
-                // may supplement the explicit compiler contract (K2 keeps the old contract
-                // until K4, so including the loaded Runtime would duplicate kernel types).
+                // TPA also includes host dependencies. SDK, Models, provider and
+                // support assemblies must never supplement the compiler-only Runtime.
                 if (!string.Equals(
                         resolved.Assembly.Name,
                         contract.CompilerReference.Assembly.Name,
                         StringComparison.Ordinal)
-                    && resolved.Assembly.Name is not ("MyFhirSdk" or "MyFhirSdk.Runtime"))
+                    && !resolved.Assembly.Name.Equals("MyFhirSdk", StringComparison.Ordinal)
+                    && !resolved.Assembly.Name.StartsWith("MyFhirSdk.", StringComparison.Ordinal))
                 {
                     results.Add(resolved);
                 }

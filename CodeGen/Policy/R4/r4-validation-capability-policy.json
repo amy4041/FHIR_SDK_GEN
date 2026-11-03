@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "fhirVersion": "4.0.1",
+  "scope": {
+    "definitionDerivation": "specialization",
+    "definitionKinds": [
+      "complex-type",
+      "resource"
+    ],
+    "generatedDefinitionSource": "r4-model-ownership-policy.json",
+    "choiceRepresentationSource": "r4-choice-open-type-policy.json",
+    "primitiveValidationSource": "primitive-generation-policy.json",
+    "constraintProfiles": "excluded-from-phase-c-model-validation-generation",
+    "implementationGuideProfiles": "existing-profile-framework-explicit-package-rules-only"
+  },
+  "compositionRules": {
+    "ruleAlgorithmsOwner": "model-agnostic-runtime",
+    "r4RuleEntriesOwner": "generated-model-metadata",
+    "runtimeConcreteR4TypeBranchesAllowed": false,
+    "generatedClassValidationMethodsAllowed": false,
+    "metadataRegistry": "same-assembly-immutable-composition",
+    "inheritedRuleComposition": "c6-effective-rule-set-per-concrete-type",
+    "duplicateRuleDisposition": "fail-before-render",
+    "diagnosticOrdering": "ordinal-type-then-element-then-rule-identity"
+  },
+  "capabilities": [
+    {
+      "id": "primitive-format",
+      "officialMetadata": "phase-b-validated-primitive-policy",
+      "runtimeEvidence": "PrimitiveFormatRule-and-PrimitiveRegistry",
+      "status": "existing-runtime-global",
+      "c6Disposition": "reuse-without-per-property-generated-rule"
+    },
+    {
+      "id": "collection-structure",
+      "officialMetadata": "collection-clr-shape",
+      "runtimeEvidence": "FhirObjectGraphWalker-and-CardinalityRule",
+      "status": "existing-runtime-global",
+      "c6Disposition": "reuse-null-list-and-null-item-checks"
+    },
+    {
+      "id": "maximum-cardinality",
+      "officialMetadata": "ElementDefinition.max",
+      "runtimeEvidence": "single-property-or-IList-public-shape",
+      "status": "structural-clr-representation",
+      "c6Disposition": "preserve-cardinality-in-ir-no-executable-rule-for-r4-baseline"
+    },
+    {
+      "id": "required-scalar",
+      "officialMetadata": "ElementDefinition.min-equals-1-and-max-equals-1",
+      "runtimeEvidence": "RequiredFieldRule.For",
+      "status": "generate-existing-runtime-rule",
+      "c6Disposition": "generate-one-entry-per-direct-required-non-choice-property"
+    },
+    {
+      "id": "required-collection",
+      "officialMetadata": "ElementDefinition.min-equals-1-and-max-equals-star",
+      "runtimeEvidence": "RequiredFieldRule.ForList",
+      "status": "generate-existing-runtime-rule",
+      "c6Disposition": "generate-one-entry-per-direct-required-collection"
+    },
+    {
+      "id": "ordinary-choice",
+      "officialMetadata": "choice-group-min-and-alternatives",
+      "runtimeEvidence": "ChoiceElementRule.AtMostOne-and-ExactlyOne",
+      "status": "generate-existing-runtime-rule",
+      "c6Disposition": "generate-at-most-one-or-exactly-one-per-ordinary-choice"
+    },
+    {
+      "id": "open-type-presence",
+      "officialMetadata": "open-type-choice-min",
+      "runtimeEvidence": "single-polymorphic-property-and-RequiredFieldRule.For",
+      "status": "generate-existing-runtime-rule",
+      "c6Disposition": "generate-required-entry-only-when-min-is-1"
+    },
+    {
+      "id": "fhirpath-invariant",
+      "officialMetadata": "ElementDefinition.constraint",
+      "runtimeEvidence": "no-fhirpath-evaluator-contract",
+      "status": "preserve-only-runtime-extension-required",
+      "c6Disposition": "retain-raw-metadata-no-executable-rule"
+    },
+    {
+      "id": "terminology-binding",
+      "officialMetadata": "ElementDefinition.binding",
+      "runtimeEvidence": "no-terminology-validation-provider-contract",
+      "status": "preserve-only-runtime-extension-required",
+      "c6Disposition": "retain-strength-and-valueset-no-executable-rule"
+    },
+    {
+      "id": "fixed-value",
+      "officialMetadata": "ElementDefinition.fixed[x]",
+      "runtimeEvidence": "no-generic-fixed-value-rule",
+      "status": "zero-in-specialization-scope-policy-update-required",
+      "c6Disposition": "fail-on-new-in-scope-occurrence"
+    },
+    {
+      "id": "pattern-value",
+      "officialMetadata": "ElementDefinition.pattern[x]",
+      "runtimeEvidence": "no-generic-pattern-value-rule",
+      "status": "zero-in-specialization-scope-policy-update-required",
+      "c6Disposition": "fail-on-new-in-scope-occurrence"
+    },
+    {
+      "id": "slicing",
+      "officialMetadata": "ElementDefinition.slicing",
+      "runtimeEvidence": "no-slice-matching-contract",
+      "status": "profile-validation-out-of-scope",
+      "c6Disposition": "retain-provenance-no-generated-core-rule"
+    },
+    {
+      "id": "reference-target-profile",
+      "officialMetadata": "ElementDefinition.type.targetProfile",
+      "runtimeEvidence": "no-reference-resolution-validation-contract",
+      "status": "preserve-only-runtime-extension-required",
+      "c6Disposition": "retain-dependency-and-profile-metadata-no-executable-rule"
+    }
+  ],
+  "unsupportedCapabilityRules": {
+    "dropOfficialMetadataAllowed": false,
+    "claimFullR4ValidationAllowed": false,
+    "generateAdHocModelSpecificAlgorithmAllowed": false,
+    "runtimeExtensionMustBeModelAgnostic": true,
+    "policyUpdateRequiredBeforeEnabling": true,
+    "unapprovedOccurrenceDisposition": "diagnostic-before-render"
+  },
+  "approvedR4Inventory": {
+    "source": "eng/FhirV5Inventory.py (locked R4 package; differential direct elements, snapshot effective elements)",
+    "generatedDefinitions": 182,
+    "generatedResourceDefinitions": 146,
+    "generatedDatatypeDefinitions": 36,
+    "directElements": 4712,
+    "effectiveElementsExcludingRoots": 7373,
+    "directRequiredElements": 770,
+    "directConstraints": 96,
+    "directBindings": 1022,
+    "directBindingStrengths": {
+      "example": 454,
+      "extensible": 147,
+      "preferred": 60,
+      "required": 361
+    },
+    "directChoices": 185,
+    "directChoiceAlternatives": 937,
+    "ordinaryChoices": 178,
+    "openChoices": 7,
+    "requiredOrdinaryChoices": 45,
+    "requiredOpenChoices": 3,
+    "directFixedValues": 0,
+    "directPatternValues": 0,
+    "directSlicing": 0,
+    "finiteCollectionMaxima": 0
+  }
+}

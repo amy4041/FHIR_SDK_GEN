@@ -1,0 +1,78 @@
+[
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.CrossVersionNestedObjectsAreRejectedBeforeSerializerAndValidator(site: \"extensionDatatype\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.CrossVersionNestedObjectsAreRejectedBeforeSerializerAndValidator(site: \"extensionPrimitive\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.R5RoundTripUsesItsOwnBootstrapCodingAndPrimitives",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.OfficialR4RequiredChoiceAndCollectionRulesRunThroughExistingExecutor",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.ExtensionDatatypesAndAbstractBridgesRoundTrip(wire: \"valueCoding\", valueJson: \"{\\\"code\\\":\\\"test\\\"}\", typeName: \"Coding\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.R4RoundTripCoversBootstrapBackboneChoiceContainedAndPrimitiveMetadata",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.RawR5EnginesNeedTheV2NestedOwnershipGuard",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.CrossVersionNestedObjectsAreRejectedBeforeSerializerAndValidator(site: \"contained\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.AttachmentSizeUsesUnsignedIntNumberInR4AndInteger64StringInR5",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.CrossVersionRootsParseTargetsAndMixedProvidersAreRejected",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.PrimitiveLexicalErrorsRemainInvalidInR4",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.ExtensionDatatypesAndAbstractBridgesRoundTrip(wire: \"valueQuantity\", valueJson: \"{\\\"value\\\":1.20,\\\"unit\\\":\\\"mg\\\"}\", typeName: \"Quantity\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.CrossVersionNestedObjectsAreRejectedBeforeSerializerAndValidator(site: \"security\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.ExtensionDatatypesAndAbstractBridgesRoundTrip(wire: \"valueMeta\", valueJson: \"{\\\"tag\\\":[{\\\"code\\\":\\\"nested\\\"}]}\", typeName: \"Meta\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.CrossVersionNestedObjectsAreRejectedBeforeSerializerAndValidator(site: \"tag\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.ExtensionDatatypesAndAbstractBridgesRoundTrip(wire: \"valueRange\", valueJson: \"{\\\"low\\\":{\\\"value\\\":1},\\\"high\\\":{\\\"value\\\":2}}\", typeName: \"Range\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.SameProcessFactoriesHaveDifferentClrIdentitiesAndSharedRuntime",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.ConcurrentAndInterleavedContextsDoNotShareFactoriesRulesOrPrimitiveCaches",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V1.DualVersionExperimentTests.ExtensionDatatypesAndAbstractBridgesRoundTrip(wire: \"valueDosage\", valueJson: \"{\\\"text\\\":\\\"experiment\\\"}\", typeName: \"Dosage\")",
+    "outcome": "Passed"
+  }
+]

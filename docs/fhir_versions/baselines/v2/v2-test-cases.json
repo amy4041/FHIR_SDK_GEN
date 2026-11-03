@@ -1,0 +1,126 @@
+[
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelOwnershipReviewTests.ForeignEnumerableResourcesCannotBypassOwnershipAtRootOrContained(r5: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelOwnershipReviewTests.SharedMetaMappingsMustExistAndUseTheRegisteredCodingType(mode: \"wrong-tag\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.ForeignObjectsAreRejectedEarlyByBothEnginesInBothDirections(site: \"extensionPrimitive\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.AnyIdentityMismatchIsRejectedBeforeAnEngineCanRun(field: \"package\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.ForeignObjectsAreRejectedEarlyByBothEnginesInBothDirections(site: \"contained\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.ForeignObjectsAreRejectedEarlyByBothEnginesInBothDirections(site: \"tag\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContractsApiSnapshotTests.NeutralSpiAndItsRuntimeSignatureDependenciesMatchTheApprovedSnapshot",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.ForeignObjectsAreRejectedEarlyByBothEnginesInBothDirections(site: \"root\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelOwnershipReviewTests.SharedMetaMappingsMustExistAndUseTheRegisteredCodingType(mode: \"wrong-both\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.FactoriesCannotReturnAnotherContextOrAnUnexpectedFhirName",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelOwnershipReviewTests.ForeignEnumerableResourcesCannotBypassOwnershipAtRootOrContained(r5: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.InventoriesAreCopiedAndCannotBeMutatedThroughThePublicLists",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.RelabelledForeignPrimitiveIsRejectedByExactInventory",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.ForeignObjectsAreRejectedEarlyByBothEnginesInBothDirections(site: \"extensionType\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.ProductionEnginesRoundTripBootstrapBackboneContainedAndPrimitiveMetadata",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.ReleaseSpecificPrimitiveTokensAndRulesStayIsolated",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.ForeignObjectsAreRejectedEarlyByBothEnginesInBothDirections(site: \"emptyCoding\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.AnyIdentityMismatchIsRejectedBeforeAnEngineCanRun(field: \"version\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.ConcurrentAndInterleavedProductionContextsRemainIndependent",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelOwnershipReviewTests.JsonIgnoredForeignModelsAreRejectedWithTheSameEarlyDiagnostic(list: False)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelOwnershipReviewTests.SharedMetaMappingsMustExistAndUseTheRegisteredCodingType(mode: \"missing-tag\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.ForeignObjectsAreRejectedEarlyByBothEnginesInBothDirections(site: \"security\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelOwnershipReviewTests.SharedMetaMappingsMustExistAndUseTheRegisteredCodingType(mode: \"missing-security\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelOwnershipReviewTests.RegisteredEnumerableModelsStillTraverseTheirFhirPropertiesAndRules",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelOwnershipReviewTests.SharedMetaMappingsMustExistAndUseTheRegisteredCodingType(mode: \"missing-both\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.AnyIdentityMismatchIsRejectedBeforeAnEngineCanRun(field: \"policy\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelOwnershipReviewTests.JsonIgnoredForeignModelsAreRejectedWithTheSameEarlyDiagnostic(list: True)",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.AnyIdentityMismatchIsRejectedBeforeAnEngineCanRun(field: \"packageVersion\")",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.PublicContractsAndIndependentProviderHaveNoSdkOrEngineDependency",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.SameResourceNamesResolveToDistinctTypesAndUnknownFactoriesFail",
+    "outcome": "Passed"
+  },
+  {
+    "test": "MyFhirSdk.Tests.Architecture.V2.ModelContextTests.AnyIdentityMismatchIsRejectedBeforeAnEngineCanRun(field: \"models\")",
+    "outcome": "Passed"
+  }
+]

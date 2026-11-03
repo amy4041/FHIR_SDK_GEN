@@ -25,12 +25,13 @@ public sealed class PrimitiveCliFailureMatrixTests : IDisposable
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task MissingExplicitPolicy_ReturnsUsageErrorWithoutWriting(bool archive)
+    public async Task MissingPackagedPolicy_ReturnsAssetDiagnosticWithoutFallbackOrWriting(bool archive)
     {
         var args = Arguments(archive ? Package : Definitions);
         var index = Array.IndexOf(args, "--policy");
         await AssertFailureAsync(args.Where((_, i) => i != index && i != index + 1).ToArray(),
-            1, "Required option '--policy' was not provided.");
+            2, "[" + GeneratorDiagnosticCodes.PackagedAssetMissing + "]",
+            parser: new GeneratorCommandLineParser(new ToolAssetResolver(Path.Combine(_root, "empty-tool"))));
     }
 
     [Theory]
@@ -196,7 +197,7 @@ public sealed class PrimitiveCliFailureMatrixTests : IDisposable
     }
 
     private async Task<string> AssertFailureAsync(string[] args, int exitCode, string errorText,
-        PrimitiveGenerationPipeline? pipeline = null)
+        PrimitiveGenerationPipeline? pipeline = null, GeneratorCommandLineParser? parser = null)
     {
         var outputPath = args[Array.IndexOf(args, "--output") + 1];
         Directory.CreateDirectory(outputPath);
@@ -204,7 +205,7 @@ public sealed class PrimitiveCliFailureMatrixTests : IDisposable
         var before = Snapshot();
         using var output = new StringWriter();
         using var error = new StringWriter();
-        var cli = new GeneratorCli(output, error, new GeneratorCommandLineParser(new ToolAssetResolver(AppContext.BaseDirectory)),
+        var cli = new GeneratorCli(output, error, parser ?? new GeneratorCommandLineParser(new ToolAssetResolver(AppContext.BaseDirectory)),
             primitivePipeline: pipeline ?? CodeGenTestRuntime.CreatePrimitivePipeline());
         Assert.Equal(exitCode, await cli.RunAsync(args));
         Assert.Contains(errorText, error.ToString());

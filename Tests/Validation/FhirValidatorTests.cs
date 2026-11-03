@@ -5,7 +5,7 @@ public sealed class FhirValidatorTests
     [Fact]
     public void ValidateRejectsNullResource()
     {
-        var validator = new FhirValidator();
+        var validator = new FhirValidator(TestContexts.R5);
 
         Assert.Throws<ArgumentNullException>(() => validator.Validate(null!));
     }
@@ -13,7 +13,7 @@ public sealed class FhirValidatorTests
     [Fact]
     public void ValidateReturnsSuccessForEmptyOptionalPatient()
     {
-        var validator = new FhirValidator();
+        var validator = new FhirValidator(TestContexts.R5);
 
         var result = validator.Validate(new Patient());
 

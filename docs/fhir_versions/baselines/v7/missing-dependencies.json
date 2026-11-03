@@ -1,0 +1,98 @@
+[
+  {
+    "consumer": "R4",
+    "missing": "MyFhirSdk.ModelContracts.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "R4",
+    "missing": "MyFhirSdk.ModelSupport.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "R4",
+    "missing": "MyFhirSdk.R4.Models.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "R4",
+    "missing": "MyFhirSdk.Runtime.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "R4",
+    "missing": "MyFhirSdk.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "R5",
+    "missing": "MyFhirSdk.ModelContracts.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "R5",
+    "missing": "MyFhirSdk.ModelSupport.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "R5",
+    "missing": "MyFhirSdk.R5.Models.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "R5",
+    "missing": "MyFhirSdk.Runtime.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "R5",
+    "missing": "MyFhirSdk.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "Dual",
+    "missing": "MyFhirSdk.ModelContracts.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "Dual",
+    "missing": "MyFhirSdk.ModelSupport.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "Dual",
+    "missing": "MyFhirSdk.R4.Models.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "Dual",
+    "missing": "MyFhirSdk.R5.Models.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "Dual",
+    "missing": "MyFhirSdk.Runtime.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  },
+  {
+    "consumer": "Dual",
+    "missing": "MyFhirSdk.dll",
+    "exitCode": 3762504530,
+    "status": "Passed"
+  }
+]

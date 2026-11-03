@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "fhirVersion": "5.0.0",
   "assemblyLayout": {
-    "phaseCMode": "single-sdk-assembly",
+    "phaseCMode": "split-models-assembly",
     "sdkAssemblyName": "MyFhirSdk",
-    "generatedModelsAssemblyName": "MyFhirSdk",
+    "generatedModelsAssemblyName": "MyFhirSdk.R5.Models",
     "codeGenAssemblyName": "MyFhirSdk.CodeGen",
-    "codeGenRuntimeReference": "sdk-project-reference",
-    "splitRequiresAdr": true
+    "codeGenRuntimeReference": "metadata-only-runtime-compiler-reference",
+    "splitRequiresAdr": false
   },
   "runtimeContracts": [
     {

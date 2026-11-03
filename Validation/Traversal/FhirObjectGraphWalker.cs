@@ -36,6 +36,15 @@ internal sealed class FhirObjectGraphWalker
             var propertyPath = FhirPathFormatter.Combine(path, FhirPathFormatter.PropertyName(property));
             var propertyValue = property.GetValue(value);
 
+            if (propertyValue is FhirObject childObject)
+            {
+                foreach (var child in WalkObject(childObject, propertyPath, issues, visited))
+                {
+                    yield return child;
+                }
+                continue;
+            }
+
             if (IsRepeatedProperty(property))
             {
                 foreach (var child in WalkRepeatedProperty(propertyValue, propertyPath, issues, visited))
@@ -46,13 +55,6 @@ internal sealed class FhirObjectGraphWalker
                 continue;
             }
 
-            if (propertyValue is FhirObject childObject)
-            {
-                foreach (var child in WalkObject(childObject, propertyPath, issues, visited))
-                {
-                    yield return child;
-                }
-            }
         }
     }
 
@@ -94,7 +96,7 @@ internal sealed class FhirObjectGraphWalker
         }
     }
 
-    private static IEnumerable<PropertyInfo> GetReadableProperties(Type type)
+    internal static IEnumerable<PropertyInfo> GetReadableProperties(Type type)
     {
         return type
             .GetProperties(BindingFlags.Instance | BindingFlags.Public)
@@ -104,6 +106,7 @@ internal sealed class FhirObjectGraphWalker
     private static bool IsRepeatedProperty(PropertyInfo property)
     {
         return property.PropertyType != typeof(string)
+            && !typeof(FhirObject).IsAssignableFrom(property.PropertyType)
             && typeof(IEnumerable).IsAssignableFrom(property.PropertyType);
     }
 }

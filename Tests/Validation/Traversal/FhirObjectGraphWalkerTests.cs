@@ -15,7 +15,7 @@ public sealed class FhirObjectGraphWalkerTests
                 }
             ]
         };
-        var validator = new FhirValidator();
+        var validator = new FhirValidator(TestContexts.R5);
 
         var result = validator.Validate(patient);
 
@@ -31,7 +31,7 @@ public sealed class FhirObjectGraphWalkerTests
             BirthDate = null,
             ManagingOrganization = null
         };
-        var validator = new FhirValidator();
+        var validator = new FhirValidator(TestContexts.R5);
 
         var result = validator.Validate(patient);
 

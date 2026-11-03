@@ -24,7 +24,7 @@ public sealed class ResourceBackboneRenderer
 
         return _renderer.Render(
             declaration,
-            $"FHIR R5 {declaration.FhirName} {kind}.",
+            $"FHIR {Generation.FhirReleaseConfiguration.ForVersion(declaration.Source.DefinitionVersion!).Release} {declaration.FhirName} {kind}.",
             isConcreteResource ? declaration.FhirName : null);
     }
 }

@@ -1,0 +1,39 @@
+{
+  "status": "Passed",
+  "releases": [
+    {
+      "fhirVersion": "5.0.0",
+      "modelAssembly": "MyFhirSdk.R5.Models",
+      "roundTrip": true,
+      "validation": true,
+      "typedClient": true
+    }
+  ],
+  "assemblies": [
+    {
+      "name": "MyFhirSdk",
+      "identity": "MyFhirSdk, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "path": "<deployment>/MyFhirSdk.dll"
+    },
+    {
+      "name": "MyFhirSdk.ModelContracts",
+      "identity": "MyFhirSdk.ModelContracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "path": "<deployment>/MyFhirSdk.ModelContracts.dll"
+    },
+    {
+      "name": "MyFhirSdk.ModelSupport",
+      "identity": "MyFhirSdk.ModelSupport, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "path": "<deployment>/MyFhirSdk.ModelSupport.dll"
+    },
+    {
+      "name": "MyFhirSdk.R5.Models",
+      "identity": "MyFhirSdk.R5.Models, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "path": "<deployment>/MyFhirSdk.R5.Models.dll"
+    },
+    {
+      "name": "MyFhirSdk.Runtime",
+      "identity": "MyFhirSdk.Runtime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "path": "<deployment>/MyFhirSdk.Runtime.dll"
+    }
+  ]
+}

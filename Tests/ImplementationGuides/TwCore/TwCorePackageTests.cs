@@ -9,7 +9,7 @@ public sealed class TwCorePackageTests
 
         Assert.Equal("tw.gov.mohw.twcore#1.0.0", package.PackageId);
         Assert.Equal("TW Core", package.Name);
-        Assert.Equal("R4.0.1", package.FhirVersion);
+        Assert.Equal("4.0.1", package.FhirVersion);
         var profile = Assert.Single(package.SupportedProfiles);
         Assert.Equal(TwCoreProfiles.Patient, profile);
     }

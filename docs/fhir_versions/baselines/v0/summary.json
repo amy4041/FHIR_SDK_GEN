@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "gate": "G0",
+  "status": "Passed",
+  "r4ProductionSupport": false,
+  "sourceRevision": "ca0c27f81adb729657da8ddab61c71c70e113984",
+  "branch": "feature/fhir-r4-v0",
+  "workingTreeDirty": true,
+  "createdAtUtc": "2026-10-13T07:59:11.446600+00:00",
+  "sdkVersion": "9.0.317",
+  "os": "Windows",
+  "architecture": "AMD64",
+  "pythonVersion": "3.13.13",
+  "targetFramework": "net9.0",
+  "configuration": "Release",
+  "testTempDirectory": "artifacts/fhir-versions/temp",
+  "sourceFingerprint": {
+    "algorithm": "sha256-path-and-bytes-v1",
+    "fileCount": 1423,
+    "sha256": "329c0787252c3501cbb995ee62efa86135cf5c35a7aeb5cfd9bb7d10cffae652"
+  },
+  "runnerSha256": "4a24a6bb883462a23013957b413a17ae78cefc6822b1c53a8921a71a07ed04e3",
+  "powershellVersion": "7.5.0",
+  "decisionsSha256": "8ac74d618a14cc4f54ca895be4f0be045546f75f6a7677d37ad4574df4099066",
+  "r4Input": {
+    "sha256": "b090bf929e1f665cf2c91583720849695bc38d2892a7c5037c56cb00817fb091",
+    "archiveBytes": 4531911,
+    "structureDefinitions": 655,
+    "byKindAndDerivation": {
+      "complex-type/None": 1,
+      "complex-type/constraint": 398,
+      "complex-type/specialization": 40,
+      "logical/None": 4,
+      "logical/specialization": 1,
+      "primitive-type/specialization": 20,
+      "resource/None": 1,
+      "resource/constraint": 43,
+      "resource/specialization": 147
+    },
+    "byDisposition": {
+      "excluded-from-base-models": 445,
+      "model-generation-candidate-requires-V4-policy": 202,
+      "runtime-bootstrap-candidate-requires-V1": 7,
+      "version-specific-auxiliary-required": 1
+    }
+  },
+  "r5Input": {
+    "sha256": "74b27cd1bfce9e80eaceac431edf230b0945a443564fbf5512f82e5fa50a80d4",
+    "archiveBytes": 17057450,
+    "structureDefinitions": 307,
+    "byKindAndDerivation": {
+      "complex-type/None": 1,
+      "complex-type/constraint": 3,
+      "complex-type/specialization": 47,
+      "logical/None": 10,
+      "primitive-type/specialization": 21,
+      "resource/constraint": 63,
+      "resource/specialization": 162
+    },
+    "byDisposition": {
+      "excluded-from-base-models": 75,
+      "model-generation-candidate-requires-V4-policy": 220,
+      "runtime-bootstrap-candidate-requires-V1": 11,
+      "version-specific-auxiliary-required": 1
+    }
+  },
+  "tool": {
+    "packageId": "MyFhirSdk.CodeGen.Tool",
+    "version": "1.2.0",
+    "sha256": "6ea683aac6e54ae524823888b58b77d3dca38243e17784f3498e3f5ad0696aa9",
+    "descriptorSha256": "75ce3d0aebb6c0e69ce18919b3b3bb6387faed1eee588e5838716d2abf365d99",
+    "compilerReferenceSha256": "8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71",
+    "contract": "runtime-kernel-v2"
+  },
+  "inventoryToolNuGetAudit": false,
+  "publicApiSha256": "925db0ae7963250c8d6602536d6e71d6ba09f51bd3681c858a8214429ea33c66",
+  "implementationHashes": {
+    "MyFhirSdk.dll": "1d84427865ff1623afde1e8922463686f5b197ade79b7fa076ba05b1dee53b50",
+    "MyFhirSdk.Runtime.dll": "3adf69db64a6ba1b63f4671d4c7279de7abaa0c83bf558833cda3ce7838e8de3"
+  },
+  "externalClientSmoke": {
+    "endpointConfigured": false,
+    "endpointSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "environmentVariable": "MYFHIRSDK_INTEGRATION_BASE_URL"
+  },
+  "regression": [
+    {
+      "assembly": "MyFhirSdk.Validation.Tests",
+      "trx": "artifacts/fhir-versions/v0/review-fixes/regression/A90408_65-0A90408-01_2026-10-13_16_00_29.trx",
+      "sha256": "3ceae51a47427979e37ebc94c17f61aa08471b73ae93204ec3c772688729ca32",
+      "total": 74,
+      "passed": 74,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Client.Tests",
+      "trx": "artifacts/fhir-versions/v0/review-fixes/regression/A90408_65-0A90408-01_2026-10-13_16_00_29[1].trx",
+      "sha256": "0d55e1f66fe627f1fb4b05a0f97b62e46210dbe174f8e8d6490dba445e7f5c2c",
+      "total": 45,
+      "passed": 44,
+      "failed": 0,
+      "skipped": 1,
+      "skips": [
+        {
+          "test": "MyFhirSdk.Tests.Client.FhirClientIntegrationSmokeTests.PatientCrudSearchSmokeFlow",
+          "reason": "Set MYFHIRSDK_INTEGRATION_BASE_URL to run integration smoke tests."
+        }
+      ]
+    },
+    {
+      "assembly": "MyFhirSdk.Parser.Json.Tests",
+      "trx": "artifacts/fhir-versions/v0/review-fixes/regression/A90408_65-0A90408-01_2026-10-13_16_00_29[2].trx",
+      "sha256": "c1fcb9ab844965826d2971ef7940db15a1ddc2ae4c90c2562b8e57f159358b7c",
+      "total": 22,
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.ImplementationGuides.TwCore.Tests",
+      "trx": "artifacts/fhir-versions/v0/review-fixes/regression/A90408_65-0A90408-01_2026-10-13_16_00_29[3].trx",
+      "sha256": "09f8eab5e45d4a831755a5a701899eb081e4671baff0d984d5cac4babb33da4c",
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Serialization.Json.Tests",
+      "trx": "artifacts/fhir-versions/v0/review-fixes/regression/A90408_65-0A90408-01_2026-10-13_16_00_29[4].trx",
+      "sha256": "3ea82d70052c55fc800916ea572b77f6ae2b5ff19b01d6d3b567c760eb8a0eab",
+      "total": 15,
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Architecture.Tests",
+      "trx": "artifacts/fhir-versions/v0/review-fixes/regression/A90408_65-0A90408-01_2026-10-13_16_00_29[5].trx",
+      "sha256": "a65d453bf820cf3c6913d2970df56fdcd0e44c65b76eb8e0f083ab93fca298a1",
+      "total": 189,
+      "passed": 189,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.CodeGen.Tests",
+      "trx": "artifacts/fhir-versions/v0/review-fixes/regression/A90408_65-0A90408-01_2026-10-13_16_00_31.trx",
+      "sha256": "2bf824546ce59bd2c61f06dc43db735e7de480a88c1e6874e5fc2790e75b4f96",
+      "total": 568,
+      "passed": 568,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    }
+  ],
+  "testCounts": {
+    "total": 923,
+    "passed": 922,
+    "failed": 0,
+    "skipped": 1
+  }
+}

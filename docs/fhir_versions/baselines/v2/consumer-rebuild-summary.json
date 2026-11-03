@@ -1,0 +1,79 @@
+{
+  "status": "passed",
+  "gates": {
+    "consumerInventory": "passed",
+    "cleanRegression": "passed",
+    "rebuiltConsumers": "passed",
+    "deployment": "passed",
+    "missingRuntime": "passed",
+    "missingModelContracts": "passed",
+    "splitInventory": "passed",
+    "historicalBaseline": "passed"
+  },
+  "regressionCounts": {
+    "total": 973,
+    "passed": 972,
+    "failed": 0,
+    "skipped": 1
+  },
+  "missingRuntime": {
+    "exitCode": -532462766,
+    "dependency": "MyFhirSdk.Runtime",
+    "fallbackObserved": false
+  },
+  "missingModelContracts": {
+    "exitCode": -532462766,
+    "dependency": "MyFhirSdk.ModelContracts",
+    "fallbackObserved": false
+  },
+  "runtimeDeclarations": 14,
+  "publicApiSha256": "7e421e1201414ff6c261456baaeb7ab443a444a9111f7934931a40df35774d17",
+  "historicalBaseline": "Frozen fixture pin verified; baseline files unchanged. Historical execution remains the separate K0 gate.",
+  "rawEvidence": "artifacts/fhir-versions/v2/review-fixed-k3/evidence.json",
+  "rawEvidenceSha256": "efad93b36aa3b134f403e56e6e89cbe3ed27201927b6f85649bfed086e4bef7d",
+  "harnessChecks": 20,
+  "harnessSha256": "4a8e3318facfcfb208462a8d917ed190eaf256433c03025b5bcb638a25d02574",
+  "deployedHashes": [
+    {
+      "identity": "MyFhirSdk.Runtime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sha256": "4d176322c293d2c6d5bd353fa4c2d6466975e4812dbac92ad98ceca0b35cb0a0"
+    },
+    {
+      "identity": "MyFhirSdk, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sha256": "e9c654ddd9c456d0cac4ad99465376454bd444866cfbd540d729e00ab130d021"
+    },
+    {
+      "identity": "MyFhirSdk.ModelContracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sha256": "5a1ca2573b816e278c66475b357a7c78d679ada2ee1b9924ca2968bcde218fc1"
+    },
+    {
+      "identity": "RebuiltLibrary, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sha256": "0a3eadf7f66622aa47a1e3a6f8e008c94dcfab777404a4a95be3eb29d698c85a"
+    },
+    {
+      "identity": "RebuiltConsumer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sha256": "5b4dcb7b279d479172e2926e5fc1796bea1f75c63264453dc8888882189eec62"
+    }
+  ],
+  "neutralProjects": [
+    {
+      "source": "ModelContracts/MyFhirSdk.ModelContracts.csproj",
+      "role": "production-model-contracts",
+      "projectReferences": [
+        "../Runtime/MyFhirSdk.Runtime.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test MyFhirSdk.sln -c Release --logger trx (builds production dependencies)"
+    },
+    {
+      "source": "Tests/FhirVersions/V2/Provider/MyFhirSdk.R4.V2.Provider.csproj",
+      "role": "experiment-r4-provider",
+      "projectReferences": [
+        "../../../../ModelContracts/MyFhirSdk.ModelContracts.csproj",
+        "../../V1/Models/MyFhirSdk.R4.V1.Models.csproj"
+      ],
+      "assemblyReferences": [],
+      "rebuildCommand": "dotnet test Tests/Architecture/MyFhirSdk.Architecture.Tests.csproj -c Release (builds independent experiment models/providers)"
+    }
+  ]
+}

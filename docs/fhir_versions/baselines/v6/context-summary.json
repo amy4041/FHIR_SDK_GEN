@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "gate": "G2",
+  "status": "Passed",
+  "productionContext": true,
+  "completeR4Support": false,
+  "sourceRevision": "9aee18656326a175b92d7b9fded1379188d64a4e",
+  "sourceFingerprint": {
+    "algorithm": "sha256-path-and-bytes-v1",
+    "fileCount": 2245,
+    "sha256": "ea29be2abdf3af0032cd625440a8cf9a433d837123f1b8d3e0a1783c8551db63"
+  },
+  "createdAtUtc": "2026-10-19T08:06:32.943689+00:00",
+  "os": "Windows",
+  "sdkVersion": "9.0.317",
+  "pythonVersion": "3.13.13",
+  "targetFramework": "net9.0",
+  "configuration": "Release",
+  "packages": [
+    {
+      "packageId": "hl7.fhir.r4.core",
+      "version": "4.0.1",
+      "sha256": "b090bf929e1f665cf2c91583720849695bc38d2892a7c5037c56cb00817fb091"
+    },
+    {
+      "packageId": "hl7.fhir.r5.core",
+      "version": "5.0.0",
+      "sha256": "74b27cd1bfce9e80eaceac431edf230b0945a443564fbf5512f82e5fa50a80d4"
+    }
+  ],
+  "integrationEndpoint": {
+    "configured": false,
+    "sha256": null
+  },
+  "regression": [
+    {
+      "assembly": "MyFhirSdk.ImplementationGuides.TwCore.Tests",
+      "trx": "artifacts/fhir-versions/v6/review-fixed-verified/sdk/generator/migration/context/test-results/g2_net9.0_20261019160644.trx",
+      "sha256": "a45e5da561baecc173b6f740ddb3f223e964cf34a8e423b19cc70b6d2e554ed1",
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Serialization.Json.Tests",
+      "trx": "artifacts/fhir-versions/v6/review-fixed-verified/sdk/generator/migration/context/test-results/g2_net9.0_20261019160645.trx",
+      "sha256": "d4d3770a35f1687ce790d365baeea8d727a8ba7fe51e3f8fdb56c19532e9aa47",
+      "total": 15,
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Validation.Tests",
+      "trx": "artifacts/fhir-versions/v6/review-fixed-verified/sdk/generator/migration/context/test-results/g2_net9.0_20261019160646.trx",
+      "sha256": "9af1f00cbb7dfdaf0a3ebd90df8aa2b7c1c2d6160af65a1cab21196e25773635",
+      "total": 74,
+      "passed": 74,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Client.Tests",
+      "trx": "artifacts/fhir-versions/v6/review-fixed-verified/sdk/generator/migration/context/test-results/g2_net9.0_20261019160647.trx",
+      "sha256": "9183f4a70878386454186cb099aa5289107cc403195d5e8e34989bbebb5c7ced",
+      "total": 50,
+      "passed": 49,
+      "failed": 0,
+      "skipped": 1,
+      "skips": [
+        {
+          "test": "MyFhirSdk.Tests.Client.FhirClientIntegrationSmokeTests.PatientCrudSearchSmokeFlow",
+          "reason": "Set MYFHIRSDK_INTEGRATION_BASE_URL to run integration smoke tests."
+        }
+      ]
+    },
+    {
+      "assembly": "MyFhirSdk.Parser.Json.Tests",
+      "trx": "artifacts/fhir-versions/v6/review-fixed-verified/sdk/generator/migration/context/test-results/g2_net9.0_20261019160648.trx",
+      "sha256": "62a5b8aedb495b10d39414d8449dd68dc1780b51cb5272f42b10c91465887031",
+      "total": 22,
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.FhirVersions.V6.Tests",
+      "trx": "artifacts/fhir-versions/v6/review-fixed-verified/sdk/generator/migration/context/test-results/g2_net9.0_20261019160649.trx",
+      "sha256": "83a80d6f7e2377dcb894a65cdc0697ae0d58663db9764d2cf3826f6a21ee4f90",
+      "total": 92,
+      "passed": 92,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.FhirVersions.V5.Tests",
+      "trx": "artifacts/fhir-versions/v6/review-fixed-verified/sdk/generator/migration/context/test-results/g2_net9.0_20261019160650.trx",
+      "sha256": "cc78bea1e2fef40c61e7fd1ea6d7df1ef461f1938119309303217ec2ebdac2a4",
+      "total": 81,
+      "passed": 81,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.Architecture.Tests",
+      "trx": "artifacts/fhir-versions/v6/review-fixed-verified/sdk/generator/migration/context/test-results/g2_net9.0_20261019160701.trx",
+      "sha256": "de23ec66524e0cd3d40a058a90d70db7fc8235f470e281f790c9d22d647b839c",
+      "total": 243,
+      "passed": 243,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    },
+    {
+      "assembly": "MyFhirSdk.CodeGen.Tests",
+      "trx": "artifacts/fhir-versions/v6/review-fixed-verified/sdk/generator/migration/context/test-results/g2_net9.0_20261019160746.trx",
+      "sha256": "704f8bd00ddd5ef8427159e99061377bfc697706d6296ce8cdbfeac67c18e46a",
+      "total": 584,
+      "passed": 584,
+      "failed": 0,
+      "skipped": 0,
+      "skips": []
+    }
+  ],
+  "testCounts": {
+    "total": 1171,
+    "passed": 1170,
+    "failed": 0,
+    "skipped": 1
+  },
+  "v2Tests": {
+    "total": 31,
+    "passed": 31
+  },
+  "runtimeContract": {
+    "descriptorSha256": "422ac582a75724ea3ecc275131b3f190b3b19d9571aa857925960edc9b23c2f2",
+    "compilerReferenceSha256": "8b990107f921287068ffc8326ce69b28a422dace2fcbf5a657ef50a7adde8e71"
+  },
+  "apiSnapshots": {
+    "Tests/Architecture/ApprovedPublicApi.txt": "95d785ee700647c3cc5be473cf3368015bbf258e854c989e9946450de97074bf",
+    "Tests/Architecture/ApprovedR5ModelApi.txt": "5d150daeb9594108154411c7c26d642a767b10f2c87caccfec60d0f8a2589a37",
+    "Tests/Architecture/ApprovedModelContractsApi.txt": "6a75af68afe81f383af6a13bab668584e012caaa824d76f14d2a56a83d1bb907"
+  },
+  "testedImplementationHashes": {
+    "MyFhirSdk.dll": "0ec256f55fbbea51a072991efa15f614ebeefbe60ead4ffcdcd59ff29dd1327f",
+    "MyFhirSdk.Runtime.dll": "b40e16f6559ce1c7dd54663df65995446f35b90276a131404336b219f27b2650",
+    "MyFhirSdk.ModelContracts.dll": "d7860a2e3b84b498883b53ac6715b09bfbe72613126e87a906bd13a970512604",
+    "MyFhirSdk.ModelSupport.dll": "41c69151daa1b37e1884ccb4c489e8b332025d40536f8c9ae1a074ed95f69988",
+    "MyFhirSdk.R5.Models.dll": "55a1c87119c43872ff5df2c0177d627af75513cb5aa02defa60641b9be32bbeb",
+    "MyFhirSdk.R4.V1.Models.dll": "12ceb0e16db2554279eb267313789b46bf5e23442ab469710e2cb1a7b8d1a6bf",
+    "MyFhirSdk.R4.V2.Provider.dll": "a1e7a2a8b75a8a3ef925ab7db13a9c5f884aa63b2c8a8f2cf895e2bea77d1dba"
+  }
+}

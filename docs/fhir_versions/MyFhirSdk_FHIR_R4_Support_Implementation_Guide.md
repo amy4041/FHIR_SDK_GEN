@@ -2,7 +2,7 @@
 
 Version 0.1 — 2026-10-13
 
-狀態：Planned，V0–V7 均尚未執行。依據 [ADR](MyFhirSdk_FHIR_R4_Support_ADR.md)，
+狀態：V0–V6 已提交並由使用者確認 CI 通過；[V7 baseline](baselines/v7/README.md) 記錄實際平台結果，新增跨平台 CI 待提交，G7 須兩平台證據經比較後驗收。依據 [ADR](MyFhirSdk_FHIR_R4_Support_ADR.md)，
 驗收採 [Acceptance Criteria](MyFhirSdk_FHIR_R4_Support_Acceptance_Criteria.md)。
 V 編號表示多版本工作包，與已交付的 Runtime extraction K0–K7 分開。
 
@@ -21,7 +21,8 @@ V0 baseline / decisions
 
 V1 允許隔離的實驗修改，不先承諾完整 production SPI。V4 的盤點可提前進行，正式生成產物
 應使用 V2／V3 已固定的 ownership。V3 每次搬移後保持 R5 可建置可執行；不能先留下壞掉的 SDK
-再等待 R4 完成。建議每個工作包使用獨立分支／PR，從已驗收的 main 接續。
+再等待 R4 完成。依使用者決定，V0／V1／V2 在同一 feature branch 以獨立 commits 接續，暫不合併 main；
+保留 main 與已驗證 V0 的完整 revision 作為隔離 checkout／重建還原點，各工作包仍需 review 與 gates。
 
 ## 2. 工作包
 
@@ -55,6 +56,10 @@ backbone、metadata、Extension／Meta／Narrative）。selected closure 不代�
 
 ### V2 — Provider／context 契約與 engines 注入
 
+實作狀態與重現方式見 [V2 baseline](baselines/v2/README.md)。中立 owner 為
+`MyFhirSdk.ModelContracts.dll`；context、engines adapters 及 R5 default composition 目前仍在 SDK。
+R4 驗收 provider 是引用 V1 bounded Models 的獨立 fixture，不等於 V5 production R4 provider。
+
 - 將 metadata／factory、primitive definitions、validation rules 與能力清單的必要契約放入中立 owner。
 - 盤點 public SPI signature 的所有參數／回傳型別，不留下 public 介面依賴 internal 型別。
 - 明確拆分版本 provider 與通用 executor；Models provider 不依賴 engines／SDK，避免新 cycle。
@@ -67,6 +72,10 @@ backbone、metadata、Extension／Meta／Narrative）。selected closure 不代�
 如需 engines assembly，三個 engines 可共用一個專案；不以多拆 DLL 作為驗收目標。
 
 ### V3 — R5 Models 分離與重編遷移
+
+實作 owner：`MyFhirSdk.R5.Models` 擁有 R5 模型與版本 composition，`MyFhirSdk.ModelSupport` 擁有共用
+primitive codecs／validators 與 base rule implementations；SDK 擁有 context、lookup adapters 與 engines。
+V3 不更動 generated C# 內容；Tool 1.2.1 同步 ownership policy／descriptor provenance 與 TPA 隔離修正。
 
 - 將 R5 generated primitives／datatypes／resources、必要 constraint declarations 與版本 composition
   編譯到獨立 Models assembly，維持單一 compile owner。
@@ -148,7 +157,8 @@ V6 外部 smoke 未執行時，V7 可交付基礎 SDK，但不能標示 R4 Clien
 ## 4. Evidence 與變更管理
 
 建議可提交證據位置為 `docs/fhir_versions/baselines/vN/`，實際執行產物放 `artifacts/fhir-versions/vN/`。
-這些是規劃路徑，runner 尚未建立。新腳本延續 `eng/` 維護，能共用現有 harness 時先共用。
+V0 runner 為 `eng/Export-FhirVersionBaseline.py`，使用 Python 3.10+ 標準庫並共用既有 Inventory／Pack／regression。
+新腳本延續 `eng/` 維護，能共用現有 harness 時先共用。
 Portable summary 記錄 source／tool／input／policy／contract identities、環境、每個 gate 的狀態與 artifact
 位置；不提交 machine absolute paths、DLL、完整 TRX 或快取。
 

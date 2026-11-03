@@ -1,0 +1,70 @@
+{
+  "status": "passed",
+  "rawEvidence": "artifacts/fhir-versions/v1/review-fixes-k3-complete/evidence.json",
+  "rawEvidenceSha256": "aee2e4899ff0757f5f353311aa4646b340ef4412908c2a820a568ed29a62d54f",
+  "gates": {
+    "consumerInventory": "passed",
+    "cleanRegression": "passed",
+    "rebuiltConsumers": "passed",
+    "deployment": "passed",
+    "missingRuntime": "passed",
+    "splitInventory": "passed",
+    "historicalBaseline": "passed"
+  },
+  "regressionCounts": {
+    "total": 942,
+    "passed": 941,
+    "failed": 0,
+    "skipped": 1
+  },
+  "experimentModels": {
+    "source": "Tests/FhirVersions/V1/Models/MyFhirSdk.R4.V1.Models.csproj",
+    "role": "experiment-r4-models",
+    "projectReferences": [
+      "../../../../Runtime/MyFhirSdk.Runtime.csproj"
+    ],
+    "assemblyReferences": [],
+    "rebuildCommand": "dotnet test Tests/Architecture/MyFhirSdk.Architecture.Tests.csproj -c Release (builds the Runtime-only experiment Models dependency)"
+  },
+  "modelsConfiguration": "Release; tested DLL hash verified by G1",
+  "runtimeDeclarations": 14,
+  "publicApiSha256": "925db0ae7963250c8d6602536d6e71d6ba09f51bd3681c858a8214429ea33c66",
+  "missingRuntime": {
+    "exitCode": -532462766,
+    "dependency": "MyFhirSdk.Runtime",
+    "fallbackObserved": false
+  },
+  "historicalBaseline": "Frozen fixture pin verified; baseline files unchanged. Historical execution remains the separate K0 gate.",
+  "harness": {
+    "rawEvidence": "artifacts/fhir-versions/v1/review-fixes-k3-harness/summary.json",
+    "sha256": "1cb1aa29600076fa6af968a9eea50e0d782878f321f4f49f0b3cb9ef65f21882",
+    "checks": [
+      "repository-wide-discovery-and-output-exclusions",
+      "unknown-business-consumer",
+      "missing-known-project",
+      "v1-runtime-only-models-dependency",
+      "v1-models-sdk-project-dependency",
+      "v1-models-explicit-dll-dependency",
+      "v1-models-package-dependency",
+      "per-project-identity-and-windows-linux-paths",
+      "entire-codegen-project-skipped",
+      "duplicate-project-report",
+      "missing-project-report",
+      "unrelated-report-replaces-required-project",
+      "failed-test",
+      "known-external-smoke-skip",
+      "each-project-must-execute-tests",
+      "configured-external-smoke-must-run",
+      "unexpected-client-skip",
+      "counter-result-mismatch"
+    ]
+  },
+  "priorDiagnosticAttempt": {
+    "rawEvidence": "artifacts/fhir-versions/v1/review-fixes-k3-release/evidence.json",
+    "result": "failed: existing RuntimePhysicalOwnershipTests MSBuild evaluation timed out after 60 seconds"
+  },
+  "buildEnvironment": {
+    "DOTNET_CLI_USE_MSBUILD_SERVER": "0",
+    "MSBUILDDISABLENODEREUSE": "1"
+  }
+}
